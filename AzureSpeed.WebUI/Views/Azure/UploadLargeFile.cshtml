@@ -1,0 +1,47 @@
+﻿@{
+    ViewBag.Title = "Azure Storage Large File Upload Test";
+}
+
+@Scripts.Render("~/bundles/jazure")
+<script type="text/javascript" src="~/Scripts/azurespeed/uploadfile.js"></script>
+
+<div class="container-fluid">
+    <h3 class="page-header">Azure Storage Large File Upload Speed Test</h3>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="alert alert-warning alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                Test upload large file to Azure Blob Storage in worldwide data centers, with different upload options.
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <a href="#" class="btn btn-success" data-toggle="modal" data-target="#upload-modal">Start testing</a>
+        </div>
+    </div>
+    <div class="row row-margin-top">
+        <div class="col-md-12">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <i class="fa fa-th-list"></i>
+                    File Upload Speed Test
+                </div>
+                <table class="table table-bordered" id="upload-table">
+                    <thead>
+                        <tr>
+                            <th>File Name</th>
+                            <th>File Size</th>
+                            <th>Region</th>
+                            <th>Block Size</th>
+                            <th>Thread</th>
+                            <th>Upload Speed</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    @Html.Partial("UploadModalPartial")
+</div>

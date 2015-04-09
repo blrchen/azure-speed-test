@@ -1,0 +1,66 @@
+﻿@{
+    ViewBag.Title = "Test";
+}
+
+<script type="text/javascript">
+    $(function () {
+        var t = {
+            sortTable: function () {
+                var table = $('#latency-table tbody'),
+                    tmp = [];
+                $.each(table.find('tr'), function () {
+                    var t = this;
+                    var num = $(t).find('.sort').text();
+                    var row = t;
+                    tmp.push({ num: num, html: row.outerHTML });
+                    $(t).remove();
+                });
+                var before = $.map(tmp, function (v) { return v.num; });
+                console.log(before);
+                tmp.sort(function (a, b) {
+                    var x = parseInt(a.num);
+                    var y = parseInt(b.num);
+                    if (isNaN(x)) { x = Infinity; }
+                    if (isNaN(y)) { y = Infinity; }
+                    return x > y;
+                });
+                var after = $.map(tmp, function (v) { return v.num; });
+                console.log(after);
+                $.each(tmp, function () {
+                    var t = this;
+                    table.append(t.html);
+                });
+            }
+        }
+        t.sortTable();
+        window.t = t;
+    });
+</script>
+
+<div class="container-fluid">
+    <h3 class="page-header">Test</h3>
+    <table class="table table-bordered table-striped" id="latency-table">
+        <thead>
+            <tr>
+                <th>Data Center Region</th>
+                <th>Average Latency (ms)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>North Central US</td><td name="azurespeednorthcentralus" class="sort">508</td></tr>
+            <tr><td>Brazil South</td><td name="azurespeedbrazilsouth" class="sort">436</td></tr>
+            <tr><td>Japan West</td><td name="azurespeedjapanwest" class="sort">101</td></tr>
+            <tr><td>West US</td><td name="azurespeedwestus" class="sort">NaN</td></tr>
+            <tr><td>East Asia</td><td name="azurespeedeastasia" class="sort">325</td></tr>
+            <tr><td>China East</td><td name="azurespeedchinaeast" class="sort">40</td></tr>
+            <tr><td>China North</td><td name="azurespeedchinanorth" class="sort">NaN</td></tr>
+            <tr><td>West Europe</td><td name="azurespeedwesteurope" class="sort">507</td></tr>
+            <tr><td>East US</td><td name="azurespeedeastus" class="sort">878</td></tr>
+            <tr><td>South Central US</td><td name="azurespeedsouthcentralus" class="sort">932</td></tr>
+            <tr><td>Central US</td><td name="azurespeedcentralus" class="sort">944</td></tr>
+            <tr><td>Southeast Asia</td><td name="azurespeedsoutheastasia" class="sort">95</td></tr>
+            <tr><td>Japan East</td><td name="azurespeedjapaneast" class="sort">95</td></tr>
+            <tr><td>North Europe</td><td name="azurespeednortheurope" class="sort">NaN</td></tr>
+        </tbody>
+    </table>
+</div>

@@ -1,4 +1,4 @@
 AzureSpeed
 ==========
 
-www.AzureSpeed.com source code
+azurespeed.com source code

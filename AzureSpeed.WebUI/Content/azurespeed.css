@@ -1,0 +1,13 @@
+﻿.speed {
+}
+
+.speed-inprogress {
+    /*background-image: url("/content/images/progress.gif") !important;
+    padding-left: 20px;
+    background-position: left center;
+    background-repeat: no-repeat;
+    display: inline;*/
+}
+
+.speed-success {
+}

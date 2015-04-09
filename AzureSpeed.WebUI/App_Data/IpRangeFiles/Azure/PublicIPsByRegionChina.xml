@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <AzurePublicIpAddresses xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <Region Name="chinanorth">
-    <IpRange Subnet="42.159.0.0/26" />
-    <IpRange Subnet="42.159.0.96/28" />
-    <IpRange Subnet="42.159.0.144/28" />
-    <IpRange Subnet="42.159.0.160/27" />
-    <IpRange Subnet="42.159.4.0/22" />
-    <IpRange Subnet="42.159.8.0/21" />
-    <IpRange Subnet="42.159.16.0/20" />
-    <IpRange Subnet="42.159.65.0/24" />
-    <IpRange Subnet="42.159.80.0/20" />
-    <IpRange Subnet="42.159.96.0/19" />
-    <IpRange Subnet="42.159.112.0/22" />
-    <IpRange Subnet="139.217.0.0/19" />
-    <IpRange Subnet="139.219.0.0/20" />
+   <Region Name="chinanorth">
+       <IpRange Subnet="42.159.0.0/26" />
+       <IpRange Subnet="42.159.0.96/28" />
+       <IpRange Subnet="42.159.0.144/28" />
+       <IpRange Subnet="42.159.0.160/27" />
+       <IpRange Subnet="42.159.4.0/22" />
+       <IpRange Subnet="42.159.8.0/21" />
+       <IpRange Subnet="42.159.16.0/20" />
+       <IpRange Subnet="42.159.65.0/24" />
+       <IpRange Subnet="42.159.80.0/20" />
+       <IpRange Subnet="42.159.96.0/19" />
+       <IpRange Subnet="42.159.112.0/22" />
+       <IpRange Subnet="139.217.0.0/19" />
+       <IpRange Subnet="139.219.0.0/20" />
   </Region>
   <Region Name="chinaeast">
-    <IpRange Subnet="42.159.129.0/26" />
-    <IpRange Subnet="42.159.129.96/28" />
-    <IpRange Subnet="42.159.130.0/23" />
-    <IpRange Subnet="42.159.132.0/22" />
-    <IpRange Subnet="42.159.136.0/21" />
-    <IpRange Subnet="42.159.144.0/20" />
-    <IpRange Subnet="42.159.192.0/20" />
-    <IpRange Subnet="42.159.208.0/24" />
-    <IpRange Subnet="42.159.224.0/19" />
-    <IpRange Subnet="139.219.128.0/20" />
+       <IpRange Subnet="42.159.129.0/26" />
+       <IpRange Subnet="42.159.129.96/28" />
+       <IpRange Subnet="42.159.130.0/23" />
+       <IpRange Subnet="42.159.132.0/22" />
+       <IpRange Subnet="42.159.136.0/21" />
+       <IpRange Subnet="42.159.144.0/20" />
+       <IpRange Subnet="42.159.192.0/20" />
+       <IpRange Subnet="42.159.208.0/24" />
+       <IpRange Subnet="42.159.224.0/19" />
+       <IpRange Subnet="139.219.128.0/20" />
   </Region>
 </AzurePublicIpAddresses>

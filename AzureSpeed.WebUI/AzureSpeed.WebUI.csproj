@@ -183,7 +183,7 @@
     <Content Include="App_Data\IpRangeFiles\Azure\PublicIPsByRegionChina.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="App_Data\IpRangeFiles\Azure\PublicIPs_20141015.xml">
+    <Content Include="App_Data\IpRangeFiles\Azure\PublicIPs.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="App_Data\IpRangeFiles\download.txt" />

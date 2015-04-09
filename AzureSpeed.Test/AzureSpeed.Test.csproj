@@ -95,12 +95,12 @@
       <Link>TestData\IpRangeFiles\AliCloud\ip.txt</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\AzureSpeed.WebUI\App_Data\IpRangeFiles\Azure\PublicIPsByRegionChina.xml">
-      <Link>TestData\IpRangeFiles\Azure\PublicIPsByRegionChina.xml</Link>
+    <Content Include="..\AzureSpeed.WebUI\App_Data\IpRangeFiles\Azure\PublicIPs.xml">
+      <Link>TestData\IpRangeFiles\Azure\PublicIPs.xml</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\AzureSpeed.WebUI\App_Data\IpRangeFiles\Azure\PublicIPs_20141015.xml">
-      <Link>TestData\IpRangeFiles\Azure\PublicIPs_20141015.xml</Link>
+    <Content Include="..\AzureSpeed.WebUI\App_Data\IpRangeFiles\Azure\PublicIPsByRegionChina.xml">
+      <Link>TestData\IpRangeFiles\Azure\PublicIPsByRegionChina.xml</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

@@ -186,7 +186,6 @@
     <Content Include="App_Data\IpRangeFiles\Azure\PublicIPs.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="App_Data\IpRangeFiles\download.txt" />
     <None Include="App_Data\setting.json" />
     <Content Include="Content\azurespeed.css" />
     <Content Include="Content\bootstrap-theme.css" />

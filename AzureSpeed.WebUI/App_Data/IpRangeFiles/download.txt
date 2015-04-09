@@ -1,4 +1,0 @@
-﻿Use following links to download latest ip range files
-Azure: https://www.microsoft.com/en-us/download/details.aspx?id=41653
-Azure China: https://www.microsoft.com/en-us/download/details.aspx?id=42064
-AWS: http://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html

@@ -25,6 +25,7 @@ namespace AzureSpeed.WebUI
             bundles.Add(new StyleBundle("~/Content/css").Include(
                             "~/Content/bootstrap.css",
                             "~/Content/font-awesome.css",
+                            "~/Content/sb-admin-2.css",
                             "~/Content/site.css",
                             "~/Content/azurespeed.css"));
 
@@ -38,6 +39,9 @@ namespace AzureSpeed.WebUI
                             "~/Scripts/jazure/jazure.storage/jazure.storage.account.js",
                             "~/Scripts/jazure/jazure.storage/blob/jazure.storage.container.js",
                             "~/Scripts/jazure/jazure.storage/blob/jazure.storage.blob.js"));
+
+            bundles.Add(new StyleBundle("~/bundles/sb-admin-2").Include(
+                            "~/Scripts/sb-admin-2/sb-admin-2.js"));
 
             bundles.Add(new StyleBundle("~/bundles/azurespeed").Include(
                             "~/Scripts/azurespeed/utils.js"));

@@ -13,32 +13,6 @@
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/azurespeed")
     @RenderSection("scripts", required: false)
-    <script type="text/javascript">
-        $(function () {
-            var layout = {
-                initEvents: function () {
-                    $(window).bind("load resize", function () {
-                        var topOffset = 50;
-                        var width = (this.window.innerWidth > 0) ? this.window.innerWidth : this.screen.width;
-                        if (width < 768) {
-                            $('div.navbar-collapse').addClass('collapse');
-                            topOffset = 100; // 2-row-menu
-                        } else {
-                            $('div.navbar-collapse').removeClass('collapse');
-                        }
-
-                        var height = (this.window.innerHeight > 0) ? this.window.innerHeight : this.screen.height;
-                        height = height - topOffset;
-                        if (height < 1) height = 1;
-                        if (height > topOffset) {
-                            $("#page-wrapper").css("min-height", (height) + "px");
-                        }
-                    });
-                }
-            };
-            layout.initEvents();
-        });
-    </script>
     <script>
         (function (i, s, o, g, r, a, m) {
             i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {

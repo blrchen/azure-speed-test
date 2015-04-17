@@ -11,6 +11,7 @@
     @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/sb-admin-2")
     @Scripts.Render("~/bundles/azurespeed")
     @RenderSection("scripts", required: false)
     <script>
@@ -72,7 +73,16 @@
                             <a href="~/Azure/TrafficManager"><i class="fa fa-globe fa-fw"></i> Traffic Manager Test</a>
                         </li>
                         <li>
-                            <a href="~/Azure/AzureOnlineTools"><i class="fa fa-gears fa-fw"></i> Azure Online Tools</a>
+                            <a href="#"><i class="fa fa-files-o fa-fw"></i> Azure Online Tools<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="~/AzureOnlineTools/EnableStorageCORS">Enable Storage CORS</a>
+                                </li>
+                                <li>
+                                    <a href="~/AzureOnlineTools/GenerateEventHubSAS">EventHub SAS Generator</a>
+                                </li>
+                            </ul>
+                            <!-- /.nav-second-level -->
                         </li>
                         <li>
                             <a href="~/Azure/Reference"><i class="fa fa-globe fa-fw"></i> Reference</a>
@@ -80,6 +90,7 @@
                         <li>
                             <a href="~/Azure/About"><i class="fa fa-book fa-fw"></i> About</a>
                         </li>
+
                     </ul>
                     <!-- /#side-menu -->
                 </div>
@@ -93,9 +104,9 @@
         <div class="footer">
             <footer class="footer">
                 <p>&copy; @DateTime.Now.Year - AzureSpeed.com | By <a href="http://blchen.com" target="_blank">Blair Chen</a>, using <a href="https://github.com/orcame/jazure" target="_blank">jazure</a>
-            </footer>        
+            </footer>
         </div>
-        
+
     </div>
 </body>
 </html>

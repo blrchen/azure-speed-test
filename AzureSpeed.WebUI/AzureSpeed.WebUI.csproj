@@ -164,6 +164,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AzureApiController.cs" />
+    <Compile Include="Controllers\AzureOnlineToolsController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\AzureController.cs" />
     <Compile Include="Controllers\SubnetBuilder.cs" />
@@ -279,6 +280,7 @@
     <Content Include="Scripts\jquery-2.1.3.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Scripts\npm.js" />
+    <Content Include="Scripts\sb-admin-2\metisMenu.js" />
     <Content Include="Scripts\sb-admin-2\sb-admin-2.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config">
@@ -307,7 +309,7 @@
       <SubType>Code</SubType>
     </Content>
     <Content Include="Views\Azure\UploadModalPartial.cshtml" />
-    <Content Include="Views\Azure\AzureOnlineTools.cshtml" />
+    <Content Include="Views\AzureOnlineTools\EnableStorageCORS.cshtml" />
     <Content Include="Views\Azure\CloudRegionFinder.cshtml" />
     <Content Include="Scripts\jquery-2.1.3.min.map" />
     <Content Include="Views\Azure\LiveStreaming.cshtml" />

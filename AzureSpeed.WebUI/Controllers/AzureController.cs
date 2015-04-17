@@ -66,11 +66,6 @@ namespace AzureSpeed.WebUI.Controllers
             return View();
         }
 
-        public ActionResult AzureOnlineTools()
-        {
-            return View();
-        }
-
         public ActionResult Reference()
         {
             return View();

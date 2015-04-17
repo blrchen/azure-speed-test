@@ -7,6 +7,13 @@ namespace AzureSpeed.WebUI
         // For more information on bundling, visit http://go.microsoft.com/fwlink/?LinkId=301862
         public static void RegisterBundles(BundleCollection bundles)
         {
+            bundles.Add(new StyleBundle("~/Content/css").Include(
+                            "~/Content/bootstrap.css",
+                            "~/Content/font-awesome.css",
+                            "~/Content/sb-admin-2.css",
+                            "~/Content/site.css",
+                            "~/Content/azurespeed.css"));
+
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                             "~/Scripts/jquery-{version}.js"));
 
@@ -22,17 +29,10 @@ namespace AzureSpeed.WebUI
                             "~/Scripts/bootstrap.js",
                             "~/Scripts/respond.js"));
 
-            bundles.Add(new StyleBundle("~/Content/css").Include(
-                            "~/Content/bootstrap.css",
-                            "~/Content/font-awesome.css",
-                            "~/Content/sb-admin-2.css",
-                            "~/Content/site.css",
-                            "~/Content/azurespeed.css"));
-
-            bundles.Add(new StyleBundle("~/bundles/flot").Include(
+            bundles.Add(new ScriptBundle("~/bundles/flot").Include(
                             "~/Scripts/flot/jquery.flot.js"));
 
-            bundles.Add(new StyleBundle("~/bundles/jazure").Include(
+            bundles.Add(new ScriptBundle("~/bundles/jazure").Include(
                             "~/Scripts/jazure/crypto-min.js",
                             "~/Scripts/jazure/jazure.core/jazure.core.js",
                             "~/Scripts/jazure/jazure.storage/jazure.storage.core.js",
@@ -40,10 +40,11 @@ namespace AzureSpeed.WebUI
                             "~/Scripts/jazure/jazure.storage/blob/jazure.storage.container.js",
                             "~/Scripts/jazure/jazure.storage/blob/jazure.storage.blob.js"));
 
-            bundles.Add(new StyleBundle("~/bundles/sb-admin-2").Include(
+            bundles.Add(new ScriptBundle("~/bundles/sb-admin-2").Include(
+                            "~/Scripts/sb-admin-2/metisMenu.js",
                             "~/Scripts/sb-admin-2/sb-admin-2.js"));
 
-            bundles.Add(new StyleBundle("~/bundles/azurespeed").Include(
+            bundles.Add(new ScriptBundle("~/bundles/azurespeed").Include(
                             "~/Scripts/azurespeed/utils.js"));
 
             // Set EnableOptimizations to false for debugging. For more information,

@@ -122,7 +122,7 @@
             });
         },
         init: function () {
-            upload.regionData = utils.getRegionData(true);
+            upload.regionData = utils.getRegionData();
             // todo: do we really need this?
             $.each(upload.regionData, function () {
                 if (upload.geoZoneList && !upload.geoZoneList[this.geozone]) {

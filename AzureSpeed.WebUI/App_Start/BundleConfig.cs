@@ -29,8 +29,8 @@ namespace AzureSpeed.WebUI
                             "~/Scripts/bootstrap.js",
                             "~/Scripts/respond.js"));
 
-            bundles.Add(new ScriptBundle("~/bundles/flot").Include(
-                            "~/Scripts/flot/jquery.flot.js"));
+            bundles.Add(new ScriptBundle("~/bundles/d3").Include(
+                            "~/Scripts/d3/d3.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/jazure").Include(
                             "~/Scripts/jazure/crypto-min.js",

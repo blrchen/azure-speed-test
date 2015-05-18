@@ -187,7 +187,9 @@
     <Content Include="App_Data\IpRangeFiles\Azure\PublicIPs.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="App_Data\setting.json" />
+    <Content Include="App_Data\setting.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\azurespeed.css" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
@@ -195,7 +197,6 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
-    <Content Include="Content\images\loading.gif" />
     <Content Include="Content\images\progress.gif" />
     <Content Include="Content\images\status.png" />
     <Content Include="Content\player\MSAdaptiveStreamingPlugin-v1.0.10-osmf2.0.swf" />
@@ -217,40 +218,8 @@
     </Content>
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
-    <Content Include="Scripts\flot\excanvas.js" />
-    <Content Include="Scripts\flot\excanvas.min.js" />
-    <Content Include="Scripts\flot\jquery.colorhelpers.js" />
-    <Content Include="Scripts\flot\jquery.colorhelpers.min.js" />
-    <Content Include="Scripts\flot\jquery.flot.canvas.js" />
-    <Content Include="Scripts\flot\jquery.flot.canvas.min.js" />
-    <Content Include="Scripts\flot\jquery.flot.categories.js" />
-    <Content Include="Scripts\flot\jquery.flot.categories.min.js" />
-    <Content Include="Scripts\flot\jquery.flot.crosshair.js" />
-    <Content Include="Scripts\flot\jquery.flot.crosshair.min.js" />
-    <Content Include="Scripts\flot\jquery.flot.errorbars.js" />
-    <Content Include="Scripts\flot\jquery.flot.errorbars.min.js" />
-    <Content Include="Scripts\flot\jquery.flot.fillbetween.js" />
-    <Content Include="Scripts\flot\jquery.flot.fillbetween.min.js" />
-    <Content Include="Scripts\flot\jquery.flot.image.js" />
-    <Content Include="Scripts\flot\jquery.flot.image.min.js" />
-    <Content Include="Scripts\flot\jquery.flot.js" />
-    <Content Include="Scripts\flot\jquery.flot.min.js" />
-    <Content Include="Scripts\flot\jquery.flot.navigate.js" />
-    <Content Include="Scripts\flot\jquery.flot.navigate.min.js" />
-    <Content Include="Scripts\flot\jquery.flot.pie.js" />
-    <Content Include="Scripts\flot\jquery.flot.pie.min.js" />
-    <Content Include="Scripts\flot\jquery.flot.resize.js" />
-    <Content Include="Scripts\flot\jquery.flot.resize.min.js" />
-    <Content Include="Scripts\flot\jquery.flot.selection.js" />
-    <Content Include="Scripts\flot\jquery.flot.selection.min.js" />
-    <Content Include="Scripts\flot\jquery.flot.stack.js" />
-    <Content Include="Scripts\flot\jquery.flot.stack.min.js" />
-    <Content Include="Scripts\flot\jquery.flot.symbol.js" />
-    <Content Include="Scripts\flot\jquery.flot.symbol.min.js" />
-    <Content Include="Scripts\flot\jquery.flot.threshold.js" />
-    <Content Include="Scripts\flot\jquery.flot.threshold.min.js" />
-    <Content Include="Scripts\flot\jquery.flot.time.js" />
-    <Content Include="Scripts\flot\jquery.flot.time.min.js" />
+    <Content Include="Scripts\d3\d3.js" />
+    <Content Include="Scripts\d3\d3.min.js" />
     <Content Include="Scripts\jazure\crypto-min.js" />
     <Content Include="Scripts\jazure\jazure.core\jazure.core.js" />
     <Content Include="Scripts\jazure\jazure.storage\blob\jazure.storage.blob.js" />
@@ -271,10 +240,9 @@
     <Content Include="Content\bootstrap-theme.css.map" />
     <Content Include="Content\bootstrap.css.map" />
     <None Include="Properties\PublishProfiles\azurespeedchinaeast.pubxml" />
-    <None Include="Properties\PublishProfiles\azurespeedeastasia.pubxml">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="Properties\PublishProfiles\azurespeedeastasia.pubxml" />
     <None Include="Properties\PublishProfiles\azurespeedwestus.pubxml" />
+    <Content Include="Scripts\d3\LICENSE" />
     <None Include="Scripts\jquery-2.1.3.intellisense.js" />
     <Content Include="Scripts\jquery-2.1.3.js" />
     <Content Include="Scripts\jquery-2.1.3.min.js" />
@@ -301,9 +269,7 @@
     <Content Include="Views\Azure\Latency.cshtml" />
     <Content Include="Views\Azure\About.cshtml" />
     <Content Include="Views\Azure\TrafficManager.cshtml" />
-    <Content Include="Views\Azure\LatencyTest.cshtml" />
     <Content Include="Views\Azure\CDN.cshtml" />
-    <Content Include="Views\Azure\Test.cshtml" />
     <Content Include="Views\Azure\Reference.cshtml" />
     <Content Include="Views\Azure\UploadLargeFile.cshtml">
       <SubType>Code</SubType>

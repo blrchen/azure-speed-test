@@ -2,32 +2,17 @@
     ViewBag.Title = "Azure Storage Latency Test";
 }
 
-@Scripts.Render("~/bundles/flot")
+@Scripts.Render("~/bundles/d3")
 <script type="text/javascript" src="~/Scripts/azurespeed/latency.js">
 </script>
 <style>
-    .chart-container {
-        box-sizing: border-box;
-        height: 350px;
-        padding: 20px 15px 15px 15px;
-        border: 1px solid #ddd;
-        background: #fff;
-        background: linear-gradient(#f6f6f6 0, #fff 50px);
-        background: -o-linear-gradient(#f6f6f6 0, #fff 50px);
-        background: -ms-linear-gradient(#f6f6f6 0, #fff 50px);
-        background: -moz-linear-gradient(#f6f6f6 0, #fff 50px);
-        background: -webkit-linear-gradient(#f6f6f6 0, #fff 50px);
-        -o-box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        -ms-box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        -moz-box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        -webkit-box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+   .x.axis line {
+        shape-rendering: auto;
     }
 
-    .chart-placeholder {
-        width: 100%;
-        height: 100%;
-        font-size: 14px;
-        line-height: 1.2em;
+    .line {
+        fill: none;
+        stroke-width: 3px;
     }
 </style>
 
@@ -60,10 +45,6 @@
                     Azure Storage Latency
                 </div>
                 <div class="chart-container">
-                    <div id="loading">
-                        <img src="~/Content/images/loading.gif" />
-                    </div>
-                    <div class="chart-placeholder" id="placeholder"> </div>
                 </div>
             </div>
         </div>

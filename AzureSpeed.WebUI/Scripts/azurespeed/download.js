@@ -14,7 +14,7 @@
                 tr.append($('<th>').html(this.name));
             });
             var tbody = $('<tbody>').appendTo(table);
-            $.each(utils.getRegionData(false), function () {
+            $.each(utils.getRegionData(), function () {
                 var region = this.region;
                 var regions = [];
                 regions.push(this.region);

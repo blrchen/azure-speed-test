@@ -1,15 +1,15 @@
 ﻿{
     "accounts": [
         {
-            "Name": " ",
-            "Key": " ",
-            "Region": " ",
+            "Name": "",
+            "Key": "",
+            "Region": "",
             "UseChinaEndpoint": false
         },
         {
-            "Name": " ",
-            "Key": " ",
-            "Region": " ",
+            "Name": "",
+            "Key": "",
+            "Region": "",
             "UseChinaEndpoint": false
         }
     ]

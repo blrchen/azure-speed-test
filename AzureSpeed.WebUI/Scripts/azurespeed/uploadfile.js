@@ -28,7 +28,7 @@
                       .text(null);
             },
             initControls: function () {
-                $.each(utils.getRegionData(true), function () {
+                $.each(utils.getRegionData(), function () {
                     var opt = $('<option>').val(this.region).text(this.region);
                     $('#region-select').append(opt);
                 });

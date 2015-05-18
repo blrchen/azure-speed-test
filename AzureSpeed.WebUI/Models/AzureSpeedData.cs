@@ -15,7 +15,8 @@ namespace AzureSpeed.WebUI.Models
                 if (accounts == null)
                 {
                     var serializer = new JavaScriptSerializer();
-                    string filePath = Path.Combine(HostingEnvironment.MapPath("~/App_Data/"), "key.json");
+                    string filePath = Path.Combine(HostingEnvironment.MapPath("~/App_Data/"), "setting.json");
+
                     var text = File.ReadAllText(filePath);
                     var setting = serializer.Deserialize<Setting>(text);
                     accounts = setting.Accounts;

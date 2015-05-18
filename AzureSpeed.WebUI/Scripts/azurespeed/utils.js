@@ -5,29 +5,29 @@
     }
 };
 var utils = {
+    cdn: [{ id: 0, name: 'cdn', storage: 'cdn', geozone: 'CDN', region: 'CDN', location: 'CDN', color: '#333' }],
     datacenters: [
-            { name: 'eastus', storage: 'azspeastus', geozone: 'United States', region: 'East US', location: 'Virginia', color: '#1BA1E2' },
-            { name: 'eastus2', storage: 'azspeastus2', geozone: 'United States', region: 'East US 2', location: 'Virginia', color: '#1BA1E2' },
-            { name: 'westus', storage: 'azspwestus', geozone: 'United States', region: 'West US', location: 'California', color: '#00ABA9' },
-            { name: 'centralus', storage: 'azspcentralus', geozone: 'United States', region: 'Central US', location: 'Iowa', color: '#A200FF' },
-            { name: 'southcentralus', storage: 'azspsouthcentralus', geozone: 'United States', region: 'South Central US', location: 'Texas', color: '#A200FF' },
-            { name: 'northcentralus', storage: 'azspnorthcentralus', geozone: 'United States', region: 'North Central US', location: 'Illinois', color: '#E51400' },
-            { name: 'northeurope', storage: 'azspnortheurope', geozone: 'Europe', region: 'North Europe', location: 'Ireland', color: '#8CBF26' },
-            { name: 'westeurope', storage: 'azspwesteurope', geozone: 'Europe', region: 'West Europe', location: 'Netherlands', color: '#A05000' },
-            { name: 'eastasia', storage: 'azspeastasia', geozone: 'Asia Pacific', region: 'East Asia', location: 'Hong Kong', color: '#E671B8' },
-            { name: 'southeastasia', storage: 'azspsoutheastasia', geozone: 'Asia Pacific', region: 'Southeast Asia', location: 'Singapore', color: '#F09609' },
-            { name: 'japaneast', storage: 'azspjapaneast', geozone: 'Japan', region: 'Japan East', location: 'Saitama Prefecture', color: '#333' },
-            { name: 'japanwest', storage: 'azspjapanwest', geozone: 'Japan', region: 'Japan West', location: 'Osaka Prefecture', color: '#999' },
-            { name: 'chinaeast', storage: 'azurespeedchinaeast', geozone: 'China', region: 'China East', location: 'Shanghai', color: '#472d56' },
-            { name: 'chinanorth', storage: 'azurespeedchinanorth', geozone: 'China', region: 'China North', location: 'Beijing', color: '#1b315e' },
-            { name: 'brazilsouth', storage: 'azspbrazilsouth', geozone: 'Brazil', region: 'Brazil South', location: 'Sao Paulo State', color: '#1b315e' },
-            { name: 'australiaeast', storage: 'azspaustraliaeast', geozone: 'Australia', region: 'Australia East', location: 'New South Walesc', color: '#1b315e' },
-            { name: 'australiasoutheast', storage: 'azspaustraliasoutheast', geozone: 'Australia', region: 'Australia Southeast', location: 'Victoria', color: '#1b315e' }
+            { id: 1, name: 'eastus', storage: 'azspeastus', geozone: 'United States', region: 'East US', location: 'Virginia' },
+            { id: 2, name: 'eastus2', storage: 'azspeastus2', geozone: 'United States', region: 'East US 2', location: 'Virginia' },
+            { id: 3, name: 'westus', storage: 'azspwestus', geozone: 'United States', region: 'West US', location: 'California' },
+            { id: 4, name: 'centralus', storage: 'azspcentralus', geozone: 'United States', region: 'Central US', location: 'Iowa' },
+            { id: 5, name: 'southcentralus', storage: 'azspsouthcentralus', geozone: 'United States', region: 'South Central US', location: 'Texas' },
+            { id: 6, name: 'northcentralus', storage: 'azspnorthcentralus', geozone: 'United States', region: 'North Central US', location: 'Illinois' },
+            { id: 7, name: 'northeurope', storage: 'azspnortheurope', geozone: 'Europe', region: 'North Europe', location: 'Ireland' },
+            { id: 8, name: 'westeurope', storage: 'azspwesteurope', geozone: 'Europe', region: 'West Europe', location: 'Netherlands' },
+            { id: 9, name: 'eastasia', storage: 'azspeastasia', geozone: 'Asia Pacific', region: 'East Asia', location: 'Hong Kong' },
+            { id: 10, name: 'southeastasia', storage: 'azspsoutheastasia', geozone: 'Asia Pacific', region: 'Southeast Asia', location: 'Singapore' },
+            { id: 11, name: 'japaneast', storage: 'azspjapaneast', geozone: 'Japan', region: 'Japan East', location: 'Saitama Prefecture' },
+            { id: 12, name: 'japanwest', storage: 'azspjapanwest', geozone: 'Japan', region: 'Japan West', location: 'Osaka Prefecture' },
+            { id: 13, name: 'chinaeast', storage: 'azspchinaeast', geozone: 'China', region: 'China East', location: 'Shanghai' },
+            { id: 14, name: 'chinanorth', storage: 'azspchinanorth', geozone: 'China', region: 'China North', location: 'Beijing' },
+            { id: 15, name: 'brazilsouth', storage: 'azspbrazilsouth', geozone: 'Brazil', region: 'Brazil South', location: 'Sao Paulo State' },
+            { id: 16, name: 'australiaeast', storage: 'azspaustraliaeast', geozone: 'Australia', region: 'Australia East', location: 'New South Walesc' },
+            { id: 17, name: 'australiasoutheast', storage: 'azspaustraliasoutheast', geozone: 'Australia', region: 'Australia Southeast', location: 'Victoria' }
     ],
-    cdn: [{ name: 'cdn', storage: 'cdn', geozone: 'CDN', region: 'CDN', location: 'CDN', color: '#333' }],
-    getRegionData: function (excludecdn) {
+    getRegionData: function (includecdn) {
         var regiondata = utils.datacenters;
-        if (!excludecdn) {
+        if (includecdn) {
             return regiondata.concat(utils.cdn);
         }
         return regiondata;

@@ -199,8 +199,6 @@
     <Content Include="Content\font-awesome.min.css" />
     <Content Include="Content\images\progress.gif" />
     <Content Include="Content\images\status.png" />
-    <Content Include="Content\player\MSAdaptiveStreamingPlugin-v1.0.10-osmf2.0.swf" />
-    <Content Include="Content\player\StrobeMediaPlayback.2.0.swf" />
     <Content Include="Content\sb-admin-2.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\fontawesome-webfont.svg" />
@@ -210,6 +208,7 @@
     <Content Include="Scripts\azurespeed\download.js" />
     <Content Include="Scripts\azurespeed\finder.js" />
     <Content Include="Scripts\azurespeed\latency.js" />
+    <Content Include="Scripts\azurespeed\livestreaming.js" />
     <Content Include="Scripts\azurespeed\uploadfile.js" />
     <Content Include="Scripts\azurespeed\upload.js" />
     <Content Include="Scripts\azurespeed\utils.js" />

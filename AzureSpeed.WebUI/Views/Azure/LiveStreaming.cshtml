@@ -2,27 +2,12 @@
     ViewBag.Title = "Azure Media Service Live Streaming Latency Test";
 }
 
-<script type="text/javascript" src="~/Scripts/azurespeed/download.js"></script>
-<script type="">
-    $(function () {
-        var ls = {
-            updateClock: function () {
-                var now = new Date(),
-                time = now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds();
-                $('#time').text(time);
-                setTimeout(ls.updateClock, 1000);
-            }
-        };
-        ls.updateClock();
-    });
-</script>
+<!-- Azure Media Player -->
+<link href="http://amp.azure.net/libs/amp/1.1.0/skins/amp-default/azuremediaplayer.min.css" rel="stylesheet">
+<script src="http://amp.azure.net/libs/amp/1.1.0/azuremediaplayer.min.js"></script>
+<script type="text/javascript" src="~/Scripts/azurespeed/livestreaming.js"></script>
 
 <style>
-    .live-wrapper {
-        width: 600px;
-        height: 400px;
-    }
-
     .time span {
         font-size: 30px;
         font-weight: bolder;
@@ -48,14 +33,12 @@
                 </div>
                 <div class="panel panel-body">
                     <div class="row">
-                        <div class="col-md-6 live-wrapper">
-                            <object type="application/x-shockwave-flash" data="/content/player/StrobeMediaPlayback.2.0.swf" width="100%" height="100%" id="flashPlayer" style="visibility: visible;">
-                                <param name="allowfullscreen" value="true">
-                                <param name="wmode" value="direct">
-                                <param name="flashvars" value="src=@System.Configuration.ConfigurationManager.AppSettings["LiveStreamingUrl"]&amp;autoPlay=true&amp;plugin_AdaptiveStreamingPlugin=/content/player/MSAdaptiveStreamingPlugin-v1.0.10-osmf2.0.swf&amp;AdaptiveStreamingPlugin_retryLive=true&amp;AdaptiveStreamingPlugin_retryInterval=10">
-                            </object>
+                        <div class="col-md-8">
+                            <video id="azuremediaplayer" class="azuremediaplayer amp-default-skin amp-big-play-centered" autoplay controls preload="auto" width="100%" height="500" poster="" tabindex=0>
+                                <p class="amp-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that supports HTML5 video</p>
+                            </video>
                         </div>
-                        <div class="col-md-6 time">
+                        <div class="col-md-4 time">
                             <span>Current Local time is </span><span id="time"></span>
                         </div>
                     </div>
@@ -63,4 +46,24 @@
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-12">
+            <h3 class="page-header">Reference</h3>
+            <ul class="list-unstyled">
+                <li>
+                    <a href="http://azure.microsoft.com/blog/2015/04/15/announcing-azure-media-player/" target="_blank">Announcing Azure Media Player</a>
+                </li>
+                <li>
+                    <a href="http://amp.azure.net/libs/amp/latest/docs/changelog.html" target="_blank">Azure Media Player Changelog</a>
+                </li>
+                <li>
+                    <a href="http://amp.azure.net/libs/amp/latest/docs/" target="_blank">Azure Media Player Document</a>
+                </li>
+                <li>
+                    <a href="http://amp.azure.net/libs/amp/latest/docs/samples.html" target="_blank">Azure Media Player Samples</a>
+                </li>
+            </ul>
+        </div>
+    </div>
 </div>
+<div class="hide" id="streaming-url">@System.Configuration.ConfigurationManager.AppSettings["LiveStreamingUrl"]</div>

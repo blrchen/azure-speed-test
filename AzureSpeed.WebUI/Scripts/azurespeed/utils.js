@@ -22,7 +22,7 @@ var utils = {
             { id: 13, name: 'chinaeast', storage: 'azspchinaeast', geozone: 'China', region: 'China East', location: 'Shanghai' },
             { id: 14, name: 'chinanorth', storage: 'azspchinanorth', geozone: 'China', region: 'China North', location: 'Beijing' },
             { id: 15, name: 'brazilsouth', storage: 'azspbrazilsouth', geozone: 'Brazil', region: 'Brazil South', location: 'Sao Paulo State' },
-            { id: 16, name: 'australiaeast', storage: 'azspaustraliaeast', geozone: 'Australia', region: 'Australia East', location: 'New South Walesc' },
+            { id: 16, name: 'australiaeast', storage: 'azspaustraliaeast', geozone: 'Australia', region: 'Australia East', location: 'New South Wales' },
             { id: 17, name: 'australiasoutheast', storage: 'azspaustraliasoutheast', geozone: 'Australia', region: 'Australia Southeast', location: 'Victoria' }
     ],
     getRegionData: function (includecdn) {

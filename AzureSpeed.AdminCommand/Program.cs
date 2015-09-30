@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Text;
 using AzureSpeed.WebUI.Models;
@@ -12,8 +11,9 @@ using NLog;
 namespace AzureSpeed.AdminCommand
 {
 
-    // This tool is for azurespeed admin operations. It does following for each storage accounts
-    // 1. Create a container azurespeed
+    // This tool is for azurespeed admin operations. It setups everythings needed for a storage to run speed test.
+    // 1. Enable CORS
+    // 2. Create a container azurespeed
     // 2. Create a callback.js which is used by latency test
     // 3. Upload a 100 mb dummy file for download speed test.
 
@@ -22,9 +22,7 @@ namespace AzureSpeed.AdminCommand
         static void Main()
         {
             Worker worker = new Worker();
-            //worker.UploadCallbackJSFileToAllStorages();
-            worker.EnableCorsForAllAccounts();
-            //worker.Upload100MBFileToAllAccounts();
+            worker.InitStorage();
             Console.ReadLine();
         }
     }
@@ -33,37 +31,7 @@ namespace AzureSpeed.AdminCommand
     {
         private Logger _logger = LogManager.GetCurrentClassLogger();
 
-        public void Upload100MBFileToAllStorages()
-        {
-            UploadFileToAllStorages(@"C:\DelMe\100MB.bin");
-        }
-
-        private void UploadFileToAllStorages(string fullFilePath)
-        {
-            var file = new FileInfo(fullFilePath);
-            foreach (var account in AzureSpeedData.Accounts)
-            {
-                CloudStorageAccount storageAccount;
-                if (!TryParse(account, out storageAccount))
-                {
-                    _logger.Error("Invalid storage account");
-                    continue;
-                }
-
-                var blobClient = storageAccount.CreateCloudBlobClient();
-                var container = blobClient.GetContainerReference("azurespeed");
-
-                var blob = container.GetBlockBlobReference(file.Name);
-                using (var fileStream = File.OpenRead(fullFilePath))
-                {
-                    blob.UploadFromStream(fileStream);
-                }
-
-                _logger.Info("Upload {0} to storage account {1} successfully", fullFilePath, account.Name);
-            }
-        }
-
-        public void UploadCallbackJSFileToAllStorages()
+        public void InitStorage()
         {
             foreach (var account in AzureSpeedData.Accounts)
             {
@@ -76,63 +44,36 @@ namespace AzureSpeed.AdminCommand
 
                 var blobClient = storageAccount.CreateCloudBlobClient();
 
+                _logger.Info("Enabling CORS for account {0}", account.Name);
+                EnableCors(blobClient);
+                _logger.Info("Enabling CORS for account {0} successfully", account.Name);
+
                 var container = blobClient.GetContainerReference("azurespeed");
                 if (container != null && !container.Exists())
                 {
+                    _logger.Info("Creating azurespeed container");
                     CreateAndSetupContainer(container);
+                    _logger.Info("Creating azurespeed container completes");
                 }
 
                 var blob = container.GetBlockBlobReference("callback.js");
                 if (blob != null && !blob.Exists())
                 {
-                    using (var ms = new MemoryStream())
-                    {
-                        blob.UploadFromStream(ms);
-                    }
-                }
-                CreateCallbackJSBlob(account, blob);
-
-                if (!blob.Uri.ToString().Contains(account.Region.Replace(" ", "").ToLower()))
-                {
-                    _logger.Error("Storage account {0} has wrong region {1}", account.Name, account.Region);
-                }
-
-                _logger.Info("Upload callback.js to storage account {0} successfully", account.Name);
-            }
-        }
-
-        public void EnableCorsForAllAccounts()
-        {
-            foreach (var account in AzureSpeedData.Accounts)
-            {
-                _logger.Info("Starting enable CORS for account {0}", account.Name);
-                CloudStorageAccount storageAccount;
-                if (!TryParse(account, out storageAccount))
-                {
-                    _logger.Error("Account invalid");
-                    continue;
-                }
-
-                var blobClient = storageAccount.CreateCloudBlobClient();
-
-                EnableCors(blobClient);
-
-                var container = blobClient.GetContainerReference("azurespeed");
-                //if (container != null && container.Exists())
-                //{
-                //    container.Delete();
-                //    Debug.Print("Delete");
-                //}
-                //continue;
-                if (container != null && !container.Exists())
-                {
-                    CreateAndSetupContainer(container);
-                }
-
-                CloudBlockBlob blob = container.GetBlockBlobReference("callback.js");
-                if (blob != null && !blob.Exists())
-                {
+                    _logger.Info("Uploading callback.js blob");
                     CreateCallbackJSBlob(account, blob);
+                    _logger.Info("Uploading callback.js blob completes");
+                }
+
+                var blob1 = container.GetBlockBlobReference("100MB.bin");
+                if (blob1 != null && !blob1.Exists())
+                {
+                    _logger.Info("Uploading 100MB.bin blob");
+                    var fullFilePath = @"C:\DelMe\100MB.bin";
+                    using (var fileStream = File.OpenRead(fullFilePath))
+                    {
+                        blob1.UploadFromStream(fileStream);
+                    }
+                    _logger.Info("Uploading 100MB.bin blob completes");
                 }
 
                 if (!blob.Uri.ToString().Contains(account.Region.Replace(" ", "").ToLower()))
@@ -140,7 +81,7 @@ namespace AzureSpeed.AdminCommand
                     _logger.Error("Storage account {0} has wrong region {1}", account.Name, account.Region);
                 }
 
-                _logger.Info("Enable CORS on storage account {0} completes", account.Name);
+                _logger.Info("Storage account {0} successfully initilized completes", account.Name);
             }
         }
 
@@ -231,12 +172,12 @@ namespace AzureSpeed.AdminCommand
 
         private bool TryParse(Account account, out CloudStorageAccount storageAccount)
         {
-            string customEndpoint = account.UseChinaEndpoint
-                    ? string.Format("BlobEndpoint=https://{0}.blob.core.chinacloudapi.cn/;", account.Name)
-                    : "";
+            string endpoint = string.IsNullOrEmpty(account.EndpointSuffix)
+                    ? ""
+                    : string.Format("BlobEndpoint=https://{0}.blob.{1}/;", account.Name, account.EndpointSuffix);
             string connectionString = string.Format(
                 "{0}DefaultEndpointsProtocol=https;AccountName={1};AccountKey={2}",
-                customEndpoint, account.Name, account.Key);
+                endpoint, account.Name, account.Key);
             // todo: TryParse does not validate if account is valid or not.
             return CloudStorageAccount.TryParse(connectionString, out storageAccount);
         }

@@ -1,16 +1,14 @@
 ﻿{
     "accounts": [
         {
-            "Name": "",
-            "Key": "",
-            "Region": "",
-            "UseChinaEndpoint": false
+            "Name": "========REPLACE WITH YOUR STORAGE ACCOUNT NAME==========",
+            "Key": "========REPLACE WITH YOUR STORAGE ACCOUNT KEY==========",
+            "Region": "East US"
         },
         {
-            "Name": "",
-            "Key": "",
-            "Region": "",
-            "UseChinaEndpoint": false
+            "Name": "========REPLACE WITH YOUR STORAGE ACCOUNT NAME==========",
+            "Key": "========REPLACE WITH YOUR STORAGE ACCOUNT KEY==========",
+            "Region": "West US"
         }
     ]
 }

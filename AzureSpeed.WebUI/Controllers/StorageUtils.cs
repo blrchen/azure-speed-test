@@ -10,8 +10,8 @@ namespace AzureSpeed.WebUI.Controllers
     {
         public static CloudStorageAccount CreateCloudStorageAccount(Account account, bool useHttps = false)
         {
-            var storageAccount = account.UseChinaEndpoint
-                ? new CloudStorageAccount(new StorageCredentials(account.Name, account.Key), "core.chinacloudapi.cn", useHttps)
+            var storageAccount = string.IsNullOrEmpty(account.EndpointSuffix)
+                ? new CloudStorageAccount(new StorageCredentials(account.Name, account.Key), account.EndpointSuffix, useHttps)
                 : new CloudStorageAccount(new StorageCredentials(account.Name, account.Key), useHttps);
 
             return storageAccount;

@@ -27,6 +27,7 @@
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
     <ApplicationInsightsResourceId>/subscriptions/73cafea5-b590-40da-b211-3e9fb8dd3b6d/resourcegroups/Default-Web-EastAsia/providers/microsoft.insights/components/azurespeedeastasia</ApplicationInsightsResourceId>
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -181,7 +182,7 @@
     <Content Include="App_Data\IpRangeFiles\AliCloud\ip.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="App_Data\IpRangeFiles\Azure\PublicIPsByRegionChina.xml">
+    <Content Include="App_Data\IpRangeFiles\Azure\PublicIPs_MC.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="App_Data\IpRangeFiles\Azure\PublicIPs.xml">

@@ -23,7 +23,10 @@ var utils = {
             { id: 14, name: 'chinanorth', storage: 'azspchinanorth', geozone: 'China', region: 'China North', location: 'Beijing' },
             { id: 15, name: 'brazilsouth', storage: 'azspbrazilsouth', geozone: 'Brazil', region: 'Brazil South', location: 'Sao Paulo State' },
             { id: 16, name: 'australiaeast', storage: 'azspaustraliaeast', geozone: 'Australia', region: 'Australia East', location: 'New South Wales' },
-            { id: 17, name: 'australiasoutheast', storage: 'azspaustraliasoutheast', geozone: 'Australia', region: 'Australia Southeast', location: 'Victoria' }
+            { id: 17, name: 'australiasoutheast', storage: 'azspaustraliasoutheast', geozone: 'Australia', region: 'Australia Southeast', location: 'Victoria' },
+            { id: 18, name: 'centralindia', storage: 'azspcentralindia', geozone: 'India', region: 'Central India', location: 'Pune' },
+            { id: 19, name: 'azspsouthindia', storage: 'azspsouthindia', geozone: 'India', region: 'South India', location: 'Chennai' },
+            { id: 20, name: 'westindia', storage: 'azspwestindia', geozone: 'India', region: 'West India', location: 'Mumbai' }
     ],
     getRegionData: function (includecdn) {
         var regiondata = utils.datacenters;

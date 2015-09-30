@@ -16,15 +16,8 @@ namespace AzureSpeed.WebUI.Controllers
         private Logger logger = LogManager.GetCurrentClassLogger();
 
         [HttpGet]
-        [Route("test")]
-        public async Task<IHttpActionResult> Test()
-        {
-            return Ok(new { foo = "foo", bar = "bar" });
-        }
-
-        [HttpGet]
         [Route("getregion")]
-        public async Task<IHttpActionResult> GetRegionName(string ipOrUrl)
+        public IHttpActionResult GetRegionName(string ipOrUrl)
         {
             return Ok(GetRegionNameByIpOrUrl(ipOrUrl));
         }

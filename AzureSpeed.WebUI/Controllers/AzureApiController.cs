@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
+using System.Web;
 using System.Web.Hosting;
 using System.Web.Http;
 using AzureSpeed.WebUI.Models;
 using LukeSkywalker.IPNetwork;
+using Microsoft.WindowsAzure.Storage.Blob;
 using NLog;
 
 namespace AzureSpeed.WebUI.Controllers
@@ -16,10 +18,73 @@ namespace AzureSpeed.WebUI.Controllers
         private Logger logger = LogManager.GetCurrentClassLogger();
 
         [HttpGet]
-        [Route("getregion")]
+        [Route("ip")]
+        public IHttpActionResult GetIp()
+        {
+            var ip = ((HttpContextBase)Request.Properties["MS_HttpContext"]).Request.UserHostAddress;
+            return Ok(ip);
+        }
+
+        [HttpGet]
+        [Route("region")]
         public IHttpActionResult GetRegionName(string ipOrUrl)
         {
             return Ok(GetRegionNameByIpOrUrl(ipOrUrl));
+        }
+
+        [HttpGet]
+        [Route("sas")]
+        public IHttpActionResult GetSasLink(string region, string blobName, string operations)
+        {
+            string url = "";
+            if (!string.IsNullOrEmpty(region))
+            {
+                var account = AzureSpeedData.Accounts.FirstOrDefault(v => v.Region == region);
+                if (account != null)
+                {
+                    var storageAccount = StorageUtils.CreateCloudStorageAccount(account, true);
+                    var blobClient = storageAccount.CreateCloudBlobClient();
+                    var container = blobClient.GetContainerReference("azurespeed");
+                    var blob = container.GetBlockBlobReference(blobName);
+                    var permissions = SharedAccessBlobPermissions.None;
+                    if (operations.ToLower().Contains("upload"))
+                    {
+                        permissions |= SharedAccessBlobPermissions.Write;
+                    }
+                    if (operations.ToLower().Contains("download"))
+                    {
+                        permissions |= SharedAccessBlobPermissions.Read;
+                    }
+                    url = StorageUtils.GetSasUrl(blob, permissions);
+                }
+            }
+            return Ok(url);
+        }
+
+        [HttpGet]
+        [Route("cleanup")]
+        public IHttpActionResult DeleteOutDatedBlobs()
+        {
+            foreach (var account in AzureSpeedData.Accounts)
+            {
+                var storageAccount = StorageUtils.CreateCloudStorageAccount(account);
+                var blobClient = storageAccount.CreateCloudBlobClient();
+                var container = blobClient.GetContainerReference("azurespeed");
+                var blobs = container.ListBlobs();
+                var oneMonthAgo = DateTimeOffset.Now.AddMonths(-1);
+                foreach (IListBlobItem blob in blobs)
+                {
+                    var cblob = blob as ICloudBlob;
+                    if (cblob != null && cblob.Name != "callback.js" && cblob.Name != "100MB.bin")
+                    {
+                        if (cblob.Properties.LastModified.Value.CompareTo(oneMonthAgo) < 0)
+                        {
+                            cblob.DeleteAsync();
+                        }
+                    }
+                }
+            }
+            return Ok();
         }
 
         public string GetRegionNameByIpOrUrl(string ipOrUrl, string ipFilePath = null)
@@ -69,6 +134,5 @@ namespace AzureSpeed.WebUI.Controllers
             }
             return "Region not found";
         }
-
     }
 }

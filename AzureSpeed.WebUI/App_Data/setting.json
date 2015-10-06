@@ -1,14 +1,108 @@
 ﻿{
     "accounts": [
         {
-            "Name": "========REPLACE WITH YOUR STORAGE ACCOUNT NAME==========",
-            "Key": "========REPLACE WITH YOUR STORAGE ACCOUNT KEY==========",
+            "Name": "azspcentralindia",
+            "Key": "==============REPLACE ME=================",
+            "Region": "Central India"
+        },
+        {
+            "Name": "azspsouthindia",
+            "Key": "==============REPLACE ME=================",
+            "Region": "South India"
+        },
+        {
+            "Name": "azspwestindia",
+            "Key": "==============REPLACE ME=================",
+            "Region": "West India"
+        },
+        {
+            "Name": "azspchinaeast",
+            "Key": "==============REPLACE ME=================",
+            "Region": "China East",
+            "EndpointSuffix": "core.chinacloudapi.cn"
+        },
+        {
+            "Name": "azspchinanorth",
+            "Key": "==============REPLACE ME=================",
+            "Region": "China North",
+            "EndpointSuffix": "core.chinacloudapi.cn"
+        },
+        {
+            "Name": "azspaustraliaeast",
+            "Key": "==============REPLACE ME=================",
+            "Region": "Australia East"
+        },
+        {
+            "Name": "azspaustraliasoutheast",
+            "Key": "==============REPLACE ME=================",
+            "Region": "Australia Southeast"
+        },
+        {
+            "Name": "azspeastasia",
+            "Key": "==============REPLACE ME=================",
+            "Region": "East Asia"
+        },
+        {
+            "Name": "azspsoutheastasia",
+            "Key": "==============REPLACE ME=================",
+
+            "Region": "Southeast Asia"
+        },
+        {
+            "Name": "azspjapaneast",
+            "Key": "==============REPLACE ME=================",
+            "Region": "Japan East"
+        },
+        {
+            "Name": "azspjapanwest",
+            "Key": "==============REPLACE ME=================",
+            "Region": "Japan West"
+        },
+        {
+            "Name": "azspnortheurope",
+            "Key": "==============REPLACE ME=================",
+            "Region": "North Europe"
+        },
+        {
+            "Name": "azspwesteurope",
+            "Key": "==============REPLACE ME=================",
+
+            "Region": "West Europe"
+        },
+        {
+            "Name": "azspeastus",
+            "Key": "==============REPLACE ME=================",
             "Region": "East US"
         },
         {
-            "Name": "========REPLACE WITH YOUR STORAGE ACCOUNT NAME==========",
-            "Key": "========REPLACE WITH YOUR STORAGE ACCOUNT KEY==========",
+            "Name": "azspeastus2",
+            "Key": "==============REPLACE ME=================",
+            "Region": "East US 2"
+        },
+        {
+            "Name": "azspwestus",
+            "Key": "==============REPLACE ME=================",
             "Region": "West US"
+        },
+        {
+            "Name": "azspcentralus",
+            "Key": "==============REPLACE ME=================",
+            "Region": "Central US"
+        },
+        {
+            "Name": "azspnorthcentralus",
+            "Key": "==============REPLACE ME=================",
+            "Region": "North Central US"
+        },
+        {
+            "Name": "azspsouthcentralus",
+            "Key": "==============REPLACE ME=================",
+            "Region": "South Central US"
+        },
+        {
+            "Name": "azspbrazilsouth",
+            "Key": "==============REPLACE ME=================",
+            "Region": "Brazil South"
         }
     ]
 }

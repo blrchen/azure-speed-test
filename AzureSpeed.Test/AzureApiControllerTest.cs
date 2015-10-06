@@ -38,7 +38,7 @@ namespace AzureSpeed.Test
             string region2 = controller.GetRegionNameByIpOrUrl(url2, ipFilePath);
             Assert.AreEqual(region2, "Azure - West US");
 
-            string url3 = "mitbbs.com";
+            string url3 = "amazon.com";
             string region3 = controller.GetRegionNameByIpOrUrl(url3, ipFilePath);
             Assert.AreEqual(region3, "AWS - US East (N. Virginia)");
         }

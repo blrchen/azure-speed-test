@@ -1,4 +1,5 @@
 ﻿$(function () {
+    // TODO: rewrite with angular code
     var latency = {
         lineChartHeight: 240,
         lineChartWidth: $('.chart-container').width(),
@@ -12,8 +13,8 @@
             table.empty();
             var tmp = [];
             // todo: change to map
-            $.each(utils.getRegionData(), function () {
-                tmp.push({ geozone: this.geozone, region: this.region, location: this.location, average: latency.latest[this.storage] });
+            $.each(utils.getRegions(), function () {
+                tmp.push({ geo: this.geo, region: this.region, location: this.location, average: latency.latest[this.storage] });
             });
             tmp.sort(function (a, b) {
                 return a.average - b.average;
@@ -23,11 +24,11 @@
             closestTable.empty();
             $.each(tmp, function () {
                 if (this.average > 0) {
-                    var tdGeoZoneRegion = $('<td>').text(this.geozone);
+                    var tdGeo = $('<td>').text(this.geo);
                     var tdRegion = $('<td>').text(this.region);
                     var tdLocation = $('<td>').text(this.location);
                     var tdLatency = $('<td>').text(parseInt(this.average).toFixed(0) + ' ms');
-                    var tr = $('<tr>').append(tdGeoZoneRegion).append(tdRegion).append(tdLocation).append(tdLatency);
+                    var tr = $('<tr>').append(tdGeo).append(tdRegion).append(tdLocation).append(tdLatency);
                     table.append(tr);
                     if (closest < 3) {
                         closest++;
@@ -43,7 +44,7 @@
             setTimeout(latency.pingloop, latency.updateInterval);
         },
         _ping: function () {
-            $.each(utils.getRegionData(), function () {
+            $.each(utils.getRegions(), function () {
                 var storage = this.storage;
                 var region = this.region;
                 latency.startTime[storage] = new Date().getTime();
@@ -76,6 +77,9 @@
             //each item in the line arrays represents the X coordinate across a graph
             //The 'value' within each line array represents the Y coordinate for that point
             data = [
+                d3.range(n).map(function () { return { value: 0 }; }),
+                d3.range(n).map(function () { return { value: 0 }; }),
+                d3.range(n).map(function () { return { value: 0 }; }),
                 d3.range(n).map(function () { return { value: 0 }; }),
                 d3.range(n).map(function () { return { value: 0 }; }),
                 d3.range(n).map(function () { return { value: 0 }; }),
@@ -181,7 +185,7 @@
                 x.domain([now - (n - 2) * duration, now - duration]);
 
                 // fill new data
-                $.each(utils.getRegionData(), function () {
+                $.each(utils.getRegions(), function () {
                     var storage = this.storage;
                     if (latency.latest[storage] > 0) {
                         data[this.id].push({ value: latency.latest[storage] });
@@ -209,7 +213,7 @@
             };
         },
         init: function () {
-            $.each(utils.getRegionData(), function () {
+            $.each(utils.getRegions(), function () {
                 var storage = this.storage;
                 latency.latest[storage] = 0;
                 latency.history[storage] = latency.history[storage] || [];

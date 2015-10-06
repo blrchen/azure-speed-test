@@ -2,10 +2,7 @@
     ViewBag.Title = "Azure Storage Large File Upload Test";
 }
 
-@Scripts.Render("~/bundles/jazure")
-<script type="text/javascript" src="~/Scripts/azurespeed/uploadfile.js"></script>
-
-<div class="container-fluid">
+<div class="container-fluid" ng-controller="uploadLargeFileCtrl">
     <h3 class="page-header">Azure Storage Large File Upload Speed Test</h3>
     <div class="row">
         <div class="col-md-12">
@@ -27,18 +24,27 @@
                     <i class="fa fa-th-list"></i>
                     File Upload Speed Test
                 </div>
-                <table class="table table-bordered" id="upload-table">
+                <table class="table table-bordered">
                     <thead>
                         <tr>
                             <th>File Name</th>
                             <th>File Size</th>
                             <th>Region</th>
-                            <th>Block Size</th>
+                            <th>Block Size(kb)</th>
                             <th>Thread</th>
                             <th>Upload Speed</th>
                         </tr>
                     </thead>
-                    <tbody></tbody>
+                    <tbody>
+                    <tr ng-repeat="result in results">
+                        <td>{{result.fileName}}</td>
+                        <td>{{result.fileSize}}</td>
+                        <td>{{result.region}}</td>
+                        <td>{{result.blockSize}}</td>
+                        <td>{{result.thread}}</td>
+                        <td>{{result.speed}}</td>
+                    </tr>
+                    </tbody>
                 </table>
             </div>
         </div>

@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html>
+<html ng-app="app">
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta charset="utf-8" />
@@ -8,24 +8,7 @@
     <meta name="description" content="AzureSpeed.com - Test network latencies and speed to Azure data centers from different countries." />
     <title>@ViewBag.Title - Azure Speed Test</title>
     @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
-    @Scripts.Render("~/bundles/sb-admin-2")
-    @Scripts.Render("~/bundles/azurespeed")
-    @RenderSection("scripts", required: false)
-    <script>
-        (function (i, s, o, g, r, a, m) {
-            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
-                (i[r].q = i[r].q || []).push(arguments)
-            }, i[r].l = 1 * new Date(); a = s.createElement(o),
-            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
-        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
-
-        ga('create', 'UA-48373679-1', 'auto');
-        ga('require', 'displayfeatures');
-        ga('send', 'pageview');
-    </script>
+    @Html.Partial("_Analytics")
 </head>
 <body>
     <div id="wrapper">
@@ -100,13 +83,19 @@
         </nav>
         <div id="page-wrapper">
             @RenderBody()
+            @Html.Partial("_Adsense")
         </div>
         <div class="footer">
             <footer class="footer">
                 <p>&copy; @DateTime.Now.Year - AzureSpeed.com | By <a href="http://blchen.com" target="_blank">Blair Chen</a>, using <a href="https://github.com/orcame/jazure" target="_blank">jazure</a>
             </footer>
         </div>
-
     </div>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/3rd")
+    @Scripts.Render("~/bundles/sb-admin-2")
+    @Scripts.Render("~/bundles/jazure")
+    @Scripts.Render("~/bundles/app")
+    @RenderSection("scripts", required: false)
 </body>
 </html>

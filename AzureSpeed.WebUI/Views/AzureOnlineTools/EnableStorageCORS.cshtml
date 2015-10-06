@@ -1,33 +1,6 @@
 ﻿@{
     ViewBag.Title = "Azure Online Tools";
 }
-<script type="text/javascript">
-    $(function () {
-        var tools = {
-            init: function () {
-                $('#enablecors-button').click(function () {
-                    var accountName = $('#accountname-input')[0].value;
-                    var accountKey = $('#accountkey-input')[0].value;
-                    var useChinaEndpoint = $('#chinaendpoint-input')[0].checked;
-                    var output = $('#enablecors-output');
-                    $.ajax({
-                        url: "/Azure/EnableStorageCORS",
-                        type: 'GET',
-                        data: { accountName: accountName, accountKey: accountKey, useChinaEndpoint: useChinaEndpoint },
-                        success: function (data) {
-                            output.text(data);
-                        },
-                        error: function (data) {
-                            output.text(data.message);
-                        },
-                    });
-                });
-            }
-        };
-        window.tools = tools;
-        tools.init();
-    });
-</script>
 
 <div class="container-fluid">
     <h3 class="page-header">@ViewBag.Title</h3>
@@ -70,3 +43,34 @@
         </div>
     </div>
 </div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(function () {
+            var tools = {
+                init: function () {
+                    $('#enablecors-button').click(function () {
+                        var accountName = $('#accountname-input')[0].value;
+                        var accountKey = $('#accountkey-input')[0].value;
+                        var useChinaEndpoint = $('#chinaendpoint-input')[0].checked;
+                        var output = $('#enablecors-output');
+                        $.ajax({
+                            url: "/Azure/EnableStorageCORS",
+                            type: 'GET',
+                            data: { accountName: accountName, accountKey: accountKey, useChinaEndpoint: useChinaEndpoint },
+                            success: function (data) {
+                                output.text(data);
+                            },
+                            error: function (data) {
+                                output.text(data.message);
+                            },
+                        });
+                    });
+                }
+            };
+            window.tools = tools;
+            tools.init();
+        });
+    </script>
+}
+

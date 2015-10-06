@@ -3,7 +3,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Upload File</h4>
+                <h3 class="modal-title">Upload File</h3>
             </div>
             <div class="modal-body form-horizontal">
                 <form>
@@ -16,43 +16,42 @@
                     <div class="form-group">
                         <label class="control-label col-md-3">Region</label>
                         <div class="col-md-9">
-                            <select id="region-select" class="form-control" required>
-                                <option value="">Please select a region</option>
+                            <select class="form-control" ng-options="region.region for region in regions" ng-model="selectedRegion" required>
+                                <option value="">--Please select--</option>
                             </select>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-md-3">Block Size</label>
+                        <label class="control-label col-md-3">Block Size(kb)</label>
                         <div class="col-md-9">
-                            <select id="blocksize-select" class="form-control" required>
-                                <option value="256" selected>256K</option>
-                                <option value="512">512K</option>
-                                <option value="1024">1024K</option>
-                                <option value="2048">2048K</option>
-                                <option value="4096">4096K</option>
+                            <select class="form-control" ng-options="blockSize for blockSize in blockSizes" ng-model="selectedBlockSize" required>
+                                <option>--Please select--</option>
                             </select>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="control-label col-md-3">Thread</label>
                         <div class="col-md-9">
-                            <select id="thread-select" class="form-control" required>
-                                <option value="1" selected>1</option>
-                                <option value="2">2</option>
-                                <option value="4">4</option>
-                                <option value="8">8</option>
+                            <select class="form-control" ng-options="thread for thread in threads" ng-model="selectedThread" required>
+                                <option>--Please select--</option>
                             </select>
                         </div>
                     </div>
                     <div class="progress">
-                        <div id="progress-bar" class="progress-bar" role="progressbar"></div>
+                        <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{progressPercent}}"
+                             style="width: {{progressPercent}}% ">{{progressPercent}}%</div>
                     </div>
-                    <div id="error-panel" class="alert alert-danger"></div>
-                    <div id="message-panel" class="alert alert-warning"></div>
+                    <div class="alert alert-success" ng-if="progressPercent > 0">file={{fileName}}, size={{fileSize}}, {{message}}</div>
+                    <div class="alert alert-danger" ng-if="error">{{error}}</div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-success" data-action="upload">Upload</button>
+                <div class="col-xs-6">
+                    <button class="btn btn-success btn-block" ng-click="upload()" ng-disabled="!canUpload()">Upload</button>
+                </div>
+                <div class="col-xs-6">
+                    <button class="btn btn-warning btn-block" data-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>

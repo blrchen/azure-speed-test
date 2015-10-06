@@ -26,11 +26,6 @@ namespace AzureSpeed.WebUI.Controllers
             return View();
         }
 
-        public ActionResult LatencyTest()
-        {
-            return View();
-        }
-
         public ActionResult Upload()
         {
             return View();
@@ -59,10 +54,13 @@ namespace AzureSpeed.WebUI.Controllers
         public ActionResult TrafficManager()
         {
             WebClient client = new WebClient();
-            string ip = client.DownloadString("http://icanhazip.com/").Trim();
-            ViewBag.Ip = ip;
-            var controller = new AzureApiController();
-            ViewBag.Region = controller.GetRegionNameByIpOrUrl(ip);
+            string ip = client.DownloadString("http://www.azurespeed.com/api/ip").Replace("\"", "").Trim();
+            if (!string.IsNullOrEmpty(ip))
+            {
+                ViewBag.Ip = ip;
+                var controller = new AzureApiController();
+                ViewBag.Region = controller.GetRegionNameByIpOrUrl(ip);
+            }
             return View();
         }
 
@@ -79,58 +77,6 @@ namespace AzureSpeed.WebUI.Controllers
         public ActionResult Test()
         {
             return View();
-        }
-
-        public JsonResult GetSasLinks(string[] regions, string blobName, string operations)
-        {
-            List<SasUrl> result = new List<SasUrl>();
-
-            foreach (var account in AzureSpeedData.Accounts)
-            {
-                if (regions.Length > 0 && regions.Contains(account.Region))
-                {
-                    var storageAccount = StorageUtils.CreateCloudStorageAccount(account);
-                    var blobClient = storageAccount.CreateCloudBlobClient();
-                    var container = blobClient.GetContainerReference("azurespeed");
-                    var blob = container.GetBlockBlobReference(blobName);
-                    var permissions = SharedAccessBlobPermissions.None;
-                    if (operations.ToLower().Contains("upload"))
-                    {
-                        permissions |= SharedAccessBlobPermissions.Write;
-                    }
-                    if (operations.ToLower().Contains("download"))
-                    {
-                        permissions |= SharedAccessBlobPermissions.Read;
-                    }
-                    string url = StorageUtils.GetSasUrl(blob, permissions);
-                    result.Add(new SasUrl { Storage = account.Name, Url = url });
-                }
-            }
-            return Json(result, JsonRequestBehavior.AllowGet);
-        }
-
-        public HttpStatusCodeResult DeleteOutDatedBlobs()
-        {
-            foreach (var account in AzureSpeedData.Accounts)
-            {
-                var storageAccount = StorageUtils.CreateCloudStorageAccount(account);
-                var blobClient = storageAccount.CreateCloudBlobClient();
-                var container = blobClient.GetContainerReference("azurespeed");
-                var blobs = container.ListBlobs();
-                var aDayAgo = DateTimeOffset.Now.AddDays(-1);
-                foreach (IListBlobItem blob in blobs)
-                {
-                    var cblob = blob as ICloudBlob;
-                    if (cblob != null && cblob.Name != "callback.js" && cblob.Name != "100MB.bin")
-                    {
-                        if (cblob.Properties.LastModified.Value.CompareTo(aDayAgo) < 0)
-                        {
-                            cblob.DeleteAsync();
-                        }
-                    }
-                }
-            }
-            return new HttpStatusCodeResult(200, "Delete Successfully");
         }
 
         public string EnableStorageCORS(Account account)

@@ -8,13 +8,12 @@ namespace AzureSpeed.WebUI.Controllers
 {
     public class AzureOnlineToolsController : Controller
     {
-        // GET: AzureOnlineTools
-        public ActionResult Index()
+        public ActionResult EnableStorageCORS()
         {
             return View();
         }
 
-        public ActionResult EnableStorageCORS()
+        public ActionResult GenerateEventHubSAS()
         {
             return View();
         }

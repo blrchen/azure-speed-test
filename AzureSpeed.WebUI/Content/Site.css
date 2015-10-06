@@ -5,3 +5,20 @@
 .row-margin-top {
     margin-top: 10px;
 }
+
+.btn {
+    border-radius: 20px;
+}
+
+.modal-header {
+    background: #F0EFF5;
+}
+
+    .modal-header h3 {
+        text-align: center;
+        color: #A0C843;
+    }
+
+.modal-footer {
+    background: #F0EFF5;
+}

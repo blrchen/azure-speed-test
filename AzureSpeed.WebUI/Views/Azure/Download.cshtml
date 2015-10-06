@@ -2,9 +2,7 @@
     ViewBag.Title = "Azure Storage Blob Download Speed Test";
 }
 
-<script type="text/javascript" src="~/Scripts/azurespeed/download.js"></script>
-
-<div class="container-fluid">
+<div class="container-fluid" ng-controller="downloadCtrl">
     <h3 class="page-header">Azure Storage Blob Download Speed Test</h3>
     <div class="row">
         <div class="col-md-12">
@@ -13,7 +11,26 @@
                     <i class="fa fa-th-list"></i>
                     Download Speed Test
                 </div>
-                <table class="table table-bordered table-striped" id="download-table"></table>
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Geo</th>
+                            <th>Region</th>
+                            <th>Location</th>
+                            <th>Test File</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="item in items">
+                            <td>{{item.geo}}</td>
+                            <td>{{item.region}}</td>
+                            <td>{{item.location}}</td>
+                            <td>
+                                <a ng-if="item.url.length>0" class="btn btn-default" href="{{item.url}}">Download 100MB File</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

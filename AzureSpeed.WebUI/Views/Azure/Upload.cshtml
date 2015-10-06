@@ -2,10 +2,7 @@
     ViewBag.Title = "Azure Storage Upload Speed Test";
 }
 
-@Scripts.Render("~/bundles/jazure")
-<script type="text/javascript" src="~/Scripts/azurespeed/upload.js"></script>
-
-<div class="container-fluid">
+<div class="container-fluid" ng-controller="uploadCtrl">
     <h3 class="page-header">Azure Storage Blob Upload Speed Test</h3>
     <div class="row">
         <div class="col-md-12">
@@ -15,17 +12,25 @@
             </div>
         </div>
     </div>
+    <label>{{percent}}</label>
     <div class="row">
         <div class="col-md-12">
-            <div id="geozone-group">
+            <div>
                 <label>Please check regions you want to test: </label>
+            </div>
+            <div >
+                <label class="checkbox-inline" ng-repeat="region in regions">
+                    <input type="checkbox" value="{{region.region}}"
+                           ng-model="region.checked" ng-change="regionChange()" >
+                    {{region.region}}
+                </label>
             </div>
         </div>
     </div>
     <div class="row">
         <div class="col-md-12">
             <div>
-                <button class="btn btn-success" data-action="upload">Start Upload Speed Test >></button>
+                <button class="btn btn-success" ng-click="uploadLoop()" ng-disabled="!canClick()">Start Upload Speed Test >></button>
             </div>
         </div>
     </div>
@@ -39,17 +44,28 @@
                 <table class="table table-bordered table-striped" id="upload-table">
                     <thead>
                         <tr>
-                            <th>GEO Zone</th>
+                            <th>Geo</th>
                             <th>Region</th>
                             <th>Location</th>
                             <th>Upload Progress</th>
                             <th>Upload Speed</th>
                         </tr>
                     </thead>
-                    <tbody></tbody>
+                    <tbody>
+                        <tr ng-repeat="result in results">
+                            <td>{{result.geo}}</td>
+                            <td>{{result.region}}</td>
+                            <td>{{result.location}}</td>
+                            <td class="upload-progress">
+                                <div class="progress" style="margin-bottom: -20px;">
+                                    <div class="progress-bar progress-bar-info" style="width: {{result.progressPercent}}% ">{{result.progressPercent}}%</div>
+                                </div>
+                            </td>
+                            <td class="upload-speed sort speed-success speed-inprogress">{{result.speed}}</td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
         </div>
     </div>
 </div>
-

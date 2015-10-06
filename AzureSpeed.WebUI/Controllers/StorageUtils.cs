@@ -10,10 +10,11 @@ namespace AzureSpeed.WebUI.Controllers
     {
         public static CloudStorageAccount CreateCloudStorageAccount(Account account, bool useHttps = false)
         {
-            var storageAccount = string.IsNullOrEmpty(account.EndpointSuffix)
-                ? new CloudStorageAccount(new StorageCredentials(account.Name, account.Key), account.EndpointSuffix, useHttps)
-                : new CloudStorageAccount(new StorageCredentials(account.Name, account.Key), useHttps);
+            string endpointSuffix = string.IsNullOrEmpty(account.EndpointSuffix)
+                                    ? "core.windows.net"
+                                    : account.EndpointSuffix;
 
+            var storageAccount = new CloudStorageAccount(new StorageCredentials(account.Name, account.Key), endpointSuffix, useHttps);
             return storageAccount;
         }
 

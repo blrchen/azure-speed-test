@@ -47,12 +47,7 @@ namespace AzureSpeed.WebUI
                             "~/app/app.js",
                             "~/app/filters.js",
                             "~/app/directives.js",
-                            "~/app/controllers/cloudRegionFinderCtrl.js",
-                            "~/app/controllers/downloadCtrl.js",
-                            "~/app/controllers/latencyCtrl.js",
-                            "~/app/controllers/testCtrl.js",
-                            "~/app/controllers/uploadCtrl.js",
-                            "~/app/controllers/uploadLargeFileCtrl.js"));
+                            "~/app/controllers/*.js"));
 
             // Set EnableOptimizations to false for debugging. For more information,
             // visit http://go.microsoft.com/fwlink/?LinkId=301862

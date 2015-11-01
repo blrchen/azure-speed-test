@@ -1,0 +1,6 @@
+﻿Last updated time
+=================
+Azure: 2015/11/1
+Azure China: 2015/11/1
+AWS: 2015/11/1
+AliCloud: 2015/1/1

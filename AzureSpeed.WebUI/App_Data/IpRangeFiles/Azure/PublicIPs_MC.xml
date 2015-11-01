@@ -18,6 +18,9 @@
     <IpRange Subnet="139.217.40.0/27" />
     <IpRange Subnet="139.217.40.32/28" />
     <IpRange Subnet="139.219.0.0/20" />
+    <IpRange Subnet="139.219.32.0/19" />
+    <IpRange Subnet="40.125.128.0/17" />
+    <IpRange Subnet="139.219.64.0/18" />
   </Region>
   <Region Name="chinaeast">
     <IpRange Subnet="42.159.129.0/24" />
@@ -42,5 +45,9 @@
     <IpRange Subnet="139.217.161.0/24" />
     <IpRange Subnet="139.217.162.0/24" />
     <IpRange Subnet="139.217.192.0/20" />
+    <IpRange Subnet="139.219.160.0/19" />
+    <IpRange Subnet="139.219.192.0/18" />
+    <IpRange Subnet="139.219.224.0/19" />
+    <IpRange Subnet="40.126.64.0/18" />
   </Region>
 </AzurePublicIpAddresses>

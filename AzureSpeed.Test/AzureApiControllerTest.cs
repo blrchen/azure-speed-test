@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using AzureSpeed.WebUI.Controllers;
 using System.IO;
 using System.Reflection;
@@ -41,6 +43,20 @@ namespace AzureSpeed.Test
             string url3 = "amazon.com";
             string region3 = controller.GetRegionNameByIpOrUrl(url3, ipFilePath);
             Assert.AreEqual(region3, "AWS - US East (N. Virginia)");
+        }
+
+        [TestMethod]
+        public void TestGetSubnetList()
+        {
+            var result = controller.GetSubnetList(ipFilePath);
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.Count > 0, "Sublist is empty");
+        }
+
+        [TestMethod]
+        public void TestDeleteOutDatedBlobs()
+        {
+            controller.DeleteOutDatedBlobs();
         }
     }
 }

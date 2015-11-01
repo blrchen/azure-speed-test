@@ -1,0 +1,62 @@
+﻿@{
+    ViewBag.Title = "Cloud IP Range";
+}
+
+<div class="container-fluid" ng-controller="ipRangeCtrl">
+    <h3 class="page-header">@ViewBag.Title</h3>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="alert alert-warning alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                Some funny data for how many public ip address do Microsoft, AWS and Alibaba owns.
+                If you know ip or url, you can use <a href="~/Cloud/RegionFinder">Cloud Region Finder</a> to find our detail cloud and region info
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class=" col-md-12">
+            <div>Raw data can be downloaded in following locations</div>
+            <div>
+                <ul>
+                    <li>
+                        Azure: <a href="https://www.microsoft.com/en-us/download/details.aspx?id=41653" target="_blank">https://www.microsoft.com/en-us/download/details.aspx?id=41653</a>
+                    </li>
+                    <li>
+                        Azure China: <a href="https://www.microsoft.com/en-us/download/details.aspx?id=42064" target="_blank">https://www.microsoft.com/en-us/download/details.aspx?id=42064</a>
+                    </li>
+                    <li>
+                        AWS: <a href="http://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html" target="_blank">http://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <i class="fa fa-th-list"></i>
+                    Cloud IP Range
+                </div>
+                <table class="table table-bordered table-striped" style="word-break: break-word">
+                    <thead>
+                        <tr>
+                            <th width="60">Cloud</th>
+                            <th width="100">Region</th>
+                            <th width="80">Total IP</th>
+                            <th>IP Range Detail</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="subnet in subnetList">
+                            <td>{{subnet.Cloud}}</td>
+                            <td>{{subnet.Region}}</td>
+                            <td>{{subnet.TotalIpCount}}</td>
+                            <td>{{subnet.Subnet}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

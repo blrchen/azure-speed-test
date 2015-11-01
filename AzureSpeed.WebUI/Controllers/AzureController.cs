@@ -46,11 +46,6 @@ namespace AzureSpeed.WebUI.Controllers
             return View();
         }
 
-        public ActionResult CloudRegionFinder()
-        {
-            return View();
-        }
-
         public ActionResult TrafficManager()
         {
             WebClient client = new WebClient();
@@ -152,7 +147,7 @@ namespace AzureSpeed.WebUI.Controllers
         public string Url { get; set; }
     }
 
-    public class AwsIpRange
+    public class AwsIpRangeData
     {
         public string syncToken { get; set; }
         public string createDate { get; set; }

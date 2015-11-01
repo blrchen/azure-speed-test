@@ -30,7 +30,7 @@ namespace AzureSpeed.WebUI.Controllers
 
         private static IDictionary<IPNetwork, string> CreateSubnetDictionary(string ipFilePath)
         {
-            var subnets = new Dictionary<IPNetwork, String>();
+            var subnets = new Dictionary<IPNetwork, string>();
             string ipFileList = ConfigurationManager.AppSettings["AzureIpRangeFileList"];
 
             // Load Azure ip range data
@@ -61,8 +61,8 @@ namespace AzureSpeed.WebUI.Controllers
             string awsIpFile = ConfigurationManager.AppSettings["AwsIpRangeFile"];
             string json = File.ReadAllText(ipFilePath + @"\IpRangeFiles\AWS\" + awsIpFile);
             var jsSerializer = new JavaScriptSerializer();
-            var awsIpRange = jsSerializer.Deserialize<AwsIpRange>(json);
-            foreach (var prefix in awsIpRange.prefixes)
+            var awsIpRangeData = jsSerializer.Deserialize<AwsIpRangeData>(json);
+            foreach (var prefix in awsIpRangeData.prefixes)
             {
                 IPNetwork net;
                 if (IPNetwork.TryParse(prefix.ip_prefix, out net))

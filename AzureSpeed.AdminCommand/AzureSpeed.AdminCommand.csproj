@@ -92,7 +92,7 @@
   <ItemGroup>
     <None Include="app.config" />
     <Content Include="Nlog.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="packages.config" />
   </ItemGroup>

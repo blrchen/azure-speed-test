@@ -1,21 +1,6 @@
 ﻿{
     "accounts": [
         {
-            "Name": "azspcentralindia",
-            "Key": "==============REPLACE ME=================",
-            "Region": "Central India"
-        },
-        {
-            "Name": "azspsouthindia",
-            "Key": "==============REPLACE ME=================",
-            "Region": "South India"
-        },
-        {
-            "Name": "azspwestindia",
-            "Key": "==============REPLACE ME=================",
-            "Region": "West India"
-        },
-        {
             "Name": "azspchinaeast",
             "Key": "==============REPLACE ME=================",
             "Region": "China East",
@@ -66,7 +51,6 @@
         {
             "Name": "azspwesteurope",
             "Key": "==============REPLACE ME=================",
-
             "Region": "West Europe"
         },
         {
@@ -103,6 +87,21 @@
             "Name": "azspbrazilsouth",
             "Key": "==============REPLACE ME=================",
             "Region": "Brazil South"
+        },
+        {
+            "Name": "azspcentralindia",
+            "Key": "==============REPLACE ME=================",
+            "Region": "Central India"
+        },
+        {
+            "Name": "azspsouthindia",
+            "Key": "==============REPLACE ME=================",
+            "Region": "South India"
+        },
+        {
+            "Name": "azspwestindia",
+            "Key": "==============REPLACE ME=================",
+            "Region": "West India"
         }
     ]
 }

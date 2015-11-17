@@ -55,7 +55,7 @@ namespace AzureSpeed.WebUI.Controllers
                 {
                     var storageAccount = StorageUtils.CreateCloudStorageAccount(account, true);
                     var blobClient = storageAccount.CreateCloudBlobClient();
-                    var container = blobClient.GetContainerReference("azurespeed");
+                    var container = blobClient.GetContainerReference(Constants.PrivateContainerName);
                     var blob = container.GetBlockBlobReference(blobName);
                     var permissions = SharedAccessBlobPermissions.None;
                     if (operations.ToLower().Contains("upload"))
@@ -80,7 +80,7 @@ namespace AzureSpeed.WebUI.Controllers
             {
                 var storageAccount = StorageUtils.CreateCloudStorageAccount(account);
                 var blobClient = storageAccount.CreateCloudBlobClient();
-                var container = blobClient.GetContainerReference("azurespeed");
+                var container = blobClient.GetContainerReference(Constants.PrivateContainerName);
                 var blobs = container.ListBlobs();
                 var oneMonthAgo = DateTimeOffset.Now.AddMonths(-1);
                 foreach (IListBlobItem blob in blobs)

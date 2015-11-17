@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using AzureSpeed.WebUI.Models;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
@@ -22,7 +24,7 @@ namespace AzureSpeed.AdminCommand
         static void Main()
         {
             Worker worker = new Worker();
-            worker.InitStorage();
+            worker.InitStorageAsync().Wait();
             Console.ReadLine();
         }
     }
@@ -31,7 +33,7 @@ namespace AzureSpeed.AdminCommand
     {
         private Logger _logger = LogManager.GetCurrentClassLogger();
 
-        public void InitStorage()
+        public async Task InitStorageAsync()
         {
             foreach (var account in AzureSpeedData.Accounts)
             {
@@ -44,45 +46,28 @@ namespace AzureSpeed.AdminCommand
 
                 var blobClient = storageAccount.CreateCloudBlobClient();
 
-                _logger.Info("Enabling CORS for account {0}", account.Name);
+                EnableStorageLogging(blobClient);
+                _logger.Info("Enabling storage logging successfully for account {0}", account.Name);
+
                 EnableCors(blobClient);
                 _logger.Info("Enabling CORS for account {0} successfully", account.Name);
 
-                var container = blobClient.GetContainerReference("azurespeed");
-                if (container != null && !container.Exists())
-                {
-                    _logger.Info("Creating azurespeed container");
-                    CreateAndSetupContainer(container);
-                    _logger.Info("Creating azurespeed container completes");
-                }
-
-                var blob = container.GetBlockBlobReference("callback.js");
-                if (blob != null && !blob.Exists())
-                {
-                    _logger.Info("Uploading callback.js blob");
-                    CreateCallbackJSBlob(account, blob);
-                    _logger.Info("Uploading callback.js blob completes");
-                }
-
-                var blob1 = container.GetBlockBlobReference("100MB.bin");
-                if (blob1 != null && !blob1.Exists())
-                {
-                    _logger.Info("Uploading 100MB.bin blob");
-                    var fullFilePath = @"C:\DelMe\100MB.bin";
-                    using (var fileStream = File.OpenRead(fullFilePath))
-                    {
-                        blob1.UploadFromStream(fileStream);
-                    }
-                    _logger.Info("Uploading 100MB.bin blob completes");
-                }
-
-                if (!blob.Uri.ToString().Contains(account.Region.Replace(" ", "").ToLower()))
-                {
-                    _logger.Error("Storage account {0} has wrong region {1}", account.Name, account.Region);
-                }
+                await CreatePublicContainerAsync(account, blobClient);
+                _logger.Info("Creating public container completes");
+                
+                await CreatePrivateContainerAsync(blobClient);
+                _logger.Info("Creating private container completes");
 
                 _logger.Info("Storage account {0} successfully initilized completes", account.Name);
             }
+        }
+
+        private static void EnableStorageLogging(CloudBlobClient blobClient)
+        {
+            var serviceProperties = blobClient.GetServiceProperties();
+            serviceProperties.Logging.LoggingOperations = LoggingOperations.All;
+            serviceProperties.Logging.RetentionDays = 365;
+            blobClient.SetServiceProperties(serviceProperties);
         }
 
         private void EnableCors(CloudBlobClient blobClient)
@@ -146,23 +131,69 @@ namespace AzureSpeed.AdminCommand
             }
         }
 
-        private void CreateCallbackJSBlob(Account account, CloudBlockBlob blob)
+        private async Task CreatePublicContainerAsync(Account account, CloudBlobClient blobClient)
+        {
+            var container = blobClient.GetContainerReference(WebUI.Models.Constants.PublicContainerName);
+            if (container != null)
+            {
+                // Create container with blob public access permission
+                await container.CreateIfNotExistsAsync();
+                var permissions = new BlobContainerPermissions
+                {
+                    PublicAccess = BlobContainerPublicAccessType.Blob
+                };
+                await container.SetPermissionsAsync(permissions);
+
+                // Create callback.js blob
+                var blob = container.GetBlockBlobReference("callback.js");
+                if (blob != null && !blob.Exists())
+                {
+                    await CreateCallbackJSBlob(account, blob);
+                    _logger.Info("Uploading callback.js blob completes");
+                }
+
+                // Post validation
+                if (!blob.Uri.ToString().Contains(account.Region.Replace(" ", "").ToLower()))
+                {
+                    _logger.Error("Storage account {0} has wrong region {1}", account.Name, account.Region);
+                }
+            }
+        }
+
+        private async Task CreatePrivateContainerAsync(CloudBlobClient blobClient)
+        {
+            var container = blobClient.GetContainerReference(WebUI.Models.Constants.PrivateContainerName);
+            if (container != null)
+            {
+                // Create private container with no puublic access permission
+                await container.CreateIfNotExistsAsync();
+                var permissions = new BlobContainerPermissions
+                {
+                    PublicAccess = BlobContainerPublicAccessType.Off
+                };
+                await container.SetPermissionsAsync(permissions);
+
+                // Create 100MB.bin blob
+                //var blob = container.GetBlockBlobReference("100MB.bin");
+                //if (blob != null && !blob.Exists())
+                //{
+                //    var fullFilePath = @"C:\DelMe\100MB.bin";
+                //    using (var fileStream = File.OpenRead(fullFilePath))
+                //    {
+                //        await blob.UploadFromStreamAsync(fileStream);
+                //    }
+                //    _logger.Info("Uploading 100MB.bin blob completes");
+                //}
+            }
+        }
+
+        private async Task CreateCallbackJSBlob(Account account, CloudBlockBlob blob)
         {
             string callback = string.Format(@"latency._pingCallback('{0}');", account.Name);
             Stream stream = GenerateStreamFromString(callback);
             blob.UploadFromStream(stream);
             blob.Properties.ContentType = "application/javascript";
-            blob.SetProperties();
-        }
-
-        private void CreateAndSetupContainer(CloudBlobContainer container)
-        {
-            container.Create();
-            var permissions = new BlobContainerPermissions
-            {
-                PublicAccess = BlobContainerPublicAccessType.Blob
-            };
-            container.SetPermissions(permissions);
+            await blob.SetPropertiesAsync();
         }
 
         private MemoryStream GenerateStreamFromString(string s)

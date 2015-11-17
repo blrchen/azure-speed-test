@@ -217,6 +217,6 @@ _Pvt_Extensions
 
 
 # AzureSpeed only
-setting.tmpl.json
-_AdsenseTemplate.cshtml
-_AnalyticsTemplate.cshtml
+setting.private.json
+_Adsense.private.cshtml
+_Analytics.private.cshtml

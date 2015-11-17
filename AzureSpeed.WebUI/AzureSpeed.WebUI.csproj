@@ -179,6 +179,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Constants.cs" />
     <Compile Include="Models\IpRangeViewModel.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\AzureSpeedData.cs" />
@@ -306,8 +307,8 @@
     <Content Include="Views\Shared\_Adsense.cshtml" />
     <Content Include="Views\AzureOnlineTools\GenerateEventHubSAS.cshtml" />
     <Content Include="Views\Shared\_Analytics.cshtml" />
-    <Content Include="Views\Shared\_AdsenseTemplate.cshtml" />
-    <Content Include="Views\Shared\_AnalyticsTemplate.cshtml" />
+    <Content Include="Views\Shared\_Adsense.private.cshtml" />
+    <Content Include="Views\Shared\_Analytics.private.cshtml" />
     <Content Include="Views\Cloud\IpRange.cshtml" />
   </ItemGroup>
   <ItemGroup />

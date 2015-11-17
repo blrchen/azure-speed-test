@@ -1,6 +1,8 @@
 ﻿$(function () {
     // TODO: rewrite with angular code
     var latency = {
+        pingCount: 0,
+        maxPingCount: 180,
         lineChartHeight: 240,
         lineChartWidth: $('.chart-container').width(),
         updateInterval: 2000,
@@ -40,20 +42,23 @@
             setTimeout(latency.report, latency.updateInterval);
         },
         pingloop: function () {
-            latency._ping();
-            setTimeout(latency.pingloop, latency.updateInterval);
+            if (latency.pingCount < latency.maxPingCount) {
+                latency._ping();
+                setTimeout(latency.pingloop, latency.updateInterval);
+                latency.pingCount++;
+            }
         },
         _ping: function () {
             $.each(utils.getRegions(), function () {
                 var storage = this.storage;
                 var region = this.region;
                 latency.startTime[storage] = new Date().getTime();
-                var requestUrl = "http://" + storage + ".blob.core.windows.net/azurespeed/callback.js";
+                var requestUrl = "http://" + storage + ".blob.core.windows.net/public/callback.js";
                 if (region.indexOf('China') != -1) {
-                    requestUrl = "http://" + storage + ".blob.core.chinacloudapi.cn/azurespeed/callback.js";
+                    requestUrl = "http://" + storage + ".blob.core.chinacloudapi.cn/public/callback.js";
                 }
                 if (storage.indexOf('cdn') != -1) {
-                    requestUrl = "http://az654246.vo.msecnd.net/azurespeed/callback.js";
+                    requestUrl = "http://az654246.vo.msecnd.net/public/callback.js";
                 }
                 $.ajax({
                     url: requestUrl,

@@ -80,7 +80,7 @@
                 allowedMethods = allowedMethods | CorsHttpMethods.Delete;
                 allowedMethods = allowedMethods | CorsHttpMethods.Options;
 
-                var delimiter = new[] {","};
+                var delimiter = new[] { "," };
                 CorsRule corsRule = new CorsRule();
                 const string allowedOrigins = "*";
                 const string allowedHeaders = "*";
@@ -126,7 +126,7 @@
             }
             catch (Exception ex)
             {
-                _logger.ErrorException("Error enable CORS", ex);
+                _logger.Error(ex, "Error enable CORS");
             }
         }
 

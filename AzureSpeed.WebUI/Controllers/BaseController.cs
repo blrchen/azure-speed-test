@@ -1,9 +1,9 @@
-﻿using System;
-using System.Web.Mvc;
-using NLog;
-
-namespace AzureSpeed.WebUI.Controllers
+﻿namespace AzureSpeed.WebUI.Controllers
 {
+    using System;
+    using System.Web.Mvc;
+    using NLog;
+
     public class BaseController : Controller
     {
         protected static readonly Logger logger = LogManager.GetCurrentClassLogger();

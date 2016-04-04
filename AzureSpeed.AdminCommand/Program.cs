@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using AzureSpeed.WebUI.Models;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
-using Microsoft.WindowsAzure.Storage.Shared.Protocol;
-using NLog;
-
-namespace AzureSpeed.AdminCommand
+﻿namespace AzureSpeed.AdminCommand
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Text;
+    using System.Threading.Tasks;
+    using Microsoft.WindowsAzure.Storage;
+    using Microsoft.WindowsAzure.Storage.Blob;
+    using Microsoft.WindowsAzure.Storage.Shared.Protocol;
+    using NLog;
+    using WebUI.Models;
+    using Constants = WebUI.Models.Constants;
 
     // This tool is for azurespeed admin operations. It setups everythings needed for a storage to run speed test.
     // 1. Enable CORS
@@ -19,9 +18,9 @@ namespace AzureSpeed.AdminCommand
     // 2. Create a callback.js which is used by latency test
     // 3. Upload a 100 mb dummy file for download speed test.
 
-    class Program
+    internal class Program
     {
-        static void Main()
+        private static void Main()
         {
             Worker worker = new Worker();
             worker.InitStorageAsync().Wait();
@@ -29,9 +28,9 @@ namespace AzureSpeed.AdminCommand
         }
     }
 
-    class Worker
+    internal class Worker
     {
-        private Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
         public async Task InitStorageAsync()
         {
@@ -54,7 +53,7 @@ namespace AzureSpeed.AdminCommand
 
                 await CreatePublicContainerAsync(account, blobClient);
                 _logger.Info("Creating public container completes");
-                
+
                 await CreatePrivateContainerAsync(blobClient);
                 _logger.Info("Creating private container completes");
 
@@ -81,7 +80,7 @@ namespace AzureSpeed.AdminCommand
                 allowedMethods = allowedMethods | CorsHttpMethods.Delete;
                 allowedMethods = allowedMethods | CorsHttpMethods.Options;
 
-                var delimiter = new[] { "," };
+                var delimiter = new[] {","};
                 CorsRule corsRule = new CorsRule();
                 const string allowedOrigins = "*";
                 const string allowedHeaders = "*";
@@ -133,7 +132,7 @@ namespace AzureSpeed.AdminCommand
 
         private async Task CreatePublicContainerAsync(Account account, CloudBlobClient blobClient)
         {
-            var container = blobClient.GetContainerReference(WebUI.Models.Constants.PublicContainerName);
+            var container = blobClient.GetContainerReference(Constants.PublicContainerName);
             if (container != null)
             {
                 // Create container with blob public access permission
@@ -162,7 +161,7 @@ namespace AzureSpeed.AdminCommand
 
         private async Task CreatePrivateContainerAsync(CloudBlobClient blobClient)
         {
-            var container = blobClient.GetContainerReference(WebUI.Models.Constants.PrivateContainerName);
+            var container = blobClient.GetContainerReference(Constants.PrivateContainerName);
             if (container != null)
             {
                 // Create private container with no puublic access permission
@@ -204,8 +203,8 @@ namespace AzureSpeed.AdminCommand
         private bool TryParse(Account account, out CloudStorageAccount storageAccount)
         {
             string endpoint = string.IsNullOrEmpty(account.EndpointSuffix)
-                    ? ""
-                    : string.Format("BlobEndpoint=https://{0}.blob.{1}/;", account.Name, account.EndpointSuffix);
+                ? ""
+                : string.Format("BlobEndpoint=https://{0}.blob.{1}/;", account.Name, account.EndpointSuffix);
             string connectionString = string.Format(
                 "{0}DefaultEndpointsProtocol=https;AccountName={1};AccountKey={2}",
                 endpoint, account.Name, account.Key);

@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.IO;
-using System.Web.Script.Serialization;
-using System.Xml;
-using LukeSkywalker.IPNetwork;
-
-namespace AzureSpeed.WebUI.Controllers
+﻿namespace AzureSpeed.WebUI.Controllers
 {
+    using System.Collections.Generic;
+    using System.Configuration;
+    using System.IO;
+    using System.Web.Script.Serialization;
+    using System.Xml;
+    using LukeSkywalker.IPNetwork;
+
     public static class SubnetBuilder
     {
         private static volatile IDictionary<IPNetwork, string> _subnetDictionary;
-        private static object _locker = new object();
+        private static readonly object _locker = new object();
 
         public static IDictionary<IPNetwork, string> GetSubnetDictionary(string ipFilePath)
         {

@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Web.Mvc;
-using AzureSpeed.WebUI.Models;
-using Microsoft.WindowsAzure.Storage.Blob;
-using Microsoft.WindowsAzure.Storage.Shared.Protocol;
-
-namespace AzureSpeed.WebUI.Controllers
+﻿namespace AzureSpeed.WebUI.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Net;
+    using System.Web.Mvc;
+    using Microsoft.WindowsAzure.Storage.Shared.Protocol;
+    using Models;
+
     public class AzureController : BaseController
     {
         public ActionResult Index()
@@ -152,7 +150,6 @@ namespace AzureSpeed.WebUI.Controllers
         public string syncToken { get; set; }
         public string createDate { get; set; }
         public List<prefix> prefixes { get; set; }
-
     }
 
     public class prefix
@@ -161,5 +158,4 @@ namespace AzureSpeed.WebUI.Controllers
         public string region { get; set; }
         public string service { get; set; }
     }
-
 }

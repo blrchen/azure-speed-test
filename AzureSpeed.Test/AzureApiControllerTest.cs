@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using AzureSpeed.WebUI.Controllers;
-using System.IO;
-using System.Reflection;
-
-namespace AzureSpeed.Test
+﻿namespace AzureSpeed.Test
 {
+    using System.IO;
+    using System.Reflection;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using WebUI.Controllers;
+
     [TestClass]
     public class AzureApiControllerTest
     {
-        private AzureApiController controller = new AzureApiController();
-        private string ipFilePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"\TestData\";
+        private readonly AzureApiController controller = new AzureApiController();
+
+        private readonly string ipFilePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) +
+                                             @"\TestData\";
 
         [TestMethod]
         public void TestGetRegionNameByIp()

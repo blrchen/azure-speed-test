@@ -1,13 +1,16 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Web.Hosting;
-using System.Web.Script.Serialization;
-
-namespace AzureSpeed.WebUI.Models
+﻿namespace AzureSpeed.WebUI.Models
 {
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Web.Hosting;
+    using System.Web.Script.Serialization;
+
     public static class AzureSpeedData
     {
         private static IEnumerable<Account> accounts;
+
+        private static Dictionary<string, string> regionNames;
+
         public static IEnumerable<Account> Accounts
         {
             get
@@ -26,7 +29,6 @@ namespace AzureSpeed.WebUI.Models
             }
         }
 
-        private static Dictionary<string, string> regionNames;
         public static Dictionary<string, string> RegionNames
         {
             get

@@ -1,25 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Diagnostics;
-using System.Linq;
-using System.Net;
-using System.Web;
-using System.Web.Hosting;
-using System.Web.Http;
-using System.Web.Script.Serialization;
-using System.Xml;
-using AzureSpeed.WebUI.Models;
-using LukeSkywalker.IPNetwork;
-using Microsoft.WindowsAzure.Storage.Blob;
-using NLog;
-
-namespace AzureSpeed.WebUI.Controllers
+﻿namespace AzureSpeed.WebUI.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Configuration;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Linq;
+    using System.Net;
+    using System.Web;
+    using System.Web.Hosting;
+    using System.Web.Http;
+    using System.Web.Script.Serialization;
+    using System.Xml;
+    using LukeSkywalker.IPNetwork;
+    using Microsoft.WindowsAzure.Storage.Blob;
+    using Models;
+    using NLog;
+
     [RoutePrefix("api")]
     public class AzureApiController : ApiController
     {
-        private Logger logger = LogManager.GetCurrentClassLogger();
+        private readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         [HttpGet]
         [Route("ip")]
@@ -100,7 +101,6 @@ namespace AzureSpeed.WebUI.Controllers
 
         public string GetRegionNameByIpOrUrl(string ipOrUrl, string ipFilePath = null)
         {
-
             if (string.IsNullOrEmpty(ipOrUrl))
             {
                 return "Must specify a valid ipAddress or url";
@@ -179,13 +179,12 @@ namespace AzureSpeed.WebUI.Controllers
 
             // Get AWS ip range data
             string awsIpFile = ConfigurationManager.AppSettings["AwsIpRangeFile"];
-            string json = System.IO.File.ReadAllText(ipFilePath + @"\IpRangeFiles\AWS\" + awsIpFile);
+            string json = File.ReadAllText(ipFilePath + @"\IpRangeFiles\AWS\" + awsIpFile);
             var jsSerializer = new JavaScriptSerializer();
 
             var awsIpRangeData = jsSerializer.Deserialize<AwsIpRangeData>(json);
             foreach (var prefix in awsIpRangeData.prefixes)
             {
-
                 string region = prefix.region;
                 string subnet = prefix.ip_prefix;
                 if (result.Any(v => v.Region == region))
@@ -207,7 +206,7 @@ namespace AzureSpeed.WebUI.Controllers
 
             // Get AliCloud ip range data
             string aliCloudIpFile = ConfigurationManager.AppSettings["AliCloudIpRangeFile"];
-            string[] lines = System.IO.File.ReadAllLines(ipFilePath + @"\IpRangeFiles\AliCloud\" + aliCloudIpFile);
+            string[] lines = File.ReadAllLines(ipFilePath + @"\IpRangeFiles\AliCloud\" + aliCloudIpFile);
             var aliIpRange = new IpRangeViewModel { Cloud = "AliCloud", Region = "AliCloud", Subnet = new List<string>() };
             foreach (var line in lines)
             {

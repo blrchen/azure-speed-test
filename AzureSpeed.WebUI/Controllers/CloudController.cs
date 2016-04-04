@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Web.Mvc;
-using System.Web.Script.Serialization;
-using System.Xml;
-using AzureSpeed.WebUI.Models;
-using System.Web.Hosting;
-
-namespace AzureSpeed.WebUI.Controllers
+﻿namespace AzureSpeed.WebUI.Controllers
 {
+    using System.Web.Mvc;
+
     public class CloudController : Controller
     {
         public ActionResult RegionFinder()

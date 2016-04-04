@@ -56,7 +56,7 @@
         [TestMethod]
         public void TestDeleteOutDatedBlobs()
         {
-            controller.DeleteOutDatedBlobs();
+            controller.CleanUpBlobs();
         }
     }
 }

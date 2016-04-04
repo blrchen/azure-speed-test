@@ -162,11 +162,13 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Compile Include="ApiControllers\ApiControllerBase.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="ApiControllers\AzureApiController.cs" />
+    <Compile Include="Attributes\ActionExecutionFilterAttribute.cs" />
     <Compile Include="Controllers\AzureOnlineToolsController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\AzureController.cs" />

@@ -75,8 +75,7 @@
             try
             {
                 var storageAccount = new StorageContext(account);
-                
-            }
+           }
             catch (Exception ex)
             {
                 logger.Error(ex);

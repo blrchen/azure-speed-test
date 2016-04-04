@@ -13,13 +13,10 @@
     using System.Web.Script.Serialization;
     using System.Xml;
     using LukeSkywalker.IPNetwork;
-    using NLog;
 
     [RoutePrefix("api")]
-    public class AzureApiController : ApiController
+    public class AzureApiController : ApiControllerBase
     {
-        private readonly Logger logger = LogManager.GetCurrentClassLogger();
-
         [HttpGet]
         [Route("ip")]
         public IHttpActionResult GetIp()
@@ -61,7 +58,7 @@
 
         [HttpGet]
         [Route("cleanup")]
-        public IHttpActionResult DeleteOutDatedBlobs()
+        public IHttpActionResult CleanUpBlobs()
         {
             foreach (var account in AzureSpeedData.Accounts)
             {
@@ -90,31 +87,24 @@
             Uri tmp = new Uri(ipOrUrl);
             ipOrUrl = tmp.Host;
 
-
             var sw = new Stopwatch();
             sw.Start();
-            try
+
+            var ips = Dns.GetHostAddresses(ipOrUrl);
+            var ipAddr = ips[0];
+            var subnets = SubnetBuilder.GetSubnetDictionary(ipFilePath);
+            foreach (IPNetwork net in subnets.Keys)
             {
-                var ips = Dns.GetHostAddresses(ipOrUrl);
-                var ipAddr = ips[0];
-                var subnets = SubnetBuilder.GetSubnetDictionary(ipFilePath);
-                foreach (IPNetwork net in subnets.Keys)
+                if (IPNetwork.Contains(net, ipAddr))
                 {
-                    if (IPNetwork.Contains(net, ipAddr))
-                    {
-                        var regionAlias = subnets[net];
-                        sw.Stop();
-                        string region = AzureSpeedData.RegionNames[regionAlias];
-                        logger.Info($"IpOrUrl = {ipOrUrl}, region = {region}, time = {sw.ElapsedMilliseconds}");
-                        return region;
-                    }
+                    var regionAlias = subnets[net];
+                    sw.Stop();
+                    string region = AzureSpeedData.RegionNames[regionAlias];
+                    Logger.Info($"IpOrUrl = {ipOrUrl}, region = {region}, time = {sw.ElapsedMilliseconds}");
+                    return region;
                 }
             }
-            catch (Exception ex)
-            {
-                logger.Error(ex);
-                return "Invalid Address!";
-            }
+
             return "Region not found";
         }
 
@@ -149,7 +139,7 @@
                 }
             }
 
-            // Get AWS ip range data
+            // Load AWS ip range data
             string awsIpFile = ConfigurationManager.AppSettings["AwsIpRangeFile"];
             string json = File.ReadAllText(ipFilePath + @"\IpRangeFiles\AWS\" + awsIpFile);
             var jsSerializer = new JavaScriptSerializer();
@@ -176,7 +166,7 @@
                 }
             }
 
-            // Get AliCloud ip range data
+            // Load AliCloud ip range data
             string aliCloudIpFile = ConfigurationManager.AppSettings["AliCloudIpRangeFile"];
             string[] lines = File.ReadAllLines(ipFilePath + @"\IpRangeFiles\AliCloud\" + aliCloudIpFile);
             var aliIpRange = new IpRangeViewModel { Cloud = "AliCloud", Region = "AliCloud", Subnet = new List<string>() };

@@ -14,16 +14,10 @@
             var table = $('#latency-table tbody');
             table.empty();
             var tmp = [];
-            // todo: change to map
             $.each(utils.getRegions(), function () {
                 tmp.push({ geo: this.geo, region: this.region, location: this.location, average: latency.latest[this.storage] });
             });
-            tmp.sort(function (a, b) {
-                return a.average - b.average;
-            });
-            var closest = 0;
-            var closestTable = $('#closest-table');
-            closestTable.empty();
+
             $.each(tmp, function () {
                 if (this.average > 0) {
                     var tdGeo = $('<td>').text(this.geo);
@@ -32,11 +26,20 @@
                     var tdLatency = $('<td>').text(parseInt(this.average).toFixed(0) + ' ms');
                     var tr = $('<tr>').append(tdGeo).append(tdRegion).append(tdLocation).append(tdLatency);
                     table.append(tr);
-                    if (closest < 3) {
-                        closest++;
-                        var text = this.region + ' ( ' + this.location + ' )';
-                        closestTable.append($('<tr>').append($('<td>').text(text)).append($('<td>').text(parseInt(this.average).toFixed(0) + ' ms')));
-                    }
+
+                }
+            });
+            var closestTable = $('#closest-table');
+            closestTable.empty();
+            tmp.sort(function (a, b) {
+                return a.average - b.average;
+            });
+            var closest = 0;
+            $.each(tmp, function() {
+                if (closest < 3) {
+                    closest++;
+                    var text = this.region + ' ( ' + this.location + ' )';
+                    closestTable.append($('<tr>').append($('<td>').text(text)).append($('<td>').text(parseInt(this.average).toFixed(0) + ' ms')));
                 }
             });
             setTimeout(latency.report, latency.updateInterval);

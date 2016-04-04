@@ -3,7 +3,7 @@
     using System.IO;
     using System.Reflection;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using WebUI.Controllers;
+    using WebUI;
 
     [TestClass]
     public class AzureApiControllerTest

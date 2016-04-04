@@ -166,21 +166,21 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Controllers\AzureApiController.cs" />
+    <Compile Include="ApiControllers\AzureApiController.cs" />
     <Compile Include="Controllers\AzureOnlineToolsController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\AzureController.cs" />
     <Compile Include="Controllers\CloudController.cs" />
-    <Compile Include="Controllers\SubnetBuilder.cs" />
-    <Compile Include="Controllers\StorageUtils.cs" />
+    <Compile Include="Common\SubnetBuilder.cs" />
+    <Compile Include="Common\StorageContext.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\Constants.cs" />
-    <Compile Include="Models\IpRangeViewModel.cs" />
-    <Compile Include="Models\Account.cs" />
-    <Compile Include="Models\AzureSpeedData.cs" />
-    <Compile Include="Models\Setting.cs" />
+    <Compile Include="Common\AzureSpeedConstants.cs" />
+    <Compile Include="ViewModels\IpRangeViewModel.cs" />
+    <Compile Include="Common\AzureSpeedAccount.cs" />
+    <Compile Include="Common\AzureSpeedData.cs" />
+    <Compile Include="Common\Setting.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

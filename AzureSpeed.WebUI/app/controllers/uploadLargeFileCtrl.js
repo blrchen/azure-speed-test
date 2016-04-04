@@ -11,7 +11,7 @@
         $scope.upload = function () {
             var file = $('#file-input')[0].files[0];
             var region = $scope.selectedRegion.region;
-            var data = { region: region, blobName: guid.newGuid(), operations: 'upload' };
+            var data = { region: region, blobName: guid.newGuid(), operation: 'upload' };
             $http.get('/api/sas', { params: data }).success(function (response) {
                 ja.storage.blockSize = $scope.selectedBlockSize * 1024;
                 ja.storage.maxThread = $scope.selectedThread;

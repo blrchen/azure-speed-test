@@ -8,7 +8,7 @@
             if ($scope.checkedRegions.length == 0) {
                 return;
             }
-            var data = { region: $scope.checkedRegions[0].region, blobName: guid.newGuid(), operations: 'upload' };
+            var data = { region: $scope.checkedRegions[0].region, blobName: guid.newGuid(), operation: 'upload' };
             $http.get('/api/sas', { params: data }).success(function (response) {
                 var content = [];
                 var byteSize = 256 * 1024;

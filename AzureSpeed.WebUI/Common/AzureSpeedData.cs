@@ -1,4 +1,4 @@
-﻿namespace AzureSpeed.WebUI.Models
+﻿namespace AzureSpeed.WebUI
 {
     using System.Collections.Generic;
     using System.IO;
@@ -7,18 +7,18 @@
 
     public static class AzureSpeedData
     {
-        private static IEnumerable<Account> accounts;
+        private static IEnumerable<AzureSpeedStorageAccount> accounts;
 
         private static Dictionary<string, string> regionNames;
 
-        public static IEnumerable<Account> Accounts
+        public static IEnumerable<AzureSpeedStorageAccount> Accounts
         {
             get
             {
                 if (accounts == null)
                 {
                     var serializer = new JavaScriptSerializer();
-                    string filePath = Path.Combine(HostingEnvironment.MapPath("~/App_Data/"), "setting.json");
+                    string filePath = @"C:\ziztfs\AzureSpeed\AzureSpeed.WebUI\App_Data\setting.json";//  Path.Combine(HostingEnvironment.MapPath("~/App_Data/"), "setting.json");
 
                     var text = File.ReadAllText(filePath);
                     var setting = serializer.Deserialize<Setting>(text);
@@ -60,6 +60,7 @@
                     regionNames.Add("indiacentral", "Azure - India Central");
                     regionNames.Add("indiawest", "Azure - India West");
                     regionNames.Add("indiasouth", "Azure - India South");
+
                     // AWS
                     regionNames.Add("ap-northeast-1", "AWS - Asia Pacific (Tokyo)");
                     regionNames.Add("ap-southeast-1", "AWS - Asia Pacific (Singapore)");

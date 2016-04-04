@@ -1,6 +1,6 @@
-﻿namespace AzureSpeed.WebUI.Models
+﻿namespace AzureSpeed.WebUI
 {
-    public class Account
+    public class AzureSpeedStorageAccount
     {
         public string Name { get; set; }
         public string Key { get; set; }

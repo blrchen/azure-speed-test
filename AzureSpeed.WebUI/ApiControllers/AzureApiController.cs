@@ -1,4 +1,4 @@
-﻿namespace AzureSpeed.WebUI.Controllers
+﻿namespace AzureSpeed.WebUI
 {
     using System;
     using System.Collections.Generic;
@@ -13,8 +13,6 @@
     using System.Web.Script.Serialization;
     using System.Xml;
     using LukeSkywalker.IPNetwork;
-    using Microsoft.WindowsAzure.Storage.Blob;
-    using Models;
     using NLog;
 
     [RoutePrefix("api")]
@@ -46,7 +44,7 @@
 
         [HttpGet]
         [Route("sas")]
-        public IHttpActionResult GetSasLink(string region, string blobName, string operations)
+        public IHttpActionResult GetSasLink(string region, string blobName, string operation)
         {
             string url = "";
             if (!string.IsNullOrEmpty(region))
@@ -54,20 +52,8 @@
                 var account = AzureSpeedData.Accounts.FirstOrDefault(v => v.Region == region);
                 if (account != null)
                 {
-                    var storageAccount = StorageUtils.CreateCloudStorageAccount(account, true);
-                    var blobClient = storageAccount.CreateCloudBlobClient();
-                    var container = blobClient.GetContainerReference(Constants.PrivateContainerName);
-                    var blob = container.GetBlockBlobReference(blobName);
-                    var permissions = SharedAccessBlobPermissions.None;
-                    if (operations.ToLower().Contains("upload"))
-                    {
-                        permissions |= SharedAccessBlobPermissions.Write;
-                    }
-                    if (operations.ToLower().Contains("download"))
-                    {
-                        permissions |= SharedAccessBlobPermissions.Read;
-                    }
-                    url = StorageUtils.GetSasUrl(blob, permissions);
+                    var storageContext = new StorageContext(account);
+                    url = storageContext.GetSasUrl(blobName, operation);
                 }
             }
             return Ok(url);
@@ -79,22 +65,8 @@
         {
             foreach (var account in AzureSpeedData.Accounts)
             {
-                var storageAccount = StorageUtils.CreateCloudStorageAccount(account);
-                var blobClient = storageAccount.CreateCloudBlobClient();
-                var container = blobClient.GetContainerReference(Constants.PrivateContainerName);
-                var blobs = container.ListBlobs();
-                var oneMonthAgo = DateTimeOffset.Now.AddMonths(-1);
-                foreach (IListBlobItem blob in blobs)
-                {
-                    var cblob = blob as ICloudBlob;
-                    if (cblob != null && cblob.Name != "callback.js" && cblob.Name != "100MB.bin")
-                    {
-                        if (cblob.Properties.LastModified.Value.CompareTo(oneMonthAgo) < 0)
-                        {
-                            cblob.DeleteAsync();
-                        }
-                    }
-                }
+                var storageAccount = new StorageContext(account);
+                storageAccount.CleanUpBlobs();
             }
             return Ok();
         }
@@ -133,7 +105,7 @@
                         var regionAlias = subnets[net];
                         sw.Stop();
                         string region = AzureSpeedData.RegionNames[regionAlias];
-                        logger.Info("IpOrUrl = {0}, region = {1}, time = {2}", ipOrUrl, region, sw.ElapsedMilliseconds);
+                        logger.Info($"IpOrUrl = {ipOrUrl}, region = {region}, time = {sw.ElapsedMilliseconds}");
                         return region;
                     }
                 }

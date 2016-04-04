@@ -1,11 +1,9 @@
-﻿namespace AzureSpeed.WebUI.Controllers
+﻿namespace AzureSpeed.WebUI
 {
     using System;
     using System.Collections.Generic;
     using System.Net;
     using System.Web.Mvc;
-    using Microsoft.WindowsAzure.Storage.Shared.Protocol;
-    using Models;
 
     public class AzureController : BaseController
     {
@@ -72,63 +70,12 @@
             return View();
         }
 
-        public string EnableStorageCORS(Account account)
+        public string EnableStorageCORS(AzureSpeedStorageAccount account)
         {
             try
             {
-                var storageAccount = StorageUtils.CreateCloudStorageAccount(account);
-                var blobClient = storageAccount.CreateCloudBlobClient();
-
-                CorsHttpMethods allowedMethods = CorsHttpMethods.None;
-                allowedMethods = allowedMethods | CorsHttpMethods.Get;
-                allowedMethods = allowedMethods | CorsHttpMethods.Put;
-                allowedMethods = allowedMethods | CorsHttpMethods.Post;
-                allowedMethods = allowedMethods | CorsHttpMethods.Delete;
-                allowedMethods = allowedMethods | CorsHttpMethods.Options;
-
-                var delimiter = new[] { "," };
-                CorsRule corsRule = new CorsRule();
-                const string allowedOrigins = "*";
-                const string allowedHeaders = "*";
-                const string exposedHeaders = "";
-
-                string[] allAllowedOrigin = allowedOrigins.Split(delimiter, StringSplitOptions.RemoveEmptyEntries);
-                string[] allExpHeaders = exposedHeaders.Split(delimiter, StringSplitOptions.RemoveEmptyEntries);
-                string[] allAllowHeaders = allowedHeaders.Split(delimiter, StringSplitOptions.RemoveEmptyEntries);
-
-                List<string> corsAllowedOrigin = new List<string>();
-                foreach (var item in allAllowedOrigin)
-                {
-                    if (!string.IsNullOrWhiteSpace(item))
-                    {
-                        corsAllowedOrigin.Add(item.Trim());
-                    }
-                }
-                List<string> corsExposedHeaders = new List<string>();
-                foreach (var item in allExpHeaders)
-                {
-                    if (!string.IsNullOrWhiteSpace(item))
-                    {
-                        corsExposedHeaders.Add(item.Trim());
-                    }
-                }
-                List<string> corsAllowHeaders = new List<string>();
-                foreach (var item in allAllowHeaders)
-                {
-                    if (!string.IsNullOrWhiteSpace(item))
-                    {
-                        corsAllowHeaders.Add(item.Trim());
-                    }
-                }
-                corsRule.MaxAgeInSeconds = 200;
-                corsRule.AllowedMethods = allowedMethods;
-                corsRule.AllowedHeaders = corsAllowHeaders;
-                corsRule.AllowedOrigins = corsAllowedOrigin;
-                corsRule.ExposedHeaders = corsExposedHeaders;
-                ServiceProperties properties = blobClient.GetServiceProperties();
-                properties.Cors.CorsRules.Clear();
-                properties.Cors.CorsRules.Add(corsRule);
-                blobClient.SetServiceProperties(properties);
+                var storageAccount = new StorageContext(account);
+                
             }
             catch (Exception ex)
             {

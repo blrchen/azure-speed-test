@@ -1,4 +1,4 @@
-﻿namespace AzureSpeed.WebUI.Models
+﻿namespace AzureSpeed.WebUI
 {
     using System.Collections.Generic;
 

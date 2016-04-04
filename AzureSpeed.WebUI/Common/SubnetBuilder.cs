@@ -1,4 +1,4 @@
-﻿namespace AzureSpeed.WebUI.Controllers
+﻿namespace AzureSpeed.WebUI
 {
     using System.Collections.Generic;
     using System.Configuration;

@@ -1,7 +1,6 @@
 ﻿namespace AzureSpeed.AdminConsole
 {
     using System;
-    using AdminConsole;
 
     // This tool setups everything needed for an Azure storage account to run speed test.
     //

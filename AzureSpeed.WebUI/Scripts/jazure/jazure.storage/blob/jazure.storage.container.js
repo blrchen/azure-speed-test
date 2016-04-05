@@ -144,7 +144,7 @@
         }, lease: function (success, error) {
             alert('lease is comming...');
         }
-    }
+    };
     container.prototype.init.prototype = container.prototype;
 
     jAzure.storage.container = container;

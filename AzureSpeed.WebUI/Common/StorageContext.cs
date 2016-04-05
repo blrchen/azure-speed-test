@@ -23,7 +23,7 @@
 
             var storageAccount = new CloudStorageAccount(new StorageCredentials(account.Name, account.Key),
                 endpointSuffix, true);
-            this.blobClient = storageAccount.CreateCloudBlobClient();
+            blobClient = storageAccount.CreateCloudBlobClient();
         }
 
         public string GetSasUrl(string blobName, string operation)
@@ -105,7 +105,7 @@
 
         public void CleanUpBlobs()
         {
-            var container = this.blobClient.GetContainerReference(AzureSpeedConstants.PrivateContainerName);
+            var container = blobClient.GetContainerReference(AzureSpeedConstants.PrivateContainerName);
             var blobs = container.ListBlobs();
             var oneMonthAgo = DateTimeOffset.Now.AddMonths(-1);
             foreach (IListBlobItem blob in blobs)
@@ -123,7 +123,7 @@
 
         public void EnableLogging()
         {
-            var serviceProperties = this.blobClient.GetServiceProperties();
+            var serviceProperties = blobClient.GetServiceProperties();
             serviceProperties.Logging.LoggingOperations = LoggingOperations.All;
             serviceProperties.Logging.RetentionDays = 365;
             blobClient.SetServiceProperties(serviceProperties);

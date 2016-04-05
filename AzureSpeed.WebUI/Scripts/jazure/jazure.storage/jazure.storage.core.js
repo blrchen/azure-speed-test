@@ -57,7 +57,7 @@
         }
         canonicalizedHeaders.sort(function (a, b) {
             return a.name > b.name ? 1 : -1;
-        })
+        });
         return canonicalizedHeaders.join(storage.newLineChar);
     }
     function getCanonicalizedResourceString(uri, accountName, isSharedKeyLiteOrTableService) {
@@ -74,7 +74,7 @@
         if (!isSharedKeyLiteOrTableService) {
             queryStrings.sort(function (a, b) {
                 return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
-            })
+            });
             var len = queryStrings.length;
             for (var i = 0; i < len; i++) {
                 var qs = queryStrings[i];
@@ -207,7 +207,7 @@
                     hash = CryptoJS.HmacSHA256(message, key),
                     signature = hash.toString(CryptoJS.enc.Base64);
                 return signature;
-            }
+            };
         }, request: function (url, verb, params, options) {
             return new request(this, url, verb, params, options);
         }, getSas: function (options) {
@@ -261,7 +261,7 @@
             for (var n in qms) {
                 var k = qms[n];
                 if (op[k]) {
-                    var v = op[k]
+                    var v = op[k];
                     strs.push(n + '=' + encodeURIComponent(op[k]));
                 }
             }

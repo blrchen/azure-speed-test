@@ -1,4 +1,5 @@
-﻿@{
+﻿@using System.Configuration
+@{
     ViewBag.Title = "Azure Media Service Live Streaming Latency Test";
 }
 
@@ -64,7 +65,7 @@
         </div>
     </div>
 </div>
-<div class="hide" id="streaming-url">@System.Configuration.ConfigurationManager.AppSettings["LiveStreamingUrl"]</div>
+<div class="hide" id="streaming-url">@ConfigurationManager.AppSettings["LiveStreamingUrl"]</div>
 
 @section scripts{
     <script src="http://amp.azure.net/libs/amp/1.1.0/azuremediaplayer.min.js"></script>

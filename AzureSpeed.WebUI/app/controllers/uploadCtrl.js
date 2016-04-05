@@ -65,8 +65,8 @@
                     $scope.checkedRegions.push(value);
                 }
             });
-        }
+        };
         $scope.canClick = function () {
             return $scope.checkedRegions.length > 0;
-        }
+        };
     }]);

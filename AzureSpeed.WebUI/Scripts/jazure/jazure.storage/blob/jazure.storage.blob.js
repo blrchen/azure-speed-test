@@ -179,8 +179,7 @@
                 return p;
             }
         }
-    }
-
+    };
     directory.prototype.init.prototype = directory.prototype;
 
     //blobs
@@ -366,7 +365,7 @@
                 document.body.appendChild(frame);
             }
             if (this.sas) {
-                frame.src = this.sas
+                frame.src = this.sas;
             } else {
                 var d = new Date(), s = new Date(d.getTime() - 5 * 60 * 1000), e = new Date(d.getTime() + 3 * 60 * 1000);
                 frame.src = this.getSasUri({ permission: 'r', startTime: s, endTime: e });
@@ -486,7 +485,7 @@
                             }
                         }).send();
                 }
-            }
+            };
             reader.readAsArrayBuffer(t.content);
         }
     };
@@ -590,6 +589,6 @@
                 }
             }
         }
-    }
+    };
     storage.blob = blob;
 })(jAzure, jQuery, window);

@@ -2,8 +2,7 @@
     var ja = jAzure, storage = ja.storage, web = ja.storage.web;
     var formatUrl = function (type, accountName, serviceEndpoint) {
         return ja.protocol + '://' + accountName + '.' + type + '.' + (serviceEndpoint || storage.serviceEndpoint) + '/';
-    }
-    //account
+    }; //account
     var account = function (accountName, sharedKey, serviceEndpoint) {
         return new account.prototype.init(accountName, sharedKey, serviceEndpoint);
     };

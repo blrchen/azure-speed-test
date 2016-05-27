@@ -1,4 +1,9 @@
 # AzureSpeed
+[![licence badge]][licence]
+[![stars badge]][stars]
+[![forks badge]][forks]
+[![issues badge]][issues]
+
 A speedtest tool for Azure. Test network latencies and speed to Azure data centers from different countries. 
 
 ## How To Run AzureSpeed
@@ -20,3 +25,14 @@ A speedtest tool for Azure. Test network latencies and speed to Azure data cente
 
 ## License
 [MIT](/LICENSE)
+
+
+[licence badge]:https://img.shields.io/badge/license-MIT-blue.svg
+[stars badge]:https://img.shields.io/github/stars/blrchen/AzureSpeed.svg
+[forks badge]:https://img.shields.io/github/forks/blrchen/AzureSpeed.svg
+[issues badge]:https://img.shields.io/github/issues/blrchen/AzureSpeed.svg
+
+[licence]:https://github.com/blrchen/AzureSpeed/blob/master/LICENSE
+[stars]:https://github.com/blrchen/AzureSpeed/stargazers
+[forks]:https://github.com/blrchen/AzureSpeed/network
+[issues]:https://github.com/blrchen/AzureSpeed/issues

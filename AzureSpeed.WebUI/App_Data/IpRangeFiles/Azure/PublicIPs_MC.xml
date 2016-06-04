@@ -38,7 +38,6 @@
     <IpRange Subnet="42.159.208.32/28" />
     <IpRange Subnet="42.159.208.64/26" />
     <IpRange Subnet="42.159.224.0/19" />
-    <IpRange Subnet="40.126.64.0/18" />
     <IpRange Subnet="139.217.128.0/19" />
     <IpRange Subnet="139.217.160.0/26" />
     <IpRange Subnet="139.217.160.64/27" />
@@ -48,5 +47,16 @@
     <IpRange Subnet="139.217.192.0/20" />
     <IpRange Subnet="139.219.160.0/19" />
     <IpRange Subnet="139.219.192.0/18" />
+    <IpRange Subnet="40.126.64.0/20" />
+    <IpRange Subnet="40.126.80.0/21" />
+    <IpRange Subnet="40.126.88.0/28" />
+    <IpRange Subnet="40.126.88.32/27" />
+    <IpRange Subnet="40.126.88.80/28" />
+    <IpRange Subnet="40.126.88.96/27" />
+    <IpRange Subnet="40.126.88.128/25" />
+    <IpRange Subnet="40.126.89.0/24" />
+    <IpRange Subnet="40.126.90.0/23" />
+    <IpRange Subnet="40.126.92.0/22" />
+    <IpRange Subnet="40.126.96.0/19" />
   </Region>
 </AzurePublicIpAddresses>

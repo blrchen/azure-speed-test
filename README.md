@@ -9,7 +9,7 @@ A speedtest tool for Azure. Test network latencies and speed to Azure data cente
 ## How To Run AzureSpeed
 1. Open **AzureSpeed.sln** in Visual Studio 2015
 2. Replace storage accounts and keys in **AzureSpeed.WebUI\App_Data\setting.json**
-3. Run AdminConsole to initialize storage account, make sure it's laoding correct **settings.json** in step 2
+3. Run AdminConsole to initialize storage account, make sure it loads correct **settings.json** in step 2
 4. You are all set, enjoy!
 
 ## Built on
@@ -22,10 +22,8 @@ A speedtest tool for Azure. Test network latencies and speed to Azure data cente
  - [jazure](https://github.com/orcame/jazure)
  - [SB Admin 2 Theme](https://github.com/IronSummitMedia/startbootstrap-sb-admin-2)
 
-
 ## License
 [MIT](/LICENSE)
-
 
 [licence badge]:https://img.shields.io/badge/license-MIT-blue.svg
 [stars badge]:https://img.shields.io/github/stars/blrchen/AzureSpeed.svg

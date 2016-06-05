@@ -21,6 +21,6 @@ var dc = [
     { id: 18, name: 'westindia', storage: 'azspdwestindia', geo: 'India', region: 'West India', location: 'Mumbai' },
     { id: 19, name: 'canadacentral', storage: 'azspdcanadacentral', geo: 'North America', region: 'Canada Central', location: 'Toronto' },
     { id: 20, name: 'canadaeast', storage: 'azspdcanadaeast', geo: 'North America', region: 'Canada East', location: 'Quebec City' },
-    { id: 100, name: 'chinaeast', storage: 'azspchinaeast', geo: 'China', region: 'China East', location: 'Shanghai' },
-    { id: 101, name: 'chinanorth', storage: 'azspchinanorth', geo: 'China', region: 'China North', location: 'Beijing' },
+    { id: 21, name: 'chinaeast', storage: 'azspchinaeast', geo: 'China', region: 'China East', location: 'Shanghai' },
+    { id: 22, name: 'chinanorth', storage: 'azspchinanorth', geo: 'China', region: 'China North', location: 'Beijing' },
 ];

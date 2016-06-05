@@ -105,6 +105,8 @@
                 d3.range(n).map(function () { return { value: 0 }; }),
                 d3.range(n).map(function () { return { value: 0 }; }),
                 d3.range(n).map(function () { return { value: 0 }; }),
+                d3.range(n).map(function () { return { value: 0 }; }),
+                d3.range(n).map(function () { return { value: 0 }; }),
                 d3.range(n).map(function () { return { value: 0 }; })
             ];
 

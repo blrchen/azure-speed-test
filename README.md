@@ -6,11 +6,20 @@
 
 A speedtest tool for Azure. Test network latencies and speed to Azure data centers from different countries. 
 
+## Demo
+http://www.azurespeed.com   
+
 ## How To Run AzureSpeed
 1. Open **AzureSpeed.sln** in Visual Studio 2015
-2. Replace storage accounts and keys in **AzureSpeed.WebUI\App_Data\setting.json**
-3. Run AdminConsole to initialize storage account, make sure it loads correct **settings.json** in step 2
-4. You are all set, enjoy!
+2. In each region you want to run speed test, create one storage account 
+3. Replace storage accounts and keys in **AzureSpeed.WebUI\App_Data\settings.json**
+4. Run AdminConsole to initialize storage account, make sure it loads correct **settings.json** by modifying line 23 in AzureSpeedData.cs step 2, this tool will take care of everything needs for a storage account to run speed test
+ - Enable CORS
+ - Create a container azurespeed
+ - Create a callback.js which is used by latency test
+ - Upload a 100 mb dummy file for download speed test.
+5. Replace storage account names in **AzureSpeed.WebUI\app\common.js**
+6. You are all set, enjoy!
 
 ## Built on
  - [ASP.NET MVC](https://github.com/IronSummitMedia/startbootstrap-sb-admin-2)

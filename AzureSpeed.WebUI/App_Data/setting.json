@@ -2,104 +2,104 @@
     "accounts": [
         {
             "Name": "azspcentralindia",
-            "Key": "==============REPLACE ME=================",
+            "Key": "sPEmgE/uriDHu+tRBBpc3qDTLPNMM56MDGmrRGUDyyN/Sk4+4633b0OE4OzRLuvkXqsJ61ONkpOLb4ctF+tagQ==",
             "Region": "Central India"
         },
         {
             "Name": "azspsouthindia",
-            "Key": "==============REPLACE ME=================",
+            "Key": "r062pALMmfWycFh1uMJLzwHI1r+geXYFWj0Sv1+19gD7wnBP9mQv87dueCR+O6030cjUEly0fslBStA4c+TPjw==",
             "Region": "South India"
         },
         {
             "Name": "azspwestindia",
-            "Key": "==============REPLACE ME=================",
+            "Key": "98DYQhHdPzrGbWRr4TdFmagdJCoa4m4imUg5WpzPMQhk9NeM6GWDDD+Zsfp3bLUvoEydcX+CEruLr/WNfYbH0w==",
             "Region": "West India"
         },
         {
             "Name": "azspchinaeast",
-            "Key": "==============REPLACE ME=================",
+            "Key": "62sMTe2pUsTzV2QUUBhppG9PtfW7vtnsz9zS2//tHnpciP/KaGLbmU9HduU9dOVDgxtUiX+CRrdpqPWxwncQfw==",
             "Region": "China East",
             "EndpointSuffix": "core.chinacloudapi.cn"
         },
         {
             "Name": "azspchinanorth",
-            "Key": "==============REPLACE ME=================",
+            "Key": "rEdFdK3YaRaX9vg2yozdD2Ccyfo7/6hYzGEwZ6YXdotAsUMLBn5BGza5iyIPA0YcsaCqC4GfWKTUnH1vL8QqsA==",
             "Region": "China North",
             "EndpointSuffix": "core.chinacloudapi.cn"
         },
         {
             "Name": "azspaustraliaeast",
-            "Key": "==============REPLACE ME=================",
+            "Key": "dPxwCPnZaba/k1SgNL/n90gCfGmV2N/lxQeqgX+0SgloR2kACDUzybNNbGDvV8gfHSgNMOonhOZfj2xBSfcStg==",
             "Region": "Australia East"
         },
         {
             "Name": "azspaustraliasoutheast",
-            "Key": "==============REPLACE ME=================",
+            "Key": "4Kxf/VSpPg7RUjXLVrxJsmbehtKmwi5AFMzxk673e0eHXnlCOXuqLAIl0leCxE0x1FCewULwVP+MzAPDrACQsg==",
             "Region": "Australia Southeast"
         },
         {
             "Name": "azspeastasia",
-            "Key": "==============REPLACE ME=================",
+            "Key": "h5OEaqq96+WjyJ6jigmPV7q5t5VZKju6wbf/rBV/wHIahkbNAtvOt5rwCgvxG0FwxKhBM34AoIr7javf09Fimw==",
             "Region": "East Asia"
         },
         {
             "Name": "azspsoutheastasia",
-            "Key": "==============REPLACE ME=================",
+            "Key": "bNlKyZeL+60vEsNnLg1lV0FkXZowPaRGbeotzGPWXWgVDvnGD3CarMsgMf4XXxKZ1kTfUMZ9v+pzBivNFUS4Ug==",
             "Region": "Southeast Asia"
         },
         {
             "Name": "azspjapaneast",
-            "Key": "==============REPLACE ME=================",
+            "Key": "Q2NYQsc9uW+haycQnMQ5nUYC+WVA2sXFTFpoyV96/6P/KF/3YQOqZzKObdB99Y2lDDzX+FqzaDtDbzlOjyU8JQ==",
             "Region": "Japan East"
         },
         {
             "Name": "azspjapanwest",
-            "Key": "==============REPLACE ME=================",
+            "Key": "StEOWQuyy8vjMVletJO7HBt3RUpk9G14xNWWeNouEnfz0G/PLpkxqmLX1QlYf6JJBc4tilImxEEHC0MPkYxtCQ==",
             "Region": "Japan West"
         },
         {
             "Name": "azspnortheurope",
-            "Key": "==============REPLACE ME=================",
+            "Key": "8j5t1hNtQYr2shUu/6/gF5CRF+CDPTjYoJw702W644GUDKB6j7V9r2nwBzGlpdVzo6hHrU9D6LpSHdsegMLhAg==",
             "Region": "North Europe"
         },
         {
             "Name": "azspwesteurope",
-            "Key": "==============REPLACE ME=================",
+            "Key": "wQOfpk4FbeP4zUh41nBwtMjLCLUbABdl7YrsHBIZlOjwyYhlU7I3vF4ul4KicUhzr1T7OvW39j4FEVYLZHfKGA==",
             "Region": "West Europe"
         },
         {
             "Name": "azspeastus",
-            "Key": "==============REPLACE ME=================",
+            "Key": "ooLxepLLXJelwzl1ppLa3tiwFVT2SIyeCmfBe6KEMz1U55VD9lrgEj5quvSHfQfhBcm2f+kgc7xG+98EhCUT+Q==",
             "Region": "East US"
         },
         {
             "Name": "azspeastus2",
-            "Key": "==============REPLACE ME=================",
+            "Key": "0ivDDnXWrjkdKFZRzw8Ts0hvrldHF/sfXknhCkeWFEXvodTyy0RyUNodmeR1FqBzDWsjpFBg1wDI59noO5PEBg==",
             "Region": "East US 2"
         },
         {
             "Name": "azspwestus",
-            "Key": "==============REPLACE ME=================",
+            "Key": "8wdoxvXSsMYQFckVzWqJVysD5JTEl1HFagx/r52AoTC14raHxGesiazxuJXGVXQk+9NUL53XMMDDn8qeZvT+Tg==",
             "Region": "West US"
         },
         {
             "Name": "azspcentralus",
-            "Key": "==============REPLACE ME=================",
+            "Key": "V+/ZlA/uICKHtLWa9piKSzudwkd1H7TeemCmgvAaV95uX0ldmsHDOsel05byKXju86rmtZMwWxSGzfLixTNISQ==",
             "Region": "Central US"
         },
         {
             "Name": "azspnorthcentralus",
-            "Key": "==============REPLACE ME=================",
+            "Key": "3+XraW35aCi4+YFjGXgdpSDS4Ly5Oovaa7JyuUyvoQtWa4iEo1RFeW9Uzj+JeEnVr28cui8QwRxrqDpRuKtQOA==",
             "Region": "North Central US"
         },
         {
             "Name": "azspsouthcentralus",
-            "Key": "==============REPLACE ME=================",
+            "Key": "6G/1bU3GKCZbqxVLNhz2ARkMex5DVd17Tq6LRgsHLodYekXzwOb5I4GQ+9Yl9t+EddEqH8VtKrMygLXl1XEm6g==",
             "Region": "South Central US"
         },
         {
             "Name": "azspbrazilsouth",
-            "Key": "==============REPLACE ME=================",
+            "Key": "MtXhHLFCHX0QAL2CC/Pr9VMvP2EATwZH7kat0YhHJpmkAofUsuFv/ffscYCgPkPZWzPZqicceCBfErYMkEtomw==",
             "Region": "Brazil South"
         }
     ]

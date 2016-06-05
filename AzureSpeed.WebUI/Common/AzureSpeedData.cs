@@ -19,8 +19,8 @@
                 if (accounts == null)
                 {
                     // Change to absoluted path when running with AdminConsole.exe
-                    string filePath = @"C:\AzureSpeed\AzureSpeed.WebUI\App_Data\settings.json";
-                    //string filePath = Path.Combine(HostingEnvironment.MapPath("~/App_Data/"), "settings.json");
+                    //string filePath = @"C:\ziztfs\AzureSpeed\AzureSpeed.WebUI\App_Data\settings.json";
+                    string filePath = Path.Combine(HostingEnvironment.MapPath("~/App_Data/"), "settings.json");
 
                     var text = File.ReadAllText(filePath);
                     var setting = JsonConvert.DeserializeObject<Settings>(text);

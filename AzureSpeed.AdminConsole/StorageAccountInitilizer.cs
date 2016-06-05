@@ -1,5 +1,6 @@
 ﻿namespace AzureSpeed.AdminConsole
 {
+    using System;
     using System.Threading.Tasks;
     using Common;
     using NLog;
@@ -34,6 +35,7 @@
 
                 _logger.Info($"[{account.Name}] Storage account is initilized successfully");
             }
+            _logger.Info("All storage accounts are initialized successfully");
         }
     }
 }

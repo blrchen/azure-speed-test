@@ -12,6 +12,7 @@
     using System.Web.Http;
     using System.Web.Script.Serialization;
     using System.Xml;
+    using Common;
     using LukeSkywalker.IPNetwork;
 
     [RoutePrefix("api")]

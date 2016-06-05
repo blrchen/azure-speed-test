@@ -4,6 +4,7 @@
     using System.IO;
     using System.Web.Hosting;
     using System.Web.Script.Serialization;
+    using Common;
 
     public static class AzureSpeedData
     {

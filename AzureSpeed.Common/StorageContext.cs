@@ -1,4 +1,4 @@
-﻿namespace AzureSpeed.WebUI
+﻿namespace AzureSpeed.Common
 {
     using System;
     using System.Collections.Generic;
@@ -9,6 +9,7 @@
     using Microsoft.WindowsAzure.Storage.Auth;
     using Microsoft.WindowsAzure.Storage.Blob;
     using Microsoft.WindowsAzure.Storage.Shared.Protocol;
+    using WebUI;
 
     public class StorageContext
     {

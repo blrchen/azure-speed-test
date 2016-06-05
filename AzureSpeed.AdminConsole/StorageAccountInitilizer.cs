@@ -1,6 +1,7 @@
 ﻿namespace AzureSpeed.AdminConsole
 {
     using System.Threading.Tasks;
+    using Common;
     using NLog;
     using WebUI;
 

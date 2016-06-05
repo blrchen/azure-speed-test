@@ -1,4 +1,4 @@
-﻿namespace AzureSpeed.WebUI
+﻿namespace AzureSpeed.Common
 {
     public class AzureSpeedStorageAccount
     {

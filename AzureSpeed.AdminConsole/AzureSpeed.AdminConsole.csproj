@@ -34,7 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.2.3\lib\net45\NLog.dll</HintPath>
+      <HintPath>..\packages\NLog.4.3.4\lib\net45\NLog.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -59,6 +59,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AzureSpeed.Common\AzureSpeed.Common.csproj">
+      <Project>{7ba84ede-8c7b-4481-896e-83b606079c2b}</Project>
+      <Name>AzureSpeed.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\AzureSpeed.WebUI\AzureSpeed.WebUI.csproj">
       <Project>{c60718d7-b11f-4d9e-9a3a-762c8e326559}</Project>
       <Name>AzureSpeed.WebUI</Name>

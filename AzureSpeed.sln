@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureSpeed.Test", "AzureSpe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureSpeed.AdminConsole", "AzureSpeed.AdminConsole\AzureSpeed.AdminConsole.csproj", "{6A8A5A83-B00B-411C-8470-0B73596CED4B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureSpeed.Common", "AzureSpeed.Common\AzureSpeed.Common.csproj", "{7BA84EDE-8C7B-4481-896E-83B606079C2B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{6A8A5A83-B00B-411C-8470-0B73596CED4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A8A5A83-B00B-411C-8470-0B73596CED4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A8A5A83-B00B-411C-8470-0B73596CED4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BA84EDE-8C7B-4481-896E-83B606079C2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BA84EDE-8C7B-4481-896E-83B606079C2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BA84EDE-8C7B-4481-896E-83B606079C2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BA84EDE-8C7B-4481-896E-83B606079C2B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

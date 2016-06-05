@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Net;
     using System.Web.Mvc;
+    using Common;
 
     public class AzureController : BaseController
     {

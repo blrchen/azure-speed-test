@@ -73,9 +73,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AzureSpeedConstants.cs" />
-    <Compile Include="AzureSpeedStorageAccount.cs" />
+    <Compile Include="StorageAccount.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Setting.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="StorageContext.cs" />
   </ItemGroup>
   <ItemGroup>

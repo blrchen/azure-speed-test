@@ -3,26 +3,27 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Web.Hosting;
-    using System.Web.Script.Serialization;
     using Common;
+    using Newtonsoft.Json;
 
     public static class AzureSpeedData
     {
-        private static IEnumerable<AzureSpeedStorageAccount> accounts;
+        private static IEnumerable<StorageAccount> accounts;
 
         private static Dictionary<string, string> regionNames;
 
-        public static IEnumerable<AzureSpeedStorageAccount> Accounts
+        public static IEnumerable<StorageAccount> Accounts
         {
             get
             {
                 if (accounts == null)
                 {
-                    var serializer = new JavaScriptSerializer();
-                    string filePath = Path.Combine(HostingEnvironment.MapPath("~/App_Data/"), "setting.json");
+                    // Change to absoluted path when running with AdminConsole.exe
+                    string filePath = @"C:\AzureSpeed\AzureSpeed.WebUI\App_Data\settings.json";
+                    //string filePath = Path.Combine(HostingEnvironment.MapPath("~/App_Data/"), "settings.json");
 
                     var text = File.ReadAllText(filePath);
-                    var setting = serializer.Deserialize<Setting>(text);
+                    var setting = JsonConvert.DeserializeObject<Settings>(text);
                     accounts = setting.Accounts;
                 }
 

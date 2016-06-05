@@ -3,8 +3,8 @@
     using System.Collections.Generic;
     using Common;
 
-    public class Setting
+    public class Settings
     {
-        public List<AzureSpeedStorageAccount> Accounts { get; set; }
+        public List<StorageAccount> Accounts { get; set; }
     }
 }

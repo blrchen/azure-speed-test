@@ -15,7 +15,7 @@
     {
         private readonly CloudBlobClient blobClient;
 
-        public StorageContext(AzureSpeedStorageAccount account)
+        public StorageContext(StorageAccount account)
         {
             // todo: change to environment
             string endpointSuffix = string.IsNullOrEmpty(account.EndpointSuffix)

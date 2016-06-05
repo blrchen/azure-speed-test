@@ -1,5 +1,5 @@
 $locations = Get-AzureRmLocation
-$resourceGroupName = "Blair-Storage-RG1"
+$resourceGroupName = "AzureSpeed"
 
 IF(!(Get-AzureRmResourceGroup -Name $resourceGroupName -ErrorAction SilentlyContinue)){
 	New-AzureRmResourceGroup -Name $resourceGroupName -Location "West US"
@@ -8,7 +8,8 @@ IF(!(Get-AzureRmResourceGroup -Name $resourceGroupName -ErrorAction SilentlyCont
 foreach ($location in $locations)
 {
     $region = $location.DisplayName
-    $storageAccountName = "blair212" + $location.Location
+    # Note: storage name length can not exceed 24 
+    $storageAccountName = "azspd" + $location.Location
 
     # TODO: Switch to -Kind BlobStorage -AccessTier Hot when v2 storage is ready in all regions
     New-AzureRMStorageAccount -Name $storageAccountName -SkuName Standard_LRS -Kind Storage -Location $region -ResourceGroupName $resourceGroupName | Out-Null

@@ -1,6 +1,16 @@
 ﻿{
     "accounts": [
         {
+            "Name": "azspcanadacentral",
+            "Key": "sPEmgE/uriDHu+tRBBpc3qDTLPNMM56MDGmrRGUDyyN/Sk4+4633b0OE4OzRLuvkXqsJ61ONkpOLb4ctF+tagQ==",
+            "Region": "Canada Central"
+        },
+        {
+            "Name": "azspcanadaeast",
+            "Key": "sPEmgE/uriDHu+tRBBpc3qDTLPNMM56MDGmrRGUDyyN/Sk4+4633b0OE4OzRLuvkXqsJ61ONkpOLb4ctF+tagQ==",
+            "Region": "Canada East"
+        },
+        {
             "Name": "azspcentralindia",
             "Key": "sPEmgE/uriDHu+tRBBpc3qDTLPNMM56MDGmrRGUDyyN/Sk4+4633b0OE4OzRLuvkXqsJ61ONkpOLb4ctF+tagQ==",
             "Region": "Central India"

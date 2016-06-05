@@ -10,10 +10,10 @@
     using System.Web;
     using System.Web.Hosting;
     using System.Web.Http;
-    using System.Web.Script.Serialization;
     using System.Xml;
     using Common;
     using LukeSkywalker.IPNetwork;
+    using Newtonsoft.Json;
 
     [RoutePrefix("api")]
     public class AzureApiController : ApiControllerBase
@@ -143,9 +143,7 @@
             // Load AWS ip range data
             string awsIpFile = ConfigurationManager.AppSettings["AwsIpRangeFile"];
             string json = File.ReadAllText(ipFilePath + @"\IpRangeFiles\AWS\" + awsIpFile);
-            var jsSerializer = new JavaScriptSerializer();
-
-            var awsIpRangeData = jsSerializer.Deserialize<AwsIpRangeData>(json);
+            var awsIpRangeData = JsonConvert.DeserializeObject<AwsIpRangeData>(json);
             foreach (var prefix in awsIpRangeData.prefixes)
             {
                 string region = prefix.region;

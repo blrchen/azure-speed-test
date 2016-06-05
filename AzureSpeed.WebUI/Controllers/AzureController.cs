@@ -71,7 +71,7 @@
             return View();
         }
 
-        public string EnableStorageCORS(AzureSpeedStorageAccount account)
+        public string EnableStorageCORS(StorageAccount account)
         {
             try
             {

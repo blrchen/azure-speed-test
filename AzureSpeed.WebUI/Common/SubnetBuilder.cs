@@ -3,9 +3,9 @@
     using System.Collections.Generic;
     using System.Configuration;
     using System.IO;
-    using System.Web.Script.Serialization;
     using System.Xml;
     using LukeSkywalker.IPNetwork;
+    using Newtonsoft.Json;
 
     public static class SubnetBuilder
     {
@@ -59,8 +59,8 @@
             // Get AWS ip range data
             string awsIpFile = ConfigurationManager.AppSettings["AwsIpRangeFile"];
             string json = File.ReadAllText(ipFilePath + @"\IpRangeFiles\AWS\" + awsIpFile);
-            var jsSerializer = new JavaScriptSerializer();
-            var awsIpRangeData = jsSerializer.Deserialize<AwsIpRangeData>(json);
+
+            var awsIpRangeData = JsonConvert.DeserializeObject<AwsIpRangeData>(json);
             foreach (var prefix in awsIpRangeData.prefixes)
             {
                 IPNetwork net;

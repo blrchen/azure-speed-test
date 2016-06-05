@@ -1,6 +1,6 @@
 ﻿namespace AzureSpeed.Common
 {
-    public class AzureSpeedStorageAccount
+    public class StorageAccount
     {
         public string Name { get; set; }
         public string Key { get; set; }

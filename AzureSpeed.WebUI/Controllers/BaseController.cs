@@ -1,4 +1,4 @@
-﻿namespace AzureSpeed.WebUI
+﻿namespace AzureSpeed.WebUI.Controllers
 {
     using System;
     using System.Web.Mvc;
@@ -12,7 +12,7 @@
         {
             if (filterContext == null)
             {
-                throw new ArgumentNullException("filterContext");
+                throw new ArgumentNullException(nameof(filterContext));
             }
 
             logger.Error(filterContext.Exception);

@@ -1,10 +1,10 @@
-﻿namespace AzureSpeed.WebUI
+﻿namespace AzureSpeed.WebUI.Controllers
 {
     using System;
-    using System.Collections.Generic;
     using System.Net;
     using System.Web.Mvc;
-    using Common;
+    using ApiControllers;
+    using AzureSpeed.Common;
 
     public class AzureController : BaseController
     {
@@ -86,30 +86,5 @@
 
             return "Enabling CORS Succeed";
         }
-    }
-
-    public class SasUrl
-    {
-        public string Storage { get; set; }
-
-        public string Url { get; set; }
-    }
-
-    public class AwsIpRangeData
-    {
-        public string syncToken { get; set; }
-
-        public string createDate { get; set; }
-
-        public List<prefix> prefixes { get; set; }
-    }
-
-    public class prefix
-    {
-        public string ip_prefix { get; set; }
-
-        public string region { get; set; }
-
-        public string service { get; set; }
     }
 }

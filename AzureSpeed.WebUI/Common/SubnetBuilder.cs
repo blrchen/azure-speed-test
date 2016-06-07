@@ -1,31 +1,32 @@
-﻿namespace AzureSpeed.WebUI
+﻿namespace AzureSpeed.WebUI.Common
 {
     using System.Collections.Generic;
     using System.Configuration;
     using System.IO;
     using System.Xml;
     using LukeSkywalker.IPNetwork;
+    using Models;
     using Newtonsoft.Json;
 
     public static class SubnetBuilder
     {
-        private static readonly object _locker = new object();
-        private static volatile IDictionary<IPNetwork, string> _subnetDictionary;
+        private static readonly object locker = new object();
+        private static volatile IDictionary<IPNetwork, string> subnetDictionary;
 
         public static IDictionary<IPNetwork, string> GetSubnetDictionary(string ipFilePath)
         {
-            if (_subnetDictionary == null)
+            if (subnetDictionary == null)
             {
-                lock (_locker)
+                lock (locker)
                 {
-                    if (_subnetDictionary == null)
+                    if (subnetDictionary == null)
                     {
-                        _subnetDictionary = CreateSubnetDictionary(ipFilePath);
+                        subnetDictionary = CreateSubnetDictionary(ipFilePath);
                     }
                 }
             }
 
-            return _subnetDictionary;
+            return subnetDictionary;
         }
 
         private static IDictionary<IPNetwork, string> CreateSubnetDictionary(string ipFilePath)
@@ -62,14 +63,14 @@
             string json = File.ReadAllText(ipFilePath + @"\IpRangeFiles\AWS\" + awsIpFile);
 
             var awsIpRangeData = JsonConvert.DeserializeObject<AwsIpRangeData>(json);
-            foreach (var prefix in awsIpRangeData.prefixes)
+            foreach (var prefix in awsIpRangeData.Prefixes)
             {
                 IPNetwork net;
-                if (IPNetwork.TryParse(prefix.ip_prefix, out net))
+                if (IPNetwork.TryParse(prefix.IpPrefix, out net))
                 {
                     if (!subnets.ContainsKey(net))
                     {
-                        subnets.Add(net, prefix.region);
+                        subnets.Add(net, prefix.Region);
                     }
                 }
             }

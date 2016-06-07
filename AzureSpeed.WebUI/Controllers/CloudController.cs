@@ -1,4 +1,4 @@
-﻿namespace AzureSpeed.WebUI
+﻿namespace AzureSpeed.WebUI.Controllers
 {
     using System.Web.Mvc;
 

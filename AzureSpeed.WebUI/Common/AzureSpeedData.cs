@@ -1,9 +1,9 @@
-﻿namespace AzureSpeed.WebUI
+﻿namespace AzureSpeed.WebUI.Common
 {
     using System.Collections.Generic;
     using System.IO;
     using System.Web.Hosting;
-    using Common;
+    using AzureSpeed.Common;
     using Newtonsoft.Json;
 
     public static class AzureSpeedData

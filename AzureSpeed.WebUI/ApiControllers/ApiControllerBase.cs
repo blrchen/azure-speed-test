@@ -1,6 +1,7 @@
-﻿namespace AzureSpeed.WebUI
+﻿namespace AzureSpeed.WebUI.ApiControllers
 {
     using System.Web.Http;
+    using Attributes;
     using NLog;
 
     [ActionExecutionFilter]

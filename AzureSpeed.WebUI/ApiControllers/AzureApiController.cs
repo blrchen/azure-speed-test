@@ -1,4 +1,4 @@
-﻿namespace AzureSpeed.WebUI
+﻿namespace AzureSpeed.WebUI.ApiControllers
 {
     using System;
     using System.Collections.Generic;
@@ -11,9 +11,12 @@
     using System.Web.Hosting;
     using System.Web.Http;
     using System.Xml;
+    using AzureSpeed.Common;
     using Common;
     using LukeSkywalker.IPNetwork;
+    using Models;
     using Newtonsoft.Json;
+    using ViewModels;
 
     [RoutePrefix("api")]
     public class AzureApiController : ApiControllerBase
@@ -148,10 +151,10 @@
             string awsIpFile = ConfigurationManager.AppSettings["AwsIpRangeFile"];
             string json = File.ReadAllText(ipFilePath + @"\IpRangeFiles\AWS\" + awsIpFile);
             var awsIpRangeData = JsonConvert.DeserializeObject<AwsIpRangeData>(json);
-            foreach (var prefix in awsIpRangeData.prefixes)
+            foreach (var prefix in awsIpRangeData.Prefixes)
             {
-                string region = prefix.region;
-                string subnet = prefix.ip_prefix;
+                string region = prefix.Region;
+                string subnet = prefix.IpPrefix;
                 if (result.Any(v => v.Region == region))
                 {
                     var ipRange = result.First(v => v.Region == region);

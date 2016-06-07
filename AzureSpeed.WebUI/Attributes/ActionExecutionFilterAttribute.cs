@@ -1,4 +1,4 @@
-﻿namespace AzureSpeed.WebUI
+﻿namespace AzureSpeed.WebUI.Attributes
 {
     using System.Web.Http.Filters;
     using NLog;

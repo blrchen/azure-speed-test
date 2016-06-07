@@ -14,7 +14,6 @@
     //   1. Update setting.json to have correct storage name and key
     //   2. Have 100MB.bin file in c:\DelMe
 
-
     internal class Program
     {
         private static void Main()

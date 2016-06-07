@@ -24,7 +24,7 @@
 
             var storageAccount = new CloudStorageAccount(new StorageCredentials(account.Name, account.Key),
                 endpointSuffix, true);
-            blobClient = storageAccount.CreateCloudBlobClient();
+            this.blobClient = storageAccount.CreateCloudBlobClient();
         }
 
         public string GetSasUrl(string blobName, string operation)
@@ -34,6 +34,7 @@
             {
                 permissions |= SharedAccessBlobPermissions.Write;
             }
+
             if (operation.ToLower() == "download")
             {
                 permissions |= SharedAccessBlobPermissions.Read;
@@ -44,13 +45,14 @@
                 SharedAccessExpiryTime = DateTime.Now.AddMinutes(2),
                 Permissions = permissions
             };
+
             var container = blobClient.GetContainerReference(AzureSpeedConstants.PrivateContainerName);
             var blob = container.GetBlobReference(blobName);
             string blobToken = blob.GetSharedAccessSignature(policy);
             return $"{blob.Uri}{blobToken}";
         }
 
-        public void EnableCORS()
+        public async Task EnableCORSAsync()
         {
             CorsHttpMethods allowedMethods = CorsHttpMethods.None;
             allowedMethods = allowedMethods | CorsHttpMethods.Get;
@@ -60,16 +62,16 @@
             allowedMethods = allowedMethods | CorsHttpMethods.Options;
 
             var delimiter = new[] { "," };
-            CorsRule corsRule = new CorsRule();
-            const string allowedOrigins = "*";
-            const string allowedHeaders = "*";
-            const string exposedHeaders = "";
+            var corsRule = new CorsRule();
+            const string AllowedOrigins = "*";
+            const string AllowedHeaders = "*";
+            const string ExposedHeaders = "";
 
-            string[] allAllowedOrigin = allowedOrigins.Split(delimiter, StringSplitOptions.RemoveEmptyEntries);
-            string[] allExpHeaders = exposedHeaders.Split(delimiter, StringSplitOptions.RemoveEmptyEntries);
-            string[] allAllowHeaders = allowedHeaders.Split(delimiter, StringSplitOptions.RemoveEmptyEntries);
+            var allAllowedOrigin = AllowedOrigins.Split(delimiter, StringSplitOptions.RemoveEmptyEntries);
+            var allExpHeaders = ExposedHeaders.Split(delimiter, StringSplitOptions.RemoveEmptyEntries);
+            var allAllowHeaders = AllowedHeaders.Split(delimiter, StringSplitOptions.RemoveEmptyEntries);
 
-            List<string> corsAllowedOrigin = new List<string>();
+            var corsAllowedOrigin = new List<string>();
             foreach (var item in allAllowedOrigin)
             {
                 if (!string.IsNullOrWhiteSpace(item))
@@ -77,7 +79,8 @@
                     corsAllowedOrigin.Add(item.Trim());
                 }
             }
-            List<string> corsExposedHeaders = new List<string>();
+
+            var corsExposedHeaders = new List<string>();
             foreach (var item in allExpHeaders)
             {
                 if (!string.IsNullOrWhiteSpace(item))
@@ -85,7 +88,8 @@
                     corsExposedHeaders.Add(item.Trim());
                 }
             }
-            List<string> corsAllowHeaders = new List<string>();
+
+            var corsAllowHeaders = new List<string>();
             foreach (var item in allAllowHeaders)
             {
                 if (!string.IsNullOrWhiteSpace(item))
@@ -93,15 +97,16 @@
                     corsAllowHeaders.Add(item.Trim());
                 }
             }
+
             corsRule.MaxAgeInSeconds = 200;
             corsRule.AllowedMethods = allowedMethods;
             corsRule.AllowedHeaders = corsAllowHeaders;
             corsRule.AllowedOrigins = corsAllowedOrigin;
             corsRule.ExposedHeaders = corsExposedHeaders;
-            ServiceProperties properties = blobClient.GetServiceProperties();
+            ServiceProperties properties = this.blobClient.GetServiceProperties();
             properties.Cors.CorsRules.Clear();
             properties.Cors.CorsRules.Add(corsRule);
-            blobClient.SetServiceProperties(properties);
+            await this.blobClient.SetServicePropertiesAsync(properties);
         }
 
         public void CleanUpBlobs()
@@ -122,12 +127,12 @@
             }
         }
 
-        public void EnableLogging()
+        public async Task EnableLoggingAsync()
         {
-            var serviceProperties = blobClient.GetServiceProperties();
+            var serviceProperties = this.blobClient.GetServiceProperties();
             serviceProperties.Logging.LoggingOperations = LoggingOperations.All;
             serviceProperties.Logging.RetentionDays = 365;
-            blobClient.SetServiceProperties(serviceProperties);
+            await blobClient.SetServicePropertiesAsync(serviceProperties);
         }
 
         public async Task CreatePublicContainerAsync()
@@ -198,7 +203,7 @@
 
         private MemoryStream GenerateStreamFromString(string s)
         {
-            return new MemoryStream(Encoding.UTF8.GetBytes(s ?? ""));
+            return new MemoryStream(Encoding.UTF8.GetBytes(s ?? string.Empty));
         }
     }
 }

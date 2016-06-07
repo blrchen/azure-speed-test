@@ -9,8 +9,8 @@
 
     public static class SubnetBuilder
     {
-        private static volatile IDictionary<IPNetwork, string> _subnetDictionary;
         private static readonly object _locker = new object();
+        private static volatile IDictionary<IPNetwork, string> _subnetDictionary;
 
         public static IDictionary<IPNetwork, string> GetSubnetDictionary(string ipFilePath)
         {
@@ -24,6 +24,7 @@
                     }
                 }
             }
+
             return _subnetDictionary;
         }
 
@@ -87,6 +88,7 @@
                     }
                 }
             }
+
             return subnets;
         }
     }

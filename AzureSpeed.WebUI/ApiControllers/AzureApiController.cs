@@ -44,7 +44,7 @@
         [Route("sas")]
         public IHttpActionResult GetSasLink(string region, string blobName, string operation)
         {
-            string url = "";
+            string url = string.Empty;
             if (!string.IsNullOrEmpty(region))
             {
                 var account = AzureSpeedData.Accounts.FirstOrDefault(v => v.Region == region);
@@ -54,6 +54,7 @@
                     url = storageContext.GetSasUrl(blobName, operation);
                 }
             }
+
             return Ok(url);
         }
 
@@ -66,6 +67,7 @@
                 var storageAccount = new StorageContext(account);
                 storageAccount.CleanUpBlobs();
             }
+
             return Ok();
         }
 
@@ -85,6 +87,7 @@
             {
                 ipOrUrl = "http://" + ipOrUrl;
             }
+
             Uri tmp = new Uri(ipOrUrl);
             ipOrUrl = tmp.Host;
 
@@ -136,6 +139,7 @@
                         var network = IPNetwork.Parse(subnet);
                         ipRange.TotalIpCount += network.Total;
                     }
+
                     result.Add(ipRange);
                 }
             }
@@ -176,6 +180,7 @@
                 var network = IPNetwork.Parse(subnet);
                 aliIpRange.TotalIpCount += network.Total;
             }
+
             result.Add(aliIpRange);
 
             return result;

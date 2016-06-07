@@ -18,10 +18,10 @@
 
                 _logger.Info($"[{account.Name}] About to initialize stroage account ");
 
-                storageContext.EnableLogging();
+                await storageContext.EnableLoggingAsync();
                 _logger.Info($"[{account.Name}] Enable logging completed succesfully");
 
-                storageContext.EnableCORS();
+                await storageContext.EnableCORSAsync();
                 _logger.Info($"[{account.Name}] Enable CORS completed");
 
                 await storageContext.CreatePublicContainerAsync();
@@ -35,8 +35,8 @@
 
                 _logger.Info($"[{account.Name}] Storage account is initilized successfully");
             }
+
             _logger.Info("All storage accounts are initialized successfully");
         }
     }
 }
-

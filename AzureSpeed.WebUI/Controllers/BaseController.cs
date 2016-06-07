@@ -14,6 +14,7 @@
             {
                 throw new ArgumentNullException("filterContext");
             }
+
             logger.Error(filterContext.Exception);
             base.OnException(filterContext);
         }

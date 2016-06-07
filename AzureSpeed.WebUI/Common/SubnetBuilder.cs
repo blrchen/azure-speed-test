@@ -10,14 +10,14 @@
 
     public static class SubnetBuilder
     {
-        private static readonly object locker = new object();
+        private static readonly object Locker = new object();
         private static volatile IDictionary<IPNetwork, string> subnetDictionary;
 
         public static IDictionary<IPNetwork, string> GetSubnetDictionary(string ipFilePath)
         {
             if (subnetDictionary == null)
             {
-                lock (locker)
+                lock (Locker)
                 {
                     if (subnetDictionary == null)
                     {

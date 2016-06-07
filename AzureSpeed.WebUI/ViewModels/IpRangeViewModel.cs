@@ -1,4 +1,4 @@
-﻿namespace AzureSpeed.WebUI
+﻿namespace AzureSpeed.WebUI.ViewModels
 {
     using System.Collections.Generic;
 

@@ -6,7 +6,7 @@
 
     public class BaseController : Controller
     {
-        protected static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         protected override void OnException(ExceptionContext filterContext)
         {
@@ -15,7 +15,7 @@
                 throw new ArgumentNullException(nameof(filterContext));
             }
 
-            logger.Error(filterContext.Exception);
+            Logger.Error(filterContext.Exception);
             base.OnException(filterContext);
         }
     }

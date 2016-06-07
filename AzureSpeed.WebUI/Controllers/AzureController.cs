@@ -80,7 +80,7 @@
             }
             catch (Exception ex)
             {
-                logger.Error(ex);
+                Logger.Error(ex);
                 return "Failed due to Incorrect Account Name or Key.";
             }
 

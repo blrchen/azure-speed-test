@@ -22,8 +22,8 @@
                 ? "core.windows.net"
                 : account.EndpointSuffix;
 
-            var storageAccount = new CloudStorageAccount(new StorageCredentials(account.Name, account.Key),
-                endpointSuffix, true);
+            var stroageCredential = new StorageCredentials(account.Name, account.Key);
+            var storageAccount = new CloudStorageAccount(stroageCredential, endpointSuffix, true);
             this.blobClient = storageAccount.CreateCloudBlobClient();
         }
 
@@ -46,7 +46,7 @@
                 Permissions = permissions
             };
 
-            var container = blobClient.GetContainerReference(AzureSpeedConstants.PrivateContainerName);
+            var container = this.blobClient.GetContainerReference(AzureSpeedConstants.PrivateContainerName);
             var blob = container.GetBlobReference(blobName);
             string blobToken = blob.GetSharedAccessSignature(policy);
             return $"{blob.Uri}{blobToken}";
@@ -111,7 +111,7 @@
 
         public void CleanUpBlobs()
         {
-            var container = blobClient.GetContainerReference(AzureSpeedConstants.PrivateContainerName);
+            var container = this.blobClient.GetContainerReference(AzureSpeedConstants.PrivateContainerName);
             var blobs = container.ListBlobs();
             var oneMonthAgo = DateTimeOffset.Now.AddMonths(-1);
             foreach (IListBlobItem blob in blobs)
@@ -132,12 +132,12 @@
             var serviceProperties = this.blobClient.GetServiceProperties();
             serviceProperties.Logging.LoggingOperations = LoggingOperations.All;
             serviceProperties.Logging.RetentionDays = 365;
-            await blobClient.SetServicePropertiesAsync(serviceProperties);
+            await this.blobClient.SetServicePropertiesAsync(serviceProperties);
         }
 
         public async Task CreatePublicContainerAsync()
         {
-            var container = blobClient.GetContainerReference(AzureSpeedConstants.PublicContainerName);
+            var container = this.blobClient.GetContainerReference(AzureSpeedConstants.PublicContainerName);
             if (container != null)
             {
                 // Create container with blob public access permission
@@ -159,7 +159,7 @@
 
         public async Task CreatePrivateContainerAsync()
         {
-            var container = blobClient.GetContainerReference(AzureSpeedConstants.PrivateContainerName);
+            var container = this.blobClient.GetContainerReference(AzureSpeedConstants.PrivateContainerName);
             if (container != null)
             {
                 // Create private container with no puublic access permission
@@ -174,7 +174,7 @@
 
         public async Task CreateCallbackJsBlob()
         {
-            var container = blobClient.GetContainerReference(AzureSpeedConstants.PublicContainerName);
+            var container = this.blobClient.GetContainerReference(AzureSpeedConstants.PublicContainerName);
             string blobContent = $"latency._pingCallback('{blobClient.Credentials.AccountName}');";
             using (var stream = GenerateStreamFromString(blobContent))
             {
@@ -187,7 +187,7 @@
 
         public async Task Upload100MBBlobAsync()
         {
-            var container = blobClient.GetContainerReference(AzureSpeedConstants.PrivateContainerName);
+            var container = this.blobClient.GetContainerReference(AzureSpeedConstants.PrivateContainerName);
 
             // Create 100MB.bin blob
             var blob = container.GetBlockBlobReference(AzureSpeedConstants.DownloadTestBlobName);

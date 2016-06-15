@@ -4,7 +4,8 @@
   "dependencies": {
     "bootstrap": "3.3.6",
     "jquery": "2.2.3",
-    "angular": "1.5.5"
+    "angular": "1.5.5",
+    "d3": "3.5.17"
   },
   "resolutions": {
     "jquery": ">=1.8"

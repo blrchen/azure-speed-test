@@ -1,0 +1,73 @@
+﻿@using System.Configuration
+@{
+    ViewBag.Title = "Azure Media Service Live Streaming Latency Test";
+}
+
+<!-- Azure Media Player -->
+<link href="http://amp.azure.net/libs/amp/1.1.0/skins/amp-default/azuremediaplayer.min.css" rel="stylesheet">
+
+<style>
+    .time span {
+        font-size: 30px;
+        font-weight: bolder;
+    }
+</style>
+
+<div class="container-fluid">
+    <h3 class="page-header">Azure Media Service Live Streaming Latency Test</h3>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="alert alert-warning alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                Test latency from remote Azure Media Service Live Streaming. The live channel is hosted at Azure China East datacenter, remote server time zone is UTC + 8
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <i class="fa fa-th-list"></i>
+                    Media Service Live Streaming latency
+                </div>
+                <div class="panel panel-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <video id="azuremediaplayer" class="azuremediaplayer amp-default-skin amp-big-play-centered" autoplay controls preload="auto" width="100%" height="500" poster="" tabindex=0>
+                                <p class="amp-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that supports HTML5 video</p>
+                            </video>
+                        </div>
+                        <div class="col-md-4 time">
+                            <span>Current Local time is </span><span id="time"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <h3 class="page-header">Reference</h3>
+            <ul class="list-unstyled">
+                <li>
+                    <a href="http://azure.microsoft.com/blog/2015/04/15/announcing-azure-media-player/" target="_blank">Announcing Azure Media Player</a>
+                </li>
+                <li>
+                    <a href="http://amp.azure.net/libs/amp/latest/docs/changelog.html" target="_blank">Azure Media Player Changelog</a>
+                </li>
+                <li>
+                    <a href="http://amp.azure.net/libs/amp/latest/docs/" target="_blank">Azure Media Player Document</a>
+                </li>
+                <li>
+                    <a href="http://amp.azure.net/libs/amp/latest/docs/samples.html" target="_blank">Azure Media Player Samples</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="hide" id="streaming-url">@ConfigurationManager.AppSettings["LiveStreamingUrl"]</div>
+
+@section scripts{
+    <script src="http://amp.azure.net/libs/amp/1.1.0/azuremediaplayer.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/azurespeed/livestreaming.js"></script>
+}

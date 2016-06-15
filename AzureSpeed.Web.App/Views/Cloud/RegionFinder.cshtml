@@ -1,0 +1,67 @@
+﻿@{
+    ViewBag.Title = "Cloud Region Finder";
+}
+
+<div class="container-fluid" ng-controller="cloudRegionFinderCtrl">
+    <h3 class="page-header">@ViewBag.Title</h3>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="alert alert-warning alert-dismissable">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                Cloud Region Finder enables you to quickly lookup cloud and region infomation of application deployment, try it by entering url or ip address now!
+                Currently Azure, AWS, AliCloud are supported.
+            </div>
+            <div class="form-group">
+                <div class="input-group">
+                    <input class="form-control" type="text" value=""
+                           placeholder="Type ip or url to start, examples: 65.52.168.70 or azurespeed.com"
+                           ng-model="ipOrUrl" ng-keyup="$event.keyCode == 13 && canSearch() && click()" />
+                    <span class="input-group-btn">
+                        <button class="btn btn-primary" ng-disabled="!canSearch()" ng-click="click()" >
+                            <i class="fa fa-search"></i> Search
+                        </button>
+                    </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="alert alert-success" ng-if="result">
+                    <label class="control-label">
+                        {{result}}
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class=" col-md-12">
+            <h4>Restful API</h4>
+            <div>Restful api is available via <a href="http://www.azurespeed.com/api/region">http://www.azurespeed.com/api/region</a>, it returns datacenter region name or Region not found if the input address can not be found in data center ip list</div>
+            <div>
+                <h5>Examples:</h5>
+                <ul>
+                    <li>
+                        <a href="http://www.azurespeed.com/api/region?ipOrUrl=65.52.170.210" target="_blank">http://www.azurespeed.com/api/region?ipOrUrl=65.52.170.210</a>
+                    </li>
+                    <li>
+                        <a href="http://www.azurespeed.com/api/region?ipOrUrl=azurespeed.com" target="_blank">http://www.azurespeed.com/api/region?ipOrUrl=www.azurespeed.com</a>
+                    </li>
+                </ul>
+            </div>
+            <h4>IP Range files</h4>
+            <div>IP range file of each cloud provider can be downloaded at: </div>
+            <div>
+                <ul>
+                    <li>
+                        Azure: <a href="https://www.microsoft.com/en-us/download/details.aspx?id=41653" target="_blank">https://www.microsoft.com/en-us/download/details.aspx?id=41653</a>
+                    </li>
+                    <li>
+                        Azure China: <a href="https://www.microsoft.com/en-us/download/details.aspx?id=42064" target="_blank">https://www.microsoft.com/en-us/download/details.aspx?id=42064</a>
+                    </li>
+                    <li>
+                        AWS: <a href="http://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html" target="_blank">http://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

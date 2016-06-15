@@ -10,7 +10,7 @@ namespace AzureSpeed.WebUI.Models
         [JsonProperty("region")]
         public string Region { get; set; }
 
-        [JsonProperty("region")]
+        [JsonProperty("service")]
         public string Service { get; set; }
     }
 }

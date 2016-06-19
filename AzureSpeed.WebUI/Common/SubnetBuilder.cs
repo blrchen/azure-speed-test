@@ -1,11 +1,12 @@
-﻿namespace AzureSpeed.WebUI.Common
+﻿using AzureSpeed.Common.Models;
+
+namespace AzureSpeed.WebUI.Common
 {
     using System.Collections.Generic;
     using System.Configuration;
     using System.IO;
     using System.Xml;
     using LukeSkywalker.IPNetwork;
-    using Models;
     using Newtonsoft.Json;
 
     public static class SubnetBuilder

@@ -4,12 +4,12 @@
 
     public class AzureOnlineToolsController : Controller
     {
-        public ActionResult EnableStorageCORS()
+        public IActionResult EnableStorageCORS()
         {
             return View();
         }
 
-        public ActionResult GenerateEventHubSAS()
+        public IActionResult GenerateEventHubSAS()
         {
             return View();
         }

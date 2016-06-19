@@ -21,7 +21,7 @@
             <div >
                 <label class="checkbox-inline" ng-repeat="region in regions">
                     <input type="checkbox" value="{{region.region}}"
-                           ng-model="region.checked" ng-change="regionChange()" >
+                           ng-model="region.checked" ng-change="regionChange()">
                     {{region.region}}
                 </label>
             </div>
@@ -43,26 +43,26 @@
                 </div>
                 <table class="table table-bordered table-striped" id="upload-table">
                     <thead>
-                        <tr>
-                            <th>Geo</th>
-                            <th>Region</th>
-                            <th>Location</th>
-                            <th>Upload Progress</th>
-                            <th>Upload Speed</th>
-                        </tr>
+                    <tr>
+                        <th>Geo</th>
+                        <th>Region</th>
+                        <th>Location</th>
+                        <th>Upload Progress</th>
+                        <th>Upload Speed</th>
+                    </tr>
                     </thead>
                     <tbody>
-                        <tr ng-repeat="result in results">
-                            <td>{{result.geo}}</td>
-                            <td>{{result.region}}</td>
-                            <td>{{result.location}}</td>
-                            <td class="upload-progress">
-                                <div class="progress" style="margin-bottom: -20px;">
-                                    <div class="progress-bar progress-bar-info" style="width: {{result.progressPercent}}% ">{{result.progressPercent}}%</div>
-                                </div>
-                            </td>
-                            <td class="upload-speed sort speed-success speed-inprogress">{{result.speed}}</td>
-                        </tr>
+                    <tr ng-repeat="result in results">
+                        <td>{{result.geo}}</td>
+                        <td>{{result.region}}</td>
+                        <td>{{result.location}}</td>
+                        <td class="upload-progress">
+                            <div class="progress" style="margin-bottom: -20px;">
+                                <div class="progress-bar progress-bar-info" style="width: { {result.progressPercent}}% ">{{result.progressPercent}}%</div>
+                            </div>
+                        </td>
+                        <td class="upload-speed sort speed-success speed-inprogress">{{result.speed}}</td>
+                    </tr>
                     </tbody>
                 </table>
             </div>

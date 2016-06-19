@@ -16,8 +16,11 @@
     "Microsoft.Extensions.Logging": "1.0.0-rc2-final",
     "Microsoft.Extensions.Logging.Console": "1.0.0-rc2-final",
     "Microsoft.Extensions.Logging.Debug": "1.0.0-rc2-final",
+    "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0-rc2-final",
     "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0-rc2-final",
-    "NLog": "4.3.5"
+    "Newtonsoft.Json": "8.0.3",
+    "NLog": "4.3.5",
+    "StyleCop.MSBuild": "4.7.54"
   },
 
   "tools": {
@@ -35,9 +38,6 @@
     "net461": {
       "dependencies": {
         "AzureSpeed.Common": {
-          "target": "project"
-        },
-        "AzureSpeed.WebUI": {
           "target": "project"
         }
       }

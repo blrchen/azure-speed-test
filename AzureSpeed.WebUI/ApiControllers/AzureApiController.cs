@@ -12,11 +12,10 @@
     using System.Web.Http;
     using System.Xml;
     using AzureSpeed.Common;
+    using AzureSpeed.Common.Models;
     using Common;
     using LukeSkywalker.IPNetwork;
-    using Models;
     using Newtonsoft.Json;
-    using ViewModels;
 
     [RoutePrefix("api")]
     public class AzureApiController : ApiControllerBase

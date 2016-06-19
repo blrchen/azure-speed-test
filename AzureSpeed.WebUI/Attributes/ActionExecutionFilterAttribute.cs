@@ -11,7 +11,9 @@
         {
             if (context.Exception != null)
             {
-                Logger.Error(context.Exception, $"Execute request exception: url: {context.Request.RequestUri}",
+                Logger.Error(
+                    context.Exception,
+                    $"Execute request exception: url: {context.Request.RequestUri}",
                     context.ActionContext.ActionArguments);
             }
 

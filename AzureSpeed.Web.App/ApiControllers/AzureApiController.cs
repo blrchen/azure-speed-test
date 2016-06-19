@@ -1,55 +1,67 @@
-﻿namespace AzureSpeed.Web.App.ApiControllers
+﻿
+
+using AzureSpeed.Common;
+using AzureSpeed.Common.Models;
+
+namespace AzureSpeed.Web.App.ApiControllers
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.IO;
     using System.Linq;
     using System.Net;
-    using System.Web.Http;
     using System.Xml;
     using Common;
     using LukeSkywalker.IPNetwork;
-    using Microsoft.AspNetCore.Hosting.Internal;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
-    using NLog.Internal;
-    using WebUI.Common;
-    using WebUI.Models;
-    using WebUI.ViewModels;
 
-    [RoutePrefix("api")]
+    [Route("api")]
     public class AzureApiController : ApiControllerBase
     {
-        [Microsoft.AspNetCore.Mvc.HttpGet]
-        [Microsoft.AspNetCore.Mvc.Route("ip")]
-        public IHttpActionResult GetIp()
+        private readonly IHostingEnvironment hostingEnvironment;
+        private readonly IOptions<AppSettings> appSettings;
+        private readonly LocalDataStoreContext localDataStoreContext;
+
+        public AzureApiController(IHostingEnvironment hostingEnvironment, IOptions<AppSettings> appSettings)
         {
-            var ip = ((HttpContextBase)Request.Properties["MS_HttpContext"]).Request.UserHostAddress;
-            return Ok(ip);
+            this.hostingEnvironment = hostingEnvironment;
+            this.appSettings = appSettings;
+            this.localDataStoreContext = new LocalDataStoreContext(hostingEnvironment.ContentRootPath);
         }
 
-        [Microsoft.AspNetCore.Mvc.HttpGet]
-        [Microsoft.AspNetCore.Mvc.Route("region")]
-        public IHttpActionResult GetRegionName(string ipOrUrl)
+        [HttpGet]
+        [Route("ip")]
+        public IActionResult GetIp()
+        {
+            var remoteIpAddress = HttpContext.Connection.RemoteIpAddress;
+            return Ok(remoteIpAddress);
+        }
+
+        [HttpGet]
+        [Route("region")]
+        public IActionResult GetRegionName(string ipOrUrl)
         {
             return Ok(GetRegionNameByIpOrUrl(ipOrUrl));
         }
 
-        [Microsoft.AspNetCore.Mvc.HttpGet]
-        [Microsoft.AspNetCore.Mvc.Route("iprange")]
-        public IHttpActionResult GetIpRange()
+        [HttpGet]
+        [Route("iprange")]
+        public IActionResult GetIpRange()
         {
             return Ok(GetSubnetList());
         }
 
-        [Microsoft.AspNetCore.Mvc.HttpGet]
-        [Microsoft.AspNetCore.Mvc.Route("sas")]
-        public IHttpActionResult GetSasLink(string region, string blobName, string operation)
+        [HttpGet]
+        [Route("sas")]
+        public IActionResult GetSasLink(string region, string blobName, string operation)
         {
             string url = string.Empty;
             if (!string.IsNullOrEmpty(region))
             {
-                var account = AzureSpeedData.Accounts.FirstOrDefault(v => v.Region == region);
+                var account = localDataStoreContext.Accounts.FirstOrDefault(v => v.Region == region);
                 if (account != null)
                 {
                     var storageContext = new StorageContext(account);
@@ -60,11 +72,11 @@
             return Ok(url);
         }
 
-        [Microsoft.AspNetCore.Mvc.HttpGet]
-        [Microsoft.AspNetCore.Mvc.Route("cleanup")]
-        public IHttpActionResult CleanUpBlobs()
+        [HttpGet]
+        [Route("cleanup")]
+        public IActionResult CleanUpBlobs()
         {
-            foreach (var account in AzureSpeedData.Accounts)
+            foreach (var account in localDataStoreContext.Accounts)
             {
                 var storageAccount = new StorageContext(account);
                 storageAccount.CleanUpBlobs();
@@ -82,7 +94,7 @@
 
             if (string.IsNullOrEmpty(ipFilePath))
             {
-                ipFilePath = HostingEnvironment.MapPath("~/App_Data/");
+                ipFilePath = hostingEnvironment.ContentRootPath + "~/App_Data/";
             }
 
             if (!(ipOrUrl.StartsWith("http://") || ipOrUrl.StartsWith("https://")))
@@ -105,7 +117,7 @@
                 {
                     var regionAlias = subnets[net];
                     sw.Stop();
-                    string region = AzureSpeedData.RegionNames[regionAlias];
+                    string region = localDataStoreContext.RegionNames[regionAlias];
                     Logger.Info($"IpOrUrl = {ipOrUrl}, region = {region}, time = {sw.ElapsedMilliseconds}");
                     return region;
                 }
@@ -118,13 +130,14 @@
         {
             if (string.IsNullOrEmpty(ipFilePath))
             {
-                ipFilePath = HostingEnvironment.MapPath("~/App_Data/");
+                ipFilePath = hostingEnvironment.ContentRootPath + ("~/App_Data/");
             }
 
             var result = new List<IpRangeViewModel>();
 
             // Load Azure ip range data
-            string ipFileList = ConfigurationManager.AppSettings["AzureIpRangeFileList"];
+            
+            string ipFileList = appSettings.Value.AzureIpRangeFileList;
             foreach (string filePath in ipFileList.Split(';'))
             {
                 var xmlDoc = new XmlDocument();
@@ -147,8 +160,8 @@
             }
 
             // Load AWS ip range data
-            string awsIpFile = ConfigurationManager.AppSettings["AwsIpRangeFile"];
-            string json = File.ReadAllText(ipFilePath + @"\IpRangeFiles\AWS\" + awsIpFile);
+            string awsIpFile = this.appSettings.Value.AwsIpRangeFile;
+            string json = System.IO.File.ReadAllText(ipFilePath + @"\IpRangeFiles\AWS\" + awsIpFile);
             var awsIpRangeData = JsonConvert.DeserializeObject<AwsIpRangeData>(json);
             foreach (var prefix in awsIpRangeData.Prefixes)
             {
@@ -172,8 +185,8 @@
             }
 
             // Load AliCloud ip range data
-            string aliCloudIpFile = ConfigurationManager.AppSettings["AliCloudIpRangeFile"];
-            string[] lines = File.ReadAllLines(ipFilePath + @"\IpRangeFiles\AliCloud\" + aliCloudIpFile);
+            string aliCloudIpFile = appSettings.Value.AliCloudIpRangeFile;
+            string[] lines = System.IO.File.ReadAllLines(ipFilePath + @"\IpRangeFiles\AliCloud\" + aliCloudIpFile);
             var aliIpRange = new IpRangeViewModel { Cloud = "AliCloud", Region = "AliCloud", Subnet = new List<string>() };
             foreach (var line in lines)
             {

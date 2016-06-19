@@ -1,12 +1,13 @@
 ﻿namespace AzureSpeed.Web.App.Controllers
 {
     using Microsoft.AspNetCore.Mvc;
+    using NLog;
 
     public class BaseController : Controller
     {
         // todo: Figure out how to handle uncaught error
 
-        //protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         //protected override void OnException(ExceptionContext filterContext)
         //{

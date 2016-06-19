@@ -23,7 +23,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AzureSpeed.Common\AzureSpeed.Common.csproj" />
-    <ProjectReference Include="..\AzureSpeed.WebUI\AzureSpeed.WebUI.csproj" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\DotNet.Web\Microsoft.DotNet.Web.targets" Condition="'$(VSToolsPath)' != ''" />
 </Project>

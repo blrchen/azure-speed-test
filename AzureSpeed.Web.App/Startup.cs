@@ -29,6 +29,11 @@ namespace AzureSpeed.Web.App
         {
             // Add framework services.
             services.AddMvc();
+
+            // Add functionality to inject IOptions<T>
+            services.AddOptions();
+
+            services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

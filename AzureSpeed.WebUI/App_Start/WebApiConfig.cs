@@ -14,7 +14,8 @@
 
             config.Routes.MapHttpRoute(
                 "DefaultApi",
-                "api/{controller}/{id}", new { id = RouteParameter.Optional });
+                "api/{controller}/{id}",
+                new { id = RouteParameter.Optional });
 
             var json = config.Formatters.JsonFormatter;
             json.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.Objects;

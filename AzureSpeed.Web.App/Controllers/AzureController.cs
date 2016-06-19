@@ -1,74 +1,71 @@
-﻿namespace AzureSpeed.Web.App.Controllers
+﻿using AzureSpeed.Common;
+
+namespace AzureSpeed.Web.App.Controllers
 {
     using System;
     using System.Net;
+    using ApiControllers;
     using Common;
     using Microsoft.AspNetCore.Mvc;
-    using WebUI.ApiControllers;
-    using AzureApiController = ApiControllers.AzureApiController;
 
     public class AzureController : BaseController
     {
-        public ActionResult Index()
+        public IActionResult Index()
         {
             return View("Latency");
         }
 
-        public ActionResult Latency()
+        public IActionResult Latency()
         {
             return View();
         }
 
-        public ActionResult CDN()
+        public IActionResult CDN()
         {
             return View();
         }
 
-        public ActionResult Upload()
+        public IActionResult Upload()
         {
             return View();
         }
 
-        public ActionResult UploadLargeFile()
+        public IActionResult UploadLargeFile()
         {
             return View();
         }
 
-        public ActionResult Download()
+        public IActionResult Download()
         {
             return View();
         }
 
-        public ActionResult LiveStreaming()
-        {
-            return View();
-        }
-
-        public ActionResult TrafficManager()
+        public IActionResult TrafficManager()
         {
             WebClient client = new WebClient();
             string ip = client.DownloadString("http://www.azurespeed.com/api/ip").Replace("\"", string.Empty).Trim();
             if (!string.IsNullOrEmpty(ip))
             {
                 ViewBag.Ip = ip;
-                var controller = new AzureApiController();
-                ViewBag.Region = controller.GetRegionNameByIpOrUrl(ip);
+                // todo: cleanup
+                //var controller = new AzureApiController();
+                //ViewBag.Region = controller.GetRegionNameByIpOrUrl(ip);
             }
 
             return View();
         }
 
-        public ActionResult Reference()
+        public IActionResult Reference()
         {
             return View();
         }
 
-        public ActionResult About()
+        public IActionResult About()
         {
             return View();
         }
 
-        public ActionResult Test()
+        public IActionResult Test()
         {
             return View();
         }

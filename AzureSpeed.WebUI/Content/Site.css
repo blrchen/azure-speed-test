@@ -22,3 +22,55 @@
 .modal-footer {
     background: #F0EFF5;
 }
+
+.dropdown-extend{
+    position:absolute;
+    display:none;
+    top:51px;
+    right:30px;
+    width:300px;
+    height:300px;
+    border:solid 1px;
+    background-color:#EAF1EF;
+}
+
+.dropdown-extend .dropdown-extend-div{
+    margin-top:30px;
+    margin-left:30px;
+    height:200px;
+    width:180px;
+    overflow:scroll;
+}
+
+.dropdown-extend .dropdown-extend-div div{
+    width:150px;
+    height:25px;
+    margin-top:0px;
+
+}
+.dropdown-extend .dropdown-extend-div label{
+    white-space:nowrap;
+}
+
+.dropdown-extend .dropdown-extend-div input{
+    position:relative;
+	width: 16px;
+	height: 16px;
+	top: 4px;
+    background: #fcfff4;
+    border-radius: 0px;
+	background: -webkit-linear-gradient(top, #222 0%, #45484d 100%);
+	background: -moz-linear-gradient(top, #222 0%, #45484d 100%);
+	background: -o-linear-gradient(top, #222 0%, #45484d 100%);
+}
+
+.dropdown-extend .dropdown-extend-div span {
+   margin-left:5px;
+
+}
+
+.dropdown-extend .dropdown-extend-apply{
+    margin-left:210px;
+    margin-top:10px;
+}
+

@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="keywords" content="Azure, Microsoft Azure, Azure Storage, Azure network latency, Azure Blob Upload Speed" />
     <meta name="description" content="AzureSpeed.com - Test network latencies and speed to Azure data centers from different countries." />
     <title>@ViewBag.Title - Azure Speed Test</title>
@@ -26,6 +26,23 @@
             <!-- /.navbar-header -->
             <ul class="nav navbar-top-links navbar-right">
                 @*@Html.Partial("_LoginPartial")*@
+                <li>
+                    <a class="menu-label">
+                        <i class="fa fa-filter fa-fw"></i>Region Select
+                    </a>
+                    <div class="dropdown-extend">
+                        <div class="dropdown-extend-div">
+                            <div>
+                                <label>
+                                    <input type='checkbox' name='regAll' /><span>Select All--></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="dropdown-extend-apply">
+                            <input type="button" value="Apply" />
+                        </div>
+                    </div>
+                </li>
             </ul>
             <!-- /.navbar-top-links -->
             <div class="navbar-default sidebar" role="navigation">

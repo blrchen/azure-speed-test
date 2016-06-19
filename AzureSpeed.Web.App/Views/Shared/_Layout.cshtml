@@ -1,24 +1,36 @@
 ﻿<!DOCTYPE html>
-<html>
+<html ng-app="app">
 <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - AzureSpeed.Web.App</title>
+    <meta name="keywords" content="Azure, Microsoft Azure, Azure Storage, Azure network latency, Azure Blob Upload Speed" />
+    <meta name="description" content="AzureSpeed.com - Test network latencies and speed to Azure data centers from different countries." />
+    <title>@ViewBag.Title - Azure Speed Test</title>
 
     <environment names="Development">
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-        <link rel="stylesheet" href="~/css/site.css" />
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css"/>
+        <link rel="stylesheet" href="~/lib/angular-bootstrap/ui-bootstrap-csp.css" />
+        <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.css"/>
+        <link rel="stylesheet" href="~/lib/metisMenu/src/metisMenu.css" />
+        <link rel="stylesheet" href="~/css/site.css"/>
+        <link rel="stylesheet" href="~/css/sb-admin-2.css" />
     </environment>
     <environment names="Staging,Production">
         <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.6/css/bootstrap.min.css"
               asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
               asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
-        <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+        <link rel="stylesheet" href="~/lib/angular-bootstrap/ui-bootstrap-csp.css" />
+        <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.css" />
+        <link rel="stylesheet" href="~/lib/metisMenu/src/metisMenu.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
+        <link rel="stylesheet" href="~/css/sb-admin-2.css" />
     </environment>
 </head>
 <body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
+    <div id="wrapper">
+        <!-- Navigation -->
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                     <span class="sr-only">Toggle navigation</span>
@@ -26,29 +38,130 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a asp-controller="Home" asp-action="Index" class="navbar-brand">AzureSpeed.Web.App</a>
+                <a class="navbar-brand" href="~/">AzureSpeed.com</a>
             </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li><a asp-controller="Home" asp-action="Index">Home</a></li>
-                    <li><a asp-controller="Home" asp-action="About">About</a></li>
-                    <li><a asp-controller="Home" asp-action="Contact">Contact</a></li>
-                </ul>
+            <!-- /.navbar-header -->
+            <ul class="nav navbar-top-links navbar-right">
+                @*@Html.Partial("_LoginPartial")*@
+                <li>
+                    <a class="menu-label">
+                        <i class="fa fa-filter fa-fw"></i>Region Select
+                    </a>
+                    <div class="dropdown-extend">
+                        <div class="dropdown-extend-div">
+                            <div>
+                                <label>
+                                    <input type='checkbox' name='regAll' /><span>Select All--></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="dropdown-extend-apply">
+                            <input type="button" value="Apply" />
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <!-- /.navbar-top-links -->
+            <div class="navbar-default sidebar" role="navigation">
+                <div class="sidebar-nav navbar-collapse">
+                    <ul class="nav" id="side-menu">
+                        <li>
+                            <a href="~/Azure/Latency"><i class="fa fa-send fa-fw"></i> Latency Test</a>
+                        </li>
+                        <li>
+                            <a href="~/Azure/CDN"><i class="fa fa-cloud fa-fw"></i> CDN Test</a>
+                        </li>
+                        <li>
+                            <a href="~/Azure/Upload"><i class="fa fa-cloud-upload fa-fw"></i> Upload Speed Test</a>
+                        </li>
+                        <li>
+                            <a href="~/Azure/UploadLargeFile"><i class="fa fa-upload fa-fw"></i> Large File Upload Speed Test</a>
+                        </li>
+                        <li>
+                            <a href="~/Azure/Download"><i class="fa fa-cloud-download fa-fw"></i> Download Speed Test</a>
+                        </li>
+                        <li>
+                            <a href="~/Cloud/IpRange"><i class="fa fa-list-alt fa-fw"></i> Cloud IP Range</a>
+                        </li>
+                        <li>
+                            <a href="~/Cloud/RegionFinder"><i class="fa fa-search fa-fw"></i> Cloud Region Finder</a>
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa fa-files-o fa-fw"></i> Azure Online Tools<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="~/AzureOnlineTools/EnableStorageCORS">Enable Storage CORS</a>
+                                </li>
+                                <li>
+                                    <a href="~/AzureOnlineTools/GenerateEventHubSAS">EventHub SAS Generator</a>
+                                </li>
+                            </ul>
+                            <!-- /.nav-second-level -->
+                        </li>
+                        <li>
+                            <a href="~/Azure/Reference"><i class="fa fa-book fa-fw"></i> Reference</a>
+                        </li>
+                        <li>
+                            <a href="~/Azure/About"><i class="fa fa-book fa-fw"></i> About</a>
+                        </li>
+                    </ul>
+                    <!-- /#side-menu -->
+                    <div class="container">
+                        <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://www.azurespeed.com" data-hashtags="azurespeed">Tweet</a>
+                        <script>
+                            !function (d, s, id) {
+                                var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https';
+                                if (!d.getElementById(id)) {
+                                    js = d.createElement(s);
+                                    js.id = id;
+                                    js.src = p + '://platform.twitter.com/widgets.js';
+                                    fjs.parentNode.insertBefore(js, fjs);
+                                }
+                            }(document, 'script', 'twitter-wjs');
+                        </script>
+                    </div>
+                </div>
+                <!-- /.sidebar-collapse -->
             </div>
+            <!-- /.navbar-static-side -->
+        </nav>
+        <div id="page-wrapper">
+            @RenderBody()
+            @Html.Partial("_Adsense")
         </div>
-    </div>
-    <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; 2016 - AzureSpeed.Web.App</p>
-        </footer>
+        <div class="footer">
+            <footer class="footer">
+                <p>&copy; @DateTime.Now.Year - AzureSpeed.com | By <a href="http://blchen.com" target="_blank">Blair Chen</a>, using <a href="https://github.com/orcame/jazure" target="_blank">jazure</a>
+            </footer>
+        </div>
     </div>
 
     <environment names="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+        <script src="~/lib/angular/angular.js"></script>
+        <script src="~/lib/angular-bootstrap/ui-bootstrap.js"></script>
+        <script src="~/lib/d3/d3.js"></script>
+        <script src="~/lib/metisMenu/src/metisMenu.js"></script>
+        <script src="~/js/sb-admin-2.js"></script>
+        <script src="~/js/jazure/crypto-min.js"></script>
+        <script src="~/js/jazure/jazure.core/jazure.core.js"></script>
+        <script src="~/js/jazure/jazure.storage/jazure.storage.core.js"></script>
+        <script src="~/js/jazure/jazure.storage/jazure.storage.account.js"></script>
+        <script src="~/js/jazure/jazure.storage/blob/jazure.storage.container.js"></script>
+        <script src="~/js/jazure/jazure.storage/blob/jazure.storage.blob.js"></script>
         <script src="~/js/site.js" asp-append-version="true"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+        <script src="~/js/common.js" asp-append-version="true"></script>
+        <script src="~/js/utils.js" asp-append-version="true"></script>
+        <script src="~/js/filters.js" asp-append-version="true"></script>
+        <script src="~/js/directives.js" asp-append-version="true"></script>
+        <script src="~/js/controllers/cloudRegionFinderCtrl.js" asp-append-version="true"></script>
+        <script src="~/js/controllers/downloadCtrl.js" asp-append-version="true"></script>
+        <script src="~/js/controllers/latencyCtrl.js" asp-append-version="true"></script>
+        <script src="~/js/controllers/ipRangeCtrl.js" asp-append-version="true"></script>
+        <script src="~/js/controllers/uploadCtrl.js" asp-append-version="true"></script>
+        <script src="~/js/controllers/uploadLargeFileCtrl.js" asp-append-version="true"></script>
     </environment>
     <environment names="Staging,Production">
         <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"
@@ -59,7 +172,29 @@
                 asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
                 asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
         </script>
-        <script src="~/js/site.min.js" asp-append-version="true"></script>
+        <script src="~/lib/angular/angular.js"></script>
+        <script src="~/lib/angular-bootstrap/ui-bootstrap.js"></script>
+        <script src="~/lib/d3/d3.js"></script>
+        <script src="~/lib/metisMenu/src/metisMenu.js"></script>
+        <script src="~/js/sb-admin-2.js"></script>
+        <script src="~/js/jazure/crypto-min.js"></script>
+        <script src="~/js/jazure/jazure.core/jazure.core.js"></script>
+        <script src="~/js/jazure/jazure.storage/jazure.storage.core.js"></script>
+        <script src="~/js/jazure/jazure.storage/jazure.storage.account.js"></script>
+        <script src="~/js/jazure/jazure.storage/blob/jazure.storage.container.js"></script>
+        <script src="~/js/jazure/jazure.storage/blob/jazure.storage.blob.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+        <script src="~/js/common.js" asp-append-version="true"></script>
+        <script src="~/js/utils.js" asp-append-version="true"></script>
+        <script src="~/js/filters.js" asp-append-version="true"></script>
+        <script src="~/js/directives.js" asp-append-version="true"></script>
+        <script src="~/js/controllers/cloudRegionFinderCtrl.js" asp-append-version="true"></script>
+        <script src="~/js/controllers/downloadCtrl.js" asp-append-version="true"></script>
+        <script src="~/js/controllers/latencyCtrl.js" asp-append-version="true"></script>
+        <script src="~/js/controllers/ipRangeCtrl.js" asp-append-version="true"></script>
+        <script src="~/js/controllers/uploadCtrl.js" asp-append-version="true"></script>
+        <script src="~/js/controllers/uploadLargeFileCtrl.js" asp-append-version="true"></script>
     </environment>
 
     @RenderSection("scripts", required: false)

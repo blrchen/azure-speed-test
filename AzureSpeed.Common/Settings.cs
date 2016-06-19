@@ -1,7 +1,6 @@
-﻿namespace AzureSpeed.WebUI
+﻿namespace AzureSpeed.Common
 {
     using System.Collections.Generic;
-    using Common;
 
     public class Settings
     {

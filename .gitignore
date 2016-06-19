@@ -42,6 +42,7 @@ dlldata.c
 
 # DNX
 project.lock.json
+project.fragment.lock.json
 artifacts/
 
 *_i.c
@@ -252,6 +253,6 @@ paket-files/
 *.sln.iml
 
 # For AzureSpeed only
-setting.private.json
+settings.private.json
 _Adsense.private.cshtml
 _Analytics.private.cshtml

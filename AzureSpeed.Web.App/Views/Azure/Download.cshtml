@@ -13,22 +13,22 @@
                 </div>
                 <table class="table table-bordered table-striped">
                     <thead>
-                        <tr>
-                            <th>Geo</th>
-                            <th>Region</th>
-                            <th>Location</th>
-                            <th>Test File</th>
-                        </tr>
+                    <tr>
+                        <th>Geo</th>
+                        <th>Region</th>
+                        <th>Location</th>
+                        <th>Test File</th>
+                    </tr>
                     </thead>
                     <tbody>
-                        <tr ng-repeat="item in items">
-                            <td>{{item.geo}}</td>
-                            <td>{{item.region}}</td>
-                            <td>{{item.location}}</td>
-                            <td>
-                                <a ng-if="item.url.length>0" class="btn btn-default" href="{{item.url}}">Download 100MB File</a>
-                            </td>
-                        </tr>
+                    <tr ng-repeat="item in items">
+                        <td>{{item.geo}}</td>
+                        <td>{{item.region}}</td>
+                        <td>{{item.location}}</td>
+                        <td>
+                            <a ng-if="item.url.length>0" class="btn btn-default" href="{{item.url}}">Download 100MB File</a>
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
             </div>

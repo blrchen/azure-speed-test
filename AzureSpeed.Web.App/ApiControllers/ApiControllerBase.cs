@@ -1,10 +1,10 @@
 ﻿namespace AzureSpeed.Web.App.ApiControllers
 {
-    using System.Web.Http;
+    using Microsoft.AspNetCore.Mvc;
     using NLog;
 
     //[ActionExecutionFilter]
-    public class ApiControllerBase : ApiController
+    public class ApiControllerBase : Controller
     {
         protected readonly Logger Logger = LogManager.GetCurrentClassLogger();
     }

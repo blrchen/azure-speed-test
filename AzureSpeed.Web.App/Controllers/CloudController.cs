@@ -4,12 +4,12 @@
 
     public class CloudController : Controller
     {
-        public ActionResult RegionFinder()
+        public IActionResult RegionFinder()
         {
             return View();
         }
 
-        public ActionResult IpRange()
+        public IActionResult IpRange()
         {
             return View();
         }

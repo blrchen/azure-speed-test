@@ -1,14 +1,11 @@
-﻿using AzureSpeed.Common;
-
-namespace AzureSpeed.Web.App.Controllers
+﻿namespace AzureSpeed.Web.App.Controllers
 {
     using System;
     using System.Net;
-    using ApiControllers;
-    using Common;
+    using AzureSpeed.Common;
     using Microsoft.AspNetCore.Mvc;
 
-    public class AzureController : BaseController
+    public class AzureController : ControllerBase
     {
         public IActionResult Index()
         {
@@ -40,21 +37,6 @@ namespace AzureSpeed.Web.App.Controllers
             return View();
         }
 
-        public IActionResult TrafficManager()
-        {
-            WebClient client = new WebClient();
-            string ip = client.DownloadString("http://www.azurespeed.com/api/ip").Replace("\"", string.Empty).Trim();
-            if (!string.IsNullOrEmpty(ip))
-            {
-                ViewBag.Ip = ip;
-                // todo: cleanup
-                //var controller = new AzureApiController();
-                //ViewBag.Region = controller.GetRegionNameByIpOrUrl(ip);
-            }
-
-            return View();
-        }
-
         public IActionResult Reference()
         {
             return View();
@@ -76,9 +58,8 @@ namespace AzureSpeed.Web.App.Controllers
             {
                 var storageAccount = new StorageContext(account);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Logger.Error(ex);
                 return "Failed due to Incorrect Account Name or Key.";
             }
 

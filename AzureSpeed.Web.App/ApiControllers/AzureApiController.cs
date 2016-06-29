@@ -1,9 +1,4 @@
-﻿
-
-using AzureSpeed.Common;
-using AzureSpeed.Common.Models;
-
-namespace AzureSpeed.Web.App.ApiControllers
+﻿namespace AzureSpeed.Web.App.ApiControllers
 {
     using System;
     using System.Collections.Generic;
@@ -11,6 +6,8 @@ namespace AzureSpeed.Web.App.ApiControllers
     using System.Linq;
     using System.Net;
     using System.Xml;
+    using AzureSpeed.Common;
+    using AzureSpeed.Common.Models;
     using Common;
     using LukeSkywalker.IPNetwork;
     using Microsoft.AspNetCore.Hosting;
@@ -94,7 +91,7 @@ namespace AzureSpeed.Web.App.ApiControllers
 
             if (string.IsNullOrEmpty(ipFilePath))
             {
-                ipFilePath = hostingEnvironment.ContentRootPath + "~/App_Data/";
+                ipFilePath = hostingEnvironment.ContentRootPath + @"\App_Data";
             }
 
             if (!(ipOrUrl.StartsWith("http://") || ipOrUrl.StartsWith("https://")))
@@ -110,15 +107,16 @@ namespace AzureSpeed.Web.App.ApiControllers
 
             var ips = Dns.GetHostAddresses(ipOrUrl);
             var ipAddr = ips[0];
-            var subnets = SubnetBuilder.GetSubnetDictionary(ipFilePath);
-            foreach (IPNetwork net in subnets.Keys)
+            var subnetContext = new SubnetContext(ipFilePath, appSettings.Value.AzureIpRangeFileList, appSettings.Value.AwsIpRangeFile, appSettings.Value.AliCloudIpRangeFile);
+            var subnets = subnetContext.GetSubnetData();
+            foreach (var net in subnets.Keys)
             {
                 if (IPNetwork.Contains(net, ipAddr))
                 {
                     var regionAlias = subnets[net];
                     sw.Stop();
                     string region = localDataStoreContext.RegionNames[regionAlias];
-                    Logger.Info($"IpOrUrl = {ipOrUrl}, region = {region}, time = {sw.ElapsedMilliseconds}");
+                    //Logger.Info($"IpOrUrl = {ipOrUrl}, region = {region}, time = {sw.ElapsedMilliseconds}");
                     return region;
                 }
             }
@@ -130,13 +128,12 @@ namespace AzureSpeed.Web.App.ApiControllers
         {
             if (string.IsNullOrEmpty(ipFilePath))
             {
-                ipFilePath = hostingEnvironment.ContentRootPath + ("~/App_Data/");
+                ipFilePath = hostingEnvironment.ContentRootPath + (@"\App_Data");
             }
 
             var result = new List<IpRangeViewModel>();
 
             // Load Azure ip range data
-            
             string ipFileList = appSettings.Value.AzureIpRangeFileList;
             foreach (string filePath in ipFileList.Split(';'))
             {

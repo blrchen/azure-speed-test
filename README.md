@@ -22,7 +22,7 @@ http://www.azurespeed.com
 6. You are all set, enjoy!
 
 ## Built on
- - [ASP.NET MVC](https://github.com/IronSummitMedia/startbootstrap-sb-admin-2)
+ - [ASP.NET Core](https://github.com/aspnet)
  - [jQuery](https://github.com/jquery/jquery)
  - [bootstrap](https://github.com/twbs/bootstrap)
  - [angular](https://github.com/angular/angular)

@@ -2,7 +2,7 @@
 {
     using Microsoft.AspNetCore.Mvc;
 
-    public class CloudController : Controller
+    public class CloudController : ControllerBase
     {
         public IActionResult RegionFinder()
         {

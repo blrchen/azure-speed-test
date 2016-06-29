@@ -1,9 +1,7 @@
 ﻿namespace AzureSpeed.WebUI.Controllers
 {
     using System;
-    using System.Net;
     using System.Web.Mvc;
-    using ApiControllers;
     using AzureSpeed.Common;
 
     public class AzureController : BaseController
@@ -40,20 +38,6 @@
 
         public ActionResult LiveStreaming()
         {
-            return View();
-        }
-
-        public ActionResult TrafficManager()
-        {
-            WebClient client = new WebClient();
-            string ip = client.DownloadString("http://www.azurespeed.com/api/ip").Replace("\"", string.Empty).Trim();
-            if (!string.IsNullOrEmpty(ip))
-            {
-                ViewBag.Ip = ip;
-                var controller = new AzureApiController();
-                ViewBag.Region = controller.GetRegionNameByIpOrUrl(ip);
-            }
-
             return View();
         }
 

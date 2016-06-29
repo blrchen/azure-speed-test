@@ -2,7 +2,7 @@
 {
     using Microsoft.AspNetCore.Mvc;
 
-    public class AzureOnlineToolsController : Controller
+    public class AzureOnlineToolsController : ControllerBase
     {
         public IActionResult EnableStorageCORS()
         {

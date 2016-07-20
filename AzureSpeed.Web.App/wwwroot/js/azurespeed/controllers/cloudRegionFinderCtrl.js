@@ -1,4 +1,5 @@
-﻿angular.module('app')
+﻿angular
+    .module('azurespeed')
     .controller('cloudRegionFinderCtrl', ['$scope', '$http', function ($scope, $http) {
         $scope.result = '';
         $scope.ipOrUrl = '';

@@ -4,12 +4,12 @@
     "preserveCompilationContext": true
   },
   "dependencies": {
-    "IPNetwork": "1.3.2",
+    "BundlerMinifier.Core": "2.1.258",
     "Microsoft.AspNetCore.Diagnostics": "1.0.0",
     "Microsoft.AspNetCore.Mvc": "1.0.0",
     "Microsoft.AspNetCore.Razor.Tools": {
-      "version": "1.0.0-preview2-final",
-      "type": "build"
+      "type": "build",
+      "version": "1.0.0-preview2-final"
     },
     "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0",
     "Microsoft.AspNetCore.Server.Kestrel": "1.0.0",
@@ -37,12 +37,13 @@
     "include": [
       "wwwroot",
       "Views",
+      "Data",
       "appsettings.json",
       "web.config"
     ]
   },
   "scripts": {
-    "prepublish": [ "npm install", "bower install", "gulp clean", "gulp min" ],
+    "prepublish": [ "bower install", "dotnet bundle" ],
     "postpublish": [ "dotnet publish-iis --publish-folder %publish:OutputPath% --framework %publish:FullTargetFramework%" ]
   },
   "tools": {

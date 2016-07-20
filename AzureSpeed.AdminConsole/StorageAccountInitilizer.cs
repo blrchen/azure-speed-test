@@ -1,11 +1,13 @@
 ﻿namespace AzureSpeed.AdminConsole
 {
-    using System;
+    using System.Configuration;
+    using System.IO;
+    using System.Linq;
+    using System.Reflection;
     using System.Threading.Tasks;
     using Common;
     using NLog;
-    using WebUI;
-    using WebUI.Common;
+    using Web.App.Common;
 
     internal class StorageAccountInitilizer
     {
@@ -13,8 +15,19 @@
 
         public async Task InitializeAsync()
         {
-            foreach (var account in AzureSpeedData.Accounts)
+            var localDataStoreContext = new LocalDataStoreContext(
+                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+                ConfigurationManager.AppSettings["AzureIpRangeFileList"],
+                ConfigurationManager.AppSettings["AwsIpRangeFile"],
+                ConfigurationManager.AppSettings["AliCloudIpRangeFile"]);
+
+            foreach (var account in localDataStoreContext.StorageAccounts.ToList())
             {
+                if (account.Name != "azspdwestus2")
+                {
+                    continue;
+                }
+
                 var storageContext = new StorageContext(account);
 
                 logger.Info($"[{account.Name}] About to initialize stroage account ");

@@ -1,2 +1,2 @@
 ﻿// Write your Javascript code.
-angular.module('app', ['ui.bootstrap'])
+angular.module('azurespeed', ['ui.bootstrap'])

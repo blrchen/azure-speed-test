@@ -1,7 +1,6 @@
 ﻿namespace AzureSpeed.Web.App.Controllers
 {
     using System;
-    using System.Net;
     using AzureSpeed.Common;
     using Microsoft.AspNetCore.Mvc;
 

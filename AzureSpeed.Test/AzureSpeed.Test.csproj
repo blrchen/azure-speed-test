@@ -77,7 +77,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="AzureApiControllerTest.cs" />
+    <Compile Include="LocalDataStoreContextTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -85,30 +85,34 @@
       <Project>{7ba84ede-8c7b-4481-896e-83b606079c2b}</Project>
       <Name>AzureSpeed.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\AzureSpeed.WebUI\AzureSpeed.WebUI.csproj">
-      <Project>{c60718d7-b11f-4d9e-9a3a-762c8e326559}</Project>
-      <Name>AzureSpeed.WebUI</Name>
+    <ProjectReference Include="..\AzureSpeed.Web.App\AzureSpeed.Web.App.xproj">
+      <Project>{c5019dd8-af60-4ed1-a73a-a188a7e0d890}</Project>
+      <Name>AzureSpeed.Web.App</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\AzureSpeed.WebUI\App_Data\IpRangeFiles\AWS\ip-ranges.json">
-      <Link>TestData\IpRangeFiles\AWS\ip-ranges.json</Link>
+    <Content Include="..\AzureSpeed.Web.App\Data\IpRangeFiles\AWS\ip-ranges.json">
+      <Link>Data\IpRangeFiles\AWS\ip-ranges.json</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    </Content>
+    <Content Include="..\AzureSpeed.Web.App\Data\settings.json">
+      <Link>Data\settings.json</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\AzureSpeed.WebUI\App_Data\IpRangeFiles\AliCloud\ip.txt">
-      <Link>TestData\IpRangeFiles\AliCloud\ip.txt</Link>
+    <Content Include="..\AzureSpeed.Web.App\Data\IpRangeFiles\AliCloud\ip.txt">
+      <Link>Data\IpRangeFiles\AliCloud\ip.txt</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\AzureSpeed.WebUI\App_Data\IpRangeFiles\Azure\PublicIPs.xml">
-      <Link>TestData\IpRangeFiles\Azure\PublicIPs.xml</Link>
+    <Content Include="..\AzureSpeed.Web.App\Data\IpRangeFiles\Azure\PublicIPs.xml">
+      <Link>Data\IpRangeFiles\Azure\PublicIPs.xml</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\AzureSpeed.WebUI\App_Data\IpRangeFiles\Azure\PublicIPs_MC.xml">
-      <Link>TestData\IpRangeFiles\Azure\PublicIPs_MC.xml</Link>
+    <Content Include="..\AzureSpeed.Web.App\Data\IpRangeFiles\Azure\PublicIPs_MC.xml">
+      <Link>Data\IpRangeFiles\Azure\PublicIPs_MC.xml</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

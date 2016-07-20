@@ -1,3 +1,7 @@
+# Run above prior to running this script
+# 1. Login-AzureRmAccount
+# 2. Select-AzureRmSubscription -SubscriptionName "Your sub name"
+
 $locations = Get-AzureRmLocation
 $resourceGroupName = "AzureSpeed"
 
@@ -16,9 +20,9 @@ foreach ($location in $locations)
     $storageAccountKey = (Get-AzureRmStorageAccountKey -Name $storageAccountName -ResourceGroupName $resourceGroupName).Value[0]
    
     Write-Host "{"
-    Write-Host "Name: '$storageAccountName',"
-    Write-Host "Key: '$storageAccountKey',"
-    Write-Host "Region: '$region'"
+    Write-Host "name: '$storageAccountName',"
+    Write-Host "key: '$storageAccountKey',"
+    Write-Host "region: '$region'"
     Write-Host "},"
     
 }

@@ -1,10 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureSpeed.WebUI", "AzureSpeed.WebUI\AzureSpeed.WebUI.csproj", "{C60718D7-B11F-4D9E-9A3A-762C8E326559}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureSpeed.Test", "AzureSpeed.Test\AzureSpeed.Test.csproj", "{EB721DE4-D49E-4D7E-BD4B-96C9D7736A92}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureSpeed.AdminConsole", "AzureSpeed.AdminConsole\AzureSpeed.AdminConsole.csproj", "{6A8A5A83-B00B-411C-8470-0B73596CED4B}"
@@ -19,10 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{C60718D7-B11F-4D9E-9A3A-762C8E326559}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C60718D7-B11F-4D9E-9A3A-762C8E326559}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C60718D7-B11F-4D9E-9A3A-762C8E326559}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C60718D7-B11F-4D9E-9A3A-762C8E326559}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EB721DE4-D49E-4D7E-BD4B-96C9D7736A92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EB721DE4-D49E-4D7E-BD4B-96C9D7736A92}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB721DE4-D49E-4D7E-BD4B-96C9D7736A92}.Release|Any CPU.ActiveCfg = Release|Any CPU

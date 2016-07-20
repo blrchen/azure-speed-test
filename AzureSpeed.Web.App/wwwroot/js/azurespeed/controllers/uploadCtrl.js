@@ -1,4 +1,5 @@
-﻿angular.module('app')
+﻿angular
+    .module('azurespeed')
     .controller('uploadCtrl', ['$scope', '$http', function ($scope, $http) {
         $scope.results = [];
         $scope.regions = utils.getRegions();

@@ -1,4 +1,6 @@
-﻿namespace AzureSpeed.Common
+﻿using AzureSpeed.Common.Storage;
+
+namespace AzureSpeed.Common
 {
     using System.Collections.Generic;
 

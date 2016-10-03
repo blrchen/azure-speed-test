@@ -1,0 +1,13 @@
+﻿<p>Please select regions:</p>
+<div ng-repeat="(key, value) in regions | groupBy: 'geo'">
+    <strong>{{key}}: </strong>
+    <label ng-repeat="region in value" class="checkbox-inline">
+        <input type="checkbox"
+               checklist-model="user.regions"
+               checklist-value="region.id"
+               checklist-change="checkChanged()"
+               ng-model="checked"> {{region.name}}
+    </label>
+</div>
+@*<button ng-click="checkAll()">check all</button>
+<button ng-click="uncheckAll()">uncheck all</button>*@

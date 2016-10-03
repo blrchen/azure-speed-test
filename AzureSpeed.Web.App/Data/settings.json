@@ -101,6 +101,16 @@
       "region": "Canada East"
     },
     {
+      "name": "azspduksouth",
+      "key": "HtFI60NBGN9a+==",
+      "region": "UK South"
+    },
+    {
+      "name": "azspdukwest",
+      "key": "Xs6ZnYzsCREm+//w/==",
+      "region": "UK West"
+    },
+    {
       "name": "azspdwestcentralus",
       "key": "nM5lnR+TQl13IqXUEK87QpZfmQd+==",
       "region": "West Central US"
@@ -109,6 +119,18 @@
       "name": "azspdwestus2",
       "key": "xsRWY6hweUE4nT+nwiV1fZWqCuFaxca90cKWFNQ3jyY/==",
       "region": "West US 2"
+    },
+    {
+      "name": "azspdchinanorth",
+      "key": "hfqYhOB6EHjRJ3xiEEwDODrC5kB/yKNcp//==",
+      "region": "China North",
+      "EndpointSuffix": "core.chinacloudapi.cn"
+    },
+    {
+      "name": "azspdchinaeast",
+      "key": "Dt43C3hiw0pgsuzrdHtJ15/==",
+      "region": "China East",
+      "EndpointSuffix": "core.chinacloudapi.cn"
     }
   ]
 }

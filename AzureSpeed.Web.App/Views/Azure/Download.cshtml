@@ -3,7 +3,10 @@
 }
 
 <div class="container-fluid" ng-controller="downloadCtrl">
-    <h3 class="page-header">Azure Storage Blob Download Speed Test</h3>
+    <div class="page-header">
+        <h3>@ViewBag.Title</h3>
+    </div>
+    @Html.Partial("_RegionSelector")
     <div class="row">
         <div class="col-md-12">
             <div class="panel panel-info">
@@ -23,7 +26,7 @@
                     <tbody>
                     <tr ng-repeat="item in items">
                         <td>{{item.geo}}</td>
-                        <td>{{item.region}}</td>
+                        <td>{{item.name}}</td>
                         <td>{{item.location}}</td>
                         <td>
                             <a ng-if="item.url.length>0" class="btn btn-default" href="{{item.url}}">Download 100MB File</a>

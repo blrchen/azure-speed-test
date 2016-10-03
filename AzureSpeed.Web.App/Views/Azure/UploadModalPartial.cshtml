@@ -16,7 +16,7 @@
                     <div class="form-group">
                         <label class="control-label col-md-3">Region</label>
                         <div class="col-md-9">
-                            <select class="form-control" ng-options="region.region for region in regions" ng-model="selectedRegion" required>
+                            <select class="form-control" ng-options="region.name for region in regions" ng-model="selectedRegion" required>
                                 <option value="">--Please select--</option>
                             </select>
                         </div>
@@ -39,7 +39,7 @@
                     </div>
                     <div class="progress">
                         <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{progressPercent}}"
-                             style="width: {{progressPercent}}% ">{{progressPercent}}%</div>
+                             ng-style="{'width': progressPercent+'%'}">{{progressPercent}}%</div>
                     </div>
                     <div class="alert alert-success" ng-if="progressPercent > 0">file={{fileName}}, size={{fileSize}}, {{message}}</div>
                     <div class="alert alert-danger" ng-if="error">{{error}}</div>

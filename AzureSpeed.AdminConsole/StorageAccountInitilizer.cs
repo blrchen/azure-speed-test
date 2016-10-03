@@ -1,14 +1,14 @@
-﻿namespace AzureSpeed.AdminConsole
-{
-    using System.Configuration;
-    using System.IO;
-    using System.Linq;
-    using System.Reflection;
-    using System.Threading.Tasks;
-    using Common;
-    using NLog;
-    using Web.App.Common;
+﻿using System.Configuration;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+using AzureSpeed.Common.LocalData;
+using AzureSpeed.Common.Storage;
+using NLog;
 
+namespace AzureSpeed.AdminConsole
+{
     internal class StorageAccountInitilizer
     {
         private readonly Logger logger = LogManager.GetCurrentClassLogger();

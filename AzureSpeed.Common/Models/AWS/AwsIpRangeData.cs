@@ -1,8 +1,8 @@
-﻿namespace AzureSpeed.Common.Models
-{
-    using System.Collections.Generic;
-    using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
+namespace AzureSpeed.Common.Models.AWS
+{
     public class AwsIpRangeData
     {
         [JsonProperty("syncToken")]

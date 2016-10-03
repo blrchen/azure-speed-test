@@ -23,6 +23,7 @@
       "wwwroot/js/site.js",
       "wwwroot/js/azurespeed/common.js",
       "wwwroot/js/azurespeed/utils.js",
+      "wwwroot/js/azurespeed/controllers/mainCtrl.js",
       "wwwroot/js/azurespeed/controllers/cloudRegionFinderCtrl.js",
       "wwwroot/js/azurespeed/controllers/downloadCtrl.js",
       "wwwroot/js/azurespeed/controllers/latencyCtrl.js",

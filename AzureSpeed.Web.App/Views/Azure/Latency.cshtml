@@ -14,15 +14,11 @@
 </style>
 
 <div class="container-fluid" ng-controller="latencyCtrl">
-    <h3 class="page-header">Azure Storage Latency Test</h3>
-    <div class="row">
-        <div class="col-md-12">
-            <div class="alert alert-warning alert-dismissable">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                Test network latency to Azure Storage in worldwide data centers, determine the best region for your application and users. A closer data center will provide less latency and fast throughput.
-            </div>
-        </div>
+    <div class="page-header">
+        <h3>@ViewBag.Title</h3>
+        <small>Test network latency to Azure Storage in worldwide data centers, determine the best region for your application and users. A closer data center will provide less latency and fast throughput.</small>
     </div>
+    @Html.Partial("_RegionSelector")
     <div class="row">
         <div class="col-md-12">
             <div class="panel panel-primary">
@@ -69,5 +65,5 @@
     </div>
 </div>
 
-@*todo: figure out how to make latency only load on homepage *@ 
-@*<script src="~/js/azurespeed/latency.js" asp-append-version="true"></script>*@
+@*todo: figure out how to make latency only load on homepage *@
+<script src="~/js/azurespeed/latency.js" asp-append-version="true"></script>

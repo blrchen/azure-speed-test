@@ -1,14 +1,16 @@
-﻿namespace AzureSpeed.Web.App.ApiControllers
-{
-    using System.Collections.Generic;
-    using System.Linq;
-    using AzureSpeed.Common;
-    using AzureSpeed.Common.Models;
-    using Common;
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Options;
+﻿using System.Collections.Generic;
+using System.Linq;
+using AzureSpeed.Common.LocalData;
+using AzureSpeed.Common.Models.Responses;
+using AzureSpeed.Common.Models.ViewModels;
+using AzureSpeed.Common.Storage;
+using AzureSpeed.Web.App.Common;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
+namespace AzureSpeed.Web.App.ApiControllers
+{
     [Route("api")]
     public class ApiController : Controller
     {

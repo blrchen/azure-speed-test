@@ -1,19 +1,22 @@
-﻿namespace AzureSpeed.Web.App.Common
-{
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Net;
-    using System.Xml;
-    using AzureSpeed.Common;
-    using AzureSpeed.Common.Models;
-    using LukeSkywalker.IPNetwork;
-    using Newtonsoft.Json;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Xml;
+using AzureSpeed.Common.Models;
+using AzureSpeed.Common.Models.AWS;
+using AzureSpeed.Common.Models.Responses;
+using AzureSpeed.Common.Models.ViewModels;
+using AzureSpeed.Common.Storage;
+using LukeSkywalker.IPNetwork;
+using Newtonsoft.Json;
 
+namespace AzureSpeed.Common.LocalData
+{
     public class LocalDataStoreContext
     {
-        private readonly string root;
+        private readonly string dataFilePath;
         private readonly string azureIpFileList;
         private readonly string awsIpFile;
         private readonly string aliCloudIpFile;
@@ -21,9 +24,9 @@
         private IDictionary<IPNetwork, string> subnetDictionary;
         private IEnumerable<StorageAccount> accounts;
 
-        public LocalDataStoreContext(string root, string azureIpFileList, string awsIpFile, string aliCloudIpFile)
+        public LocalDataStoreContext(string dataPath, string azureIpFileList, string awsIpFile, string aliCloudIpFile)
         {
-            this.root = root;
+            this.dataFilePath = dataPath;
             this.azureIpFileList = azureIpFileList;
             this.awsIpFile = awsIpFile;
             this.aliCloudIpFile = aliCloudIpFile;
@@ -35,7 +38,7 @@
             {
                 if (this.accounts == null)
                 {
-                    string filePath = Path.Combine(root, @"Data\settings.json");
+                    string filePath = Path.Combine(dataFilePath, @"Data\settings.json");
                     var text = File.ReadAllText(filePath);
                     var setting = JsonConvert.DeserializeObject<Settings>(text);
                     this.accounts = setting.Accounts;
@@ -127,7 +130,7 @@
             foreach (string filePath in ipFileList.Split(';'))
             {
                 var xmlDoc = new XmlDocument();
-                xmlDoc.Load(this.root + @"\Data\IpRangeFiles\Azure\" + filePath);
+                xmlDoc.Load(this.dataFilePath + @"\Data\IpRangeFiles\Azure\" + filePath);
                 var root = xmlDoc.DocumentElement;
                 foreach (XmlElement ele in root)
                 {
@@ -145,7 +148,7 @@
             }
 
             // Load AWS ip range data
-            string json = File.ReadAllText(this.root + @"\Data\IpRangeFiles\AWS\" + this.awsIpFile);
+            string json = File.ReadAllText(this.dataFilePath + @"\Data\IpRangeFiles\AWS\" + this.awsIpFile);
             var awsIpRangeData = JsonConvert.DeserializeObject<AwsIpRangeData>(json);
             foreach (var prefix in awsIpRangeData.Prefixes)
             {
@@ -168,7 +171,7 @@
 
             // Load AliCloud ip range data
             string aliCloudIpFile = this.aliCloudIpFile;
-            string[] lines = File.ReadAllLines(this.root + @"\Data\IpRangeFiles\AliCloud\" + aliCloudIpFile);
+            string[] lines = File.ReadAllLines(this.dataFilePath + @"\Data\IpRangeFiles\AliCloud\" + aliCloudIpFile);
             var aliIpRange = new IpRangeViewModel { Cloud = "AliCloud", Region = "AliCloud", Subnet = new List<string>() };
             foreach (var line in lines)
             {
@@ -223,7 +226,7 @@
             foreach (string filePath in this.azureIpFileList.Split(';'))
             {
                 var xmlDoc = new XmlDocument();
-                xmlDoc.Load(this.root + @"\Data\IpRangeFiles\Azure\" + filePath);
+                xmlDoc.Load(this.dataFilePath + @"\Data\IpRangeFiles\Azure\" + filePath);
                 var root = xmlDoc.DocumentElement;
                 foreach (XmlElement ele in root)
                 {
@@ -244,7 +247,7 @@
             }
 
             // Get AWS ip range data
-            string json = File.ReadAllText(this.root + @"\Data\IpRangeFiles\AWS\" + this.awsIpFile);
+            string json = File.ReadAllText(this.dataFilePath + @"\Data\IpRangeFiles\AWS\" + this.awsIpFile);
 
             var awsIpRangeData = JsonConvert.DeserializeObject<AwsIpRangeData>(json);
             foreach (var prefix in awsIpRangeData.Prefixes)
@@ -260,7 +263,7 @@
             }
 
             // Get AliCloud ip range data
-            string[] lines = File.ReadAllLines(this.root + @"\Data\IpRangeFiles\AliCloud\" + this.aliCloudIpFile);
+            string[] lines = File.ReadAllLines(this.dataFilePath + @"\Data\IpRangeFiles\AliCloud\" + this.aliCloudIpFile);
             foreach (var line in lines)
             {
                 IPNetwork net;

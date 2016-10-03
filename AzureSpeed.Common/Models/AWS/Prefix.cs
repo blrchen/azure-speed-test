@@ -1,7 +1,7 @@
-﻿namespace AzureSpeed.Common.Models
-{
-    using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
+namespace AzureSpeed.Common.Models.AWS
+{
     public class Prefix
     {
         [JsonProperty("ip_prefix")]

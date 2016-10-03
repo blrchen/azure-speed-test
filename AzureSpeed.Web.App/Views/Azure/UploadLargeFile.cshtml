@@ -1,16 +1,11 @@
 ﻿@{
-    ViewBag.Title = "Azure Storage Large File Upload Test";
+    ViewBag.Title = "Azure Storage Large File Upload Speed Test";
 }
 
 <div class="container-fluid" ng-controller="uploadLargeFileCtrl">
-    <h3 class="page-header">Azure Storage Large File Upload Speed Test</h3>
-    <div class="row">
-        <div class="col-md-12">
-            <div class="alert alert-warning alert-dismissable">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                Test upload large file to Azure Blob Storage in worldwide data centers, with different upload options.
-            </div>
-        </div>
+    <div class="page-header">
+        <h3>@ViewBag.Title</h3>
+        <small>Test upload large file to Azure Blob Storage in worldwide data centers, with different upload options.</small>
     </div>
     <div class="row">
         <div class="col-md-12">
@@ -36,14 +31,14 @@
                         </tr>
                     </thead>
                     <tbody>
-                    <tr ng-repeat="result in results">
-                        <td>{{result.fileName}}</td>
-                        <td>{{result.fileSize}}</td>
-                        <td>{{result.region}}</td>
-                        <td>{{result.blockSize}}</td>
-                        <td>{{result.thread}}</td>
-                        <td>{{result.speed}}</td>
-                    </tr>
+                        <tr ng-repeat="result in results">
+                            <td>{{result.fileName}}</td>
+                            <td>{{result.fileSize}}</td>
+                            <td>{{result.region}}</td>
+                            <td>{{result.blockSize}}</td>
+                            <td>{{result.thread}}</td>
+                            <td>{{result.speed}}</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>

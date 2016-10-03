@@ -1,2 +1,2 @@
-﻿// Write your Javascript code.
-angular.module('azurespeed', ['ui.bootstrap'])
+﻿angular
+    .module('azurespeed', ['angular.filter', 'ui.bootstrap', 'checklist-model'])

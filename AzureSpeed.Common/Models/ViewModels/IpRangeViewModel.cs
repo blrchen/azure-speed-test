@@ -1,7 +1,7 @@
-﻿namespace AzureSpeed.Common.Models
-{
-    using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
+namespace AzureSpeed.Common.Models.ViewModels
+{
     public class IpRangeViewModel
     {
         public string Cloud { get; set; }

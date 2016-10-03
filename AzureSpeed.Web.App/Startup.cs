@@ -1,11 +1,12 @@
-﻿namespace AzureSpeed.Web.App
-{
-    using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Logging;
+﻿using AzureSpeed.Web.App.Common;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
+namespace AzureSpeed.Web.App
+{
     public class Startup
     {
         public Startup(IHostingEnvironment env)

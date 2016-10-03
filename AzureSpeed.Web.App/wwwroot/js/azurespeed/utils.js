@@ -1,26 +1,23 @@
 ﻿var guid = {
     newGuid: function () {
         var s4 = function () { return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1); };
-        return (s4() + s4() + "-" + s4() + "-" + s4() + "-" + s4() + "-" + s4() + s4() + s4());
+        return (s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4());
     }
 };
 var utils = {
-    getRegions: function (includecdn) {
-        var result = dc.slice(0);
-        for (var i = dc.length - 1 ; i >= 0; i--) {
-            if (!checkStatusDc[i]) {
-                result.splice(i,1);
+    getRegions: function () {
+        var result = [];
+        if (window.userregions) {
+            for (var i = 0; i < window.userregions.length; i++) {
+                result.push(regions[window.userregions[i]]);
             }
-        }
-        if (includecdn) {
-            return result.concat(cdn);
         }
         return result;
     },
     getGeoList: function () {
         var result = [];
         $.each(utils.getRegions(), function () {
-            if (this.geo.indexOf('CDN') == -1 && $.inArray(this.geo, result) == -1) {
+            if ($.inArray(this.geo, result) == -1) {
                 result.push(this.geo);
             }
         });
@@ -28,15 +25,15 @@ var utils = {
     },
     getSize: function (size, orgUnit, targetUnit, dif) {
         if (!orgUnit) {
-            orgUnit = "B";
+            orgUnit = 'B';
         }
         if (!targetUnit) {
-            targetUnit = "Auto";
+            targetUnit = 'Auto';
         }
         if (dif) {
             size += dif;
         }
-        var units = ["B", "KB", "MB", "GB", "TB", "PB"];
+        var units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
         var idx = -1;
         for (idx = 0; idx < units.length; idx++) {
             if (units[idx].toLowerCase() == orgUnit.toLowerCase()) {
@@ -48,10 +45,10 @@ var utils = {
         while (idx < units.length) {
             unit = units[idx];
             idx++;
-            if (targetUnit != "auto" && unit.toLowerCase() == targetUnit) {
+            if (targetUnit != 'auto' && unit.toLowerCase() == targetUnit) {
                 break;
             }
-            if (targetUnit == "auto" && dsize < 1024) {
+            if (targetUnit == 'auto' && dsize < 1024) {
                 break;
             }
             dsize = dsize / 1024;
@@ -67,7 +64,7 @@ var utils = {
         return null;
     },
     convertSizeStrToFloat: function (v) {
-        var units = ["KB", "MB", "GB", "TB", "PB", "B"];
+        var units = ['KB', 'MB', 'GB', 'TB', 'PB', 'B'];
         var idx = -1;
         var num = 0;
         for (idx = 0; idx < units.length; idx++) {

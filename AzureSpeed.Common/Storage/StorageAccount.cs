@@ -1,7 +1,7 @@
-﻿namespace AzureSpeed.Common
-{
-    using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
+namespace AzureSpeed.Common.Storage
+{
     public class StorageAccount
     {
         [JsonProperty("name")]

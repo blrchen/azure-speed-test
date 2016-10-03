@@ -1,9 +1,9 @@
-﻿namespace AzureSpeed.Web.App.Controllers
-{
-    using System;
-    using AzureSpeed.Common;
-    using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using AzureSpeed.Common.Storage;
+using Microsoft.AspNetCore.Mvc;
 
+namespace AzureSpeed.Web.App.Controllers
+{
     public class AzureController : ControllerBase
     {
         public IActionResult Index()
@@ -42,11 +42,6 @@
         }
 
         public IActionResult About()
-        {
-            return View();
-        }
-
-        public IActionResult Test()
         {
             return View();
         }

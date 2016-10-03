@@ -1,4 +1,4 @@
-﻿namespace AzureSpeed.Common.Models
+﻿namespace AzureSpeed.Common.Models.Responses
 {
     public class RegionInfo
     {

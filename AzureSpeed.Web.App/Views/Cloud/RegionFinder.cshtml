@@ -3,19 +3,19 @@
 }
 
 <div class="container-fluid" ng-controller="cloudRegionFinderCtrl">
-    <h3 class="page-header">@ViewBag.Title</h3>
+    <div class="page-header">
+        <h3>@ViewBag.Title</h3>
+        <small>
+            Cloud Region Finder enables you to quickly lookup cloud and region infomation of application deployment, try it by entering url or ip address now! Currently Azure, AWS, AliCloud are supported.
+        </small>
+    </div>
     <div class="row">
         <div class="col-md-12">
-            <div class="alert alert-warning alert-dismissable">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                Cloud Region Finder enables you to quickly lookup cloud and region infomation of application deployment, try it by entering url or ip address now!
-                Currently Azure, AWS, AliCloud are supported.
-            </div>
             <div class="form-group">
                 <div class="input-group">
                     <input class="form-control" type="text" value=""
                            placeholder="Type ip or url to start, examples: 168.62.20.37 or azurespeed.com"
-                           ng-model="ipOrUrl" ng-keyup="$event.keyCode == 13 && canSearch() && click()" />
+                           ng-model="ipOrUrl" ng-keyup="$event.keyCode == 13 && canSearch() && click()"/>
                     <span class="input-group-btn">
                         <button class="btn btn-primary" ng-disabled="!canSearch()" ng-click="click()">
                             <i class="fa fa-search"></i> Search

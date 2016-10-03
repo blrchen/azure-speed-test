@@ -2,7 +2,6 @@
     .module('azurespeed')
     .controller('uploadLargeFileCtrl', ['$scope', '$http', function ($scope, $http) {
         $scope.results = [];
-        $scope.regions = utils.getRegions();
         $scope.blockSizes = [256, 512, 1024, 4096];
         $scope.threads = [1, 2, 4, 8, 16];
         $scope.progressNow = 0;
@@ -11,7 +10,7 @@
         $scope.selectedThread = 4;
         $scope.upload = function () {
             var file = $('#file-input')[0].files[0];
-            var region = $scope.selectedRegion.region;
+            var region = $scope.selectedRegion.name;
             var data = { region: region, blobName: guid.newGuid(), operation: 'upload' };
             $http.get('/api/sas', { params: data }).success(function (response) {
                 ja.storage.blockSize = $scope.selectedBlockSize * 1024;

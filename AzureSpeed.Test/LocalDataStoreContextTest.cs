@@ -1,12 +1,12 @@
-﻿namespace AzureSpeed.Test
-{
-    using System.Configuration;
-    using System.IO;
-    using System.Linq;
-    using System.Reflection;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Web.App.Common;
+﻿using System.Configuration;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using AzureSpeed.Common.LocalData;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+namespace AzureSpeed.Test
+{
     [TestClass]
     public class LocalDataStoreContextTest
     {

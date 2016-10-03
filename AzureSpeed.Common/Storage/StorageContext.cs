@@ -1,15 +1,15 @@
-﻿namespace AzureSpeed.Common
-{
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Text;
-    using System.Threading.Tasks;
-    using Microsoft.WindowsAzure.Storage;
-    using Microsoft.WindowsAzure.Storage.Auth;
-    using Microsoft.WindowsAzure.Storage.Blob;
-    using Microsoft.WindowsAzure.Storage.Shared.Protocol;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Auth;
+using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage.Shared.Protocol;
 
+namespace AzureSpeed.Common.Storage
+{
     public class StorageContext
     {
         private readonly CloudBlobClient blobClient;
@@ -22,7 +22,7 @@
                 : account.EndpointSuffix;
 
             var stroageCredential = new StorageCredentials(account.Name, account.Key);
-            var storageAccount = new CloudStorageAccount(stroageCredential, endpointSuffix, true);
+            var storageAccount = new CloudStorageAccount(stroageCredential, endpointSuffix, false);
             this.blobClient = storageAccount.CreateCloudBlobClient();
         }
 

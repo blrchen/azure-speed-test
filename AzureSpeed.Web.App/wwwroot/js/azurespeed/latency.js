@@ -13,32 +13,31 @@
         report: function () {
             var table = $('#latency-table tbody');
             table.empty();
-            var tmp = [];
+            var tmpRegions = [];
             $.each(utils.getRegions(), function () {
-                tmp.push({ geo: this.geo, region: this.region, location: this.location, average: latency.latest[this.storage] });
+                tmpRegions.push({ geo: this.geo, name: this.name, location: this.location, average: latency.latest[this.storage] });
             });
 
-            $.each(tmp, function () {
+            $.each(tmpRegions, function () {
                 if (this.average > 0) {
                     var tdGeo = $('<td>').text(this.geo);
-                    var tdRegion = $('<td>').text(this.region);
+                    var tdRegion = $('<td>').text(this.name);
                     var tdLocation = $('<td>').text(this.location);
                     var tdLatency = $('<td>').text(parseInt(this.average).toFixed(0) + ' ms');
                     var tr = $('<tr>').append(tdGeo).append(tdRegion).append(tdLocation).append(tdLatency);
                     table.append(tr);
-
                 }
             });
             var closestTable = $('#closest-table');
             closestTable.empty();
-            tmp.sort(function (a, b) {
+            tmpRegions.sort(function (a, b) {
                 return a.average - b.average;
             });
             var closest = 0;
-            $.each(tmp, function() {
+            $.each(tmpRegions, function () {
                 if (closest < 3) {
                     closest++;
-                    var text = this.region + ' ( ' + this.location + ' )';
+                    var text = this.name + ' ( ' + this.location + ' )';
                     closestTable.append($('<tr>').append($('<td>').text(text)).append($('<td>').text(parseInt(this.average).toFixed(0) + ' ms')));
                 }
             });
@@ -53,20 +52,14 @@
         },
         _ping: function () {
             $.each(utils.getRegions(), function () {
-                var storage = this.storage;
-                var region = this.region;
-                latency.startTime[storage] = new Date().getTime();
-                var requestUrl = "http://" + storage + ".blob.core.windows.net/public/callback.js";
-                if (region.indexOf('China') != -1) {
-                    requestUrl = "http://" + storage + ".blob.core.chinacloudapi.cn/public/callback.js";
-                }
-                if (storage.indexOf('cdn') != -1) {
-                    requestUrl = "http://az654246.vo.msecnd.net/public/callback.js";
-                }
+                latency.startTime[this.storage] = new Date().getTime();
+                var requestUrl = this.endpointSuffic
+                    ? 'http://' + this.storage + '.blob.' + this.endpointSuffic + '/public/callback.js'
+                    : 'http://' + this.storage + '.blob.core.windows.net/public/callback.js';
                 $.ajax({
                     url: requestUrl,
                     type: 'GET',
-                    cache: false,
+                    cache: false
                 });
             });
         },
@@ -74,47 +67,49 @@
             var elapsed = new Date().getTime() - latency.startTime[storage];
             latency.history[storage].push(elapsed);
             latency.latest[storage] = elapsed;
+            console.log('storage = ' + storage + ' latency = ' + elapsed);
         },
         tickloop: function () {
             var n = 60,                                 //number of x coordinates in the graph
-            duration = 600,                          //duration for transitions
-            deviceValue = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],       //temp holding for each device value
-            now = new Date(Date.now() - duration),   //Now
-            //fill an array of arrays with dummy data to start the chart
-            //each item in the top-level array is a line
-            //each item in the line arrays represents the X coordinate across a graph
-            //The 'value' within each line array represents the Y coordinate for that point
-            data = [
-                d3.range(n).map(function () { return { value: 0 }; }),
-                d3.range(n).map(function () { return { value: 0 }; }),
-                d3.range(n).map(function () { return { value: 0 }; }),
-                d3.range(n).map(function () { return { value: 0 }; }),
-                d3.range(n).map(function () { return { value: 0 }; }),
-                d3.range(n).map(function () { return { value: 0 }; }),
-                d3.range(n).map(function () { return { value: 0 }; }),
-                d3.range(n).map(function () { return { value: 0 }; }),
-                d3.range(n).map(function () { return { value: 0 }; }),
-                d3.range(n).map(function () { return { value: 0 }; }),
-                d3.range(n).map(function () { return { value: 0 }; }),
-                d3.range(n).map(function () { return { value: 0 }; }),
-                d3.range(n).map(function () { return { value: 0 }; }),
-                d3.range(n).map(function () { return { value: 0 }; }),
-                d3.range(n).map(function () { return { value: 0 }; }),
-                d3.range(n).map(function () { return { value: 0 }; }),
-                d3.range(n).map(function () { return { value: 0 }; }),
-                d3.range(n).map(function () { return { value: 0 }; }),
-                d3.range(n).map(function () { return { value: 0 }; }),
-                d3.range(n).map(function () { return { value: 0 }; }),
-                d3.range(n).map(function () { return { value: 0 }; }),
-                d3.range(n).map(function () { return { value: 0 }; }),
-                d3.range(n).map(function () { return { value: 0 }; }),
-                d3.range(n).map(function () { return { value: 0 }; }),
-                d3.range(n).map(function () { return { value: 0 }; })
-            ];
+                duration = 600,                          //duration for transitions
+                now = new Date(Date.now() - duration),   //Now
+                //fill an array of arrays with dummy data to start the chart
+                //each item in the top-level array is a line
+                //each item in the line arrays represents the X coordinate across a graph
+                //The 'value' within each line array represents the Y coordinate for that point
+                data = [
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; })
+                ];
 
             // Auto generate color
             var color = d3.scale.category10();
-            var colorDomain = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"];
+            var colorDomain = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16'];
             color.domain(colorDomain);
 
             //set margins and figure out width/height
@@ -133,51 +128,51 @@
                             .range([0, height]);
 
             var line = d3.svg.line()
-                             .interpolate("basis")
+                             .interpolate('basis')
                              .x(function (d, i) { return x(now - (n - 1 - i) * duration); })
                              .y(function (d, i) { return y(d.value); });
 
-            var svg = d3.select(".chart-container")
-                        .append("svg")
-                        .attr("width", width + margin.left + margin.right)
-                        .attr("height", height + margin.top + margin.bottom)
-                        .append("g")
-                        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            var svg = d3.select('.chart-container')
+                        .append('svg')
+                        .attr('width', width + margin.left + margin.right)
+                        .attr('height', height + margin.top + margin.bottom)
+                        .append('g')
+                        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
             //Define a clipping path, because we need to clip the graph to render only the bits we want to see as it moves
-            svg.append("defs")
-               .append("clipPath")
-               .attr("id", "clip")
-               .append("rect")
-               .attr("width", width)
-               .attr("height", height);
+            svg.append('defs')
+               .append('clipPath')
+               .attr('id', 'clip')
+               .append('rect')
+               .attr('width', width)
+               .attr('height', height);
 
             //Append the x axis
-            var axis = svg.append("g")
-                          .attr("class", "x axis")
-                          .attr("transform", "translate(0," + height + ")")
+            var axis = svg.append('g')
+                          .attr('class', 'x axis')
+                          .attr('transform', 'translate(0,' + height + ')')
                           .call(x.axis = d3.svg.axis()
                           .scale(x)
-                          .orient("bottom"));
+                          .orient('bottom'));
 
             //append the y axis
-            var yaxis = svg.append("g")
-                           .attr("class", "y axis")
+            var yaxis = svg.append('g')
+                           .attr('class', 'y axis')
                            .call(y.axis = d3.svg.axis().scale(y)
-                           .orient("left")
+                           .orient('left')
                            .ticks(5));
 
             //append the clipping path
-            var linegroup = svg.append("g")
-                               .attr("clip-path", "url(#clip)");
+            var linegroup = svg.append('g')
+                               .attr('clip-path', 'url(#clip)');
 
-            var path = linegroup.selectAll(".line")
+            var path = linegroup.selectAll('.line')
                                 .data(data)
                                 .enter()
-                                .append("path")
-                                .attr("class", "line")
-                                .attr("d", line)
-                                .style("stroke", function (d, i) { return color(i); });
+                                .append('path')
+                                .attr('class', 'line')
+                                .attr('d', line)
+                                .style('stroke', function (d, i) { return color(i); });
 
             //We need to transition the graph after all lines have been updated. There's no
             //built-in for this, so this function does reference counting on end events
@@ -186,7 +181,7 @@
                 var n = 0;
                 transition
                     .each(function () { ++n; })
-                    .each("end", function () { if (!--n) callback.apply(this, arguments); });
+                    .each('end', function () { if (!--n) callback.apply(this, arguments); });
             }
 
             tick();
@@ -207,16 +202,16 @@
                 //slide the x-axis left
                 axis.transition()
                     .duration(duration)
-                    .ease("linear")
+                    .ease('linear')
                     .call(x.axis);
 
                 //Update the paths based on the updated line data and slide left
-                path.attr("d", line)
-                    .attr("transform", null)
+                path.attr('d', line)
+                    .attr('transform', null)
                     .transition()
                     .duration(duration)
-                    .ease("linear")
-                    .attr("transform", "translate(" + x(now - (n - 1) * duration) + ",0)")
+                    .ease('linear')
+                    .attr('transform', 'translate(' + x(now - (n - 1) * duration) + ',0)')
                     .call(endall, tick);
 
                 for (var i = 0; i < data.length; i++) {
@@ -225,7 +220,7 @@
             };
         },
         init: function () {
-            $.each(utils.getRegions(), function () {
+            $.each(regions, function () {
                 var storage = this.storage;
                 latency.latest[storage] = 0;
                 latency.history[storage] = latency.history[storage] || [];

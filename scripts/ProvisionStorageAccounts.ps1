@@ -20,9 +20,8 @@ foreach ($location in $locations)
     $storageAccountKey = (Get-AzureRmStorageAccountKey -Name $storageAccountName -ResourceGroupName $resourceGroupName).Value[0]
    
     Write-Host "{"
-    Write-Host "name: '$storageAccountName',"
-    Write-Host "key: '$storageAccountKey',"
-    Write-Host "region: '$region'"
+    Write-Host "  `"name`": `"$storageAccountName`","
+    Write-Host "  `"key`": `"$storageAccountKey`","
+    Write-Host "  `"region`": `"$region`""
     Write-Host "},"
-    
 }

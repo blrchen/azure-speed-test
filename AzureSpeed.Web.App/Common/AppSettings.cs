@@ -1,4 +1,4 @@
-namespace AzureSpeed.Web.App
+namespace AzureSpeed.Web.App.Common
 {
     public class AppSettings
     {

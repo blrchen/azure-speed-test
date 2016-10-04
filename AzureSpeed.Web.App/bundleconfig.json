@@ -3,9 +3,22 @@
 [
   {
     "inputFiles": [
+      "wwwroot/lib/metisMenu/src/metisMenu.css",
+      "wwwroot/css/sb-admin-2.css",
       "wwwroot/css/site.css"
     ],
     "outputFileName": "wwwroot/css/site.min.css"
+  },
+  {
+    "inputFiles": [
+      "wwwroot/lib/angular-filter/dist/angular-filter.js",
+      "wwwroot/lib/angular-bootstrap/ui-bootstrap.js",
+      "wwwroot/lib/checklist-model/checklist-model.js",
+      "wwwroot/lib/d3/d3.js",
+      "wwwroot/lib/metisMenu/dist/metisMenu.js",
+      "wwwroot/js/sb-admin-2.js"
+    ],
+    "outputFileName": "wwwroot/js/lib.all.js"
   },
   {
     "inputFiles": [

@@ -44,5 +44,8 @@
             // This is a temp workaround before latency page is fully re-wrotten with angular
             window.userregions = $scope.user.regions;
         };
+
+        // TODO: Workaround to ensure latency page can get correct region list. 
+        // Remove when it's changed to angular
         $scope.checkChanged();
     }]);

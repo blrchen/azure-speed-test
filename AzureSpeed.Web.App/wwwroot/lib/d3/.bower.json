@@ -14,5 +14,6 @@
   },
   "_source": "https://github.com/mbostock-bower/d3-bower.git",
   "_target": "3.5.17",
-  "_originalSource": "d3"
+  "_originalSource": "d3",
+  "_direct": true
 }

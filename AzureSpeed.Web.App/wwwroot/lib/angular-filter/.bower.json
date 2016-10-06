@@ -35,6 +35,6 @@
     "commit": "cf4ca0823fd31318701d830901b5e037f74d4df2"
   },
   "_source": "https://github.com/a8m/angular-filter.git",
-  "_target": "0.5.11",
+  "_target": "^0.5.11",
   "_originalSource": "angular-filter"
 }

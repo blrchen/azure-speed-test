@@ -27,6 +27,5 @@
 /// <reference path="lib/angular-filter/dist/angular-filter.js" />
 /// <reference path="lib/bootstrap/dist/js/bootstrap.js" />
 /// <reference path="lib/checklist-model/checklist-model.js" />
-/// <reference path="lib/d3/d3.js" />
 /// <reference path="lib/jquery/dist/jquery.js" />
-/// <reference path="lib/metismenu/dist/metismenu.js" />
+/// <reference path="lib/metisMenu/dist/metisMenu.js" />

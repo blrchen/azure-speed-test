@@ -9,18 +9,19 @@
     <title>@ViewBag.Title - Azure Speed Test</title>
 
     <environment names="Development">
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-        <link rel="stylesheet" href="~/lib/angular-bootstrap/ui-bootstrap-csp.css" />
-        <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.css" />
-        <link rel="stylesheet" href="~/lib/metisMenu/src/metisMenu.css" />
-        <link rel="stylesheet" href="~/css/sb-admin-2.css" />
-        <link rel="stylesheet" href="~/css/site.css" />
+        <link href="~/lib/font-awesome/css/font-awesome.css" rel="stylesheet" />
+        <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+        <link href="~/lib/angular-bootstrap/ui-bootstrap-csp.css" rel="stylesheet" />
+        <link href="~/lib/metisMenu/dist/metisMenu.css" rel="stylesheet" />
+        <link href="~/css/sb-admin-2.css" rel="stylesheet" />
+        <link href="~/css/site.css" rel="stylesheet" />
     </environment>
     <environment names="Staging,Production">
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-        <link rel="stylesheet" href="~/lib/angular-bootstrap/ui-bootstrap-csp.css" />
-        <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.min.css" />
-        <link rel="stylesheet" href="~/css/site.min.css" />
+        <link href="~/lib/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+        <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="~/lib/angular-bootstrap/ui-bootstrap-csp.css" rel="stylesheet" />
+        <link href="~/lib/metisMenu/dist/metisMenu.min.css" rel="stylesheet" />
+        <link href="~/css/site.min.css" rel="stylesheet" />
     </environment>
     <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.4.min.js"></script>
     @Html.Partial("_Analytics")
@@ -114,14 +115,13 @@
     </div>
 
     <environment names="Development">
-        <script src="~/lib/jquery/dist/jquery.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
         <script src="~/lib/angular/angular.js"></script>
         <script src="~/lib/angular-filter/dist/angular-filter.js"></script>
         <script src="~/lib/angular-bootstrap/ui-bootstrap.js"></script>
         <script src="~/lib/checklist-model/checklist-model.js"></script>
         <script src="~/lib/d3/d3.js"></script>
-        <script src="~/lib/metisMenu/src/metisMenu.js"></script>
+        <script src="~/lib/metisMenu/dist/metisMenu.js"></script>
         <script src="~/js/sb-admin-2.js"></script>
         <script src="~/js/jazure/crypto-min.js"></script>
         <script src="~/js/jazure/jazure.core/jazure.core.js"></script>
@@ -150,6 +150,7 @@
                 asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
         </script>
         <script src="~/lib/angular/angular.min.js"></script>
+        <script src="~/lib/metisMenu/dist/metisMenu.min.js"></script>
         <script src="~/js/lib.all.min.js"></script>
         <script src="~/js/jazure.all.min.js" asp-append-version="true"></script>
         <script src="~/js/azurespeed.all.min.js" asp-append-version="true"></script>

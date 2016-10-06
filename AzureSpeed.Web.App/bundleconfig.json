@@ -3,7 +3,6 @@
 [
   {
     "inputFiles": [
-      "wwwroot/lib/metisMenu/src/metisMenu.css",
       "wwwroot/css/sb-admin-2.css",
       "wwwroot/css/site.css"
     ],

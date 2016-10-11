@@ -1,37 +1,18 @@
 ﻿<p>Please select regions:</p>
 <div ng-repeat="(key, value) in regions | groupBy: 'geo'">
     <div ng-mouseenter="show(key)" ng-mouseleave="hide(key)">
-        <div class="horizon-show">
-            <strong >{{key}}: </strong>
-        </div>  
-        <div ng-class="{'div-hidden': !ifShow(key),'horizon-show': ifShow(key)}">
-            <button ng-click="checkAll(key)">check all</button>
-            <button ng-click="uncheckAll(key)">uncheck all</button>
+        <div>
+            <label>{{key}}:</label>
+            <button class="btn btn-link" ng-click="checkAll(key)">check all</button>
+            <button class="btn btn-link" ng-click="uncheckAll(key)">uncheck all</button>
         </div>
     </div>
     <label ng-repeat="region in value" class="checkbox-inline">
-        <input type="checkbox"
+        <input class="checkbox"
+               type="checkbox"
                checklist-model="user.regions"
                checklist-value="region.id"
                checklist-change="checkChanged()"
                ng-model="checked"> {{region.name}}
     </label>
 </div>
-
-@*<button ng-click="checkAll()">check all</button>
-<button ng-click="uncheckAll()">uncheck all</button>*@
-
-// TODO: Code clean up
-<style type="text/css">
-    .div-show{
-        display: block;
-    }
-
-    .div-hidden{
-        display: none;
-    }
-
-    .horizon-show{
-        display: inline-block;
-    }
-</style>

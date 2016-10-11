@@ -1,6 +1,6 @@
 ﻿angular
     .module('azurespeed')
-    .controller('cloudRegionFinderCtrl', ['$scope', '$http', function ($scope, $http) {
+    .controller('CloudRegionFinderController', ['$scope', '$http', function ($scope, $http) {
         $scope.result = '';
         $scope.ipOrUrl = '';
         $scope.click = function () {

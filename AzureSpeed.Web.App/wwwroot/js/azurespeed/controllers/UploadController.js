@@ -1,9 +1,6 @@
 ﻿angular
     .module('azurespeed')
-    .controller('uploadCtrl', ['$scope', '$http', '$controller', function ($scope, $http, $controller) {
-    // todo: remove me
-        $controller('mainCtrl', { $scope: $scope });
-
+    .controller('UploadController', ['$scope', '$http', '$controller', function ($scope, $http, $controller) {
         $scope.selectedRegionIds = [];
         $scope.$on('checkChanged', function () {
             $scope.selectedRegionIds = $scope.user.regions;
@@ -39,23 +36,18 @@
                     };
                     var progress = function (ev) {
                         $scope.current.progressPercent = ((ev.loaded / ev.total) * 100).toFixed(0);
-                        console.log('progressPercent = ' + $scope.current.progressPercent);
                         $scope.$digest();
                     };
                     var success = function () {
                         var elapsedSeconds = (new Date() - st) / 1000;
                         var speed = utils.getSizeStr(byteSize / elapsedSeconds) + '/s';
-                        console.log('speed = ' + speed);
                         $scope.current.speed = speed;
                         $scope.results.last = $scope.current;
                         $scope.$digest();
-                        console.log(region.storage + ' upload completed successfully, speed = ' + speed);
                         $scope.user.regions.shift();
                         $scope.upload();
                     };
                     var error = function (err) {
-                        //upload.uploadTable.find('tr[name="' + storage + '"] td.upload-speed').text('upload completed with error');
-                        console.log(region.storage + ' upload completed with error' + err);
                     };
                     blob.upload(content, before, progress, success, error);
                 });

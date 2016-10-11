@@ -36,13 +36,13 @@
       "wwwroot/js/site.js",
       "wwwroot/js/azurespeed/common.js",
       "wwwroot/js/azurespeed/utils.js",
-      "wwwroot/js/azurespeed/controllers/mainCtrl.js",
-      "wwwroot/js/azurespeed/controllers/cloudRegionFinderCtrl.js",
-      "wwwroot/js/azurespeed/controllers/downloadCtrl.js",
-      "wwwroot/js/azurespeed/controllers/latencyCtrl.js",
-      "wwwroot/js/azurespeed/controllers/ipRangeCtrl.js",
-      "wwwroot/js/azurespeed/controllers/uploadCtrl.js",
-      "wwwroot/js/azurespeed/controllers/uploadLargeFileCtrl.js"
+      "wwwroot/js/azurespeed/controllers/MainController.js",
+      "wwwroot/js/azurespeed/controllers/CloudRegionFinderController.js",
+      "wwwroot/js/azurespeed/controllers/DownloadController.js",
+      "wwwroot/js/azurespeed/controllers/LatencyController.js",
+      "wwwroot/js/azurespeed/controllers/IpRangeController.js",
+      "wwwroot/js/azurespeed/controllers/UploadController.js",
+      "wwwroot/js/azurespeed/controllers/UploadLargeFileController.js"
     ],
     "minify": {
       "enabled": true,

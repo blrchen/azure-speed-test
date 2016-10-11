@@ -1,8 +1,6 @@
 ﻿angular
     .module('azurespeed')
-    .controller('downloadCtrl', ['$scope', '$http', '$controller', function ($scope, $http, $controller) {
-        $controller('mainCtrl', { $scope: $scope });
-
+    .controller('DownloadController', ['$scope', '$http', '$controller', function ($scope, $http) {
         $scope.load = function() {
             $scope.items = regions.where(function (d) { return $scope.user.regions.indexOf(d.id) != -1 });
             angular.forEach($scope.user.regions, function (value, key) {

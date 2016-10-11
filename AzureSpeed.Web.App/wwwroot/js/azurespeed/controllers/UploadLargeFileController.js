@@ -1,6 +1,6 @@
 ﻿angular
     .module('azurespeed')
-    .controller('uploadLargeFileCtrl', ['$scope', '$http', function ($scope, $http) {
+    .controller('UploadLargeFileController', ['$scope', '$http', function ($scope, $http) {
         $scope.results = [];
         $scope.blockSizes = [256, 512, 1024, 4096];
         $scope.threads = [1, 2, 4, 8, 16];
@@ -28,9 +28,6 @@
                 var progress = function (ev) {
                     $scope.progressNow = ev.loaded;
                     $scope.progressPercent = ((ev.loaded / ev.total) * 100).toFixed(0);
-                    console.log('loaded = ' + ev.loaded);
-                    console.log('total = ' + ev.total);
-                    console.log('progressPercent = ' + $scope.progressPercent);
                     $scope.$digest();
                 };
                 var success = function () {

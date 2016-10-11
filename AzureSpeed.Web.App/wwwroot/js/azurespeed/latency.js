@@ -67,7 +67,6 @@
             var elapsed = new Date().getTime() - latency.startTime[storage];
             latency.history[storage].push(elapsed);
             latency.latest[storage] = elapsed;
-            console.log('storage = ' + storage + ' latency = ' + elapsed);
         },
         tickloop: function () {
             var n = 60,                                 //number of x coordinates in the graph

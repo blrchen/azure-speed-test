@@ -41,6 +41,7 @@ Array.prototype.select = function (func) {
 
 Array.prototype.remove = function (item) {
     var idx = this.indexOf(item);
+    if (idx < 0) return;
     this.splice(idx, 1);
 }
 

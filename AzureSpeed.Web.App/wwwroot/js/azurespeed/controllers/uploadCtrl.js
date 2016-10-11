@@ -1,6 +1,7 @@
 ﻿angular
     .module('azurespeed')
     .controller('uploadCtrl', ['$scope', '$http', '$controller', function ($scope, $http, $controller) {
+    // todo: remove me
         $controller('mainCtrl', { $scope: $scope });
 
         $scope.selectedRegionIds = [];

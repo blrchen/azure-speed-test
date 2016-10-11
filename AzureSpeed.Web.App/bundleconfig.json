@@ -15,7 +15,8 @@
       "wwwroot/lib/checklist-model/checklist-model.js",
       "wwwroot/lib/d3/d3.js",
       "wwwroot/lib/metisMenu/dist/metisMenu.js",
-      "wwwroot/js/sb-admin-2.js"
+      "wwwroot/js/sb-admin-2.js",
+      "wwwroot/lib/angular-local-storage/dist/angular-local-storage.js"
     ],
     "outputFileName": "wwwroot/js/lib.all.js"
   },

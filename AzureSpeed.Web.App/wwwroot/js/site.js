@@ -3,7 +3,7 @@
 
 app.config(function (localStorageServiceProvider) {
     localStorageServiceProvider
-        .setPrefix('myApp')
+        .setPrefix('azurespeed')
         .setStorageType('localStorage')
         .setStorageCookieDomain('.')
         .setNotify(true, true);

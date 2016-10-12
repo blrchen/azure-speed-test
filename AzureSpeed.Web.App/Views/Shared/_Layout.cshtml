@@ -18,9 +18,9 @@
     </environment>
     <environment names="Staging,Production">
         <link href="~/lib/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
-        <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="~/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
         <link href="~/lib/angular-bootstrap/ui-bootstrap-csp.css" rel="stylesheet" />
-        <link href="~/lib/metisMenu/dist/metisMenu.min.css" rel="stylesheet" />
+        <link href="~/lib/metisMenu/metisMenu.min.css" rel="stylesheet" />
         <link href="~/css/site.min.css" rel="stylesheet" />
     </environment>
     <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.4.min.js"></script>
@@ -143,18 +143,16 @@
     </environment>
     <environment names="Staging,Production">
         <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.4.min.js"
-                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                asp-fallback-src="~/lib/jquery/jquery.min.js"
                 asp-fallback-test="window.jQuery">
         </script>
         <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
-                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
+                asp-fallback-src="~/lib/bootstrap/js/bootstrap.min.js"
                 asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
         </script>
-        <script src="~/lib/angular/angular.min.js"></script>
-        <script src="~/lib/metisMenu/dist/metisMenu.min.js"></script>
         <script src="~/js/lib.all.min.js"></script>
         <script src="~/js/jazure.all.min.js" asp-append-version="true"></script>
-        <script src="~/js/azurespeed.all.min.js" asp-append-version="true"></script>
+        <script src="~/js/azurespeed.all.js" asp-append-version="true"></script>
     </environment>
 
     @RenderSection("scripts", required: false)

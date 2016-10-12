@@ -8,13 +8,11 @@
                 var data = { region: region.name, blobName: '100MB.bin', operation: 'download' };
                 $http.get('/api/sas', { params: data }).success(function (response) {
                     region.url = response;
-                    console.log(response);
                 });
             });
         }
 
         $scope.$on('checkChanged', function (event, message) {
-            console.log($scope.user.regions);
             $scope.load();
         });
 

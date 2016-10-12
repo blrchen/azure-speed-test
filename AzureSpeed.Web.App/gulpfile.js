@@ -9,7 +9,9 @@ var gulp = require("gulp"),
   eslint = require('gulp-eslint');
 
 var paths = {
-    webroot: "./wwwroot/"
+    webroot: "./wwwroot/",
+    bower: "./bower_components/",
+    lib: "./wwwroot/lib/"
 };
 
 paths.js = paths.webroot + "js/**/*.js";
@@ -18,6 +20,26 @@ paths.css = paths.webroot + "css/**/*.css";
 paths.minCss = paths.webroot + "css/**/*.min.css";
 paths.concatJsDest = paths.webroot + "js/site.min.js";
 paths.concatCssDest = paths.webroot + "css/site.min.css";
+
+gulp.task("copy", ["clean"], function () {
+    var bower = {
+        "angular": "angular/angular*.js",
+        "angular-bootstrap": "angular-bootstrap/ui-bootstrap*.{js,css}",
+        "angular-filter": "angular-filter/dist/*.js",
+        "angular-local-storage": "angular-local-storage/dist/*.js",
+        "bootstrap": "bootstrap/dist/**/*.{js,map,css,ttf,svg,woff,eot}",
+        "checklist-model": "checklist-model/*.js",
+        "d3": "d3/*.js",
+        "font-awesome": "font-awesome/**/*.{js,map,css,ttf,svg,woff,eot}",
+        "jquery": "jquery/dist/jquery*.{js,map}",
+        "metisMenu": "metisMenu/dist/*.{js,css}"
+    }
+
+    for (var destinationDir in bower) {
+        gulp.src(paths.bower + bower[destinationDir])
+          .pipe(gulp.dest(paths.lib + destinationDir));
+    }
+});
 
 gulp.task("clean:js", function (cb) {
     rimraf(paths.concatJsDest, cb);

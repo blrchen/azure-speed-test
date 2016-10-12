@@ -10,13 +10,15 @@
   },
   {
     "inputFiles": [
-      "wwwroot/lib/angular-filter/dist/angular-filter.js",
+      "wwwroot/lib/bootstrap/js/bootstrap.js",
+      "wwwroot/lib/angular/angular.js",
+      "wwwroot/lib/angular-filter/angular-filter.js",
       "wwwroot/lib/angular-bootstrap/ui-bootstrap.js",
+      "wwwroot/lib/angular-local-storage/angular-local-storage.js",
       "wwwroot/lib/checklist-model/checklist-model.js",
       "wwwroot/lib/d3/d3.js",
-      "wwwroot/lib/metisMenu/dist/metisMenu.js",
+      "wwwroot/lib/metisMenu/metisMenu.js",
       "wwwroot/js/sb-admin-2.js",
-      "wwwroot/lib/angular-local-storage/dist/angular-local-storage.js"
     ],
     "outputFileName": "wwwroot/js/lib.all.js"
   },

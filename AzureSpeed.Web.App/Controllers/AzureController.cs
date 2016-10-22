@@ -36,6 +36,11 @@ namespace AzureSpeed.Web.App.Controllers
             return View();
         }
 
+        public IActionResult PsPing()
+        {
+            return View();
+        }
+
         public IActionResult Reference()
         {
             return View();

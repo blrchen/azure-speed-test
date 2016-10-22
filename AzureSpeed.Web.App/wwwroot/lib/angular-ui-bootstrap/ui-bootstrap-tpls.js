@@ -2,7 +2,7 @@
  * angular-ui-bootstrap
  * http://angular-ui.github.io/bootstrap/
 
- * Version: 2.1.4 - 2016-09-23
+ * Version: 2.2.0 - 2016-10-10
  * License: MIT
  */angular.module("ui.bootstrap", ["ui.bootstrap.tpls", "ui.bootstrap.collapse","ui.bootstrap.tabindex","ui.bootstrap.accordion","ui.bootstrap.alert","ui.bootstrap.buttons","ui.bootstrap.carousel","ui.bootstrap.dateparser","ui.bootstrap.isClass","ui.bootstrap.datepicker","ui.bootstrap.position","ui.bootstrap.datepickerPopup","ui.bootstrap.debounce","ui.bootstrap.dropdown","ui.bootstrap.stackedMap","ui.bootstrap.modal","ui.bootstrap.paging","ui.bootstrap.pager","ui.bootstrap.pagination","ui.bootstrap.tooltip","ui.bootstrap.popover","ui.bootstrap.progressbar","ui.bootstrap.rating","ui.bootstrap.tabs","ui.bootstrap.timepicker","ui.bootstrap.typeahead"]);
 angular.module("ui.bootstrap.tpls", ["uib/template/accordion/accordion-group.html","uib/template/accordion/accordion.html","uib/template/alert/alert.html","uib/template/carousel/carousel.html","uib/template/carousel/slide.html","uib/template/datepicker/datepicker.html","uib/template/datepicker/day.html","uib/template/datepicker/month.html","uib/template/datepicker/year.html","uib/template/datepickerPopup/popup.html","uib/template/modal/window.html","uib/template/pager/pager.html","uib/template/pagination/pagination.html","uib/template/tooltip/tooltip-html-popup.html","uib/template/tooltip/tooltip-popup.html","uib/template/tooltip/tooltip-template-popup.html","uib/template/popover/popover-html.html","uib/template/popover/popover-template.html","uib/template/popover/popover.html","uib/template/progressbar/bar.html","uib/template/progressbar/progress.html","uib/template/progressbar/progressbar.html","uib/template/rating/rating.html","uib/template/tabs/tab.html","uib/template/tabs/tabset.html","uib/template/timepicker/timepicker.html","uib/template/typeahead/typeahead-match.html","uib/template/typeahead/typeahead-popup.html"]);
@@ -2208,7 +2208,7 @@ angular.module('ui.bootstrap.position', [])
         var paddingRight = this.parseStyle(elemStyle.paddingRight);
         var paddingBottom = this.parseStyle(elemStyle.paddingBottom);
         var scrollParent = this.scrollParent(elem, false, true);
-        var scrollbarWidth = this.scrollbarWidth(scrollParent, BODY_REGEX.test(scrollParent.tagName));
+        var scrollbarWidth = this.scrollbarWidth(BODY_REGEX.test(scrollParent.tagName));
 
         return {
           scrollbarWidth: scrollbarWidth,
@@ -3192,9 +3192,9 @@ angular.module('ui.bootstrap.dropdown', ['ui.bootstrap.position'])
 
   this.close = function(dropdownScope, element) {
     if (openScope === dropdownScope) {
-      openScope = null;
       $document.off('click', closeDropdown);
       $document.off('keydown', this.keybindFilter);
+      openScope = null;
     }
   };
 
@@ -3227,6 +3227,11 @@ angular.module('ui.bootstrap.dropdown', ['ui.bootstrap.position'])
   };
 
   this.keybindFilter = function(evt) {
+    if (!openScope) {
+      // see this.close as ESC could have been pressed which kills the scope so we can not proceed
+      return;
+    }
+
     var dropdownElement = openScope.getDropdownElement();
     var toggleElement = openScope.getToggleElement();
     var dropdownElementTargeted = dropdownElement && dropdownElement[0].contains(evt.target);
@@ -3744,7 +3749,7 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.stackedMap', 'ui.bootstrap.p
         // {@link Attribute#$observe} on it. For more details please see {@link TableColumnResize}.
         scope.$isRendered = true;
 
-        // Deferred object that will be resolved when this modal is render.
+        // Deferred object that will be resolved when this modal is rendered.
         var modalRenderDeferObj = $q.defer();
         // Resolve render promise post-digest
         scope.$$postDigest(function() {
@@ -3777,7 +3782,7 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.stackedMap', 'ui.bootstrap.p
 
             /**
              * If something within the freshly-opened modal already has focus (perhaps via a
-             * directive that causes focus). then no need to try and focus anything.
+             * directive that causes focus) then there's no need to try to focus anything.
              */
             if (!($document[0].activeElement && element[0].contains($document[0].activeElement))) {
               var inputWithAutofocus = element[0].querySelector('[autofocus]');
@@ -3835,6 +3840,7 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.stackedMap', 'ui.bootstrap.p
       };
       var topModalIndex = 0;
       var previousTopOpenedModal = null;
+      var ARIA_HIDDEN_ATTRIBUTE_NAME = 'data-bootstrap-modal-aria-hidden-count';
 
       //Modal focus behavior
       var tabbableSelector = 'a[href], area[href], input:not([disabled]):not([tabindex=\'-1\']), ' +
@@ -4136,25 +4142,74 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.stackedMap', 'ui.bootstrap.p
 
         openedWindows.top().value.modalDomEl = angularDomEl;
         openedWindows.top().value.modalOpener = modalOpener;
+
+        applyAriaHidden(angularDomEl);
+
+        function applyAriaHidden(el) {
+          if (!el || el[0].tagName === 'BODY') {
+            return;
+          }
+
+          getSiblings(el).forEach(function(sibling) {
+            var elemIsAlreadyHidden = sibling.getAttribute('aria-hidden') === 'true',
+              ariaHiddenCount = parseInt(sibling.getAttribute(ARIA_HIDDEN_ATTRIBUTE_NAME), 10);
+
+            if (!ariaHiddenCount) {
+              ariaHiddenCount = elemIsAlreadyHidden ? 1 : 0;  
+            }
+
+            sibling.setAttribute(ARIA_HIDDEN_ATTRIBUTE_NAME, ariaHiddenCount + 1);
+            sibling.setAttribute('aria-hidden', 'true');
+          });
+
+          return applyAriaHidden(el.parent());
+
+          function getSiblings(el) {
+            var children = el.parent() ? el.parent().children() : [];
+
+            return Array.prototype.filter.call(children, function(child) {
+              return child !== el[0];
+            });
+          }
+        }
       };
 
       function broadcastClosing(modalWindow, resultOrReason, closing) {
         return !modalWindow.value.modalScope.$broadcast('modal.closing', resultOrReason, closing).defaultPrevented;
       }
 
+      function unhideBackgroundElements() {
+        Array.prototype.forEach.call(
+          document.querySelectorAll('[' + ARIA_HIDDEN_ATTRIBUTE_NAME + ']'),
+          function(hiddenEl) {
+            var ariaHiddenCount = parseInt(hiddenEl.getAttribute(ARIA_HIDDEN_ATTRIBUTE_NAME), 10),
+              newHiddenCount = ariaHiddenCount - 1;
+            hiddenEl.setAttribute(ARIA_HIDDEN_ATTRIBUTE_NAME, newHiddenCount);
+
+            if (!newHiddenCount) {
+              hiddenEl.removeAttribute(ARIA_HIDDEN_ATTRIBUTE_NAME);
+              hiddenEl.removeAttribute('aria-hidden');
+            }
+          }
+        );
+      }
+      
       $modalStack.close = function(modalInstance, result) {
         var modalWindow = openedWindows.get(modalInstance);
+        unhideBackgroundElements();
         if (modalWindow && broadcastClosing(modalWindow, result, true)) {
           modalWindow.value.modalScope.$$uibDestructionScheduled = true;
           modalWindow.value.deferred.resolve(result);
           removeModalWindow(modalInstance, modalWindow.value.modalOpener);
           return true;
         }
+
         return !modalWindow;
       };
 
       $modalStack.dismiss = function(modalInstance, reason) {
         var modalWindow = openedWindows.get(modalInstance);
+        unhideBackgroundElements();
         if (modalWindow && broadcastClosing(modalWindow, reason, false)) {
           modalWindow.value.modalScope.$$uibDestructionScheduled = true;
           modalWindow.value.deferred.reject(reason);
@@ -4177,6 +4232,7 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.stackedMap', 'ui.bootstrap.p
 
       $modalStack.modalRendered = function(modalInstance) {
         var modalWindow = openedWindows.get(modalInstance);
+        $modalStack.focusFirstFocusableElement($modalStack.loadFocusElementList(modalWindow));
         if (modalWindow) {
           modalWindow.value.renderDeferred.resolve();
         }
@@ -4850,6 +4906,7 @@ angular.module('ui.bootstrap.tooltip', ['ui.bootstrap.position', 'ui.bootstrap.s
             var showTimeout;
             var hideTimeout;
             var positionTimeout;
+            var adjustmentTimeout;
             var appendToBody = angular.isDefined(options.appendToBody) ? options.appendToBody : false;
             var triggers = getTriggers(undefined);
             var hasEnableExp = angular.isDefined(attrs[prefix + 'Enable']);
@@ -4882,12 +4939,13 @@ angular.module('ui.bootstrap.tooltip', ['ui.bootstrap.position', 'ui.bootstrap.s
                     tooltip.addClass(options.placementClassPrefix + ttPosition.placement);
                   }
 
-                  $timeout(function() {
+                  adjustmentTimeout = $timeout(function() {
                     var currentHeight = angular.isDefined(tooltip.offsetHeight) ? tooltip.offsetHeight : tooltip.prop('offsetHeight');
                     var adjustment = $position.adjustTop(placementClasses, elementPos, initialHeight, currentHeight);
                     if (adjustment) {
                       tooltip.css(adjustment);
                     }
+                    adjustmentTimeout = null;
                   }, 0, false);
 
                   // first time through tt element will have the
@@ -5052,7 +5110,11 @@ angular.module('ui.bootstrap.tooltip', ['ui.bootstrap.position', 'ui.bootstrap.s
 
               if (tooltip) {
                 tooltip.remove();
+                
                 tooltip = null;
+                if (adjustmentTimeout) {
+                  $timeout.cancel(adjustmentTimeout);
+                }
               }
 
               openedTooltips.remove(ttScope);
@@ -5940,6 +6002,7 @@ angular.module('ui.bootstrap.timepicker', [])
 })
 
 .controller('UibTimepickerController', ['$scope', '$element', '$attrs', '$parse', '$log', '$locale', 'uibTimepickerConfig', function($scope, $element, $attrs, $parse, $log, $locale, timepickerConfig) {
+  var hoursModelCtrl, minutesModelCtrl, secondsModelCtrl;
   var selected = new Date(),
     watchers = [],
     ngModelCtrl = { $setViewValue: angular.noop }, // nullModelCtrl
@@ -5960,6 +6023,10 @@ angular.module('ui.bootstrap.timepicker', [])
     var hoursInputEl = inputs.eq(0),
         minutesInputEl = inputs.eq(1),
         secondsInputEl = inputs.eq(2);
+
+    hoursModelCtrl = hoursInputEl.controller('ngModel');
+    minutesModelCtrl = minutesInputEl.controller('ngModel');
+    secondsModelCtrl = secondsInputEl.controller('ngModel');
 
     var mousewheel = angular.isDefined($attrs.mousewheel) ? $scope.$parent.$eval($attrs.mousewheel) : timepickerConfig.mousewheel;
 
@@ -6220,14 +6287,23 @@ angular.module('ui.bootstrap.timepicker', [])
       ngModelCtrl.$setValidity('time', false);
       if (angular.isDefined(invalidHours)) {
         $scope.invalidHours = invalidHours;
+        if (hoursModelCtrl) {
+          hoursModelCtrl.$setValidity('hours', false);
+        }
       }
 
       if (angular.isDefined(invalidMinutes)) {
         $scope.invalidMinutes = invalidMinutes;
+        if (minutesModelCtrl) {
+          minutesModelCtrl.$setValidity('minutes', false);
+        }
       }
 
       if (angular.isDefined(invalidSeconds)) {
         $scope.invalidSeconds = invalidSeconds;
+        if (secondsModelCtrl) {
+          secondsModelCtrl.$setValidity('seconds', false);
+        }
       }
     };
 
@@ -6350,6 +6426,18 @@ angular.module('ui.bootstrap.timepicker', [])
   }
 
   function makeValid() {
+    if (hoursModelCtrl) {
+      hoursModelCtrl.$setValidity('hours', true);
+    }
+
+    if (minutesModelCtrl) {
+      minutesModelCtrl.$setValidity('minutes', true);
+    }
+
+    if (secondsModelCtrl) {
+      secondsModelCtrl.$setValidity('seconds', true);
+    }
+
     ngModelCtrl.$setValidity('time', true);
     $scope.invalidHours = false;
     $scope.invalidMinutes = false;

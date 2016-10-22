@@ -1,17 +1,25 @@
 {
-  "version": "1.0.0",
   "name": "azurespeed",
-  "private": true,
+  "version": "1.0.0",
   "devDependencies": {
+    "angular": "^1.5.8",
+    "angular-filter": "^0.5.11",
+    "angular-local-storage": "^0.5.0",
+    "angular-ui-bootstrap": "^2.2.0",
+    "bootstrap": "^3.3.7",
+    "checklist-model": "^0.10.0",
+    "d3": "^3.5.17",
     "eslint": "^3.7.0",
     "eslint-config-angular": "^0.5.0",
     "eslint-plugin-angular": "^1.4.1",
+    "font-awesome": "^4.6.3",
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.0",
     "gulp-cssmin": "0.1.7",
     "gulp-eslint": "^3.0.1",
     "gulp-uglify": "^2.0.0",
+    "jquery": "^2.2.4",
+    "metismenu": "^2.5.2",
     "rimraf": "^2.5.4"
-  },
-  "dependencies": {}
+  }
 }

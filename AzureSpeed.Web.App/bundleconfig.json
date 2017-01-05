@@ -19,7 +19,14 @@
       "wwwroot/lib/metisMenu/metisMenu.js",
       "wwwroot/js/sb-admin-2.js"
     ],
-    "outputFileName": "wwwroot/js/lib.all.js"
+    "outputFileName": "wwwroot/js/lib.all.js",
+    // Optionally specify minification options
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    // Optinally generate .map file
+    "sourceMap": false
   },
   {
     "inputFiles": [
@@ -45,11 +52,13 @@
       "wwwroot/js/azurespeed/controllers/UploadController.js",
       "wwwroot/js/azurespeed/controllers/UploadLargeFileController.js"
     ],
+    "outputFileName": "wwwroot/js/azurespeed.all.js",
+    // Optionally specify minification options
     "minify": {
       "enabled": true,
       "renameLocals": true
     },
-    "outputFileName": "wwwroot/js/azurespeed.all.js",
+    // Optinally generate .map file
     "sourceMap": false
   }
 ]

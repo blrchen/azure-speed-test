@@ -63,16 +63,16 @@
                             <a href="~/Cloud/RegionFinder"><i class="fa fa-search fa-fw"></i> Cloud Region Finder</a>
                         </li>
                         @*<li>
-                            <a href="#"><i class="fa fa-files-o fa-fw"></i> Azure Online Tools<span class="fa arrow"></span></a>
-                            <ul class="nav nav-second-level">
-                                <li>
-                                    <a href="~/AzureOnlineTools/EnableStorageCORS">Enable Storage CORS</a>
-                                </li>
-                                <li>
-                                    <a href="~/AzureOnlineTools/GenerateEventHubSAS">EventHub SAS Generator</a>
-                                </li>
-                            </ul>
-                        </li>*@
+                                <a href="#"><i class="fa fa-files-o fa-fw"></i> Azure Online Tools<span class="fa arrow"></span></a>
+                                <ul class="nav nav-second-level">
+                                    <li>
+                                        <a href="~/AzureOnlineTools/EnableStorageCORS">Enable Storage CORS</a>
+                                    </li>
+                                    <li>
+                                        <a href="~/AzureOnlineTools/GenerateEventHubSAS">EventHub SAS Generator</a>
+                                    </li>
+                                </ul>
+                            </li>*@
                         <li>
                             <a href="~/Azure/PsPing"><i class="fa fa-book fa-fw"></i> PsPing Latency Test</a>
                         </li>
@@ -115,6 +115,8 @@
     </div>
 
     <environment names="Development">
+        @* Need bootstrap.js to make madal open code work *@<
+        <script src="~/lib/bootstrap/js/bootstrap.js"></script>
         <script src="~/lib/angular/angular.js"></script>
         <script src="~/lib/angular-filter/angular-filter.js"></script>
         <script src="~/lib/angular-ui-bootstrap/ui-bootstrap-tpls.js"></script>

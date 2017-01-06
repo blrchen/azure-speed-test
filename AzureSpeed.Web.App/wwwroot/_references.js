@@ -29,5 +29,6 @@
 /// <reference path="lib/bootstrap/js/bootstrap.min.js" />
 /// <reference path="lib/bootstrap/js/npm.js" />
 /// <reference path="lib/checklist-model/checklist-model.js" />
+/// <reference path="lib/d3/d3.js" />
 /// <reference path="lib/jquery/jquery.js" />
 /// <reference path="lib/metismenu/metismenu.min.js" />

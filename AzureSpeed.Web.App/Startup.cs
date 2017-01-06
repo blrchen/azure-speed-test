@@ -27,9 +27,7 @@ namespace AzureSpeed.Web.App
             // Add framework services.
             services.AddMvc();
 
-            // Add functionality to inject IOptions<T>
             services.AddOptions();
-
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
         }
 

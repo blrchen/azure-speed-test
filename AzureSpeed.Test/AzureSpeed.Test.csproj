@@ -85,7 +85,7 @@
       <Project>{7ba84ede-8c7b-4481-896e-83b606079c2b}</Project>
       <Name>AzureSpeed.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\AzureSpeed.Web.App\AzureSpeed.Web.App.xproj">
+    <ProjectReference Include="..\AzureSpeed.Web.App\AzureSpeed.Web.App.csproj">
       <Project>{c5019dd8-af60-4ed1-a73a-a188a7e0d890}</Project>
       <Name>AzureSpeed.Web.App</Name>
     </ProjectReference>

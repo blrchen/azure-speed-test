@@ -1,21 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9DED3A7A-F0F4-435A-8C16-4BF55925BD31}"
+	ProjectSection(SolutionItems) = preProject
+		scripts\DeployWebApp.cmd = scripts\DeployWebApp.cmd
+		scripts\ProvisionStorageAccounts.ps1 = scripts\ProvisionStorageAccounts.ps1
+	EndProjectSection
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureSpeed.Test", "AzureSpeed.Test\AzureSpeed.Test.csproj", "{EB721DE4-D49E-4D7E-BD4B-96C9D7736A92}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureSpeed.AdminConsole", "AzureSpeed.AdminConsole\AzureSpeed.AdminConsole.csproj", "{6A8A5A83-B00B-411C-8470-0B73596CED4B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureSpeed.Common", "AzureSpeed.Common\AzureSpeed.Common.csproj", "{7BA84EDE-8C7B-4481-896E-83B606079C2B}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "AzureSpeed.Web.App", "AzureSpeed.Web.App\AzureSpeed.Web.App.xproj", "{C5019DD8-AF60-4ED1-A73A-A188A7E0D890}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9DED3A7A-F0F4-435A-8C16-4BF55925BD31}"
-	ProjectSection(SolutionItems) = preProject
-		scripts\DeployWebApp.cmd = scripts\DeployWebApp.cmd
-		scripts\ProvisionStorageAccounts.ps1 = scripts\ProvisionStorageAccounts.ps1
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSpeed.Web.App", "AzureSpeed.Web.App\AzureSpeed.Web.App.csproj", "{C5019DD8-AF60-4ED1-A73A-A188A7E0D890}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

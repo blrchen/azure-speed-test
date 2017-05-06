@@ -41,31 +41,12 @@ gulp.task('copy', ['clean'], function () {
     }
 });
 
-gulp.task('clean:js', function (cb) {
-    rimraf(paths.concatJsDest, cb);
+gulp.task('clean:lib', function (callback) {
+    rimraf(paths.lib, callback);
 });
 
-gulp.task('clean:css', function (cb) {
-    rimraf(paths.concatCssDest, cb);
-});
+gulp.task('clean', ['clean:lib']);
 
-gulp.task('clean', ['clean:js', 'clean:css']);
-
-gulp.task('min:js', function () {
-    return gulp.src([paths.js, '!' + paths.minJs], { base: '.' })
-      .pipe(concat(paths.concatJsDest))
-      .pipe(uglify())
-      .pipe(gulp.dest('.'));
-});
-
-gulp.task('min:css', function () {
-    return gulp.src([paths.css, '!' + paths.minCss])
-      .pipe(concat(paths.concatCssDest))
-      .pipe(cssmin())
-      .pipe(gulp.dest('.'));
-});
-
-gulp.task('min', ['min:js', 'min:css']);
 
 gulp.task('lint', () => {
     // ESLint ignores files with 'node_modules' paths. 
@@ -82,8 +63,4 @@ gulp.task('lint', () => {
         // To have the process exit with an error code (1) on 
         // lint error, return the stream and pipe to failAfterError last. 
         .pipe(eslint.failAfterError());
-});
-
-gulp.task('default', ['lint'], function () {
-    // This will only run if the lint task is successful... 
 });

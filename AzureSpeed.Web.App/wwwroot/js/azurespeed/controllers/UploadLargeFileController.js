@@ -12,10 +12,10 @@
             var file = $('#file-input')[0].files[0];
             var region = $scope.selectedRegion.name;
             var data = { region: region, blobName: guid.newGuid(), operation: 'upload' };
-            $http.get('/api/sas', { params: data }).success(function (response) {
+            $http.get('/api/sas', { params: data }).then(function (response) {
                 ja.storage.blockSize = $scope.selectedBlockSize * 1024;
                 ja.storage.maxThread = $scope.selectedThread;
-                var url = response;
+                var url = response.data;
                 var blob = ja.storage.blob(url);
                 var st = new Date();
                 var before = function () {
@@ -48,9 +48,10 @@
                     $scope.error = err;
                 };
                 blob.upload(file, before, progress, success, error);
+            }, function () {
             });
         };
-        $scope.canUpload = function() {
+        $scope.canUpload = function () {
             return $scope.selectedRegion && $('#file-input')[0].files.length > 0;
         };
     }]);

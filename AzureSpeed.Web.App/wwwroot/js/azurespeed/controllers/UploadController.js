@@ -14,14 +14,14 @@
             var region = regions.first(function (v) { return v.id == $scope.user.regions[0]; });
             var data = { region: region.name, blobName: guid.newGuid(), operation: 'upload' };
             $http.get('/api/sas', { params: data })
-                .success(function (response) {
+                .then(function (response) {
                     var content = [];
                     var byteSize = 256 * 1024;
                     for (var i = 0; i < byteSize; i++) {
                         content.push('.');
                     }
 
-                    var blobUrl = response;
+                    var blobUrl = response.data;
                     var blob = ja.storage.blob(blobUrl);
                     var st = new Date();
                     var before = function () {
@@ -50,6 +50,7 @@
                     var error = function (err) {
                     };
                     blob.upload(content, before, progress, success, error);
+                }, function () {
                 });
         };
         $scope.uploadLoop = function () {

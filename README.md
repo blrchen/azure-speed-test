@@ -22,14 +22,17 @@ http://www.azurespeed.com
 6. You are all set, enjoy!
 
 ## Built on
- - [ASP.NET Core](https://github.com/aspnet)
- - [jQuery](https://github.com/jquery/jquery)
- - [bootstrap](https://github.com/twbs/bootstrap)
- - [angular](https://github.com/angular/angular)
- - [font awesome](https://github.com/FortAwesome/Font-Awesome)
- - [d3](https://github.com/mbostock/d3)
- - [jazure](https://github.com/orcame/jazure)
- - [SB Admin 2 Theme](https://github.com/IronSummitMedia/startbootstrap-sb-admin-2)
+- [ASP.NET Core](https://github.com/aspnet/home)
+- [Bootstrap](https://github.com/twbs/bootstrap)
+- [Font Awesome](https://github.com/FortAwesome/Font-Awesome)
+- [jQuery](https://github.com/jquery/jquery)
+- [Angular](https://github.com/angular/angular)
+- [UI Bootstrap](https://github.com/angular-ui/bootstrap)
+- [Angular-filter](https://github.com/a8m/angular-filter)
+- [checklist-model](https://github.com/vitalets/checklist-model)
+- [D3](https://github.com/mbostock/d3)
+- [SB Admin 2 Theme](https://github.com/blackrockdigital/startbootstrap-sb-admin-2/)
+- [jazure](https://github.com/orcame/jazure)
 
 ## License
 [MIT](/LICENSE)

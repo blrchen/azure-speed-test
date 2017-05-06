@@ -27,10 +27,10 @@ gulp.task('copy', ['clean'], function () {
         'angular-ui-bootstrap': 'angular-ui-bootstrap/dist/ui-bootstrap*.{js,css}',
         'angular-filter': 'angular-filter/dist/*.js',
         'angular-local-storage': 'angular-local-storage/dist/*.js',
-        'bootstrap': 'bootstrap/dist/**/*.{js,map,css,ttf,svg,woff,eot}',
+        'bootstrap': 'bootstrap/dist/**/*.{js,map,css,ttf,svg,woff,woff2,eot}',
         'checklist-model': 'checklist-model/checklist-model*.js',
         'd3': 'd3/d3*.js',
-        'font-awesome': 'font-awesome/**/*.{js,map,css,ttf,svg,woff,eot}',
+        'font-awesome': 'font-awesome/**/*.{js,map,css,ttf,svg,woff,woff2,eot}',
         'jquery': 'jquery/dist/jquery*.{js,map}',
         'metisMenu': 'metisMenu/dist/*.{js,css}'
     }

@@ -10,7 +10,7 @@
     "checklist-model": "0.11.0",
     "d3": "3.5.17",
     "font-awesome": "4.7.0",
-    "jquery": "^2.2.4",
+    "jquery": "2.2.4",
     "metismenu": "2.7.0"
   },
   "devDependencies": {

@@ -42,18 +42,19 @@
     },
     // js files in azurespeed folder
     {
-        "inputFiles": [
-            "wwwroot/js/site.js",
-            "wwwroot/js/azurespeed/common.js",
-            "wwwroot/js/azurespeed/utils.js",
-            "wwwroot/js/azurespeed/controllers/MainController.js",
-            "wwwroot/js/azurespeed/controllers/CloudRegionFinderController.js",
-            "wwwroot/js/azurespeed/controllers/DownloadController.js",
-            "wwwroot/js/azurespeed/controllers/LatencyController.js",
-            "wwwroot/js/azurespeed/controllers/IpRangeController.js",
-            "wwwroot/js/azurespeed/controllers/UploadController.js",
-            "wwwroot/js/azurespeed/controllers/UploadLargeFileController.js"
-        ],
+      "inputFiles": [
+        "wwwroot/js/site.js",
+        "wwwroot/js/azurespeed/common.js",
+        "wwwroot/js/azurespeed/TaskAsync.js",
+        "wwwroot/js/azurespeed/utils.js",
+        "wwwroot/js/azurespeed/controllers/MainController.js",
+        "wwwroot/js/azurespeed/controllers/CloudRegionFinderController.js",
+        "wwwroot/js/azurespeed/controllers/DownloadController.js",
+        "wwwroot/js/azurespeed/controllers/LatencyController.js",
+        "wwwroot/js/azurespeed/controllers/IpRangeController.js",
+        "wwwroot/js/azurespeed/controllers/UploadController.js",
+        "wwwroot/js/azurespeed/controllers/UploadLargeFileController.js"
+      ],
         "outputFileName": "wwwroot/js/azurespeed.all.js",
         "minify": {
             "enabled": true,

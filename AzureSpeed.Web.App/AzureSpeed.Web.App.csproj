@@ -9,10 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="wwwroot\js\azurespeed\TaskAsync.js" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="App.config" />
     <None Update="wwwroot\**\*;Data\**\*">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>

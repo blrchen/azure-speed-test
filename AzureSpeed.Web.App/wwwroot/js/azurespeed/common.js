@@ -69,10 +69,12 @@ var regions = [
     { id: 17, name: 'West India', alias: 'westindia', storage: 'azspdwestindia', geo: 'Asia', location: 'Mumbai' },
     { id: 18, name: 'Canada Central', alias: 'canadacentral', storage: 'azspdcanadacentral', geo: 'America', location: 'Toronto' },
     { id: 19, name: 'Canada East', alias: 'canadaeast', storage: 'azspdcanadaeast', geo: 'America', location: 'Quebec City' },
-    { id: 20, name: 'UK South', alias: 'south', storage: 'azspduksouth', geo: 'Europe', location: 'London' },
+    { id: 20, name: 'UK South', alias: 'uksouth', storage: 'azspduksouth', geo: 'Europe', location: 'London' },
     { id: 21, name: 'UK West', alias: 'ukwest', storage: 'azspdukwest', geo: 'Europe', location: 'Cardiff' },
     { id: 22, name: 'West Central US', alias: 'westcentralus', storage: 'azspdwestcentralus', geo: 'America', location: 'West Central US' },
     { id: 23, name: 'West US 2', alias: 'westus2', storage: 'azspdwestus2', geo: 'America', location: 'West US 2' },
-    { id: 24, name: 'China East', alias: 'chinaeast', storage: 'azspchinaeast', geo: 'Asia', location: 'Shanghai', endpointSuffic: 'core.chinacloudapi.cn' },
-    { id: 25, name: 'China North', alias: 'chinanorth', storage: 'azspchinanorth', geo: 'Asia', location: 'Beijing', endpointSuffic: 'core.chinacloudapi.cn' }
+    { id: 24, name: 'Korea Central', alias: 'koreacentral', storage: 'azspdkoreacentral', geo: 'Asia', location: 'Seoul' },
+    { id: 25, name: 'Korea South', alias: 'koreasouth', storage: 'azspdkoreasouth', geo: 'Asia', location: 'Busan' },
+    { id: 26, name: 'China East', alias: 'chinaeast', storage: 'azspchinaeast', geo: 'Asia', location: 'Shanghai', endpointSuffic: 'core.chinacloudapi.cn' },
+    { id: 27, name: 'China North', alias: 'chinanorth', storage: 'azspchinanorth', geo: 'Asia', location: 'Beijing', endpointSuffic: 'core.chinacloudapi.cn' }
 ];

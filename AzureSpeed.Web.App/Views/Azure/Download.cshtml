@@ -5,35 +5,37 @@
 <div class="container-fluid" ng-controller="DownloadController">
     <div class="page-header">
         <h3>@ViewBag.Title</h3>
+        <small>Test download spped from Azure Storage Servcie around the world.</small>
     </div>
     @Html.Partial("_RegionSelector")
     <div class="row">
         <div class="col-md-12">
-            <div class="panel panel-info">
+            <div class="panel panel-default">
                 <div class="panel-heading">
-                    <i class="fa fa-th-list"></i>
-                    Download Speed Test
+                    Azure Download Speed Test
                 </div>
-                <table class="table table-bordered table-striped">
-                    <thead>
-                    <tr>
-                        <th>Geo</th>
-                        <th>Region</th>
-                        <th>Location</th>
-                        <th>Test File</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr ng-repeat="item in items">
-                        <td>{{item.geo}}</td>
-                        <td>{{item.name}}</td>
-                        <td>{{item.location}}</td>
-                        <td>
-                            <a ng-if="item.url.length>0" class="btn btn-default" href="{{item.url}}">Download 100MB File</a>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+                <div class="panel-body">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Geo</th>
+                                <th>Region</th>
+                                <th>Location</th>
+                                <th>Test File</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in items">
+                                <td>{{item.geo}}</td>
+                                <td>{{item.name}}</td>
+                                <td>{{item.location}}</td>
+                                <td>
+                                    <a ng-if="item.url.length>0" class="btn btn-default" href="{{item.url}}">Download 100MB File</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

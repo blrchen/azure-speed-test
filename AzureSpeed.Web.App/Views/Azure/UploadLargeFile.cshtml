@@ -9,40 +9,46 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <a href="#" class="btn btn-success" data-toggle="modal" data-target="#upload-modal">Start testing</a>
+
         </div>
     </div>
-    <div class="row row-margin-top">
+    <div class="row">
         <div class="col-md-12">
-            <div class="panel panel-info">
+            <div class="panel panel-default">
                 <div class="panel-heading">
-                    <i class="fa fa-th-list"></i>
                     File Upload Speed Test
                 </div>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>File Name</th>
-                            <th>File Size</th>
-                            <th>Region</th>
-                            <th>Block Size(kb)</th>
-                            <th>Thread</th>
-                            <th>Upload Speed</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr ng-repeat="result in results">
-                            <td>{{result.fileName}}</td>
-                            <td>{{result.fileSize}}</td>
-                            <td>{{result.region}}</td>
-                            <td>{{result.blockSize}}</td>
-                            <td>{{result.thread}}</td>
-                            <td>{{result.speed}}</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="panel-body">
+                    <p>
+                        <a href="#" class="btn btn-success" data-toggle="modal" data-target="#upload-modal">Start testing</a>
+                    </p>
+                    <p>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>File Name</th>
+                                    <th>File Size</th>
+                                    <th>Region</th>
+                                    <th>Block Size(kb)</th>
+                                    <th>Thread</th>
+                                    <th>Upload Speed</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="result in results">
+                                    <td>{{result.fileName}}</td>
+                                    <td>{{result.fileSize}}</td>
+                                    <td>{{result.region}}</td>
+                                    <td>{{result.blockSize}}</td>
+                                    <td>{{result.thread}}</td>
+                                    <td>{{result.speed}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
-    @Html.Partial("UploadModalPartial")
+    @Html.Partial("UploadFileModal")
 </div>

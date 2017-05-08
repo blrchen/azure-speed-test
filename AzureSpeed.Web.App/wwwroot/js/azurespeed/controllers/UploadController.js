@@ -67,8 +67,8 @@
             }); 
 
             TaskAsync
-                .Run(list)
-                .Wait((sucess) => { console.log(sucess); }, (fail) => { console.log(fail); });
+                .WhenAll(list)
+                .Wait((sucess) => { console.log(sucess); });
         }
 
         $scope.uploadLoop = function () {

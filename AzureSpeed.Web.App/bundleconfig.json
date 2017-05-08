@@ -45,7 +45,7 @@
       "inputFiles": [
         "wwwroot/js/site.js",
         "wwwroot/js/azurespeed/common.js",
-        "wwwroot/js/azurespeed/taskasync.js",
+        "wwwroot/js/azurespeed/TaskAsync.js",
         "wwwroot/js/azurespeed/utils.js",
         "wwwroot/js/azurespeed/controllers/MainController.js",
         "wwwroot/js/azurespeed/controllers/CloudRegionFinderController.js",

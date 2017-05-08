@@ -7,12 +7,11 @@
         });
 
         $scope.results = [];
-
         $scope.upload = function () {
             var regionSelected = regions.filter(function (v) {
                 return $scope.user.regions.indexOf(v.id) >= 0;
             });
-            
+
             var list = [].map.call(regionSelected, (region) => {
                 var data = { region: region.name, blobName: guid.newGuid(), operation: 'upload' };
                 return TaskAsync.Run((callback) => {
@@ -53,18 +52,14 @@
                             current.speed = speed;
                             $scope.results.last = current;
                             $scope.$digest();
-
-                            //$scope.user.regions.shift();
-                            //$scope.upload();
                             callback("over!");
-
                         };
                         var error = function (err) {
                         };
                         blob.upload(content, before, progress, success, error);
                     }, (fail) => { console.log(fail); });
-                });            
-            }); 
+                });
+            });
 
             TaskAsync
                 .WhenAll(list)

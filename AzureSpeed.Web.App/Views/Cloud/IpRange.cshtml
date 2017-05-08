@@ -27,29 +27,30 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <div class="panel panel-info">
+            <div class="panel panel-default">
                 <div class="panel-heading">
-                    <i class="fa fa-th-list"></i>
                     Cloud IP Range
                 </div>
-                <table class="table table-bordered table-striped" style="word-break: break-word">
-                    <thead>
-                        <tr>
-                            <th width="60">Cloud</th>
-                            <th width="100">Region</th>
-                            <th width="80">Total IP</th>
-                            <th>IP Range Detail</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr ng-repeat="subnet in subnetList">
-                            <td>{{subnet.cloud}}</td>
-                            <td>{{subnet.region}}</td>
-                            <td>{{subnet.totalIpCount}}</td>
-                            <td>{{subnet.subnet}}</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="panel-body">
+                    <table class="table table-bordered table-striped" style="word-break: break-word">
+                        <thead>
+                            <tr>
+                                <th width="60">Cloud</th>
+                                <th width="100">Region</th>
+                                <th width="80">Total IP</th>
+                                <th>IP Range Detail</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="subnet in subnetList">
+                                <td>{{subnet.cloud}}</td>
+                                <td>{{subnet.region}}</td>
+                                <td>{{subnet.totalIpCount}}</td>
+                                <td>{{subnet.subnet}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

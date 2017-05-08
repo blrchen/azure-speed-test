@@ -47,8 +47,5 @@
 
   <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">
     <Exec Command="dotnet bundle" />
-    <Exec Command="gulp clean" />
-    <Exec Command="gulp min" />
   </Target>
-
 </Project>

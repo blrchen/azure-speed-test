@@ -1,5 +1,4 @@
-﻿/// <binding Clean='clean' />
-'use strict';
+﻿'use strict';
 
 var gulp = require('gulp'),
   rimraf = require('rimraf'),
@@ -21,16 +20,17 @@ paths.minCss = paths.webroot + 'css/**/*.min.css';
 paths.concatJsDest = paths.webroot + 'js/site.min.js';
 paths.concatCssDest = paths.webroot + 'css/site.min.css';
 
+// Task to copy referenced 3rd js packages from npm node_modules folder to lib folder under wwwroot
 gulp.task('copy', ['clean'], function () {
     var npm = {
         'angular': 'angular/angular*.js',
         'angular-ui-bootstrap': 'angular-ui-bootstrap/dist/ui-bootstrap*.{js,css}',
         'angular-filter': 'angular-filter/dist/*.js',
         'angular-local-storage': 'angular-local-storage/dist/*.js',
-        'bootstrap': 'bootstrap/dist/**/*.{js,map,css,ttf,svg,woff,eot}',
+        'bootstrap': 'bootstrap/dist/**/*.{js,map,css,ttf,svg,woff,woff2,eot}',
         'checklist-model': 'checklist-model/checklist-model*.js',
         'd3': 'd3/d3*.js',
-        'font-awesome': 'font-awesome/**/*.{js,map,css,ttf,svg,woff,eot}',
+        'font-awesome': 'font-awesome/**/*.{js,map,css,ttf,svg,woff,woff2,eot}',
         'jquery': 'jquery/dist/jquery*.{js,map}',
         'metisMenu': 'metisMenu/dist/*.{js,css}'
     }
@@ -41,32 +41,13 @@ gulp.task('copy', ['clean'], function () {
     }
 });
 
-gulp.task('clean:js', function (cb) {
-    rimraf(paths.concatJsDest, cb);
+gulp.task('clean:lib', function (callback) {
+    rimraf(paths.lib, callback);
 });
 
-gulp.task('clean:css', function (cb) {
-    rimraf(paths.concatCssDest, cb);
-});
+gulp.task('clean', ['clean:lib']);
 
-gulp.task('clean', ['clean:js', 'clean:css']);
-
-gulp.task('min:js', function () {
-    return gulp.src([paths.js, '!' + paths.minJs], { base: '.' })
-      .pipe(concat(paths.concatJsDest))
-      .pipe(uglify())
-      .pipe(gulp.dest('.'));
-});
-
-gulp.task('min:css', function () {
-    return gulp.src([paths.css, '!' + paths.minCss])
-      .pipe(concat(paths.concatCssDest))
-      .pipe(cssmin())
-      .pipe(gulp.dest('.'));
-});
-
-gulp.task('min', ['min:js', 'min:css']);
-
+// Task to run lint, setting file is .eslintrc.json
 gulp.task('lint', () => {
     // ESLint ignores files with 'node_modules' paths. 
     // So, it's best to have gulp ignore the directory as well. 
@@ -82,8 +63,4 @@ gulp.task('lint', () => {
         // To have the process exit with an error code (1) on 
         // lint error, return the stream and pipe to failAfterError last. 
         .pipe(eslint.failAfterError());
-});
-
-gulp.task('default', ['lint'], function () {
-    // This will only run if the lint task is successful... 
 });

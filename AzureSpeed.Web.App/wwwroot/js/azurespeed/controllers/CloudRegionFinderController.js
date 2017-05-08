@@ -5,11 +5,11 @@
         $scope.ipOrUrl = '';
         $scope.click = function () {
             $scope.result = 'Please wait';
-            $http.get('/api/region', { params: { ipOrUrl: $scope.ipOrUrl } }).success(function (response) {
-                $scope.result = response;
-            }).error(function (response) {
-                $scope.result = response;
-            });
+            $http.get('/api/region', { params: { ipOrUrl: $scope.ipOrUrl } })
+                .then(function (response) {
+                    $scope.result = response.data;
+                }, function (response) {
+                });
         }
         $scope.canSearch = function () {
             // is valid ip
@@ -19,11 +19,11 @@
             // is url valid
             // http://stackoverflow.com/questions/5717093/check-if-a-javascript-string-is-an-url
             var pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
-                                      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
-                                      '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-                                      '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-                                      '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-                                      '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+                '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+                '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+                '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+                '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+                '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
             if (pattern.test($scope.ipOrUrl)) {
                 return true;
             }

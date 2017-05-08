@@ -38,7 +38,7 @@
                     $scope.results.push({
                         fileName: $scope.fileName,
                         fileSize: $scope.fileSize,
-                        region: $scope.selectedRegion.region,
+                        region: $scope.selectedRegion.name,
                         blockSize: $scope.selectedBlockSize,
                         thread: $scope.selectedThread,
                         speed: $scope.speed

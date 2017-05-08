@@ -1,18 +1,22 @@
-﻿<p>Please select regions:</p>
-<div ng-repeat="(key, value) in regions | groupBy: 'geo'">
-    <div ng-mouseenter="show(key)" ng-mouseleave="hide(key)">
-        <div>
-            <label>{{key}}:</label>
-            <button class="btn btn-link" ng-click="checkAll(key)">check all</button>
-            <button class="btn btn-link" ng-click="uncheckAll(key)">uncheck all</button>
+﻿<div class="panel panel-default">
+    <div class="panel-heading">Please select regions</div>
+    <div class="panel-body">
+        <div ng-repeat="(key, value) in regions | groupBy: 'geo'">
+            <div ng-mouseenter="show(key)" ng-mouseleave="hide(key)">
+                <div>
+                    <label>{{key}}:</label>
+                    <button class="btn btn-link" ng-click="checkAll(key)">check all</button>
+                    <button class="btn btn-link" ng-click="uncheckAll(key)">uncheck all</button>
+                </div>
+            </div>
+            <label ng-repeat="region in value" class="checkbox-inline">
+                <input class="checkbox"
+                       type="checkbox"
+                       checklist-model="user.regions"
+                       checklist-value="region.id"
+                       checklist-change="checkChanged()"
+                       ng-model="checked"> {{region.name}}
+            </label>
         </div>
     </div>
-    <label ng-repeat="region in value" class="checkbox-inline">
-        <input class="checkbox"
-               type="checkbox"
-               checklist-model="user.regions"
-               checklist-value="region.id"
-               checklist-change="checkChanged()"
-               ng-model="checked"> {{region.name}}
-    </label>
 </div>

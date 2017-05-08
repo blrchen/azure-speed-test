@@ -5,47 +5,48 @@
 <div class="container-fluid" ng-controller="UploadController">
     <div class="page-header">
         <h3>@ViewBag.Title</h3>
-        <small>Test upload speed to Azure Blob Storage in worldwide data centers</small>
+        <small>Test download spped to Azure Storage Servcie around the world.</small>
     </div>
     @Html.Partial("_RegionSelector")
     <div class="row">
         <div class="col-md-12">
-            <div>
-                <button class="btn btn-success" ng-click="uploadLoop()" ng-disabled="!canClick()">Start Upload Speed Test >></button>
-            </div>
-        </div>
-    </div>
-    <div class="row row-margin-top">
-        <div class="col-md-12">
-            <div class="panel panel-info">
+            <div class="panel panel-default">
                 <div class="panel-heading">
-                    <i class="fa fa-th-list"></i>
-                    Upload Speed Result
+                    Upload Speed Test
                 </div>
-                <table class="table table-bordered table-striped" id="upload-table">
-                    <thead>
-                        <tr>
-                            <th>Geo</th>
-                            <th>Region</th>
-                            <th>Location</th>
-                            <th>Upload Progress</th>
-                            <th>Upload Speed</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr ng-repeat="result in results">
-                            <td>{{result.geo}}</td>
-                            <td>{{result.region}}</td>
-                            <td>{{result.location}}</td>
-                            <td class="upload-progress">
-                                <div class="progress" style="margin-bottom: -20px;">
-                                    <div class="progress-bar progress-bar-info" ng-style="{'width':result.progressPercent+'%'}">{{result.progressPercent}}%</div>
-                                </div>
-                            </td>
-                            <td class="upload-speed sort speed-success speed-inprogress">{{result.speed}}</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="panel-body">
+                    <div class="panel-body">
+                        <p>
+                            <button class="btn btn-success" ng-click="uploadLoop()" ng-disabled="!canClick()">Start Upload Speed Test >></button>
+                        </p>
+                        <p>
+                            <table class="table table-bordered table-striped" id="upload-table">
+                                <thead>
+                                    <tr>
+                                        <th>Geo</th>
+                                        <th>Region</th>
+                                        <th>Location</th>
+                                        <th>Upload Progress</th>
+                                        <th>Upload Speed</th>
+                                    </tr>
+                                </thead>
+                                <tbdy>
+                                    <tr ng-repeat="result in results">
+                                        <td>{{result.geo}}</td>
+                                        <td>{{result.region}}</td>
+                                        <td>{{result.location}}</td>
+                                        <td class="upload-progress">
+                                            <div class="progress" style="margin-bottom: -20px;">
+                                                <div class="progress-bar progress-bar-info" ng-style="{'width':result.progressPercent+'%'}">{{result.progressPercent}}%</div>
+                                            </div>
+                                        </td>
+                                        <td class="upload-speed sort speed-success speed-inprogress">{{result.speed}}</td>
+                                    </tr>
+                                </tbdy>
+                            </table>
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

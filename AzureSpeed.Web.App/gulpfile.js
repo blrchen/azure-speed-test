@@ -1,5 +1,4 @@
-﻿/// <binding Clean='clean' />
-'use strict';
+﻿'use strict';
 
 var gulp = require('gulp'),
   rimraf = require('rimraf'),
@@ -21,6 +20,7 @@ paths.minCss = paths.webroot + 'css/**/*.min.css';
 paths.concatJsDest = paths.webroot + 'js/site.min.js';
 paths.concatCssDest = paths.webroot + 'css/site.min.css';
 
+// Task to copy referenced 3rd js packages from npm node_modules folder to lib folder under wwwroot
 gulp.task('copy', ['clean'], function () {
     var npm = {
         'angular': 'angular/angular*.js',
@@ -47,7 +47,7 @@ gulp.task('clean:lib', function (callback) {
 
 gulp.task('clean', ['clean:lib']);
 
-
+// Task to run lint, setting file is .eslintrc.json
 gulp.task('lint', () => {
     // ESLint ignores files with 'node_modules' paths. 
     // So, it's best to have gulp ignore the directory as well. 

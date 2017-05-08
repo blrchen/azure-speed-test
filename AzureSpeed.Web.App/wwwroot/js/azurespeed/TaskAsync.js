@@ -1,5 +1,11 @@
 ﻿(function (win) {
 
+    var actionEnum = {
+        Run: "run",
+        WhenAll: "whenAll",
+        WhenAny: "whenAny"
+    }
+
     // convert anonymous function to promise
     function functionAsPromise(func) {
         return new Promise((resolve, reject) => {
@@ -41,27 +47,60 @@
         }); 
     }
 
-    var TaskManager = function (task) {
+    function promiseComposeForRunAction(promiseArr, listener) {
+        switch (listener.type) {
+            case actionEnum.Run:
+            case actionEnum.WhenAll:
+                var executes = [].reduce.call(promiseArr, (acc, cur) => {
+                    return promiseCompose(acc, cur);
+                });
+                executes.then(
+                    (sucess) => {
+                        listener.OnEvent(sucess);
+                    },
+                    (err) => {
+                        // console.log(fail);
+                        listener.OnEvent(err);
+                    });
+                break;
+            case actionEnum.WhenAny:
+                [].forEach.call(promiseArr, (item) => {
+                    item.then((sucess) => { listener.OnEvent(sucess); }, (err) => { listener.OnEvent(err); });
+                });
+                break;
+        }
+        
+    }
+
+    var TaskListener = function (handler, type) {
+        var _this = this;
+        _this.type = type;
+        _this.callTimes = 0;
+
+        _this.states = [];
+        _this.callBack = handler;
+
+        _this.OnEvent = function (e) {
+            if (_this.type === actionEnum.WhenAny && _this.callTimes > 0) {
+                return;
+            } 
+            _this.callTimes += 1;
+            if (typeof _this.callBack === "function") {
+                _this.callBack(e);
+            }
+            return null;
+        }
+    }
+
+    var TaskManager = function (task, type) {
         var _this = this;
         _this.promiseArr = null;
         var executables = null;
 
         _this.Wait = function (ok, fail) {
             _this.AsPromise();
-            executables = [].reduce.call(_this.promiseArr, (acc, cur) => {
-                return promiseCompose(acc, cur);
-            });
-            executables.then(
-                (sucess) =>
-                {
-                    //console.log(sucess);
-                    ok(sucess);
-                },
-                (err) =>
-                {
-                    console.log(fail);
-                    fail(err);
-                });
+            var listener = new TaskListener(ok, type);
+            executables = promiseComposeForRunAction(_this.promiseArr, listener);
         }
 
         var TaskAsPromise = function (t) {
@@ -90,16 +129,27 @@
 
             return _this;
         }
-
     }
 
     var run = function (task) {
-        var taskManager = new TaskManager(task);
+        var taskManager = new TaskManager(task, actionEnum.Run);
+        return taskManager;
+    }
+
+    var whenAll = function (task) {
+        var taskManager = new TaskManager(task, actionEnum.WhenAll);
+        return taskManager;
+    }
+
+    var whenAny = function (task) {
+        var taskManager = new TaskManager(task, actionEnum.WhenAny);
         return taskManager;
     }
 
     win.TaskAsync= {
-        'Run': run
+        'Run': run,
+        'WhenAny': whenAny,
+        'WhenAll': whenAll
     }
 
 })(window)

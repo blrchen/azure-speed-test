@@ -7,21 +7,21 @@
         });
 
         $scope.results = [];
-        $scope.upload = function () {
-            var regionSelected = regions.filter(function (v) {
+        $scope.uploadLoop = function () {
+            var regionsSelected = regions.filter(function (v) {
                 return $scope.user.regions.indexOf(v.id) >= 0;
             });
 
-            var list = [].map.call(regionSelected, (region) => {
+            var list = [].map.call(regionsSelected, (region) => {
                 var data = { region: region.name, blobName: guid.newGuid(), operation: 'upload' };
-                return TaskAsync.Run((callback) => {
+                return TaskAsync.run((callback) => {
 
-                    TaskAsync.Run((cb) => {
+                    TaskAsync.run((cb) => {
                         $http.get('/api/sas', { params: data })
                             .success(function (response) {
                                 cb(response);
                             })
-                    }).Wait((res) => {
+                    }).wait((res) => {
                         var content = [];
                         var byteSize = 256 * 1024;
                         for (var i = 0; i < byteSize; i++) {
@@ -57,18 +57,15 @@
                         var error = function (err) {
                         };
                         blob.upload(content, before, progress, success, error);
-                    }, (fail) => { console.log(fail); });
+                    });
                 });
             });
 
             TaskAsync
-                .WhenAll(list)
-                .Wait((sucess) => { console.log(sucess); });
+                .whenAll(list)
+                .wait((sucess) => { console.log(sucess); });
         }
 
-        $scope.uploadLoop = function () {
-            $scope.upload();
-        };
         $scope.canClick = function () {
             return true;
         }

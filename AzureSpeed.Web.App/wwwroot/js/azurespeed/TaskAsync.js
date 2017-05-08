@@ -56,16 +56,16 @@
                 });
                 executes.then(
                     (sucess) => {
-                        listener.OnEvent(sucess);
+                        listener.onEvent(sucess);
                     },
                     (err) => {
                         // console.log(fail);
-                        listener.OnEvent(err);
+                        listener.onEvent(err);
                     });
                 break;
             case actionEnum.WhenAny:
                 [].forEach.call(promiseArr, (item) => {
-                    item.then((sucess) => { listener.OnEvent(sucess); }, (err) => { listener.OnEvent(err); });
+                    item.then((sucess) => { listener.onEvent(sucess); }, (err) => { listener.onEvent(err); });
                 });
                 break;
         }
@@ -80,7 +80,7 @@
         _this.states = [];
         _this.callBack = handler;
 
-        _this.OnEvent = function (e) {
+        _this.onEvent = function (e) {
             if (_this.type === actionEnum.WhenAny && _this.callTimes > 0) {
                 return;
             } 
@@ -97,36 +97,34 @@
         _this.promiseArr = null;
         var executables = null;
 
-        _this.Wait = function (ok, fail) {
-            _this.AsPromise();
+        _this.wait = function (ok, fail) {
+            _this.asPromise();
             var listener = new TaskListener(ok, type);
             executables = promiseComposeForRunAction(_this.promiseArr, listener);
         }
 
-        var TaskAsPromise = function (t) {
+        var taskAsPromise = function (t) {
             if (typeof t === "function") {
                 return functionAsPromise(t);
             }
 
             if (t instanceof TaskManager) {
-                return t.AsPromise().promiseArr;
+                return t.asPromise().promiseArr;
             }
 
             // return emty function
-            return functionAsPromise(function () { });
+            return functionAsPromise(function (cb) { cb("empty!");});
         }
 
-        _this.AsPromise = function () {
+        _this.asPromise = function () {
             _this.promiseArr = [];
             if (task instanceof Array) {          
                 [].forEach.call(task, (item) => {
-                    _this.promiseArr = _this.promiseArr.concat(TaskAsPromise(item));
+                    _this.promiseArr = _this.promiseArr.concat(taskAsPromise(item));
                 });
-
             } else {
-                _this.promiseArr = _this.promiseArr.concat(TaskAsPromise(task));
+                _this.promiseArr = _this.promiseArr.concat(taskAsPromise(task));
             }
-
             return _this;
         }
     }
@@ -147,9 +145,9 @@
     }
 
     win.TaskAsync= {
-        'Run': run,
-        'WhenAny': whenAny,
-        'WhenAll': whenAll
+        'run': run,
+        'whenAny': whenAny,
+        'whenAll': whenAll
     }
 
 })(window)

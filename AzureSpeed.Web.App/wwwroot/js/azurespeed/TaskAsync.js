@@ -29,17 +29,17 @@
                 var stack = [];
                 p1.then(
                     (sucess) => {
-                        stack.push(sucess);
+                        stack = stack.concat(sucess);
                         p2.then((s) => {
-                            stack.push(s);
+                            stack = stack.concat(s);
                             resolve(stack);
                         }, (e) => {
-                            stack.push(e);
+                            stack = stack.concat(s);
                             resolve(stack);
                         });
                     },
                     (fail) => {
-                        stack.push(fail);
+                        stack = stack.concat(fail);
                         resolve(stack);
                     }
                 );

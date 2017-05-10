@@ -7,7 +7,8 @@
         });
 
         $scope.results = [];
-        $scope.uploadLoop = function () {
+        $scope.uploadLoop = function() {
+            $scope.results = [];
             var regionsSelected = regions.filter(function (v) {
                 return $scope.user.regions.indexOf(v.id) >= 0;
             });

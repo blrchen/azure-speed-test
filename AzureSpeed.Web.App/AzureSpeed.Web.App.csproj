@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="wwwroot\js\azurespeed\PromiseExtension.js" />
     <Content Include="wwwroot\js\azurespeed\TaskAsync.js" />
   </ItemGroup>
 

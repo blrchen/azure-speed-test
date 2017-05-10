@@ -14,21 +14,21 @@
 
             var list = [].map.call(regionsSelected, (region) => {
                 var data = { region: region.name, blobName: guid.newGuid(), operation: 'upload' };
-                return TaskAsync.run((callback) => {
+                return Promise.fromLamda((callback) => {
 
-                    TaskAsync.run((cb) => {
+                    Promise.fromLamda((cb) => {
                         $http.get('/api/sas', { params: data })
-                            .success(function (response) {
+                            .then(function (response) {
                                 cb(response);
                             })
-                    }).wait((res) => {
+                    }).runAsync().then((res) => {
                         var content = [];
                         var byteSize = 256 * 1024;
                         for (var i = 0; i < byteSize; i++) {
                             content.push('.');
                         }
 
-                        var blobUrl = res;
+                        var blobUrl = res[0].data;
                         var blob = ja.storage.blob(blobUrl);
                         var st = new Date();
                         var current = null;
@@ -61,9 +61,10 @@
                 });
             });
 
-            TaskAsync
-                .whenAll(list)
-                .wait((sucess) => { console.log(sucess); });
+            Promise
+                .fromLamda(list)
+                .run()
+                .then((sucess) => { console.log(sucess); });
         }
 
         $scope.canClick = function () {

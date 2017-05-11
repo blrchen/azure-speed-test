@@ -67,6 +67,7 @@
                             res("over");
                         };
                         var error = function(err) {
+                            res("over");
                         };
                         blob.upload(content, before, progress, success, error);
                     });

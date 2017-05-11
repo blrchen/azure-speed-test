@@ -1,38 +1,50 @@
 ﻿angular
     .module('azurespeed')
-    .controller('UploadController', ['$scope', '$http', '$controller', function ($scope, $http, $controller) {
+    .controller('UploadController', ['$scope', '$http', '$controller', '$q', function($scope, $http, $controller, $q) {
         $scope.selectedRegionIds = [];
-        $scope.$on('checkChanged', function () {
+
+        $scope.$on('checkChanged', function() {
             $scope.selectedRegionIds = $scope.user.regions;
         });
 
         $scope.results = [];
-        $scope.uploadLoop = function () {
-            var regionsSelected = regions.filter(function (v) {
+
+        $scope.uploadLoop = function() {
+            $scope.results = [];
+            var chain = $q.when();
+            var regionsSelected = regions.filter(function(v) {
                 return $scope.user.regions.indexOf(v.id) >= 0;
             });
 
-            var list = [].map.call(regionsSelected, (region) => {
-                var data = { region: region.name, blobName: guid.newGuid(), operation: 'upload' };
-                return TaskAsync.run((callback) => {
+            [].forEach.call(regionsSelected, (region) => {
+                chain = chain.then(function() {
+                    return uploadBlob(region);
+                });
+            });
+            chain.then(x => console.log(x));
+            return chain;
+        }
 
-                    TaskAsync.run((cb) => {
-                        $http.get('/api/sas', { params: data })
-                            .success(function (response) {
-                                cb(response);
-                            })
-                    }).wait((res) => {
+        $scope.canClick = function() {
+            return true;
+        }
+
+        function uploadBlob(region) {
+            var data = { region: region.name, blobName: guid.newGuid(), operation: 'upload' };
+            return new $q((res, rej) => {
+                $http.get('/api/sas', { params: data })
+                    .then(function(response) {
                         var content = [];
                         var byteSize = 256 * 1024;
                         for (var i = 0; i < byteSize; i++) {
                             content.push('.');
                         }
 
-                        var blobUrl = res;
+                        var blobUrl = response.data;
                         var blob = ja.storage.blob(blobUrl);
                         var st = new Date();
                         var current = null;
-                        var before = function () {
+                        var before = function() {
                             st = new Date();
                             current = {
                                 'geo': region.geo,
@@ -42,32 +54,24 @@
                             };
                             $scope.results.push(current);
                         };
-                        var progress = function (ev) {
+                        var progress = function(ev) {
                             current.progressPercent = ((ev.loaded / ev.total) * 100).toFixed(0);
                             $scope.$digest();
                         };
-                        var success = function () {
+                        var success = function() {
                             var elapsedSeconds = (new Date() - st) / 1000;
                             var speed = utils.getSizeStr(byteSize / elapsedSeconds) + '/s';
                             current.speed = speed;
                             $scope.results.last = current;
                             $scope.$digest();
-                            callback("over!");
+                            res("over");
                         };
-                        var error = function (err) {
+                        var error = function(err) {
+                            res("over");
                         };
                         blob.upload(content, before, progress, success, error);
                     });
-                });
             });
-
-            TaskAsync
-                .whenAll(list)
-                .wait((sucess) => { console.log(sucess); });
-        }
-
-        $scope.canClick = function () {
-            return true;
         }
 
     }]);

@@ -121,6 +121,16 @@
       "region": "West US 2"
     },
     {
+      "name": "azspdkoreacentral",
+      "key": "==Replace==Me==",
+      "region": "Korea Central"
+    },
+    {
+      "name": "azspdkoreasouth",
+      "key": "==Replace==Me==",
+      "region": "Korea South"
+    },
+    {
       "name": "azspdchinanorth",
       "key": "==Replace==Me==",
       "region": "China North",

@@ -4,7 +4,7 @@
         $scope.load = function () {
             var blobName = '100MB.bin';
             angular.forEach($scope.user.regions, function (value, key) {
-                var region = $scope.user.regions.find(function (r) { return r.id == value.id });
+                var region = $scope.user.regions.find(function (r) { return r.id === value.id });
                 var data = { region: region.name, blobName: blobName, operation: 'download' };
                 $http.get('/api/sas', { params: data })
                     .then(function (response) {

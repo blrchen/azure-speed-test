@@ -50,19 +50,5 @@ namespace AzureSpeed.Web.App.Controllers
         {
             return View();
         }
-
-        public string EnableStorageCORS(StorageAccount account)
-        {
-            try
-            {
-                var storageAccount = new StorageContext(account);
-            }
-            catch (Exception)
-            {
-                return "Failed due to Incorrect Account Name or Key.";
-            }
-
-            return "Enabling CORS Succeed";
-        }
     }
 }

@@ -43,6 +43,7 @@ var utils = {
         }
         var dsize = size;
         targetUnit = targetUnit.toLowerCase();
+        var unit;
         while (idx < units.length) {
             unit = units[idx];
             idx++;

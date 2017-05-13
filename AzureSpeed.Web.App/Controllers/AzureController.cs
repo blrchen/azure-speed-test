@@ -1,6 +1,4 @@
-﻿using System;
-using AzureSpeed.Common.Storage;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace AzureSpeed.Web.App.Controllers
 {

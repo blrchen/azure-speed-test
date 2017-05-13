@@ -14,7 +14,7 @@
             });
         }
 
-        $scope.$on('checkChanged', function (event, message) {
+        $scope.$on('checkChanged', function () {
             console.log($scope.user.regions);
             $scope.load();
         });

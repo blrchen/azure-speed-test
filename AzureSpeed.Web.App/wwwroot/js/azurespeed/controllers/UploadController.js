@@ -60,7 +60,7 @@
                             $scope.$digest();
                             res("over");
                         };
-                        var error = function (err) {
+                        var error = function () {
                             res("over");
                         };
                         blob.upload(content, before, progress, success, error);

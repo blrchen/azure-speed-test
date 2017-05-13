@@ -8,7 +8,7 @@
             $http.get('/api/region', { params: { ipOrUrl: $scope.ipOrUrl } })
                 .then(function (response) {
                     $scope.result = response.data;
-                }, function (response) {
+                }, function () {
                 });
         }
         $scope.canSearch = function () {

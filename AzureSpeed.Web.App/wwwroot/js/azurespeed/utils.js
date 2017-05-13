@@ -9,9 +9,10 @@ var utils = {
         var result = [];
         if (window.userregions) {
             for (var i = 0; i < window.userregions.length; i++) {
-                result.push(regions[window.userregions[i]]);
+                result.push(window.userregions[i]);
             }
         }
+        console.log(result);
         return result;
     },
     getGeoList: function () {

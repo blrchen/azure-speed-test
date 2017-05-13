@@ -2,39 +2,44 @@
     .module('azurespeed')
     .controller('MainController', ['$scope', 'localStorageService', function ($scope, localStorageService) {
         $scope.regions = regions;
+        $scope.user = {
+            regions: []
+        };
 
         var localStorage = localStorageService.get('userSelectedRegions');
-
         if (localStorage) {
-            $scope.user = {
-                regions: localStorage
-            };
+            // If data in local storage is found to use old data schema, remove it
+            if (localStorage.length >= 1 && angular.isNumber(localStorage[0])) {
+                localStorageService.remove('userSelectedRegions');
+                localStorage = regions.filter(function (r) {
+                    return r.geo === 'America';
+                });
+            }
+            $scope.user.regions = localStorage;
         } else {
-            $scope.user = {
-                regions: [2, 3, 4, 5, 6, 7, 12, 18, 19, 23, 22]
-            };
+            $scope.user = {};
+            $scope.user.regions = regions.filter(function (r) {
+                return r.geo === 'America';
+            });
         }
 
         $scope.checkAll = function (key) {
-            var regionTemp = $scope.user.regions;
-            $scope.regions.map(function (item) {
-                if (item.geo == key && regionTemp.where(function (d) { return d == item.id }).length == 0) {
-                    $scope.user.regions.push(item.id);
-                }
+            $scope.user.regions = $scope.user.regions.filter(function (r) {
+                return r.geo !== key;
             });
+            $scope.user.regions = $scope.user.regions.concat(regions.filter(function (r) {
+                return r.geo === key;
+            }));
+            console.log($scope.user.regions);
         };
 
         $scope.uncheckAll = function (key) {
-            var regionTemp = $scope.user.regions;
-
-            $scope.regions.map(function (item) {
-                if (item.geo == key) {
-                    regionTemp.remove(item.id);
-                }
+            $scope.user.regions = $scope.user.regions.filter(function (r) {
+                return r.geo !== key;
             });
-
-            $scope.user.regions = regionTemp;
+            console.log($scope.user.regions);
         };
+
         $scope.checkChanged = function () {
             $scope.$broadcast('checkChanged');
             // Below code to share user selected regions to latency test page 

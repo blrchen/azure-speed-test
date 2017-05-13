@@ -25,12 +25,12 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="item in items">
-                                <td>{{item.geo}}</td>
-                                <td>{{item.name}}</td>
-                                <td>{{item.location}}</td>
+                            <tr ng-repeat="region in user.regions">
+                                <td>{{region.geo}}</td>
+                                <td>{{region.name}}</td>
+                                <td>{{region.location}}</td>
                                 <td>
-                                    <a ng-if="item.url.length>0" class="btn btn-default" href="{{item.url}}">Download 100MB File</a>
+                                    <a ng-if="region.url.length>0" class="btn btn-default" href="{{region.url}}">Download 100MB File</a>
                                 </td>
                             </tr>
                         </tbody>

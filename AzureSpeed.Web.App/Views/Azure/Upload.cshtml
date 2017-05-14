@@ -5,7 +5,7 @@
 <div class="container-fluid" ng-controller="UploadController">
     <div class="page-header">
         <h3>@ViewBag.Title</h3>
-        <small>Test download spped to Azure Storage Servcie around the world.</small>
+        <small>Test upload speed to Azure Storage Servcie around the world.</small>
     </div>
     @Html.Partial("_RegionSelector")
     <div class="row">
@@ -30,19 +30,19 @@
                                         <th>Upload Speed</th>
                                     </tr>
                                 </thead>
-                                <tbdy>
+                                <tbody>
                                     <tr ng-repeat="result in results">
                                         <td>{{result.geo}}</td>
                                         <td>{{result.region}}</td>
                                         <td>{{result.location}}</td>
-                                        <td class="upload-progress">
+                                        <td>
                                             <div class="progress" style="margin-bottom: -20px;">
                                                 <div class="progress-bar progress-bar-info" ng-style="{'width':result.progressPercent+'%'}">{{result.progressPercent}}%</div>
                                             </div>
                                         </td>
-                                        <td class="upload-speed sort speed-success speed-inprogress">{{result.speed}}</td>
+                                        <td>{{result.speed}}</td>
                                     </tr>
-                                </tbdy>
+                                </tbody>
                             </table>
                         </p>
                     </div>

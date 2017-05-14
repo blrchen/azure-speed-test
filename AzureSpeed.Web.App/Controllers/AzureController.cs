@@ -1,6 +1,4 @@
-﻿using System;
-using AzureSpeed.Common.Storage;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace AzureSpeed.Web.App.Controllers
 {
@@ -49,20 +47,6 @@ namespace AzureSpeed.Web.App.Controllers
         public IActionResult About()
         {
             return View();
-        }
-
-        public string EnableStorageCORS(StorageAccount account)
-        {
-            try
-            {
-                var storageAccount = new StorageContext(account);
-            }
-            catch (Exception)
-            {
-                return "Failed due to Incorrect Account Name or Key.";
-            }
-
-            return "Enabling CORS Succeed";
         }
     }
 }

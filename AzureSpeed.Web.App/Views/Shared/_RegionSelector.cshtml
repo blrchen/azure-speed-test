@@ -12,8 +12,8 @@
             <label ng-repeat="region in value" class="checkbox-inline">
                 <input class="checkbox"
                        type="checkbox"
-                       checklist-model="user.regions"
-                       checklist-value="region.id"
+                       data-checklist-model="user.regions"
+                       data-checklist-value="region"
                        checklist-change="checkChanged()"
                        ng-model="checked"> {{region.name}}
             </label>

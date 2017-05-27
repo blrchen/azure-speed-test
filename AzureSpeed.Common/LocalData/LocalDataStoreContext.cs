@@ -55,7 +55,7 @@ namespace AzureSpeed.Common.LocalData
                 if (this.regionNames == null)
                 {
                     // The list is from ip file xml file.
-                    // Needs to be update when new data center opens.
+                    // Needs to be update when new datacenter opens.
                     // TODO: Generate this list from ip files on the flying??
                     this.regionNames = new Dictionary<string, CloudRegion>();
 

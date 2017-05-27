@@ -4,7 +4,7 @@
 [![forks badge]][forks]
 [![issues badge]][issues]
 
-Azure speed test tool. Test your network latency and speed to Azure data centers around the world. 
+Azure speed test tool. Test your network latency and speed to Azure datacenters around the world. 
 
 ## Demo
 http://www.azurespeed.com

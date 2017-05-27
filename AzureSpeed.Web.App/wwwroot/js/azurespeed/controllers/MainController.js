@@ -30,14 +30,12 @@
             $scope.user.regions = $scope.user.regions.concat(regions.filter(function (r) {
                 return r.geo === key;
             }));
-            console.log($scope.user.regions);
         };
 
         $scope.uncheckAll = function (key) {
             $scope.user.regions = $scope.user.regions.filter(function (r) {
                 return r.geo !== key;
             });
-            console.log($scope.user.regions);
         };
 
         $scope.checkChanged = function () {

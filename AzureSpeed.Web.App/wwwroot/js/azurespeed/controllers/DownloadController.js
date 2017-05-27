@@ -15,7 +15,6 @@
         }
 
         $scope.$on('checkChanged', function () {
-            console.log($scope.user.regions);
             $scope.load();
         });
 

@@ -40,9 +40,6 @@
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Views\AzureOnlineTools\" />
-  </ItemGroup>
 
   <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">
     <Exec Command="dotnet bundle" />

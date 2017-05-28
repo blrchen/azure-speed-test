@@ -22,7 +22,9 @@
         <link href="~/css/site.min.css" rel="stylesheet" />
     </environment>
     <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.4.min.js"></script>
-    @Html.Partial("_Analytics")
+    <environment names="Staging,Production">
+        @Html.Partial("_Analytics")
+    </environment>
 </head>
 <body>
     <div id="wrapper">
@@ -95,10 +97,11 @@
         </nav>
         <div id="page-wrapper">
             @RenderBody()
-            @Html.Partial("_Adsense")
+            <environment names="Staging,Production">
+                @Html.Partial("_Adsense")
+            </environment>
         </div>
     </div>
-
     <environment names="Development">
         @* Need bootstrap.js to make bootstrap madal work *@
         <script src="~/lib/bootstrap/js/bootstrap.js"></script>

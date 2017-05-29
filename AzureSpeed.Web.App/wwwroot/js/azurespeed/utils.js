@@ -12,7 +12,6 @@ var utils = {
                 result.push(window.userregions[i]);
             }
         }
-        console.log(result);
         return result;
     },
     getGeoList: function () {

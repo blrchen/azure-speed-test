@@ -9,9 +9,10 @@
             return View();
         }
 
+        // Redirection: /Cloud/IpRange => /Information/IpRange
         public IActionResult IpRange()
         {
-            return View();
+            return RedirectToAction("IpRange","Information");
         }
     }
 }

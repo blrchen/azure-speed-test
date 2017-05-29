@@ -10,12 +10,11 @@
             $scope.results = [];
             var chain = $q.when();
 
-            [].forEach.call($scope.user.regions, (region) => {
+            [].forEach.call($scope.user.regions, function (region) {
                 chain = chain.then(function () {
                     return uploadBlob(region);
                 });
             });
-            chain.then(x => console.log(x));
             return chain;
         }
 
@@ -25,7 +24,7 @@
 
         function uploadBlob(region) {
             var data = { region: region.name, blobName: guid.newGuid(), operation: 'upload' };
-            return new $q((res, rej) => {
+            return new $q(function(res, rej) {
                 $http.get('/api/sas', { params: data })
                     .then(function (response) {
                         var content = [];

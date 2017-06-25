@@ -14,6 +14,11 @@ namespace AzureSpeed.Web.App.Controllers
             return View();
         }
 
+        public IActionResult AzureBillingMeters()
+        {
+            return View();
+        }
+
         public IActionResult IpRange()
         {
             return View();

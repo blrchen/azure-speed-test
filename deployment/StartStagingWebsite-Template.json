@@ -13,12 +13,6 @@
       "metadata": {
         "description": "The name of the App Service plan to use for hosting the web app."
       }
-    },
-    "subscriptionId": {
-      "type": "string",
-      "metadata": {
-        "description": "Subscription Id."
-      }
     }
   },
   "resources": [

@@ -7,9 +7,6 @@
     },
     "appServicePlanName": {
       "value": "azurespeed-serviceplan-wus"
-    },
-    "subscriptionId": {
-      "value": "8eaf4bf3-36ac-44f2-8f0a-87fc37036d30"
     }
   }
 }

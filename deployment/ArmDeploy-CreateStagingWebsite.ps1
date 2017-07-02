@@ -5,4 +5,4 @@ New-AzureRmResourceGroupDeployment -ResourceGroupName "AzureSpeed" `
     -Name $DeploymentName `
     -Mode Incremental `
     -TemplateFile "CreateStagingWebsite-Template.json" `
-    -TemplateParameterFile "CreateStagingWebsite-TempalteParamters.json"
+    -TemplateParameterFile "CreateStagingWebsite-Parameters.json"

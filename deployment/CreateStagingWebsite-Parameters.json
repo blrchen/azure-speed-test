@@ -9,67 +9,10 @@
       "value": "azurespeed-wus"
     },
     "servicePackageLink": {
-      "value": "https://blairstoragehk.blob.core.windows.net/products/MAC.zip"
+      "value": "https://blairstoragehk.blob.core.windows.net/azurespeeddeploy/AzureSpeed.Web.App.zip"
     },
     "appServicePlanName": {
       "value": "azurespeed-serviceplan-wus"
-    },
-    "subscriptionId": {
-      "value": "8eaf4bf3-36ac-44f2-8f0a-87fc37036d30"
-    },
-    "callbackUrl": {
-      "value": "https://mmp-web-int-cne.chinacloudsites.cn/auth"
-    },
-    "aadLoginUrl": {
-      "value": "https://login.chinacloudapi.cn/"
-    },
-    "aadApplicationUrl": {
-      "value": "https://mmp-web-int-cne.chinacloudsites.cn/"
-    },
-    "siteEnvironment": {
-      "value": "int"
-    },
-    "searchUrl": {
-      "value": "https://mmp-search-int-cne.0d0a.com/indexes/macappsv1/docs"
-    },
-    "searchAPIKey": {
-      "value": ""
-    },
-    "graphApiUrl": {
-      "value": "https://microsoftgraph.chinacloudapi.cn/"
-    },
-    "jwt_audience": {
-      "value": "https://mmp-web-int-cne.chinacloudsites.cn/"
-    },
-    "adTenantConfigurationUrl": {
-      "value": "https://login.chinacloudapi.cn/{0}/.well-known/openid-configuration"
-    },
-    "cookieEncryptionSecret": {
-      "value": ""
-    },
-    "documentDbUrl": {
-      "value": "https://mmp-docdb-int-cne.documents.azure.cn:443/"
-    },
-    "docDbClientPreferredLocations": {
-      "value": "China East"
-    },
-    "serverHostUrl": {
-      "value": "mmp-web-int-cne-staging.chinacloudsites.cn"
-    },
-    "hashSecret": {
-      "value": ""
-    },
-    "secondaryHashSecret": {
-      "value": ""
-    },
-    "encryptionSecret": {
-      "value": ""
-    },
-    "secondaryEncryptionSecret": {
-      "value": ""
-    },
-    "legacyGraphApiUrl": {
-      "value": "https://graph.chinacloudapi.cn/"
     }
   }
 }

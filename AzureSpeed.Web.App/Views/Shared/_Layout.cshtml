@@ -8,21 +8,21 @@
     <meta name="description" content="Azure speed test tool. Test your network latency and speed to Azure datacenters around the world." />
     <title>@ViewBag.Title - Azure Speed Test</title>
 
-    <environment names="Development">
+    <environment include="Development">
         <link href="~/lib/font-awesome/css/font-awesome.css" rel="stylesheet" />
         <link href="~/lib/bootstrap/css/bootstrap.css" rel="stylesheet" />
         <link href="~/lib/metisMenu/metisMenu.css" rel="stylesheet" />
         <link href="~/css/sb-admin-2.css" rel="stylesheet" />
         <link href="~/css/site.css" rel="stylesheet" />
     </environment>
-    <environment names="Staging,Production">
+    <environment exclude="Development">
         <link href="~/lib/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
         <link href="~/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
         <link href="~/lib/metisMenu/metisMenu.min.css" rel="stylesheet" />
         <link href="~/css/site.min.css" rel="stylesheet" />
     </environment>
     <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.4.min.js"></script>
-    <environment names="Staging,Production">
+    <environment exclude="Development">
         @Html.Partial("_Analytics")
     </environment>
 </head>
@@ -100,12 +100,12 @@
         </nav>
         <div id="page-wrapper">
             @RenderBody()
-            <environment names="Staging,Production">
+            <environment exclude="Development">
                 @Html.Partial("_Adsense")
             </environment>
         </div>
     </div>
-    <environment names="Development">
+    <environment include="Development">
         @* Need bootstrap.js to make bootstrap madal work *@
         <script src="~/lib/bootstrap/js/bootstrap.js"></script>
         <script src="~/lib/angular/angular.js"></script>
@@ -133,14 +133,16 @@
         <script src="~/js/azurespeed/controllers/UploadController.js" asp-append-version="true"></script>
         <script src="~/js/azurespeed/controllers/UploadLargeFileController.js" asp-append-version="true"></script>
     </environment>
-    <environment names="Staging,Production">
+    <environment exclude="Development">
         <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.4.min.js"
                 asp-fallback-src="~/lib/jquery/jquery.min.js"
-                asp-fallback-test="window.jQuery">
+                asp-fallback-test="window.jQuery"
+                crossorigin="anonymous">
         </script>
         <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
                 asp-fallback-src="~/lib/bootstrap/js/bootstrap.min.js"
-                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
+                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
+                crossorigin="anonymous">
         </script>
         <script src="~/js/lib.all.min.js"></script>
         <script src="~/js/jazure.all.min.js" asp-append-version="true"></script>

@@ -52,7 +52,7 @@ namespace AzureSpeed.Test
             Assert.AreEqual("China North", eastChinaRegion.Region);
             Assert.AreEqual(ipOfAzureCN, eastChinaRegion.IpAddress);
 
-            string ipOfAzureSpeedCom = "168.62.20.37";
+            string ipOfAzureSpeedCom = "104.45.231.79";
             var azureSpeedRegion = this.localDataStoreContext.GetRegionInfoByIpOrUrl("www.azurespeed.com");
             Assert.AreEqual("Azure", eastAsiaRegion.Cloud);
             Assert.AreEqual("West US", azureSpeedRegion.Region);

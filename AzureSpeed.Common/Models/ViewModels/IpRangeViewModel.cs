@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Numerics;
 
 namespace AzureSpeed.Common.Models.ViewModels
 {
@@ -8,7 +9,7 @@ namespace AzureSpeed.Common.Models.ViewModels
 
         public string Region { get; set; }
 
-        public double TotalIpCount { get; set; }
+        public BigInteger TotalIpCount { get; set; }
 
         public List<string> Subnet { get; set; }
     }

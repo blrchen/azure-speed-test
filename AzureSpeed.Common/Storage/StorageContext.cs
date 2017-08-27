@@ -102,33 +102,33 @@ namespace AzureSpeed.Common.Storage
             corsRule.AllowedHeaders = corsAllowHeaders;
             corsRule.AllowedOrigins = corsAllowedOrigin;
             corsRule.ExposedHeaders = corsExposedHeaders;
-            ServiceProperties properties = this.blobClient.GetServiceProperties();
-            properties.Cors.CorsRules.Clear();
-            properties.Cors.CorsRules.Add(corsRule);
-            await this.blobClient.SetServicePropertiesAsync(properties);
+            var serviceProperties = await this.blobClient.GetServicePropertiesAsync();
+            serviceProperties.Cors.CorsRules.Clear();
+            serviceProperties.Cors.CorsRules.Add(corsRule);
+            await this.blobClient.SetServicePropertiesAsync(serviceProperties);
         }
 
-        public void CleanUpBlobs()
-        {
-            var container = this.blobClient.GetContainerReference(AzureSpeedConstants.PrivateContainerName);
-            var blobs = container.ListBlobs();
-            var oneMonthAgo = DateTimeOffset.Now.AddMonths(-1);
-            foreach (IListBlobItem blob in blobs)
-            {
-                var cblob = blob as ICloudBlob;
-                if (cblob != null && cblob.Name != AzureSpeedConstants.CallBackBlobName && cblob.Name != AzureSpeedConstants.DownloadTestBlobName)
-                {
-                    if (cblob.Properties.LastModified.Value.CompareTo(oneMonthAgo) < 0)
-                    {
-                        cblob.DeleteAsync();
-                    }
-                }
-            }
-        }
+        //public void CleanUpBlobs()
+        //{
+        //    var container = this.blobClient.GetContainerReference(AzureSpeedConstants.PrivateContainerName);
+        //    var blobs = container.ListBlobs();
+        //    var oneMonthAgo = DateTimeOffset.Now.AddMonths(-1);
+        //    foreach (IListBlobItem blob in blobs)
+        //    {
+        //        var cblob = blob as ICloudBlob;
+        //        if (cblob != null && cblob.Name != AzureSpeedConstants.CallBackBlobName && cblob.Name != AzureSpeedConstants.DownloadTestBlobName)
+        //        {
+        //            if (cblob.Properties.LastModified.Value.CompareTo(oneMonthAgo) < 0)
+        //            {
+        //                cblob.DeleteAsync();
+        //            }
+        //        }
+        //    }
+        //}
 
         public async Task EnableLoggingAsync()
         {
-            var serviceProperties = this.blobClient.GetServiceProperties();
+            var serviceProperties = await this.blobClient.GetServicePropertiesAsync();
             serviceProperties.Logging.LoggingOperations = LoggingOperations.All;
             serviceProperties.Logging.RetentionDays = 365;
             await this.blobClient.SetServicePropertiesAsync(serviceProperties);
@@ -149,7 +149,7 @@ namespace AzureSpeed.Common.Storage
 
                 // Create callback.js blob
                 var blob = container.GetBlockBlobReference(AzureSpeedConstants.CallBackBlobName);
-                if (blob != null && !blob.Exists())
+                if (blob != null && !await blob.ExistsAsync())
                 {
                     await CreateCallbackJsBlob();
                 }
@@ -178,7 +178,7 @@ namespace AzureSpeed.Common.Storage
             using (var stream = GenerateStreamFromString(blobContent))
             {
                 var blob = container.GetBlockBlobReference(AzureSpeedConstants.CallBackBlobName);
-                blob.UploadFromStream(stream);
+                await blob.UploadFromStreamAsync(stream);
                 blob.Properties.ContentType = "application/javascript";
                 await blob.SetPropertiesAsync();
             }
@@ -190,7 +190,7 @@ namespace AzureSpeed.Common.Storage
 
             // Create 100MB.bin blob
             var blob = container.GetBlockBlobReference(AzureSpeedConstants.DownloadTestBlobName);
-            if (blob != null && !blob.Exists())
+            if (blob != null && !await blob.ExistsAsync())
             {
                 var fullFilePath = @"C:\DelMe\100MB.bin";
                 using (var fileStream = File.OpenRead(fullFilePath))

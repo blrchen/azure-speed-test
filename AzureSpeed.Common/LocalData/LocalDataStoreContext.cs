@@ -9,7 +9,6 @@ using AzureSpeed.Common.Models.AWS;
 using AzureSpeed.Common.Models.Responses;
 using AzureSpeed.Common.Models.ViewModels;
 using AzureSpeed.Common.Storage;
-using LukeSkywalker.IPNetwork;
 using Newtonsoft.Json;
 
 namespace AzureSpeed.Common.LocalData

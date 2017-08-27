@@ -100,7 +100,7 @@
         </nav>
         <div id="page-wrapper">
             @RenderBody()
-            <environment names="Staging,Production">
+            <environment exclude="Development">
                 @Html.Partial("_Adsense")
             </environment>
         </div>

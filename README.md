@@ -7,7 +7,8 @@
 Azure speed test tool. Test your network latency and speed to Azure datacenters around the world.
 
 ## Demo
-http://www.azurespeed.com
+* Prod: http://www.azurespeed.com
+# Staging
 
 ## Development
 1. Open **AzureSpeed.sln** in **Visual Studio 2017**

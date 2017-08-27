@@ -38,6 +38,11 @@
     <IpRange Subnet="42.159.144.0/20" />
     <IpRange Subnet="139.219.128.0/20" />
     <IpRange Subnet="139.219.241.0/24" />
+    <IpRange Subnet="40.72.128.0/24" />
+    <IpRange Subnet="40.72.136.0/21" />
+    <IpRange Subnet="40.72.144.0/20" />
+    <IpRange Subnet="40.72.160.0/21" />
+    <IpRange Subnet="40.72.192.16/28" />
     <IpRange Subnet="40.126.88.16/28" />
     <IpRange Subnet="40.126.88.64/28" />
     <IpRange Subnet="42.159.192.0/20" />

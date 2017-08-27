@@ -9,7 +9,6 @@
     <None Update="wwwroot\**\*;Data\**\*">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
-    <ProjectReference Include="..\AzureSpeed.Common\AzureSpeed.Common.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
   </ItemGroup>
 
@@ -19,6 +18,9 @@
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
     <DotNetCliToolReference Include="BundlerMinifier.Core" Version="2.4.337" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AzureSpeed.Common\AzureSpeed.Common.csproj" />
   </ItemGroup>
 
   <Target Name="PrepublishScript" BeforeTargets="PrepareForPublish">

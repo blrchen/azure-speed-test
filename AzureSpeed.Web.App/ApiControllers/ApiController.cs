@@ -59,17 +59,17 @@ namespace AzureSpeed.Web.App.ApiControllers
             return url;
         }
 
-        [HttpGet]
-        [Route("cleanup")]
-        public string CleanUpBlobs()
-        {
-            foreach (var account in localDataStoreContext.StorageAccounts)
-            {
-                var storageAccount = new StorageContext(account);
-                storageAccount.CleanUpBlobs();
-            }
+        //[HttpGet]
+        //[Route("cleanup")]
+        //public string CleanUpBlobs()
+        //{
+        //    foreach (var account in localDataStoreContext.StorageAccounts)
+        //    {
+        //        var storageAccount = new StorageContext(account);
+        //        storageAccount.CleanUpBlobs();
+        //    }
 
-            return string.Empty;
-        }
+        //    return string.Empty;
+        //}
     }
 }

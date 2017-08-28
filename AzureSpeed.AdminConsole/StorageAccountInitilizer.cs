@@ -6,6 +6,8 @@ using System.Reflection;
 using System.Threading.Tasks;
 using AzureSpeed.Common.LocalData;
 using AzureSpeed.Common.Storage;
+using Microsoft.Extensions.Configuration;
+using AzureSpeed.Web.App.Common;
 
 namespace AzureSpeed.AdminConsole
 {
@@ -13,15 +15,23 @@ namespace AzureSpeed.AdminConsole
     {
         public async Task InitializeAsync()
         {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json");
+
+            IConfiguration configuration = builder.Build();
+            var appSettings = new AppSettings();
+            configuration.GetSection("AppSettings").Bind(appSettings);
+
             var localDataStoreContext = new LocalDataStoreContext(
                 Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-                ConfigurationManager.AppSettings["AzureIpRangeFileList"],
-                ConfigurationManager.AppSettings["AwsIpRangeFile"],
-                ConfigurationManager.AppSettings["AliCloudIpRangeFile"]);
+                appSettings.AzureIpRangeFileList,
+                appSettings.AwsIpRangeFile,
+                appSettings.AliCloudIpRangeFile);
 
             foreach (var account in localDataStoreContext.StorageAccounts.ToList())
             {
-                if (account.Name != "azspdkoreasouth")
+                if (account.Name != "azspdeastasia")
                 {
                     continue;
                 }

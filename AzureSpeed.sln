@@ -10,13 +10,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureSpeed.Test", "AzureSpeed.Test\AzureSpeed.Test.csproj", "{EB721DE4-D49E-4D7E-BD4B-96C9D7736A92}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureSpeed.AdminConsole", "AzureSpeed.AdminConsole\AzureSpeed.AdminConsole.csproj", "{6A8A5A83-B00B-411C-8470-0B73596CED4B}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSpeed.Web.App", "AzureSpeed.Web.App\AzureSpeed.Web.App.csproj", "{C5019DD8-AF60-4ED1-A73A-A188A7E0D890}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureSpeed.Common", "AzureSpeed.Common\AzureSpeed.Common.csproj", "{F2434CAD-DB53-4A0A-8098-EE0A51933A9A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSpeed.Common", "AzureSpeed.Common\AzureSpeed.Common.csproj", "{F2434CAD-DB53-4A0A-8098-EE0A51933A9A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureSpeed.AdminConsole", "AzureSpeed.AdminConsole\AzureSpeed.AdminConsole.csproj", "{D65720BB-2285-4117-A258-0C4B4C26C2E6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureSpeed.Test", "AzureSpeed.Test\AzureSpeed.Test.csproj", "{8B9A67D2-506B-498F-9703-1D738E4131DB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,14 +24,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{EB721DE4-D49E-4D7E-BD4B-96C9D7736A92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EB721DE4-D49E-4D7E-BD4B-96C9D7736A92}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EB721DE4-D49E-4D7E-BD4B-96C9D7736A92}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EB721DE4-D49E-4D7E-BD4B-96C9D7736A92}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6A8A5A83-B00B-411C-8470-0B73596CED4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6A8A5A83-B00B-411C-8470-0B73596CED4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6A8A5A83-B00B-411C-8470-0B73596CED4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6A8A5A83-B00B-411C-8470-0B73596CED4B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C5019DD8-AF60-4ED1-A73A-A188A7E0D890}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C5019DD8-AF60-4ED1-A73A-A188A7E0D890}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C5019DD8-AF60-4ED1-A73A-A188A7E0D890}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -40,6 +32,14 @@ Global
 		{F2434CAD-DB53-4A0A-8098-EE0A51933A9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F2434CAD-DB53-4A0A-8098-EE0A51933A9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F2434CAD-DB53-4A0A-8098-EE0A51933A9A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D65720BB-2285-4117-A258-0C4B4C26C2E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D65720BB-2285-4117-A258-0C4B4C26C2E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D65720BB-2285-4117-A258-0C4B4C26C2E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D65720BB-2285-4117-A258-0C4B4C26C2E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B9A67D2-506B-498F-9703-1D738E4131DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B9A67D2-506B-498F-9703-1D738E4131DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B9A67D2-506B-498F-9703-1D738E4131DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B9A67D2-506B-498F-9703-1D738E4131DB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

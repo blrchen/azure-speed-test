@@ -4,6 +4,8 @@ using System.Linq;
 using System.Reflection;
 using AzureSpeed.Common.LocalData;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Extensions.Configuration;
+using AzureSpeed.Web.App.Common;
 
 namespace AzureSpeed.Test
 {
@@ -14,11 +16,25 @@ namespace AzureSpeed.Test
 
         public LocalDataStoreContextTest()
         {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json");
+
+            IConfiguration configuration = builder.Build();
+            var appSettings = new AppSettings();
+            configuration.GetSection("AppSettings").Bind(appSettings);
+
+            var localDataStoreContext = new LocalDataStoreContext(
+                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+                appSettings.AzureIpRangeFileList,
+                appSettings.AwsIpRangeFile,
+                appSettings.AliCloudIpRangeFile);
+
             this.localDataStoreContext = new LocalDataStoreContext(
                 Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-                ConfigurationManager.AppSettings["AzureIpRangeFileList"],
-                ConfigurationManager.AppSettings["AwsIpRangeFile"],
-                ConfigurationManager.AppSettings["AliCloudIpRangeFile"]);
+                appSettings.AzureIpRangeFileList,
+                appSettings.AwsIpRangeFile,
+                appSettings.AliCloudIpRangeFile);
         }
 
         [TestMethod]

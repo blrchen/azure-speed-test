@@ -7,7 +7,7 @@
   <ItemGroup>
     <PackageReference Include="IPNetwork2" Version="2.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <PackageReference Include="WindowsAzure.Storage" Version="7.2.1" />
+    <PackageReference Include="WindowsAzure.Storage" Version="8.4.0" />
   </ItemGroup>
 
 </Project>

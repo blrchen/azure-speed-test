@@ -7,35 +7,39 @@
 Azure speed test tool. Test your network latency and speed to Azure datacenters around the world.
 
 ## Demo
-* Prod: http://www.azurespeed.com
-* Staging: http://azurespeed-wus-staging.azurewebsites.net/
+* Staging - http://azurespeed-wus-staging.azurewebsites.net/
+* Production - http://www.azurespeed.com
 
-## Development
-1. Open **AzureSpeed.sln** in **Visual Studio 2017**
-2. Run ProvisionStorageAccounts.ps1 in PowerShell commnad line window to create Azure storage accounts.
-3. Replace storage accounts and keys in **AzureSpeed.Web.App\Data\settings.json**
-4. Run AdminConsole.exe to initialize storage account, this tool will take care of everything needs for a storage account to run speed test
-    1. Enable CORS
-    2. Create two containers
-    3. Create a callback.js which is used for latency test
-    4. Upload a 100MB dummy file for download speed test (Test file can be downloaded from http://azurespeed.com/Azure/Download)
-5. Replace storage account names in 
+## Setup local develop environment
+To run the code locally you will need:
+* Visual Studio 2017.3 or higher
+* An Azure subscription
+
+Steps
+1. Run ProvisionStorageAccounts.ps1 in PowerShell commnad line window to create Azure storage accounts.
+2. Update **AzureSpeed.Web.App\Data\settings.json** with storage accounts and keys created in step #1
+3. Run AzureSpeed.AdminConsole.exe to initialize storage accounts, this tool will take care of everything needs for a storage account to run speed test
+    * Enable CORS
+    * Create a callback.js used for latency test
+    * Upload a 100MB dummy file for download speed test (Test file can be downloaded from http://www.azurespeed.com/Azure/Download)
+5. Open **AzureSpeed.sln** in **Visual Studio 2017**
+6. Updated below files with storage accounts created in step #1
     - **AzureSpeed.Web.App\wwwroot\js\azurespeed\common.js** 
     - **AzureSpeed.Web.App\wwwroot\js\azurespeed\controllers\MainController.js**
 6. You are all set now, enjoy coding!
 
 ## Built on
-- [ASP.NET Core](https://github.com/aspnet/home)
-- [Bootstrap](https://github.com/twbs/bootstrap)
-- [Font Awesome](https://github.com/FortAwesome/Font-Awesome)
-- [jQuery](https://github.com/jquery/jquery)
-- [Angular](https://github.com/angular/angular)
-- [UI Bootstrap](https://github.com/angular-ui/bootstrap)
-- [Angular-filter](https://github.com/a8m/angular-filter)
-- [checklist-model](https://github.com/vitalets/checklist-model)
-- [D3](https://github.com/mbostock/d3)
-- [SB Admin 2 Theme](https://github.com/blackrockdigital/startbootstrap-sb-admin-2/)
-- [jazure](https://github.com/orcame/jazure)
+* [ASP.NET Core](https://github.com/aspnet/home)
+* [Bootstrap](https://github.com/twbs/bootstrap)
+* [Font Awesome](https://github.com/FortAwesome/Font-Awesome)
+* [jQuery](https://github.com/jquery/jquery)
+* [Angular](https://github.com/angular/angular)
+* [UI Bootstrap](https://github.com/angular-ui/bootstrap)
+* [Angular-filter](https://github.com/a8m/angular-filter)
+* [checklist-model](https://github.com/vitalets/checklist-model)
+* [D3](https://github.com/mbostock/d3)
+* [SB Admin 2 Theme](https://github.com/blackrockdigital/startbootstrap-sb-admin-2/)
+* [jazure](https://github.com/orcame/jazure)
 
 ## License
 [MIT](/LICENSE)

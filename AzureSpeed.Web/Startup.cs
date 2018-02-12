@@ -25,6 +25,9 @@ namespace AzureSpeed.Web
             {
                 configuration.RootPath = "ClientApp/build";
             });
+
+            // Enable CORS
+            services.AddCors();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -38,6 +41,8 @@ namespace AzureSpeed.Web
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
+            app.UseCors(build => build.WithOrigins("*").WithHeaders("*").WithMethods("*"));
 
             app.UseStaticFiles();
             app.UseSpaStaticFiles();

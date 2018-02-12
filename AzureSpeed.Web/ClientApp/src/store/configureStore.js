@@ -2,9 +2,11 @@
 import thunk from 'redux-thunk';
 import { routerReducer, routerMiddleware } from 'react-router-redux';
 import * as Counter from './counter';
+import * as IpRange from './ipRange';
 
 export default function configureStore(history, initialState) {
   const reducers = {
+    ipRange: IpRange.reducer,
     counter: Counter.reducer
   };
 

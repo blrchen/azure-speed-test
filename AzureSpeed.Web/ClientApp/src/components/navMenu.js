@@ -2,6 +2,7 @@
 import { Link } from 'react-router-dom';
 import { Glyphicon, Nav, Navbar, NavItem } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
+
 import './navMenu.css';
 
 export default props => (
@@ -80,6 +81,13 @@ export default props => (
         <LinkContainer to={'/about'} exact>
           <NavItem>
             <Glyphicon glyph='home' /> Datacenter IP Ranges
+          </NavItem>
+        </LinkContainer>
+      </Nav>
+      <Nav>
+        <LinkContainer to={'/reference'} exact>
+          <NavItem>
+            <Glyphicon glyph='home' /> Reference
           </NavItem>
         </LinkContainer>
       </Nav>

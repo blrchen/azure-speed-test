@@ -57,28 +57,28 @@ export default props => (
         </LinkContainer>
       </Nav>
       <Nav>
-        <LinkContainer to={'/about'} exact>
+        <LinkContainer to={'/azureRegions'} exact>
           <NavItem>
             <Glyphicon glyph='home' /> Azure Regions
           </NavItem>
         </LinkContainer>
       </Nav>
       <Nav>
-        <LinkContainer to={'/about'} exact>
+        <LinkContainer to={'/azureEnvironments'} exact>
           <NavItem>
             <Glyphicon glyph='home' /> Azure Environments
           </NavItem>
         </LinkContainer>
       </Nav>
       <Nav>
-        <LinkContainer to={'/about'} exact>
+        <LinkContainer to={'/azureBillingMeters'} exact>
           <NavItem>
             <Glyphicon glyph='home' /> Azure Billing Meters
           </NavItem>
         </LinkContainer>
       </Nav>
       <Nav>
-        <LinkContainer to={'/about'} exact>
+        <LinkContainer to={'/ipRange'} exact>
           <NavItem>
             <Glyphicon glyph='home' /> Datacenter IP Ranges
           </NavItem>

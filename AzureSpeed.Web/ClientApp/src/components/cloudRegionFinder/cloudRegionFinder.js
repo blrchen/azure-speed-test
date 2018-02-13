@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { actionCreators } from '../../store/ipRange';
+import { actionCreators } from '../../store/cloudRegionFinder';
 
 import './ipRange.css';
 
-class IpRange extends Component {
+class CloudRegionFinder extends Component {
 
   componentDidMount() {
     this.props.getIpRangeData();
@@ -82,4 +82,4 @@ class IpRange extends Component {
 export default connect(
   state => state.ipRange,
   actionCreators
-)(IpRange);
+)(CloudRegionFinder);

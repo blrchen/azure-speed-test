@@ -6,9 +6,7 @@ const initialState = { ipRangeData: {} };
 
 export const actionCreators = {
   getIpRangeData: () => async (dispatch, getState) => {
-    console.log('in getIpRangeData');
     const ipRangeData = await AzureSpeedService.getIpRageData();
-    console.log(ipRangeData);
     dispatch({ type: getIpRangeDataType, ipRangeData });
   }
 };

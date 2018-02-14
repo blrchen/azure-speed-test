@@ -17,40 +17,40 @@ export default props => (
       <Nav>
         <LinkContainer to={'/'} exact>
           <NavItem>
-            <Glyphicon glyph='home' /> Latency Test
+            <Glyphicon glyph='latency' /> Latency Test
           </NavItem>
         </LinkContainer>
       </Nav>
       <Nav>
-        <LinkContainer to={'/about'} exact>
+        <LinkContainer to={'/upload'} exact>
           <NavItem>
             <Glyphicon glyph='home' /> Upload Speed Test
           </NavItem>
         </LinkContainer>
       </Nav>
       <Nav>
-        <LinkContainer to={'/about'} exact>
+        <LinkContainer to={'/uploadFile'} exact>
           <NavItem>
             <Glyphicon glyph='home' /> Large File Upload Speed Test
           </NavItem>
         </LinkContainer>
       </Nav>
       <Nav>
-        <LinkContainer to={'/about'} exact>
+        <LinkContainer to={'/download'} exact>
           <NavItem>
             <Glyphicon glyph='home' /> Download Speed Test
           </NavItem>
         </LinkContainer>
       </Nav>
       <Nav>
-        <LinkContainer to={'/about'} exact>
+        <LinkContainer to={'/psPing'} exact>
           <NavItem>
             <Glyphicon glyph='home' /> PsPing Latency Test
           </NavItem>
         </LinkContainer>
       </Nav>
       <Nav>
-        <LinkContainer to={'/about'} exact>
+        <LinkContainer to={'/cloudRegionFinder'} exact>
           <NavItem>
             <Glyphicon glyph='home' /> Cloud Region Finder
           </NavItem>

@@ -487,13 +487,16 @@ const AzureRegions = props => (
         <p>
           <ul>
             <li>
-              <a href="https://github.com/Azure-Samples/billing-dotnet-ratecard-api" target="_blank">Microsoft Azure Billing API Code Samples: RateCard API</a>
+              <a href="https://github.com/Azure-Samples/billing-dotnet-ratecard-api" target="_blank" rel="noopener noreferrer">
+              Microsoft Azure Billing API Code Samples: RateCard API</a>
             </li>
             <li>
-              <a href="https://msdn.microsoft.com/en-us/library/azure/mt219005.aspx" target="_blank">Resource RateCard REST API</a>
+              <a href="https://msdn.microsoft.com/en-us/library/azure/mt219005.aspx" target="_blank" rel="noopener noreferrer">
+              Resource RateCard REST API</a>
             </li>
             <li>
-              <a href="https://github.com/Azure/BillingCodeSamples" target="_blank">Microsoft Azure Billing API Code Samples</a>
+              <a href="https://github.com/Azure/BillingCodeSamples" target="_blank" rel="noopener noreferrer">
+              Microsoft Azure Billing API Code Samples</a>
             </li>
           </ul>
         </p>

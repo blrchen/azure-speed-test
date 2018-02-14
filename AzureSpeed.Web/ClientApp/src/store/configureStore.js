@@ -2,10 +2,15 @@
 import thunk from 'redux-thunk';
 import { routerReducer, routerMiddleware } from 'react-router-redux';
 import * as Counter from './counter';
+
+import * as Download from './download';
+import * as CloudRegionFinder from './cloudRegionFinder';
 import * as IpRange from './ipRange';
 
 export default function configureStore(history, initialState) {
   const reducers = {
+    download: Download.reducer,
+    cloudRegionFinder: CloudRegionFinder.reducer,
     ipRange: IpRange.reducer,
     counter: Counter.reducer
   };

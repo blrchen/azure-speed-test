@@ -64,7 +64,8 @@ const AzureRegions = props => (
         <p>
           <ul>
             <li>
-              <a href="https://docs.microsoft.com/en-us/azure/best-practices-availability-paired-regions" target="_blank">Business continuity and disaster recovery (BCDR): Azure Paired Regions</a>
+              <a href="https://docs.microsoft.com/en-us/azure/best-practices-availability-paired-regions" target="_blank" rel="noopener noreferrer">
+                Business continuity and disaster recovery (BCDR): Azure Paired Regions</a>
             </li>
           </ul>
         </p>

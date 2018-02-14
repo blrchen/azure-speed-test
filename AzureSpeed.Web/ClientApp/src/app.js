@@ -2,7 +2,9 @@
 import { Route } from 'react-router';
 import Layout from './components/layout';
 import Counter from './components/counter';
+import Download from './components/download/download';
 import PsPing from './components/static/psping';
+import CloudRegionFinder from './components/cloudRegionFinder/cloudRegionFinder';
 import AzureRegions from './components/static/azureRegions';
 import AzureEnvironments from './components/static/azureEnvironments';
 import AzureBillingMeters from './components/static/azureBillingMeters';
@@ -16,9 +18,9 @@ export default () => (
     <Route path='/latency' component={Counter} />
     <Route path='/upload' component={Counter} />
     <Route path='/uploadLargeFile' component={Counter} />
-    <Route path='/download' component={Counter} />
+    <Route path='/download' component={Download} />
     <Route path='/psping' component={PsPing} />
-    <Route path='/cloudRegionFinlder' component={Counter} />
+    <Route path='/cloudRegionFinlder' component={CloudRegionFinder} />
     <Route path='/azureRegions' component={AzureRegions} />
     <Route path='/azureEnvironments' component={AzureEnvironments} />
     <Route path='/azureBillingMeters' component={AzureBillingMeters} />

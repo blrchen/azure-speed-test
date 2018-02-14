@@ -128,7 +128,8 @@ const AzureEnvironments = props => (
         <p>
           <ul>
             <li>
-              <a href="https://docs.microsoft.com/en-us/azure/azure-government/documentation-government-developer-guide" target="_blank">Azure Government developer guide</a>
+              <a href="https://docs.microsoft.com/en-us/azure/azure-government/documentation-government-developer-guide" target="_blank" rel="noopener noreferrer">
+                Azure Government developer guide</a>
             </li>
           </ul>
         </p>

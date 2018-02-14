@@ -44,7 +44,6 @@ namespace AzureSpeed.Web
 
             app.UseCors(build => build.WithOrigins("*").WithHeaders("*").WithMethods("*"));
 
-            app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
             app.UseMvc(routes =>

@@ -34,7 +34,6 @@ class Download extends Component {
                       <th>Test File</th>
                     </tr>
                   </thead>
-
                   <tbody>
                     <tr>
                       {

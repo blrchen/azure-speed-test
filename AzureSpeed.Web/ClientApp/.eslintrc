@@ -12,6 +12,7 @@
     }],
     "no-trailing-spaces": 2,
     "no-tabs": 2,
-    "semi": [2, "always"]
+    "semi": [2, "always"],
+    "no-undef": 1
   }
 }

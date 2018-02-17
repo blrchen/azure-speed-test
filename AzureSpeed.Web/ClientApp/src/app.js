@@ -2,6 +2,8 @@
 import { Route } from 'react-router';
 import Layout from './components/layout';
 import Counter from './components/counter';
+import Upload from './components/upload/upload';
+import UploadLargeFile from './components/uploadLargeFile/uploadLargeFile';
 import Download from './components/download/download';
 import PsPing from './components/static/psping';
 import CloudRegionFinder from './components/cloudRegionFinder/cloudRegionFinder';
@@ -16,8 +18,8 @@ export default () => (
   <Layout>
     <Route exact path='/' component={Counter} />
     <Route path='/latency' component={Counter} />
-    <Route path='/upload' component={Counter} />
-    <Route path='/uploadLargeFile' component={Counter} />
+    <Route path='/upload' component={Upload} />
+    <Route path='/uploadLargeFile' component={UploadLargeFile} />
     <Route path='/download' component={Download} />
     <Route path='/psping' component={PsPing} />
     <Route path='/cloudRegionFinlder' component={CloudRegionFinder} />

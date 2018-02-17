@@ -29,7 +29,7 @@ export default props => (
         </LinkContainer>
       </Nav>
       <Nav>
-        <LinkContainer to={'/uploadFile'} exact>
+        <LinkContainer to={'/uploadLargeFile'} exact>
           <NavItem>
             <Glyphicon glyph='home' /> Large File Upload Speed Test
           </NavItem>

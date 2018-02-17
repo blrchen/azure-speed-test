@@ -8,6 +8,14 @@ export default class AzureSpeedService {
     return HttpClient.get(`${Config.apiUrl}/api/download`);
   }
 
+  static getUploadData() {
+    return HttpClient.get(`${Config.apiUrl}/api/sas?blobName=1&operation=upload&region=China+East`);
+  }
+
+  static getUploadLargeFileData(region, blobName, operation) {
+    return HttpClient.get(`${Config.apiUrl}/api/sas?blobName=${blobName}&operation=${operation}&region=${region}`);
+  }
+
   static getIpRageData() {
     return HttpClient.get(`${Config.apiUrl}/api/iprange`);
   }

@@ -48,6 +48,7 @@ export default class HttpClient {
   static ajax(url, options) {
     options = options || {};
     options.headers = options.headers || {};
+    options.headers['Cache-Control'] = 'no-cache';
     // options.headers['Csrf-Token'] = 'nocheck';  Turn off to get ES api call work
     return fetch(url, options).then(
       response => {

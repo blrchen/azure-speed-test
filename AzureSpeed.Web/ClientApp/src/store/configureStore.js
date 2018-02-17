@@ -1,8 +1,8 @@
 ﻿import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
 import { routerReducer, routerMiddleware } from 'react-router-redux';
-import * as Counter from './counter';
 
+import * as Latency from './latency';
 import * as Upload from './upload';
 import * as UploadLargeFile from './uploadLargeFile';
 import * as Download from './download';
@@ -11,12 +11,12 @@ import * as IpRange from './ipRange';
 
 export default function configureStore(history, initialState) {
   const reducers = {
+    latency: Latency.reducer,
     upload: Upload.reducer,
     uploadLargeFile: UploadLargeFile.reducer,
     download: Download.reducer,
     cloudRegionFinder: CloudRegionFinder.reducer,
-    ipRange: IpRange.reducer,
-    counter: Counter.reducer
+    ipRange: IpRange.reducer
   };
 
   const middleware = [

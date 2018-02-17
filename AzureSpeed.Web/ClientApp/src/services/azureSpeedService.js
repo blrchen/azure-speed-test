@@ -4,6 +4,10 @@ import HttpClient from './httpClient';
 
 export default class AzureSpeedService {
 
+  static getLatencyData(region) {
+    return HttpClient.get(`https://${region}.blob.core.chinacloudapi.cn/test/cb.js`);
+  }
+
   static getDownloadData() {
     return HttpClient.get(`${Config.apiUrl}/api/download`);
   }

@@ -1,7 +1,7 @@
 ﻿import React from 'react';
 import { Route } from 'react-router';
 import Layout from './components/layout';
-import Counter from './components/counter';
+import Latency from './components/latency/latency';
 import Upload from './components/upload/upload';
 import UploadLargeFile from './components/uploadLargeFile/uploadLargeFile';
 import Download from './components/download/download';
@@ -16,8 +16,8 @@ import About from './components/static/about';
 
 export default () => (
   <Layout>
-    <Route exact path='/' component={Counter} />
-    <Route path='/latency' component={Counter} />
+    <Route exact path='/' component={Latency} />
+    <Route path='/latency' component={Latency} />
     <Route path='/upload' component={Upload} />
     <Route path='/uploadLargeFile' component={UploadLargeFile} />
     <Route path='/download' component={Download} />

@@ -463,6 +463,7 @@
                                 }
                                 cp.send = true;
                             }, progress: function (ev) {
+                console.log('block upload: progrss');
                                 cp.loaded += (ev.loaded - t.loaded);
                                 t.loaded = ev.loaded;
                                 if (cp.progress) {
@@ -470,11 +471,13 @@
                                 }
                             }, success: function () {
                                 if (cp.loaded == cp.size) {
+                  console.log('block upload: success');
                                     uploader.commit(cp);
                                 }
                                 uploader.threads--;
                                 uploader.upload();
                             }, error: function () {
+                console.log('block upload: error');
                                 cp.loaded -= t.loaded;
                                 cp.errorBlocks.push(t);
                                 if (cp.error) {

@@ -18,8 +18,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSpeed.Test", "AzureSpe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSpeed.AdminConsole", "AzureSpeed.AdminConsole\AzureSpeed.AdminConsole.csproj", "{7DFD810C-2358-431E-BCDF-7A50672AF2D7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureSpeed.Web", "AzureSpeed.Web\AzureSpeed.Web.csproj", "{059B5A65-D745-45C0-985B-747D6D6A0328}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,10 +40,6 @@ Global
 		{7DFD810C-2358-431E-BCDF-7A50672AF2D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7DFD810C-2358-431E-BCDF-7A50672AF2D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7DFD810C-2358-431E-BCDF-7A50672AF2D7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{059B5A65-D745-45C0-985B-747D6D6A0328}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{059B5A65-D745-45C0-985B-747D6D6A0328}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{059B5A65-D745-45C0-985B-747D6D6A0328}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{059B5A65-D745-45C0-985B-747D6D6A0328}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -7,25 +7,25 @@
 Azure speed test tool. Test your network latency and speed to Azure datacenters around the world.
 
 ## Demo
-* Staging - http://azurespeed-wus-staging.azurewebsites.net/
 * Production - http://www.azurespeed.com
+* Staging - https://azurespeed-wus-staging.azurewebsites.net/
 
-## Setup local develop environment
+## Setup local development environment
 To run the code locally you will need:
 * Visual Studio 2017.3 or higher
-* An Azure subscription
+* Azure storage accounts for speed testing
 
-Steps
-1. Run ProvisionStorageAccounts.ps1 in PowerShell commnad line window to create Azure storage accounts.
+### Steps
+1. Open PowerShell prompt and go to deployment folder, run ProvisionStorageAccounts.ps1 in PowerShell commnad line window to create Azure storage accounts.
 2. Update **AzureSpeed.Web.App\Data\settings.json** with storage accounts and keys created in step #1
 3. Run AzureSpeed.AdminConsole.exe to initialize storage accounts, this tool will take care of everything needs for a storage account to run speed test
     * Enable CORS
+    * Create containers
     * Create a callback.js used for latency test
     * Upload a 100MB dummy file for download speed test (Test file can be downloaded from http://www.azurespeed.com/Azure/Download)
 5. Open **AzureSpeed.sln** in **Visual Studio 2017**
 6. Updated below files with storage accounts created in step #1
     - **AzureSpeed.Web.App\wwwroot\js\azurespeed\common.js** 
-    - **AzureSpeed.Web.App\wwwroot\js\azurespeed\controllers\MainController.js**
 6. You are all set now, enjoy coding!
 
 ## Built on

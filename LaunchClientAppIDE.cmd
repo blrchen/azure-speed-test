@@ -1,1 +1,0 @@
-code AzureSpeed.Web\ClientApp

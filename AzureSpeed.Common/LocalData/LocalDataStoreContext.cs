@@ -88,6 +88,8 @@ namespace AzureSpeed.Common.LocalData
                     this.regionNames.Add("koreacentral", new CloudRegion { Cloud = "Azure", RegionId = "koreacentral", Region = "Korea Central", Location = "Seoul" });
                     this.regionNames.Add("chinaeast", new CloudRegion { Cloud = "Azure", RegionId = "chinaeast", Region = "China East", Location = "Shanghai" });
                     this.regionNames.Add("chinanorth", new CloudRegion { Cloud = "Azure", RegionId = "chinanorth", Region = "China North", Location = "Beijing" });
+                    this.regionNames.Add("southafricanorth", new CloudRegion { Cloud = "Azure", RegionId = "southafricanorth", Region = "South Africa North", Location = "Johannesburg" });
+                    this.regionNames.Add("southafricawest", new CloudRegion { Cloud = "Azure", RegionId = "southafricawest", Region = "South Africa West", Location = "Cape Town" });
 
                     // AWS
                     this.regionNames.Add("ap-northeast-1", new CloudRegion { Cloud = "AWS", RegionId = "ap-northeast-1", Region = "Asia Pacific", Location = "Tokyo" });

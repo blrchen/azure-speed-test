@@ -10,12 +10,11 @@
         $scope.selectedThread = 4;
         $scope.upload = function () {
             var file = $('#file-input')[0].files[0];
-            var region = $scope.selectedRegion.name;
-            var data = { region: region, blobName: guid.newGuid(), operation: 'upload' };
+            var data = { locationId: $scope.selectedRegion.locationId, blobName: guid.newGuid(), operation: 'upload' };
             $http.get('/api/sas', { params: data }).then(function (response) {
                 ja.storage.blockSize = $scope.selectedBlockSize * 1024;
                 ja.storage.maxThread = $scope.selectedThread;
-                var url = response.data;
+                var url = response.data.url;
                 var blob = ja.storage.blob(url);
                 var st = new Date();
                 var before = function () {

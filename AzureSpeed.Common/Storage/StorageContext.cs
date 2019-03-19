@@ -28,15 +28,18 @@ namespace AzureSpeed.Common.Storage
 
         public string GetSasUrl(string blobName, string operation)
         {
+            string containerName = "";
             var permissions = SharedAccessBlobPermissions.None;
             if (operation.ToLower() == "upload")
             {
                 permissions |= SharedAccessBlobPermissions.Write;
+                containerName = AzureSpeedConstants.UploadContainerName;
             }
 
             if (operation.ToLower() == "download")
             {
                 permissions |= SharedAccessBlobPermissions.Read;
+                containerName = AzureSpeedConstants.PrivateContainerName;
             }
 
             var policy = new SharedAccessBlobPolicy
@@ -45,7 +48,7 @@ namespace AzureSpeed.Common.Storage
                 Permissions = permissions
             };
 
-            var container = this.blobClient.GetContainerReference(AzureSpeedConstants.PrivateContainerName);
+            var container = this.blobClient.GetContainerReference(containerName);
             var blob = container.GetBlobReference(blobName);
             string blobToken = blob.GetSharedAccessSignature(policy);
             return $"{blob.Uri}{blobToken}";
@@ -130,7 +133,7 @@ namespace AzureSpeed.Common.Storage
         {
             var serviceProperties = await this.blobClient.GetServicePropertiesAsync();
             serviceProperties.Logging.LoggingOperations = LoggingOperations.All;
-            serviceProperties.Logging.RetentionDays = 365;
+            serviceProperties.Logging.RetentionDays = 7;
             await this.blobClient.SetServicePropertiesAsync(serviceProperties);
         }
 
@@ -156,9 +159,9 @@ namespace AzureSpeed.Common.Storage
             }
         }
 
-        public async Task CreatePrivateContainerAsync()
+        public async Task CreatePrivateContainerAsync(string containerName)
         {
-            var container = this.blobClient.GetContainerReference(AzureSpeedConstants.PrivateContainerName);
+            var container = this.blobClient.GetContainerReference(containerName);
             if (container != null)
             {
                 // Create private container with no puublic access permission

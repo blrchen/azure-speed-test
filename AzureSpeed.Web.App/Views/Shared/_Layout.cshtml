@@ -23,7 +23,7 @@
     </environment>
     <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.4.min.js"></script>
     <environment exclude="Development">
-        @Html.Partial("_Analytics")
+        <partial name="_Analytics" />
     </environment>
 </head>
 <body>
@@ -68,19 +68,22 @@
                             <a href="#"><i class="fa fa-wrench fa-fw"></i> Information<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level collapse in" aria-expanded="true">
                                 <li>
-                                    <a href="~/Information/AzureRegions">Azure Regions</a>
+                                    <a href="~/Information/AzureBillingMeters">Azure Billing Meters</a>
                                 </li>
                                 <li>
                                     <a href="~/Information/AzureEnvironments">Azure Environments</a>
                                 </li>
                                 <li>
-                                    <a href="~/Information/AzureBillingMeters">Azure Billing Meters</a>
+                                    <a href="~/Information/AzureRegions">Azure Regions</a>
+                                </li>
+                                <li>
+                                    <a href="~/Information/AzureVMPricing">Azure VM Pricing</a>
                                 </li>
                                 <li>
                                     <a href="~/Information/IpRange">Datacenter IP Ranges</a>
                                 </li>
                                 <li>
-                                    <a href="~/Azure/Reference"> Reference</a>
+                                    <a href="~/Information/Reference"> Reference</a>
                                 </li>
                             </ul>
                         </li>
@@ -101,7 +104,7 @@
         <div id="page-wrapper">
             @RenderBody()
             <environment exclude="Development">
-                @Html.Partial("_Adsense")
+                <partial name="_Adsense" />
             </environment>
         </div>
     </div>
@@ -125,11 +128,13 @@
         <script src="~/js/site.js" asp-append-version="true"></script>
         <script src="~/js/azurespeed/common.js" asp-append-version="true"></script>
         <script src="~/js/azurespeed/utils.js" asp-append-version="true"></script>
-        <script src="~/js/azurespeed/controllers/MainController.js" asp-append-version="true"></script>
+        <script src="~/js/azurespeed/controllers/AzureBillingMetersController.js" asp-append-version="true"></script>
+        <script src="~/js/azurespeed/controllers/AzureVMPricingController.js" asp-append-version="true"></script>
         <script src="~/js/azurespeed/controllers/CloudRegionFinderController.js" asp-append-version="true"></script>
         <script src="~/js/azurespeed/controllers/DownloadController.js" asp-append-version="true"></script>
-        <script src="~/js/azurespeed/controllers/LatencyController.js" asp-append-version="true"></script>
         <script src="~/js/azurespeed/controllers/IpRangeController.js" asp-append-version="true"></script>
+        <script src="~/js/azurespeed/controllers/LatencyController.js" asp-append-version="true"></script>
+        <script src="~/js/azurespeed/controllers/MainController.js" asp-append-version="true"></script>
         <script src="~/js/azurespeed/controllers/UploadController.js" asp-append-version="true"></script>
         <script src="~/js/azurespeed/controllers/UploadLargeFileController.js" asp-append-version="true"></script>
     </environment>

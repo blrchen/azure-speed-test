@@ -23,7 +23,7 @@
         }
 
         function uploadBlob(region) {
-            var data = { region: region.name, blobName: guid.newGuid(), operation: 'upload' };
+            var data = { locationId: region.locationId, blobName: guid.newGuid(), operation: 'upload' };
             return new $q(function(res, rej) {
                 $http.get('/api/sas', { params: data })
                     .then(function (response) {
@@ -33,14 +33,14 @@
                             content.push('.');
                         }
 
-                        var blobUrl = response.data;
+                        var blobUrl = response.data.url;
                         var blob = ja.storage.blob(blobUrl);
                         var st = new Date();
                         var current = null;
                         var before = function () {
                             st = new Date();
                             current = {
-                                'geo': region.geo,
+                                'geoName': region.geoName,
                                 'region': region.name,
                                 'location': region.location,
                                 'progressPercent': 0

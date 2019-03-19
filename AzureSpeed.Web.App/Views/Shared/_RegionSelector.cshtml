@@ -1,7 +1,7 @@
 ﻿<div class="panel panel-default">
     <div class="panel-heading">Please select regions</div>
     <div class="panel-body">
-        <div ng-repeat="(key, value) in regions | groupBy: 'geo'">
+        <div ng-repeat="(key, value) in regions | groupBy: 'geoName'">
             <div ng-mouseenter="show(key)" ng-mouseleave="hide(key)">
                 <div>
                     <label>{{key}}:</label>

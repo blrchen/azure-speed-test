@@ -4,6 +4,12 @@ namespace AzureSpeed.Web.App.Controllers
 {
     public class InformationController : ControllerBase
     {
+
+        public IActionResult AzureBillingMeters()
+        {
+            return View();
+        }
+
         public IActionResult AzureEnvironments()
         {
             return View();
@@ -14,12 +20,17 @@ namespace AzureSpeed.Web.App.Controllers
             return View();
         }
 
-        public IActionResult AzureBillingMeters()
+        public IActionResult AzureVMPricing()
         {
             return View();
         }
 
         public IActionResult IpRange()
+        {
+            return View();
+        }
+
+        public IActionResult Reference()
         {
             return View();
         }

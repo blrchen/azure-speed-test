@@ -7,9 +7,9 @@
 var utils = {
     getRegions: function () {
         var result = [];
-        if (window.userregions) {
-            for (var i = 0; i < window.userregions.length; i++) {
-                result.push(window.userregions[i]);
+        if (window.userRegions) {
+            for (var i = 0; i < window.userRegions.length; i++) {
+                result.push(window.userRegions[i]);
             }
         }
         return result;
@@ -17,8 +17,8 @@ var utils = {
     getGeoList: function () {
         var result = [];
         $.each(utils.getRegions(), function () {
-            if ($.inArray(this.geo, result) === -1) {
-                result.push(this.geo);
+            if ($.inArray(this.geoName, result) === -1) {
+                result.push(this.geoName);
             }
         });
         return result;

@@ -7,7 +7,7 @@
         <h3>@ViewBag.Title</h3>
         <small>Test download speed from Azure Storage Service around the world.</small>
     </div>
-    @Html.Partial("_RegionSelector")
+    <partial name="_RegionSelector" />
     <div class="row">
         <div class="col-md-12">
             <div class="panel panel-default">
@@ -26,7 +26,7 @@
                         </thead>
                         <tbody>
                             <tr ng-repeat="region in user.regions">
-                                <td>{{region.geo}}</td>
+                                <td>{{region.geoName}}</td>
                                 <td>{{region.name}}</td>
                                 <td>{{region.location}}</td>
                                 <td>

@@ -1,146 +1,284 @@
 ﻿{
   "accounts": [
     {
-      "name": "azspdeastasia",
-      "key": "==Replace==Me==",
-      "region": "East Asia"
+      "name": "asteastasia",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "eastasia"
     },
     {
-      "name": "azspdsoutheastasia",
-      "key": "==Replace==Me==",
-      "region": "Southeast Asia"
+      "name": "astsoutheastasia",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "southeastasia"
     },
     {
-      "name": "azspdcentralus",
-      "key": "==Replace==Me==",
-      "region": "Central US"
+      "name": "astcentralus",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "centralus"
     },
     {
-      "name": "azspdeastus",
-      "key": "==Replace==Me==",
-      "region": "East US"
+      "name": "asteastus",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "eastus"
     },
     {
-      "name": "azspdeastus2",
-      "key": "==Replace==Me==",
-      "region": "East US 2"
+      "name": "asteastus2",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "eastus2"
     },
     {
-      "name": "azspdwestus",
-      "key": "==Replace==Me==",
-      "region": "West US"
+      "name": "astwestus",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "westus"
     },
     {
-      "name": "azspdnorthcentralus",
-      "key": "==Replace==Me==",
-      "region": "North Central US"
+      "name": "astnorthcentralus",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "northcentralus"
     },
     {
-      "name": "azspdsouthcentralus",
-      "key": "==Replace==Me==",
-      "region": "South Central US"
+      "name": "astsouthcentralus",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "southcentralus"
     },
     {
-      "name": "azspdnortheurope",
-      "key": "==Replace==Me==",
-      "region": "North Europe"
+      "name": "astnortheurope",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "northeurope"
     },
     {
-      "name": "azspdwesteurope",
-      "key": "==Replace==Me==",
-      "region": "West Europe"
+      "name": "astwesteurope",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "westeurope"
     },
     {
-      "name": "azspdjapanwest",
-      "key": "==Replace==Me==",
-      "region": "Japan West"
+      "name": "astjapanwest",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "japanwest"
     },
     {
-      "name": "azspdjapaneast",
-      "key": "==Replace==Me==",
-      "region": "Japan East"
+      "name": "astjapaneast",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "japaneast"
     },
     {
-      "name": "azspdbrazilsouth",
-      "key": "==Replace==Me==",
-      "region": "Brazil South"
+      "name": "astbrazilsouth",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "brazilsouth"
     },
     {
-      "name": "azspdaustraliaeast",
-      "key": "==Replace==Me==",
-      "region": "Australia East"
+      "name": "astaustraliaeast",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "australiaeast"
     },
     {
-      "name": "azspdaustraliasoutheast",
-      "key": "==Replace==Me==",
-      "region": "Australia Southeast"
+      "name": "astaustraliasoutheast",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "australiasoutheast"
     },
     {
-      "name": "azspdsouthindia",
-      "key": "==Replace==Me==",
-      "region": "South India"
+      "name": "astsouthindia",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "southindia"
     },
     {
-      "name": "azspdcentralindia",
-      "key": "==Replace==Me==",
-      "region": "Central India"
+      "name": "astcentralindia",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "centralindia"
     },
     {
-      "name": "azspdwestindia",
-      "key": "==Replace==Me==",
-      "region": "West India"
+      "name": "astwestindia",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "westindia"
     },
     {
-      "name": "azspdcanadacentral",
-      "key": "==Replace==Me==",
-      "region": "Canada Central"
+      "name": "astcanadacentral",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "canadacentral"
     },
     {
-      "name": "azspdcanadaeast",
-      "key": "==Replace==Me==",
-      "region": "Canada East"
+      "name": "astcanadaeast",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "canadaeast"
     },
     {
-      "name": "azspduksouth",
-      "key": "==Replace==Me==",
-      "region": "UK South"
+      "name": "astuksouth",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "uksouth"
     },
     {
-      "name": "azspdukwest",
-      "key": "==Replace==Me==",
-      "region": "UK West"
+      "name": "astukwest",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "ukwest"
     },
     {
-      "name": "azspdwestcentralus",
-      "key": "==Replace==Me==",
-      "region": "West Central US"
+      "name": "astwestcentralus",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "westcentralus"
     },
     {
-      "name": "azspdwestus2",
-      "key": "==Replace==Me==",
-      "region": "West US 2"
+      "name": "astwestus2",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "westus2"
     },
     {
-      "name": "azspdkoreacentral",
-      "key": "==Replace==Me==",
-      "region": "Korea Central"
+      "name": "astkoreacentral",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "koreacentral"
     },
     {
-      "name": "azspdkoreasouth",
-      "key": "==Replace==Me==",
-      "region": "Korea South"
+      "name": "astkoreasouth",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "koreasouth"
     },
     {
-      "name": "azspdchinanorth",
-      "key": "==Replace==Me==",
-      "region": "China North",
-      "EndpointSuffix": "core.chinacloudapi.cn"
+      "name": "astfrancecentral",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "francecentral"
     },
     {
-      "name": "azspdchinaeast",
-      "key": "==Replace==Me==",
-      "region": "China East",
-      "EndpointSuffix": "core.chinacloudapi.cn"
+      "name": "astsouthafricanorth",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "southafricanorth"
+    },
+    {
+      "name": "asteastasia",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "eastasia"
+    },
+    {
+      "name": "astsoutheastasia",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "southeastasia"
+    },
+    {
+      "name": "astcentralus",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "centralus"
+    },
+    {
+      "name": "asteastus",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "eastus"
+    },
+    {
+      "name": "asteastus2",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "eastus2"
+    },
+    {
+      "name": "astwestus",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "westus"
+    },
+    {
+      "name": "astnorthcentralus",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "northcentralus"
+    },
+    {
+      "name": "astsouthcentralus",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "southcentralus"
+    },
+    {
+      "name": "astnortheurope",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "northeurope"
+    },
+    {
+      "name": "astwesteurope",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "westeurope"
+    },
+    {
+      "name": "astjapanwest",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "japanwest"
+    },
+    {
+      "name": "astjapaneast",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "japaneast"
+    },
+    {
+      "name": "astbrazilsouth",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "brazilsouth"
+    },
+    {
+      "name": "astaustraliaeast",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "australiaeast"
+    },
+    {
+      "name": "astaustraliasoutheast",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "australiasoutheast"
+    },
+    {
+      "name": "astsouthindia",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "southindia"
+    },
+    {
+      "name": "astcentralindia",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "centralindia"
+    },
+    {
+      "name": "astwestindia",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "westindia"
+    },
+    {
+      "name": "astcanadacentral",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "canadacentral"
+    },
+    {
+      "name": "astcanadaeast",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "canadaeast"
+    },
+    {
+      "name": "astuksouth",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "uksouth"
+    },
+    {
+      "name": "astukwest",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "ukwest"
+    },
+    {
+      "name": "astwestcentralus",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "westcentralus"
+    },
+    {
+      "name": "astwestus2",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "westus2"
+    },
+    {
+      "name": "astkoreacentral",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "koreacentral"
+    },
+    {
+      "name": "astkoreasouth",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "koreasouth"
+    },
+    {
+      "name": "astfrancecentral",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "francecentral"
+    },
+    {
+      "name": "astsouthafricanorth",
+      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "locationId": "southafricanorth"
     }
   ]
 }

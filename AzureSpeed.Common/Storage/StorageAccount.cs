@@ -10,8 +10,8 @@ namespace AzureSpeed.Common.Storage
         [JsonProperty("key")]
         public string Key { get; set; }
 
-        [JsonProperty("region")]
-        public string Region { get; set; }
+        [JsonProperty("locationId")]
+        public string LocationId { get; set; }
 
         [JsonProperty("endpointSuffix")]
         public string EndpointSuffix { get; set; }

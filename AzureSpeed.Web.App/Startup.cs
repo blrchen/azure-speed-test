@@ -1,6 +1,7 @@
 ﻿using AzureSpeed.Web.App.Common;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -9,6 +10,8 @@ namespace AzureSpeed.Web.App
 {
     public class Startup
     {
+        private IHostingEnvironment hostingEnvironment;
+
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -17,6 +20,8 @@ namespace AzureSpeed.Web.App
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
+
+            hostingEnvironment = env;
         }
 
         public IConfiguration Configuration { get; }
@@ -28,6 +33,8 @@ namespace AzureSpeed.Web.App
 
             services.AddOptions();
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
+
+            services.AddSingleton<IFileProvider>(hostingEnvironment.ContentRootFileProvider);
 
             // Enable CORS
             services.AddCors();
@@ -42,7 +49,6 @@ namespace AzureSpeed.Web.App
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseBrowserLink();
             }
             else
             {

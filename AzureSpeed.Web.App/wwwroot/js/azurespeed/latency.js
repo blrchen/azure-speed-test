@@ -15,16 +15,16 @@
             table.empty();
             var tmpRegions = [];
             $.each(utils.getRegions(), function () {
-                tmpRegions.push({ geo: this.geo, name: this.name, location: this.location, average: latency.latest[this.storage] });
+                tmpRegions.push({ geoName: this.geoName, name: this.name, location: this.location, average: latency.latest[this.storageAccountName] });
             });
 
             $.each(tmpRegions, function () {
                 if (this.average > 0) {
-                    var tdGeo = $('<td>').text(this.geo);
+                    var tdGeoName = $('<td>').text(this.geoName);
                     var tdRegion = $('<td>').text(this.name);
                     var tdLocation = $('<td>').text(this.location);
                     var tdLatency = $('<td>').text(parseInt(this.average).toFixed(0) + ' ms');
-                    var tr = $('<tr>').append(tdGeo).append(tdRegion).append(tdLocation).append(tdLatency);
+                    var tr = $('<tr>').append(tdGeoName).append(tdRegion).append(tdLocation).append(tdLatency);
                     table.append(tr);
                 }
             });
@@ -52,10 +52,10 @@
         },
         _ping: function () {
             $.each(utils.getRegions(), function () {
-                latency.startTime[this.storage] = new Date().getTime();
+                latency.startTime[this.storageAccountName] = new Date().getTime();
                 var requestUrl = this.endpointSuffic
-                    ? 'http://' + this.storage + '.blob.' + this.endpointSuffic + '/public/callback.js'
-                    : 'http://' + this.storage + '.blob.core.windows.net/public/callback.js';
+                    ? 'http://' + this.storageAccountName + '.blob.' + this.endpointSuffic + '/public/callback.js'
+                    : 'http://' + this.storageAccountName + '.blob.core.windows.net/public/callback.js';
                 $.ajax({
                     url: requestUrl,
                     type: 'GET',
@@ -77,6 +77,8 @@
                 //each item in the line arrays represents the X coordinate across a graph
                 //The 'value' within each line array represents the Y coordinate for that point
                 data = [
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
                     d3.range(n).map(function () { return { value: 0 }; }),
                     d3.range(n).map(function () { return { value: 0 }; }),
                     d3.range(n).map(function () { return { value: 0 }; }),
@@ -194,9 +196,9 @@
 
                 // fill new data
                 $.each(utils.getRegions(), function () {
-                    var storage = this.storage;
-                    if (latency.latest[storage] > 0) {
-                        data[this.id].push({ value: latency.latest[storage] });
+                    var storageAccountName = this.storageAccountName;
+                    if (latency.latest[storageAccountName] > 0) {
+                        data[this.id].push({ value: latency.latest[storageAccountName] });
                     }
                 });
 
@@ -222,10 +224,10 @@
         },
         init: function () {
             $.each(regions, function () {
-                var storage = this.storage;
-                latency.latest[storage] = 0;
-                latency.history[storage] = latency.history[storage] || [];
-                latency.average[storage] = 0;
+                var storageAccountName = this.storageAccountName;
+                latency.latest[storageAccountName] = 0;
+                latency.history[storageAccountName] = latency.history[storageAccountName] || [];
+                latency.average[storageAccountName] = 0;
             });
             latency.pingloop();
             latency.tickloop();

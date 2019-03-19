@@ -30,7 +30,7 @@ namespace AzureSpeed.Web.App.Controllers
             return View();
         }
 
-        public IActionResult Reference()
+        public IActionResult References()
         {
             return View();
         }

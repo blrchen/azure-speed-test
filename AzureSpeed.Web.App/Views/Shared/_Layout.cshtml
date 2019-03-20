@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@inject Microsoft.ApplicationInsights.AspNetCore.JavaScriptSnippet JavaScriptSnippet
+<!DOCTYPE html>
 <html ng-app="azurespeed" ng-controller="MainController">
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -25,6 +26,7 @@
     <environment exclude="Development">
         <partial name="_Analytics" />
     </environment>
+    @Html.Raw(JavaScriptSnippet.FullScript)
 </head>
 <body>
     <div id="wrapper">

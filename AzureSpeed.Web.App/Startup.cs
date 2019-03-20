@@ -10,7 +10,8 @@ namespace AzureSpeed.Web.App
 {
     public class Startup
     {
-        private IHostingEnvironment hostingEnvironment;
+        private readonly IConfiguration configuration;
+        private readonly IHostingEnvironment hostingEnvironment;
 
         public Startup(IHostingEnvironment env)
         {
@@ -19,22 +20,25 @@ namespace AzureSpeed.Web.App
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
-            Configuration = builder.Build();
+            this.configuration = builder.Build();
 
-            hostingEnvironment = env;
+            this.hostingEnvironment = env;
         }
 
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-
             services.AddOptions();
-            services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
-
-            services.AddSingleton<IFileProvider>(hostingEnvironment.ContentRootFileProvider);
+            services.Configure<AppSettings>(this.configuration.GetSection("AppSettings"));
+            services.AddLogging(loggingBuilder =>
+            {
+                loggingBuilder.AddConfiguration(this.configuration.GetSection("Logging"));
+                loggingBuilder.AddConsole();
+                loggingBuilder.AddDebug();
+            });
+            services.AddSingleton<IFileProvider>(this.hostingEnvironment.ContentRootFileProvider);
 
             // Enable CORS
             services.AddCors();
@@ -43,9 +47,6 @@ namespace AzureSpeed.Web.App
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -62,8 +63,8 @@ namespace AzureSpeed.Web.App
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
-                    "default",
-                    "{controller=Azure}/{action=Latency}/{id?}");
+                    name: "default",
+                    template: "{controller=Azure}/{action=Latency}/{id?}");
             });
         }
     }

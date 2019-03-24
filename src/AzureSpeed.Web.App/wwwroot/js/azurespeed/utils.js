@@ -14,15 +14,6 @@ var utils = {
         }
         return result;
     },
-    getGeoList: function () {
-        var result = [];
-        $.each(utils.getRegions(), function () {
-            if ($.inArray(this.geoName, result) === -1) {
-                result.push(this.geoName);
-            }
-        });
-        return result;
-    },
     getSize: function (size, orgUnit, targetUnit, dif) {
         if (!orgUnit) {
             orgUnit = 'B';

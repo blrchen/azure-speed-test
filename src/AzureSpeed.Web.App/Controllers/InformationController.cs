@@ -15,6 +15,11 @@ namespace AzureSpeed.Web.App.Controllers
             return View();
         }
 
+        public IActionResult AzureGeographies()
+        {
+            return View();
+        }
+
         public IActionResult AzureRegions()
         {
             return View();

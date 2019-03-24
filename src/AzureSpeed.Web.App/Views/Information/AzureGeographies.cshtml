@@ -1,0 +1,56 @@
+﻿@{
+    ViewBag.Title = "Azure Geographies";
+}
+
+<div class="container-fluid" ng-controller="IpRangeController">
+    <div class="page-header">
+        <h3>@ViewBag.Title</h3>
+        <small>A geography is a discrete market, typically containing two or more regions, that preserves data residency and compliance boundaries.</small>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Azure Geographies
+                </div>
+                <div class="panel-body">
+                    <table class="table table-bordered table-striped" style="word-break: break-all">
+                        <thead>
+                            <tr>
+                                <th>Geography</th>
+                                <th>Regions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Asia Pacific                </td> <td>East Asia, Southeast Asia</td></tr>
+                            <tr><td>Australia                   </td> <td>Australia Central 2, Australia Southeast, Australia East, Australia Central</td></tr>
+                            <tr><td>Brazil                      </td> <td>Brazil South</td></tr>
+                            <tr><td>Canada                      </td> <td>Canada East, Canada Central</td></tr>
+                            <tr><td>Europe                      </td> <td>West Europe, North Europe</td></tr>
+                            <tr><td>France                      </td> <td>France Central, France South</td></tr>
+                            <tr><td>India                       </td> <td>South India, Central India, West India</td></tr>
+                            <tr><td>Japan                       </td> <td>Japan East, Japan West</td></tr>
+                            <tr><td>Korea                       </td> <td>Korea South, Korea Central</td></tr>
+                            <tr><td>Suoth Africa                </td> <td>South Africa North, South Africa West</td></tr>
+                            <tr><td>United Kingdom              </td> <td>UK West, UK South</td></tr>
+                            <tr><td>United States               </td> <td>Central US, South Central US, North Central US, West US, West Central US, East US, East US 2, West US 2</td></tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <h3>References</h3>
+            <p>
+                <ul>
+                    <li>
+                        <a href="https://docs.microsoft.com/en-us/azure/best-practices-availability-paired-regions" target="_blank">Business continuity and disaster recovery (BCDR): Azure Paired Regions</a>
+                    </li>
+                </ul>
+            </p>
+        </div>
+    </div>
+</div>

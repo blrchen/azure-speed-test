@@ -345,7 +345,6 @@ healthchecksdb
 MigrationBackup/
 
 # AzureSpeed specific
-settings.private.json
 site.min.js
 site.min.css
 jazure.all.js

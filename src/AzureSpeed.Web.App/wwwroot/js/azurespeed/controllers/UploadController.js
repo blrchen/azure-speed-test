@@ -40,7 +40,7 @@
                         var before = function () {
                             st = new Date();
                             current = {
-                                'geoName': region.geoName,
+                                'geography': region.geography,
                                 'region': region.name,
                                 'location': region.location,
                                 'progressPercent': 0

@@ -15,16 +15,16 @@
             table.empty();
             var tmpRegions = [];
             $.each(utils.getRegions(), function () {
-                tmpRegions.push({ geoName: this.geoName, name: this.name, location: this.location, average: latency.latest[this.storageAccountName] });
+                tmpRegions.push({ geographyGrouping: this.geographyGrouping, geography: this.geography, name: this.name, location: this.location, average: latency.latest[this.storageAccountName] });
             });
 
             $.each(tmpRegions, function () {
                 if (this.average > 0) {
-                    var tdGeoName = $('<td>').text(this.geoName);
+                    var tdGeography = $('<td>').text(this.geography);
                     var tdRegion = $('<td>').text(this.name);
                     var tdLocation = $('<td>').text(this.location);
                     var tdLatency = $('<td>').text(parseInt(this.average).toFixed(0) + ' ms');
-                    var tr = $('<tr>').append(tdGeoName).append(tdRegion).append(tdLocation).append(tdLatency);
+                    var tr = $('<tr>').append(tdGeography).append(tdRegion).append(tdLocation).append(tdLatency);
                     table.append(tr);
                 }
             });

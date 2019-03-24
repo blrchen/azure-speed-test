@@ -13,162 +13,161 @@ IF (!(Get-AzResourceGroup -Name $resourceGroupName -ErrorAction SilentlyContinue
 #  - Key is generated from Get-AzLocation | select-object "Location"
 #  - Location information comes from https://azure.microsoft.com/en-us/global-infrastructure/locations/
 #  - Regions comes from public ip xml file, it seems location and regions mapping is one to many
-
 $locationHashtable = @{
     eastasia           = @{
-        regions  = "asiaeast"
-        location = "Hong Kong"
-        geoName  = "Asia Pacific"
+        location          = "Hong Kong"
+        geography         = "Asia Pacific"
+        geographyGrouping = "Asia Pacific"
     }
     southeastasia      = @{
-        regions  = "asiasoutheast"
-        location = "Singapore"
-        geoName  = "Asia Pacific"
+        location          = "Singapore"
+        geography         = "Asia Pacific"
+        geographyGrouping = "Asia Pacific"
     }
     centralus          = @{
-        regions  = "uscentral"
-        location = "Iowa"
-        geoName  = "Americas"
+        location          = "Iowa"
+        geography         = "United States"
+        geographyGrouping = "Americas"
     }
     eastus             = @{
-        regions  = "useast"
-        location = "Virginia"
-        geoName  = "Americas"
+        location          = "Virginia"
+        geography         = "United States"
+        geographyGrouping = "Americas"
     }
     eastus2            = @{
-        regions  = "useast2"
-        location = "Virginia"
-        geoName  = "Americas"
+        location          = "Virginia"
+        geography         = "United States"
+        geographyGrouping = "Americas"
     }
     westus             = @{
-        regions  = "uswest"
-        location = "California"
-        geoName  = "Americas"
+        location          = "California"
+        geography         = "United States"
+        geographyGrouping = "Americas"
     }
     northcentralus     = @{
-        regions  = "usnorth"
-        location = "Illinois"
-        geoName  = "Americas"
+        location          = "Illinois"
+        geography         = "United States"
+        geographyGrouping = "Americas"
     }
     southcentralus     = @{
-        regions  = "ussouth"
-        location = "Texas"
-        geoName  = "Americas"
+        location          = "Texas"
+        geography         = "United States"
+        geographyGrouping = "Americas"
     }
     northeurope        = @{
-        regions  = "europenorth"
-        location = "Ireland"
-        geoName  = "Europe"
+        location          = "Ireland"
+        geography         = "Europe"
+        geographyGrouping = "Europe"
     }
     westeurope         = @{
-        regions  = "europewest"
-        location = "Netherlands"
-        geoName  = "Europe"
+        location          = "Netherlands"
+        geography         = "Europe"
+        geographyGrouping = "Europe"
     }
     japanwest          = @{
-        regions  = "japanwest"
-        location = "Osaka"
-        geoName  = "Asia Pacific"
+        location          = "Osaka"
+        geography         = "Japan"
+        geographyGrouping = "Asia Pacific"
     }
     japaneast          = @{
-        regions  = "japaneast"
-        location = "Tokyo, Saitama"
-        geoName  = "Asia Pacific"
+        location          = "Tokyo, Saitama"
+        geography         = "Japan"
+        geographyGrouping = "Asia Pacific"
     }
     brazilsouth        = @{
-        regions  = "brazilsouth"
-        location = "Sao Paulo State"
-        geoName  = "Americas"
+        location          = "Sao Paulo State"
+        geography         = "Brazil"
+        geographyGrouping = "Americas"
     }
     australiaeast      = @{
-        regions  = "australiaeast"
-        location = "New South Wales"
-        geoName  = "Asia Pacific"
+        location          = "New South Wales"
+        geography         = "Australia"
+        geographyGrouping = "Asia Pacific"
     }
     australiasoutheast = @{
-        regions  = "australiasoutheast"
-        location = "Victoria" 
-        geoName  = "Asia Pacific"
+        location          = "Victoria"
+        geography         = "Australia"
+        geographyGrouping = "Asia Pacific"
     }
     southindia         = @{
-        regions  = "indiasouth"
-        location = "Chennai"
-        geoName  = "Asia Pacific"
+        location          = "Chennai"
+        geography         = "India"
+        geographyGrouping = "Asia Pacific"
     }
     centralindia       = @{
-        regions  = "indiacentral"
-        location = "Pune"
-        geoName  = "Asia Pacific"
+        location          = "Pune"
+        geography         = "India"
+        geographyGrouping = "Asia Pacific"
     }
     westindia          = @{
-        regions  = "indiawest"
-        location = "Mumbai"
-        geoName  = "Asia Pacific"
+        location          = "Mumbai"
+        geography         = "India"
+        geographyGrouping = "Asia Pacific"
     }
     canadacentral      = @{
-        regions  = "canadacentral"
-        location = "Toronto"
-        geoName  = "Americas"
+        location          = "Toronto"
+        geography         = "Canada"
+        geographyGrouping = "Americas"
     }
     canadaeast         = @{
-        regions  = "canadaeast"
-        location = "Quebec City"
-        geoName  = "Americas"
+        location          = "Quebec City"
+        geography         = "Canada"
+        geographyGrouping = "Americas"
     }
     uksouth            = @{
-        regions  = "uksouth"
-        location = "London"
-        geoName  = "Europe"
+        location          = "London"
+        geography         = "United Kingdom"
+        geographyGrouping = "Europe"
     }
     ukwest             = @{
-        regions  = "ukwest"
-        location = "Cardiff"
-        geoName  = "Europe"
+        location          = "Cardiff"
+        geography         = "United Kingdom"
+        geographyGrouping = "Europe"
     }
     westcentralus      = @{
-        regions  = "uswestcentral"
-        location = "Wyoming"
-        geoName  = "Americas"
+        location          = "Wyoming"
+        geography         = "United States"
+        geographyGrouping = "Americas"
     }
     westus2            = @{
-        regions  = "uswest2"
-        location = "Washington"
-        geoName  = "Americas"
+        location          = "Washington"
+        geography         = "United States"
+        geographyGrouping = "Americas"
     }
     koreacentral       = @{
-        regions  = "koreacentral"
-        location = "Seoul"
-        geoName  = "Asia Pacific"
+        location          = "Seoul"
+        geography         = "Korea"
+        geographyGrouping = "Asia Pacific"
     }
     koreasouth         = @{
-        regions  = "koreasouth"
-        location = "Busan"
-        geoName  = "Asia Pacific"
+        location          = "Busan"
+        geography         = "Korea"
+        geographyGrouping = "Asia Pacific"
     }
     francecentral      = @{
-        regions  = "francec"
-        location = "Paris"
-        geoName  = "Europe"
+        location          = "Paris"
+        geography         = "France"
+        geographyGrouping = "Europe"
     }
     francesouth        = @{
-        regions  = "frances"
-        location = "Marseille"
-        geoName  = "Europe"
+        location          = "Marseille"
+        geography         = "France"
+        geographyGrouping = "Europe"
     }
     australiacentral   = @{
-        regions  = "australiac"
-        location = "Canberra"
-        geoName  = "Asia Pacific"
+        location          = "Canberra"
+        geography         = "Australia"
+        geographyGrouping = "Asia Pacific"
     }
     australiacentral2  = @{
-        regions  = "australiac2"
-        location = "Canberra"
-        geoName  = "Asia Pacific"
+        location          = "Canberra"
+        geography         = "Australia"
+        geographyGrouping = "Asia Pacific"
     }
     southafricanorth   = @{
-        regions  = "southafrican"
-        location = "Johannesburg"
-        geoName  = "Middle East and Africa"
+        location          = "Johannesburg"
+        geography         = "Suoth Africa"
+        geographyGrouping = "Middle East and Africa"
     }
 }
 
@@ -187,9 +186,9 @@ foreach ($location in $locations) {
             locationId         = $location.Location
             name               = $location.DisplayName
             storageAccountName = $storageAccount.StorageAccountName
-            regions            = $locationHashtable[$location.Location].regions
             location           = $locationHashtable[$location.Location].location
-            geoName            = $locationHashtable[$location.Location].geoName
+            geography          = $locationHashtable[$location.Location].geography
+            geographyGrouping  = $locationHashtable[$location.Location].geographyGrouping
         }
         $regionList.Add($regionObject)
     }

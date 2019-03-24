@@ -12,36 +12,54 @@
             if (localStorage.length >= 1 && angular.isNumber(localStorage[0])) {
                 localStorageService.remove('userSelectedRegions');
                 localStorage = regions.filter(function (r) {
-                    return r.geoName === 'Americas';
+                    return r.geographyGrouping === 'Americas';
                 });
             }
-            // If out-dated schema found, clean local storage to avoid runtime error - Region is number
+            // If out-dated schema found, clean local storage to avoid runtime error
             if (localStorage.length >= 1 && !localStorage[0].hasOwnProperty('locationId')) {
                 localStorageService.remove('userSelectedRegions');
                 localStorage = regions.filter(function (r) {
-                    return r.geoName === 'Americas';
+                    return r.geographyGrouping === 'Americas';
+                });
+            }
+            if (localStorage.length >= 1 && !localStorage[0].hasOwnProperty('storageAccountName')) {
+                localStorageService.remove('userSelectedRegions');
+                localStorage = regions.filter(function (r) {
+                    return r.geographyGrouping === 'Americas';
+                });
+            }
+            if (localStorage.length >= 1 && !localStorage[0].hasOwnProperty('geography')) {
+                localStorageService.remove('userSelectedRegions');
+                localStorage = regions.filter(function (r) {
+                    return r.geographyGrouping === 'Americas';
+                });
+            }
+            if (localStorage.length >= 1 && !localStorage[0].hasOwnProperty('geographyGrouping')) {
+                localStorageService.remove('userSelectedRegions');
+                localStorage = regions.filter(function (r) {
+                    return r.geographyGrouping === 'Americas';
                 });
             }
             $scope.user.regions = localStorage;
         } else {
             $scope.user = {};
             $scope.user.regions = regions.filter(function (r) {
-                return r.geoName === 'Americas';
+                return r.geographyGrouping === 'Americas';
             });
         }
 
         $scope.checkAll = function (key) {
             $scope.user.regions = $scope.user.regions.filter(function (r) {
-                return r.geoName !== key;
+                return r.geographyGrouping !== key;
             });
             $scope.user.regions = $scope.user.regions.concat(regions.filter(function (r) {
-                return r.geoName === key;
+                return r.geographyGrouping === key;
             }));
         };
 
         $scope.uncheckAll = function (key) {
             $scope.user.regions = $scope.user.regions.filter(function (r) {
-                return r.geoName !== key;
+                return r.geographyGrouping !== key;
             });
         };
 

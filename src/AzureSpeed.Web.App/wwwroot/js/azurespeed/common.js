@@ -6,251 +6,252 @@ var regions = [
         "locationId": "eastasia",
         "name": "East Asia",
         "storageAccountName": "asteastasia",
-        "regions": "asiaeast",
         "location": "Hong Kong",
-        "geoName": "Asia Pacific"
+        "geography": "Asia Pacific",
+        "geographyGrouping": "Asia Pacific"
     },
     {
         "id": 2,
         "locationId": "southeastasia",
         "name": "Southeast Asia",
         "storageAccountName": "astsoutheastasia",
-        "regions": "asiasoutheast",
         "location": "Singapore",
-        "geoName": "Asia Pacific"
+        "geography": "Asia Pacific",
+        "geographyGrouping": "Asia Pacific"
     },
     {
         "id": 3,
         "locationId": "centralus",
         "name": "Central US",
         "storageAccountName": "astcentralus",
-        "regions": "uscentral",
         "location": "Iowa",
-        "geoName": "Americas"
+        "geography": "United States",
+        "geographyGrouping": "Americas"
     },
     {
         "id": 4,
         "locationId": "eastus",
         "name": "East US",
         "storageAccountName": "asteastus",
-        "regions": "useast",
         "location": "Virginia",
-        "geoName": "Americas"
+        "geography": "United States",
+        "geographyGrouping": "Americas"
     },
     {
         "id": 5,
         "locationId": "eastus2",
         "name": "East US 2",
         "storageAccountName": "asteastus2",
-        "regions": "useast2",
         "location": "Virginia",
-        "geoName": "Americas"
+        "geography": "United States",
+        "geographyGrouping": "Americas"
     },
     {
         "id": 6,
         "locationId": "westus",
         "name": "West US",
         "storageAccountName": "astwestus",
-        "regions": "uswest",
         "location": "California",
-        "geoName": "Americas"
+        "geography": "United States",
+        "geographyGrouping": "Americas"
     },
     {
         "id": 7,
         "locationId": "northcentralus",
         "name": "North Central US",
         "storageAccountName": "astnorthcentralus",
-        "regions": "usnorth",
         "location": "Illinois",
-        "geoName": "Americas"
+        "geography": "United States",
+        "geographyGrouping": "Americas"
     },
     {
         "id": 8,
         "locationId": "southcentralus",
         "name": "South Central US",
         "storageAccountName": "astsouthcentralus",
-        "regions": "ussouth",
         "location": "Texas",
-        "geoName": "Americas"
+        "geography": "United States",
+        "geographyGrouping": "Americas"
     },
     {
         "id": 9,
         "locationId": "northeurope",
         "name": "North Europe",
         "storageAccountName": "astnortheurope",
-        "regions": "europenorth",
         "location": "Ireland",
-        "geoName": "Europe"
+        "geography": "Europe",
+        "geographyGrouping": "Europe"
     },
     {
         "id": 10,
         "locationId": "westeurope",
         "name": "West Europe",
         "storageAccountName": "astwesteurope",
-        "regions": "europewest",
         "location": "Netherlands",
-        "geoName": "Europe"
+        "geography": "Europe",
+        "geographyGrouping": "Europe"
     },
     {
         "id": 11,
         "locationId": "japanwest",
         "name": "Japan West",
         "storageAccountName": "astjapanwest",
-        "regions": "japanwest",
         "location": "Osaka",
-        "geoName": "Asia Pacific"
+        "geography": "Japan",
+        "geographyGrouping": "Asia Pacific"
     },
     {
         "id": 12,
         "locationId": "japaneast",
         "name": "Japan East",
         "storageAccountName": "astjapaneast",
-        "regions": "japaneast",
         "location": "Tokyo, Saitama",
-        "geoName": "Asia Pacific"
+        "geography": "Japan",
+        "geographyGrouping": "Asia Pacific"
     },
     {
         "id": 13,
         "locationId": "brazilsouth",
         "name": "Brazil South",
         "storageAccountName": "astbrazilsouth",
-        "regions": "brazilsouth",
         "location": "Sao Paulo State",
-        "geoName": "Americas"
+        "geography": "Brazil",
+        "geographyGrouping": "Americas"
     },
     {
         "id": 14,
         "locationId": "australiaeast",
         "name": "Australia East",
         "storageAccountName": "astaustraliaeast",
-        "regions": "australiaeast",
         "location": "New South Wales",
-        "geoName": "Asia Pacific"
+        "geography": "Australia",
+        "geographyGrouping": "Asia Pacific"
     },
     {
         "id": 15,
         "locationId": "australiasoutheast",
         "name": "Australia Southeast",
         "storageAccountName": "astaustraliasoutheast",
-        "regions": "australiasoutheast",
         "location": "Victoria",
-        "geoName": "Asia Pacific"
+        "geography": "Australia",
+        "geographyGrouping": "Asia Pacific"
     },
     {
         "id": 16,
         "locationId": "southindia",
         "name": "South India",
         "storageAccountName": "astsouthindia",
-        "regions": "indiasouth",
         "location": "Chennai",
-        "geoName": "Asia Pacific"
+        "geography": "India",
+        "geographyGrouping": "Asia Pacific"
     },
     {
         "id": 17,
         "locationId": "centralindia",
         "name": "Central India",
         "storageAccountName": "astcentralindia",
-        "regions": "indiacentral",
         "location": "Pune",
-        "geoName": "Asia Pacific"
+        "geography": "India",
+        "geographyGrouping": "Asia Pacific"
     },
     {
         "id": 18,
         "locationId": "westindia",
         "name": "West India",
         "storageAccountName": "astwestindia",
-        "regions": "indiawest",
         "location": "Mumbai",
-        "geoName": "Asia Pacific"
+        "geography": "India",
+        "geographyGrouping": "Asia Pacific"
     },
     {
         "id": 19,
         "locationId": "canadacentral",
         "name": "Canada Central",
         "storageAccountName": "astcanadacentral",
-        "regions": "canadacentral",
         "location": "Toronto",
-        "geoName": "Americas"
+        "geography": "Canada",
+        "geographyGrouping": "Americas"
     },
     {
         "id": 20,
         "locationId": "canadaeast",
         "name": "Canada East",
         "storageAccountName": "astcanadaeast",
-        "regions": "canadaeast",
         "location": "Quebec City",
-        "geoName": "Americas"
+        "geography": "Canada",
+        "geographyGrouping": "Americas"
     },
     {
         "id": 21,
         "locationId": "uksouth",
         "name": "UK South",
         "storageAccountName": "astuksouth",
-        "regions": "uksouth",
         "location": "London",
-        "geoName": "Europe"
+        "geography": "United Kingdom",
+        "geographyGrouping": "Europe"
     },
     {
         "id": 22,
         "locationId": "ukwest",
         "name": "UK West",
         "storageAccountName": "astukwest",
-        "regions": "ukwest",
         "location": "Cardiff",
-        "geoName": "Europe"
+        "geography": "United Kingdom",
+        "geographyGrouping": "Europe"
     },
     {
         "id": 23,
         "locationId": "westcentralus",
         "name": "West Central US",
         "storageAccountName": "astwestcentralus",
-        "regions": "uswestcentral",
         "location": "Wyoming",
-        "geoName": "Americas"
+        "geography": "United States",
+        "geographyGrouping": "Americas"
     },
     {
         "id": 24,
         "locationId": "westus2",
         "name": "West US 2",
         "storageAccountName": "astwestus2",
-        "regions": "uswest2",
         "location": "Washington",
-        "geoName": "Americas"
+        "geography": "United States",
+        "geographyGrouping": "Americas"
     },
     {
         "id": 25,
         "locationId": "koreacentral",
         "name": "Korea Central",
         "storageAccountName": "astkoreacentral",
-        "regions": "koreacentral",
         "location": "Seoul",
-        "geoName": "Asia Pacific"
+        "geography": "Korea",
+        "geographyGrouping": "Asia Pacific"
     },
     {
         "id": 26,
         "locationId": "koreasouth",
         "name": "Korea South",
         "storageAccountName": "astkoreasouth",
-        "regions": "koreasouth",
         "location": "Busan",
-        "geoName": "Asia Pacific"
+        "geography": "Korea",
+        "geographyGrouping": "Asia Pacific"
     },
     {
         "id": 27,
         "locationId": "francecentral",
         "name": "France Central",
         "storageAccountName": "astfrancecentral",
-        "regions": "francec",
         "location": "Paris",
-        "geoName": "Europe"
+        "geography": "France",
+        "geographyGrouping": "Europe"
     },
     {
-        "id": 28,
+        "id": 31,
         "locationId": "southafricanorth",
         "name": "South Africa North",
         "storageAccountName": "astsouthafricanorth",
-        "regions": "southafrican",
         "location": "Johannesburg",
-        "geoName": "Middle East and Africa"
+        "geography": "Suoth Africa",
+        "geographyGrouping": "Middle East and Africa"
     }
-];
+]
+;

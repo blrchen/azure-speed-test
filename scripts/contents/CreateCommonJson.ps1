@@ -166,7 +166,7 @@ $locationHashtable = @{
     }
     southafricanorth   = @{
         location          = "Johannesburg"
-        geography         = "Suoth Africa"
+        geography         = "South Africa"
         geographyGrouping = "Middle East and Africa"
     }
 }

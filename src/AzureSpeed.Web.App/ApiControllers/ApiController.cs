@@ -6,6 +6,7 @@ using AzureSpeed.Common.Models.Responses;
 using AzureSpeed.Common.Models.ViewModels;
 using AzureSpeed.Common.Storage;
 using AzureSpeed.Web.App.Common;
+using AzureSpeed.Web.App.Filters;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
@@ -14,6 +15,7 @@ using Microsoft.Extensions.Options;
 namespace AzureSpeed.Web.App.ApiControllers
 {
     [Route("api")]
+    [ApiExceptionFilter]
     public class ApiController : Controller
     {
         private readonly IOptions<AppSettings> appSettings;

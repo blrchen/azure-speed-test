@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.16
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSpeed.Common", "AzureSpeed.Common\AzureSpeed.Common.csproj", "{F2434CAD-DB53-4A0A-8098-EE0A51933A9A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSpeed.AdminConsole", "AzureSpeed.AdminConsole\AzureSpeed.AdminConsole.csproj", "{7DFD810C-2358-431E-BCDF-7A50672AF2D7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F2434CAD-DB53-4A0A-8098-EE0A51933A9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2434CAD-DB53-4A0A-8098-EE0A51933A9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2434CAD-DB53-4A0A-8098-EE0A51933A9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2434CAD-DB53-4A0A-8098-EE0A51933A9A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DFD810C-2358-431E-BCDF-7A50672AF2D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DFD810C-2358-431E-BCDF-7A50672AF2D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DFD810C-2358-431E-BCDF-7A50672AF2D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DFD810C-2358-431E-BCDF-7A50672AF2D7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EAA7047C-2B34-4A2F-8301-A4A879365359}
+	EndGlobalSection
+EndGlobal

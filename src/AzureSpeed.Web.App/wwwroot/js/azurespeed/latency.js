@@ -107,6 +107,24 @@
                     d3.range(n).map(function () { return { value: 0 }; }),
                     d3.range(n).map(function () { return { value: 0 }; }),
                     d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
+                    d3.range(n).map(function () { return { value: 0 }; }),
                     d3.range(n).map(function () { return { value: 0 }; })
                 ];
 
@@ -122,60 +140,60 @@
 
             //the time scale for the X axis
             var x = d3.time.scale()
-                           .domain([now - (n - 2) * duration, now - duration])
-                           .range([0, width]);
+                .domain([now - (n - 2) * duration, now - duration])
+                .range([0, width]);
 
             //the numerical scale for the Y axis
             var y = d3.scale.linear()
-                            .domain([500, 0])
-                            .range([0, height]);
+                .domain([500, 0])
+                .range([0, height]);
 
             var line = d3.svg.line()
-                             .interpolate('basis')
-                             .x(function (d, i) { return x(now - (n - 1 - i) * duration); })
-                             .y(function (d, i) { return y(d.value); });
+                .interpolate('basis')
+                .x(function (d, i) { return x(now - (n - 1 - i) * duration); })
+                .y(function (d, i) { return y(d.value); });
 
             var svg = d3.select('.chart-container')
-                        .append('svg')
-                        .attr('width', width + margin.left + margin.right)
-                        .attr('height', height + margin.top + margin.bottom)
-                        .append('g')
-                        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+                .append('svg')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom)
+                .append('g')
+                .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
             //Define a clipping path, because we need to clip the graph to render only the bits we want to see as it moves
             svg.append('defs')
-               .append('clipPath')
-               .attr('id', 'clip')
-               .append('rect')
-               .attr('width', width)
-               .attr('height', height);
+                .append('clipPath')
+                .attr('id', 'clip')
+                .append('rect')
+                .attr('width', width)
+                .attr('height', height);
 
             //Append the x axis
             var axis = svg.append('g')
-                          .attr('class', 'x axis')
-                          .attr('transform', 'translate(0,' + height + ')')
-                          .call(x.axis = d3.svg.axis()
-                          .scale(x)
-                          .orient('bottom'));
+                .attr('class', 'x axis')
+                .attr('transform', 'translate(0,' + height + ')')
+                .call(x.axis = d3.svg.axis()
+                    .scale(x)
+                    .orient('bottom'));
 
             //append the y axis
             var yaxis = svg.append('g')
-                           .attr('class', 'y axis')
-                           .call(y.axis = d3.svg.axis().scale(y)
-                           .orient('left')
-                           .ticks(5));
+                .attr('class', 'y axis')
+                .call(y.axis = d3.svg.axis().scale(y)
+                    .orient('left')
+                    .ticks(5));
 
             //append the clipping path
             var linegroup = svg.append('g')
-                               .attr('clip-path', 'url(#clip)');
+                .attr('clip-path', 'url(#clip)');
 
             var path = linegroup.selectAll('.line')
-                                .data(data)
-                                .enter()
-                                .append('path')
-                                .attr('class', 'line')
-                                .attr('d', line)
-                                .style('stroke', function (d, i) { return color(i); });
+                .data(data)
+                .enter()
+                .append('path')
+                .attr('class', 'line')
+                .attr('d', line)
+                .style('stroke', function (d, i) { return color(i); });
 
             //We need to transition the graph after all lines have been updated. There's no
             //built-in for this, so this function does reference counting on end events

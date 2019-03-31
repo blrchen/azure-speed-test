@@ -9,6 +9,10 @@ namespace AzureSpeed.Web.App.Controllers
         {
             return View();
         }
+        public IActionResult AzureSovereignClouds()
+        {
+            return View();
+        }
 
         public IActionResult AzureEnvironments()
         {

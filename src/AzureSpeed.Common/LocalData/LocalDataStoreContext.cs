@@ -112,6 +112,9 @@ namespace AzureSpeed.Common.LocalData
                     this.regionNames.Add("us-gov-east-1", new CloudRegion { Cloud = "AWS", RegionId = "us-gov-east-1", Region = "AWS GovCloud", Location = "US-East" });
                     this.regionNames.Add("us-gov-west-1", new CloudRegion { Cloud = "AWS", RegionId = "us-gov-west-1", Region = "AWS GovCloud", Location = "US" });
 
+                    // AWS GLOBAL means edge locations 
+                    this.regionNames.Add("GLOBAL", new CloudRegion { Cloud = "AWS", RegionId = "GLOBAL", Region = "GLOBAL", Location = "Edge locations" });
+
                     // AliCloud
                     regionNames.Add("alicloud", new CloudRegion { Cloud = "AliCloud", RegionId = string.Empty, Region = string.Empty });
                 }
@@ -211,13 +214,22 @@ namespace AzureSpeed.Common.LocalData
 
             Uri tmp = new Uri(ipOrUrl);
             ipOrUrl = tmp.Host;
-
-            var ips = Dns.GetHostAddresses(ipOrUrl);
-            var ipAddr = ips[0];
-            result.IpAddress = ipAddr.ToString();
+            IPAddress[] ipAddresses;
+            try
+            {
+                ipAddresses = Dns.GetHostAddresses(ipOrUrl);
+            }
+            catch (Exception)
+            {
+                // Can not resolve host name, return null at this case.
+                return result;
+            }
+           
+            var ipAddress = ipAddresses[0];
+            result.IpAddress = ipAddress.ToString();
             foreach (var net in Subnets.Keys)
             {
-                if (IPNetwork.Contains(net, ipAddr))
+                if (IPNetwork.Contains(net, ipAddress))
                 {
                     var regionAlias = Subnets[net];
                     result.Cloud = RegionNames[regionAlias].Cloud;

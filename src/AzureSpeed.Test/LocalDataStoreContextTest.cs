@@ -79,14 +79,15 @@ namespace AzureSpeed.Test
             Assert.AreEqual("West US", azureSpeedRegion1.Region);
             Assert.AreEqual(ipOfAzureSpeedCom, azureSpeedRegion1.IpAddress);
 
-            string ipOfAwsConsole = "54.239.26.209";
             var awsConsoleRegion = this.localDataStoreContext.GetRegionInfoByIpOrUrl("aws.amazon.com");
             Assert.AreEqual("AWS", awsConsoleRegion.Cloud);
-            Assert.AreEqual("US East (N. Virginia)", awsConsoleRegion.Region);
-            Assert.AreEqual(ipOfAwsConsole, awsConsoleRegion.IpAddress);
+            Assert.AreEqual("GLOBAL", awsConsoleRegion.Region);
 
             var noRegion = this.localDataStoreContext.GetRegionInfoByIpOrUrl("1.1.1.1");
             Assert.IsTrue(string.IsNullOrEmpty(noRegion.Region));
+
+            var invalidHostRegion = this.localDataStoreContext.GetRegionInfoByIpOrUrl("88888888888888888888.888");
+            Assert.IsTrue(string.IsNullOrEmpty(invalidHostRegion.Region));
         }
 
         [TestMethod]

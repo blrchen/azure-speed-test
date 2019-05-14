@@ -17,10 +17,9 @@ namespace AzureSpeed.AdminConsole
         //   2. File C:\DelMe\100MB.bin exists
         public static void Main(string[] args = null)
         {
-            var storageAccountInitilizer = new StorageAccountInitilizer();
+            var storageAccountInitilizer = new StorageAccountInitializer();
             storageAccountInitilizer.InitializeAsync().Wait();
             Console.ReadLine();
         }
     }
 }
-

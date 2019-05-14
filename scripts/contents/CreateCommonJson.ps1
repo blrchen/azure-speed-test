@@ -1,3 +1,5 @@
+# This script generates common.json with following format, used by frontend code
+
 # Important: these commands only work if you have logged into your Azure account
 # 1. Connect-AzAccount
 # 2. Select-AzSubscription -SubscriptionName "Your sub name"

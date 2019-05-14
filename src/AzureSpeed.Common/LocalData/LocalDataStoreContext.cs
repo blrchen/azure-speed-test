@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Xml;
-using AzureSpeed.Common.Models;
+﻿using AzureSpeed.Common.Models;
 using AzureSpeed.Common.Models.AWS;
 using AzureSpeed.Common.Models.Responses;
 using AzureSpeed.Common.Models.ViewModels;
 using AzureSpeed.Common.Storage;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Xml;
 
 namespace AzureSpeed.Common.LocalData
 {
@@ -56,64 +56,65 @@ namespace AzureSpeed.Common.LocalData
                     // The list is from ip file xml file.
                     // Needs to be update when new datacenter opens.
                     // TODO: Generate this list from ip files on the flying??
-                    this.regionNames = new Dictionary<string, CloudRegion>();
+                    this.regionNames = new Dictionary<string, CloudRegion>
+                    {
+                        // Azure, sorted by PublicIPs.xml
+                        // TODO: Get data from common.js
+                        { "uswest", new CloudRegion { Cloud = "Azure", RegionId = "uswest", Region = "West US", Location = "California" } },
+                        { "useast", new CloudRegion { Cloud = "Azure", RegionId = "useast", Region = "East US", Location = "Iowa" } },
+                        { "useast2", new CloudRegion { Cloud = "Azure", RegionId = "useast2", Region = "East US 2", Location = "Iowa" } },
+                        { "usnorth", new CloudRegion { Cloud = "Azure", RegionId = "usnorth", Region = "North Central US", Location = "Illinois" } },
+                        { "uswest2", new CloudRegion { Cloud = "Azure", RegionId = "uswest2", Region = "West US 2", Location = "West US 2" } },
+                        { "ussouth", new CloudRegion { Cloud = "Azure", RegionId = "ussouth", Region = "SouthCentral US", Location = "Texas" } },
+                        { "uscentral", new CloudRegion { Cloud = "Azure", RegionId = "uscentral", Region = "Central US", Location = "Iowa" } },
+                        { "europewest", new CloudRegion { Cloud = "Azure", RegionId = "europewest", Region = "West Europe", Location = "Netherlands" } },
+                        { "europenorth", new CloudRegion { Cloud = "Azure", RegionId = "europenorth", Region = "North Europe", Location = "Ireland" } },
+                        { "asiaeast", new CloudRegion { Cloud = "Azure", RegionId = "asiaeast", Region = "East Asia", Location = "Hong Kong" } },
+                        { "asiasoutheast", new CloudRegion { Cloud = "Azure", RegionId = "asiasoutheast", Region = "Southeast Asia", Location = "Singapore" } },
+                        { "japaneast", new CloudRegion { Cloud = "Azure", RegionId = "japaneast", Region = "Japan East", Location = "Saitama Prefecture" } },
+                        { "japanwest", new CloudRegion { Cloud = "Azure", RegionId = "japanwest", Region = "Japan West", Location = "Osaka Prefecture" } },
+                        { "brazilsouth", new CloudRegion { Cloud = "Azure", RegionId = "brazilsouth", Region = "Brazil South", Location = "Sao Paulo State" } },
+                        { "australiaeast", new CloudRegion { Cloud = "Azure", RegionId = "australiaeast", Region = "Australia East", Location = "New South Wales" } },
+                        { "australiasoutheast", new CloudRegion { Cloud = "Azure", RegionId = "australiasoutheast", Region = "Australia Southeast", Location = "Victoria" } },
+                        { "indiasouth", new CloudRegion { Cloud = "Azure", RegionId = "indiasouth", Region = "South India", Location = "Chennai" } },
+                        { "indiawest", new CloudRegion { Cloud = "Azure", RegionId = "indiawest", Region = "West India", Location = "Mumbai" } },
+                        { "indiacentral", new CloudRegion { Cloud = "Azure", RegionId = "indiacentral", Region = "Central India", Location = "Pune" } },
+                        { "canadacentral", new CloudRegion { Cloud = "Azure", RegionId = "canadacentral", Region = "Canada Central", Location = "Toronto" } },
+                        { "canadaeast", new CloudRegion { Cloud = "Azure", RegionId = "canadaeast", Region = "Canada East", Location = "Quebec City" } },
+                        { "uswestcentral", new CloudRegion { Cloud = "Azure", RegionId = "uswestcentral", Region = "West Central US", Location = "West Central US" } },
+                        { "ukwest", new CloudRegion { Cloud = "Azure", RegionId = "ukwest", Region = "UK West", Location = "Cardiff" } },
+                        { "uksouth", new CloudRegion { Cloud = "Azure", RegionId = "uksouth", Region = "UK South", Location = "London" } },
+                        { "koreasouth", new CloudRegion { Cloud = "Azure", RegionId = "koreasouth", Region = "Korea South", Location = "Busan" } },
+                        { "koreacentral", new CloudRegion { Cloud = "Azure", RegionId = "koreacentral", Region = "Korea Central", Location = "Seoul" } },
+                        { "chinaeast", new CloudRegion { Cloud = "Azure", RegionId = "chinaeast", Region = "China East", Location = "Shanghai" } },
+                        { "chinanorth", new CloudRegion { Cloud = "Azure", RegionId = "chinanorth", Region = "China North", Location = "Beijing" } },
 
-                    // Azure, sorted by PublicIPs.xml
-                    // TODO: Get data from common.js
-                    this.regionNames.Add("uswest", new CloudRegion { Cloud = "Azure", RegionId = "uswest", Region = "West US", Location = "California" });
-                    this.regionNames.Add("useast", new CloudRegion { Cloud = "Azure", RegionId = "useast", Region = "East US", Location = "Iowa" });
-                    this.regionNames.Add("useast2", new CloudRegion { Cloud = "Azure", RegionId = "useast2", Region = "East US 2", Location = "Iowa" });
-                    this.regionNames.Add("usnorth", new CloudRegion { Cloud = "Azure", RegionId = "usnorth", Region = "North Central US", Location = "Illinois" });
-                    this.regionNames.Add("uswest2", new CloudRegion { Cloud = "Azure", RegionId = "uswest2", Region = "West US 2", Location = "West US 2" });
-                    this.regionNames.Add("ussouth", new CloudRegion { Cloud = "Azure", RegionId = "ussouth", Region = "SouthCentral US", Location = "Texas" });
-                    this.regionNames.Add("uscentral", new CloudRegion { Cloud = "Azure", RegionId = "uscentral", Region = "Central US", Location = "Iowa" });
-                    this.regionNames.Add("europewest", new CloudRegion { Cloud = "Azure", RegionId = "europewest", Region = "West Europe", Location = "Netherlands" });
-                    this.regionNames.Add("europenorth", new CloudRegion { Cloud = "Azure", RegionId = "europenorth", Region = "North Europe", Location = "Ireland" });
-                    this.regionNames.Add("asiaeast", new CloudRegion { Cloud = "Azure", RegionId = "asiaeast", Region = "East Asia", Location = "Hong Kong" });
-                    this.regionNames.Add("asiasoutheast", new CloudRegion { Cloud = "Azure", RegionId = "asiasoutheast", Region = "Southeast Asia", Location = "Singapore" });
-                    this.regionNames.Add("japaneast", new CloudRegion { Cloud = "Azure", RegionId = "japaneast", Region = "Japan East", Location = "Saitama Prefecture" });
-                    this.regionNames.Add("japanwest", new CloudRegion { Cloud = "Azure", RegionId = "japanwest", Region = "Japan West", Location = "Osaka Prefecture" });
-                    this.regionNames.Add("brazilsouth", new CloudRegion { Cloud = "Azure", RegionId = "brazilsouth", Region = "Brazil South", Location = "Sao Paulo State" });
-                    this.regionNames.Add("australiaeast", new CloudRegion { Cloud = "Azure", RegionId = "australiaeast", Region = "Australia East", Location = "New South Wales" });
-                    this.regionNames.Add("australiasoutheast", new CloudRegion { Cloud = "Azure", RegionId = "australiasoutheast", Region = "Australia Southeast", Location = "Victoria" });
-                    this.regionNames.Add("indiasouth", new CloudRegion { Cloud = "Azure", RegionId = "indiasouth", Region = "South India", Location = "Chennai" });
-                    this.regionNames.Add("indiawest", new CloudRegion { Cloud = "Azure", RegionId = "indiawest", Region = "West India", Location = "Mumbai" });
-                    this.regionNames.Add("indiacentral", new CloudRegion { Cloud = "Azure", RegionId = "indiacentral", Region = "Central India", Location = "Pune" });
-                    this.regionNames.Add("canadacentral", new CloudRegion { Cloud = "Azure", RegionId = "canadacentral", Region = "Canada Central", Location = "Toronto" });
-                    this.regionNames.Add("canadaeast", new CloudRegion { Cloud = "Azure", RegionId = "canadaeast", Region = "Canada East", Location = "Quebec City" });
-                    this.regionNames.Add("uswestcentral", new CloudRegion { Cloud = "Azure", RegionId = "uswestcentral", Region = "West Central US", Location = "West Central US" });
-                    this.regionNames.Add("ukwest", new CloudRegion { Cloud = "Azure", RegionId = "ukwest", Region = "UK West", Location = "Cardiff" });
-                    this.regionNames.Add("uksouth", new CloudRegion { Cloud = "Azure", RegionId = "uksouth", Region = "UK South", Location = "London" });
-                    this.regionNames.Add("koreasouth", new CloudRegion { Cloud = "Azure", RegionId = "koreasouth", Region = "Korea South", Location = "Busan" });
-                    this.regionNames.Add("koreacentral", new CloudRegion { Cloud = "Azure", RegionId = "koreacentral", Region = "Korea Central", Location = "Seoul" });
-                    this.regionNames.Add("chinaeast", new CloudRegion { Cloud = "Azure", RegionId = "chinaeast", Region = "China East", Location = "Shanghai" });
-                    this.regionNames.Add("chinanorth", new CloudRegion { Cloud = "Azure", RegionId = "chinanorth", Region = "China North", Location = "Beijing" });
+                        // AWS https://docs.amazonaws.cn/en_us/general/latest/gr/rande.html#autoscaling_region
+                        { "us-east-2", new CloudRegion { Cloud = "AWS", RegionId = "us-east-2", Region = "US East", Location = "Ohio" } },
+                        { "us-east-1", new CloudRegion { Cloud = "AWS", RegionId = "us-east-1", Region = "US East", Location = "N. Virginia" } },
+                        { "us-west-1", new CloudRegion { Cloud = "AWS", RegionId = "us-west-1", Region = "US West", Location = "N. California" } },
+                        { "us-west-2", new CloudRegion { Cloud = "AWS", RegionId = "us-west-2", Region = "US West", Location = "Oregon" } },
+                        { "ap-south-1", new CloudRegion { Cloud = "AWS", RegionId = "ap-south-1", Region = "Asia Pacific", Location = "Mumbai" } },
+                        { "ap-northeast-3", new CloudRegion { Cloud = "AWS", RegionId = "ap-northeast-3", Region = "Asia Pacific", Location = "Osaka-Local" } },
+                        { "ap-northeast-2", new CloudRegion { Cloud = "AWS", RegionId = "ap-northeast-2", Region = "Asia Pacific", Location = "Seoul" } },
+                        { "ap-southeast-1", new CloudRegion { Cloud = "AWS", RegionId = "ap-southeast-1", Region = "Asia Pacific", Location = "Singapore" } },
+                        { "ap-southeast-2", new CloudRegion { Cloud = "AWS", RegionId = "ap-southeast-2", Region = "Asia Pacific", Location = "Sydney" } },
+                        { "ap-northeast-1", new CloudRegion { Cloud = "AWS", RegionId = "ap-northeast-1", Region = "Asia Pacific", Location = "Tokyo" } },
+                        { "ca-central-1", new CloudRegion { Cloud = "AWS", RegionId = "ca-central-1", Region = "Asia Pacific", Location = "Central" } },
+                        { "cn-north-1", new CloudRegion { Cloud = "AWS", RegionId = "cn-north-1", Region = "China", Location = "Beijing" } },
+                        { "cn-northwest-1", new CloudRegion { Cloud = "AWS", RegionId = "cn-northwest-1", Region = "China", Location = "Ningxia" } },
+                        { "eu-central-1", new CloudRegion { Cloud = "AWS", RegionId = "eu-central-1", Region = "EU", Location = "Frankfurt" } },
+                        { "eu-west-1", new CloudRegion { Cloud = "AWS", RegionId = "eu-west-1", Region = "EU", Location = "Ireland" } },
+                        { "eu-west-2", new CloudRegion { Cloud = "AWS", RegionId = "eu-west-2", Region = "EU", Location = "London" } },
+                        { "eu-west-3", new CloudRegion { Cloud = "AWS", RegionId = "eu-west-3", Region = "EU", Location = "Paris" } },
+                        { "eu-north-1", new CloudRegion { Cloud = "AWS", RegionId = "eu-north-1", Region = "EU", Location = "Stockholm" } },
+                        { "sa-east-1", new CloudRegion { Cloud = "AWS", RegionId = "sa-east-1", Region = "South America", Location = "São Paulo" } },
+                        { "us-gov-east-1", new CloudRegion { Cloud = "AWS", RegionId = "us-gov-east-1", Region = "AWS GovCloud", Location = "US-East" } },
+                        { "us-gov-west-1", new CloudRegion { Cloud = "AWS", RegionId = "us-gov-west-1", Region = "AWS GovCloud", Location = "US" } },
 
-                    // AWS https://docs.amazonaws.cn/en_us/general/latest/gr/rande.html#autoscaling_region
-                    this.regionNames.Add("us-east-2", new CloudRegion { Cloud = "AWS", RegionId = "us-east-2", Region = "US East", Location = "Ohio" });
-                    this.regionNames.Add("us-east-1", new CloudRegion { Cloud = "AWS", RegionId = "us-east-1", Region = "US East", Location = "N. Virginia" });
-                    this.regionNames.Add("us-west-1", new CloudRegion { Cloud = "AWS", RegionId = "us-west-1", Region = "US West", Location = "N. California" });
-                    this.regionNames.Add("us-west-2", new CloudRegion { Cloud = "AWS", RegionId = "us-west-2", Region = "US West", Location = "Oregon" });
-                    this.regionNames.Add("ap-south-1", new CloudRegion { Cloud = "AWS", RegionId = "ap-south-1", Region = "Asia Pacific", Location = "Mumbai" });
-                    this.regionNames.Add("ap-northeast-3", new CloudRegion { Cloud = "AWS", RegionId = "ap-northeast-3", Region = "Asia Pacific", Location = "Osaka-Local" });
-                    this.regionNames.Add("ap-northeast-2", new CloudRegion { Cloud = "AWS", RegionId = "ap-northeast-2", Region = "Asia Pacific", Location = "Seoul" });
-                    this.regionNames.Add("ap-southeast-1", new CloudRegion { Cloud = "AWS", RegionId = "ap-southeast-1", Region = "Asia Pacific", Location = "Singapore" });
-                    this.regionNames.Add("ap-southeast-2", new CloudRegion { Cloud = "AWS", RegionId = "ap-southeast-2", Region = "Asia Pacific", Location = "Sydney" });
-                    this.regionNames.Add("ap-northeast-1", new CloudRegion { Cloud = "AWS", RegionId = "ap-northeast-1", Region = "Asia Pacific", Location = "Tokyo" });
-                    this.regionNames.Add("ca-central-1", new CloudRegion { Cloud = "AWS", RegionId = "ca-central-1", Region = "Asia Pacific", Location = "Central" });
-                    this.regionNames.Add("cn-north-1", new CloudRegion { Cloud = "AWS", RegionId = "cn-north-1", Region = "China", Location = "Beijing" });
-                    this.regionNames.Add("cn-northwest-1", new CloudRegion { Cloud = "AWS", RegionId = "cn-northwest-1", Region = "China", Location = "Ningxia" });
-                    this.regionNames.Add("eu-central-1", new CloudRegion { Cloud = "AWS", RegionId = "eu-central-1", Region = "EU", Location = "Frankfurt" });
-                    this.regionNames.Add("eu-west-1", new CloudRegion { Cloud = "AWS", RegionId = "eu-west-1", Region = "EU", Location = "Ireland" });
-                    this.regionNames.Add("eu-west-2", new CloudRegion { Cloud = "AWS", RegionId = "eu-west-2", Region = "EU", Location = "London" });
-                    this.regionNames.Add("eu-west-3	", new CloudRegion { Cloud = "AWS", RegionId = "eu-west-3", Region = "EU", Location = "Paris" });
-                    this.regionNames.Add("eu-north-1", new CloudRegion { Cloud = "AWS", RegionId = "eu-north-1", Region = "EU", Location = "Stockholm" });
-                    this.regionNames.Add("sa-east-1", new CloudRegion { Cloud = "AWS", RegionId = "sa-east-1", Region = "South America", Location = "São Paulo" });
-                    this.regionNames.Add("us-gov-east-1", new CloudRegion { Cloud = "AWS", RegionId = "us-gov-east-1", Region = "AWS GovCloud", Location = "US-East" });
-                    this.regionNames.Add("us-gov-west-1", new CloudRegion { Cloud = "AWS", RegionId = "us-gov-west-1", Region = "AWS GovCloud", Location = "US" });
-
-                    // AWS GLOBAL means edge locations 
-                    this.regionNames.Add("GLOBAL", new CloudRegion { Cloud = "AWS", RegionId = "GLOBAL", Region = "GLOBAL", Location = "Edge locations" });
+                        // AWS GLOBAL means edge locations
+                        { "GLOBAL", new CloudRegion { Cloud = "AWS", RegionId = "GLOBAL", Region = "GLOBAL", Location = "Edge locations" } }
+                    };
 
                     // AliCloud
                     regionNames.Add("alicloud", new CloudRegion { Cloud = "AliCloud", RegionId = string.Empty, Region = string.Empty });
@@ -184,8 +185,8 @@ namespace AzureSpeed.Common.LocalData
             }
 
             // Load AliCloud ip range data
-            string aliCloudIpFile = this.aliCloudIpFile;
-            string[] lines = File.ReadAllLines(this.dataFilePath + @"\Data\IpRangeFiles\AliCloud\" + aliCloudIpFile);
+            string aliCloudIpFilePath = $@"{this.dataFilePath}\Data\IpRangeFiles\AliCloud\{this.aliCloudIpFile}";
+            string[] lines = File.ReadAllLines(aliCloudIpFilePath);
             var aliIpRange = new IpRangeViewModel { Cloud = "AliCloud", Region = "AliCloud", Subnet = new List<string>() };
             foreach (var line in lines)
             {
@@ -224,12 +225,12 @@ namespace AzureSpeed.Common.LocalData
                 // Can not resolve host name, return null at this case.
                 return result;
             }
-           
+
             var ipAddress = ipAddresses[0];
             result.IpAddress = ipAddress.ToString();
             foreach (var net in Subnets.Keys)
             {
-                if (IPNetwork.Contains(net, ipAddress))
+                if (net.Contains(ipAddress))
                 {
                     var regionAlias = Subnets[net];
                     result.Cloud = RegionNames[regionAlias].Cloud;
@@ -258,8 +259,7 @@ namespace AzureSpeed.Common.LocalData
                     foreach (XmlElement ipRange in ele)
                     {
                         var subnet = ipRange.GetAttribute("Subnet");
-                        IPNetwork net;
-                        if (IPNetwork.TryParse(subnet, out net))
+                        if (IPNetwork.TryParse(subnet, out IPNetwork net))
                         {
                             if (!subnets.ContainsKey(net))
                             {
@@ -276,8 +276,7 @@ namespace AzureSpeed.Common.LocalData
             var awsIpRangeData = JsonConvert.DeserializeObject<AwsIpRangeData>(json);
             foreach (var prefix in awsIpRangeData.Prefixes)
             {
-                IPNetwork net;
-                if (IPNetwork.TryParse(prefix.IpPrefix, out net))
+                if (IPNetwork.TryParse(prefix.IpPrefix, out IPNetwork net))
                 {
                     if (!subnets.ContainsKey(net))
                     {
@@ -290,8 +289,7 @@ namespace AzureSpeed.Common.LocalData
             string[] lines = File.ReadAllLines(this.dataFilePath + @"\Data\IpRangeFiles\AliCloud\" + this.aliCloudIpFile);
             foreach (var line in lines)
             {
-                IPNetwork net;
-                if (IPNetwork.TryParse(line, out net))
+                if (IPNetwork.TryParse(line, out IPNetwork net))
                 {
                     if (!subnets.ContainsKey(net))
                     {

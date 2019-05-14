@@ -1,8 +1,4 @@
-# Important: these commands only work if you have logged into your Azure account
-# 1. Connect-AzAccount
-# 2. Select-AzSubscription -SubscriptionName "Your sub name"
-
-# This script generate settings.json with following format
+# This script generates settings.json with following format, used by backend code
 # {
 #     "accounts": [
 #       {
@@ -17,6 +13,11 @@
 #       }
 #     ]
 # }
+
+# Important: these commands only work if you have logged into your Azure account
+# 1. Connect-AzAccount
+# 2. Select-AzSubscription -SubscriptionName "Your sub name"
+
 
 $locations = Get-AzLocation
 $resourceGroupName = "AzureSpeedRG"

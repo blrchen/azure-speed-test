@@ -1,69 +1,69 @@
 ﻿@{
-    ViewBag.Title = "Azure Billing Meters";
+  ViewBag.Title = "Azure Billing Meters";
 }
 
 <div class="container-fluid" ng-controller="AzureBillingMetersController">
-    <div class="page-header">
-        <h3>@ViewBag.Title</h3>
-        <small>Azure billing meter information with prices.</small>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    Azure Regions
-                </div>
-                <div class="panel-body">
-                    <table class="table table-bordered table-striped" style="word-break: break-all">
-                        <thead>
-                            <tr>
-                                <th>MeterId</th>
-                                <th>MeterCategory</th>
-                                <th>MeterSubCategory</th>
-                                <th>MeterName</th>
-                                <th>MeterRegion</th>
-                                <th>MeterRates</th>
-                                <th>Tier</th>
-                                <th>OS</th>
-                                <th>InstanceName</th>
-                                <th>IncludedQuantity</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="m in meters">
-                                <td>{{m.MeterId}}</td>
-                                <td>{{m.MeterCategory}}</td>
-                                <td>{{m.MeterSubCategory}}</td>
-                                <td>{{m.MeterName}}</td>
-                                <td>{{m.MeterRegion}}</td>
-                                <td>{{m.MeterRates[0]}}</td>
-                                <td>{{m.Tier}}</td>
-                                <td>{{m.OS}}</td>
-                                <td>{{m.InstanceName}}</td>
-                                <td>{{m.IncludedQuantity}}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+  <div class="page-header">
+    <h3>@ViewBag.Title</h3>
+    <small>Azure billing meter information with prices.</small>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          Azure Regions
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <h3>References</h3>
-            <p>
-                <ul>
-                    <li>
-                        <a href="https://github.com/Azure-Samples/billing-dotnet-ratecard-api" target="_blank">Microsoft Azure Billing API Code Samples: RateCard API</a>
-                    </li>
-                    <li>
-                        <a href="https://msdn.microsoft.com/en-us/library/azure/mt219005.aspx" target="_blank">Resource RateCard REST API</a>
-                    </li>
-                    <li>
-                        <a href="https://github.com/Azure/BillingCodeSamples" target="_blank">Microsoft Azure Billing API Code Samples</a>
-                    </li>
-                </ul>
-            </p>
+        <div class="card-body">
+          <table class="table table-bordered table-striped" style="word-break: break-all">
+            <thead>
+              <tr>
+                <th>MeterId</th>
+                <th>MeterCategory</th>
+                <th>MeterSubCategory</th>
+                <th>MeterName</th>
+                <th>MeterRegion</th>
+                <th>MeterRates</th>
+                <th>Tier</th>
+                <th>OS</th>
+                <th>InstanceName</th>
+                <th>IncludedQuantity</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="m in meters">
+                <td>{{m.MeterId}}</td>
+                <td>{{m.MeterCategory}}</td>
+                <td>{{m.MeterSubCategory}}</td>
+                <td>{{m.MeterName}}</td>
+                <td>{{m.MeterRegion}}</td>
+                <td>{{m.MeterRates[0]}}</td>
+                <td>{{m.Tier}}</td>
+                <td>{{m.OS}}</td>
+                <td>{{m.InstanceName}}</td>
+                <td>{{m.IncludedQuantity}}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
+      </div>
     </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <h3>References</h3>
+      <p>
+        <ul>
+          <li>
+            <a href="https://github.com/Azure-Samples/billing-dotnet-ratecard-api" target="_blank">Microsoft Azure Billing API Code Samples: RateCard API</a>
+          </li>
+          <li>
+            <a href="https://msdn.microsoft.com/en-us/library/azure/mt219005.aspx" target="_blank">Resource RateCard REST API</a>
+          </li>
+          <li>
+            <a href="https://github.com/Azure/BillingCodeSamples" target="_blank">Microsoft Azure Billing API Code Samples</a>
+          </li>
+        </ul>
+      </p>
+    </div>
+  </div>
 </div>

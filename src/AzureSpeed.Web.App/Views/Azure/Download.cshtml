@@ -1,42 +1,42 @@
 ﻿@{
-    ViewBag.Title = "Azure Storage Blob Download Speed Test";
+  ViewBag.Title = "Azure Storage Blob Download Speed Test";
 }
 
 <div class="container-fluid" ng-controller="DownloadController">
-    <div class="page-header">
-        <h3>@ViewBag.Title</h3>
-        <small>Test download speed from Azure Storage Service around the world.</small>
-    </div>
-    <partial name="_RegionSelector" />
-    <div class="row">
-        <div class="col-md-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    Azure Download Speed Test
-                </div>
-                <div class="panel-body">
-                    <table class="table table-bordered table-striped">
-                        <thead>
-                            <tr>
-                                <th>Geography</th>
-                                <th>Region</th>
-                                <th>Location</th>
-                                <th>Test File</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="region in user.regions">
-                                <td>{{region.geography}}</td>
-                                <td>{{region.name}}</td>
-                                <td>{{region.location}}</td>
-                                <td>
-                                    <a ng-if="region.url.length>0" class="btn btn-default" href="{{region.url}}">Download 100MB File</a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+  <div class="page-header">
+    <h3>@ViewBag.Title</h3>
+    <small>Test download speed from Azure Storage Service around the world.</small>
+  </div>
+  <partial name="_RegionSelector" />
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Azure Download Speed Test
         </div>
+        <div class="panel-body">
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th>Geography</th>
+                <th>Region</th>
+                <th>Location</th>
+                <th>Test File</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="region in user.regions">
+                <td>{{region.geography}}</td>
+                <td>{{region.name}}</td>
+                <td>{{region.location}}</td>
+                <td>
+                  <a ng-if="region.url.length>0" class="btn btn-default" href="{{region.url}}">Download 100MB File</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
+  </div>
 </div>

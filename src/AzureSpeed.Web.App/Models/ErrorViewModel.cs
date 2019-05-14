@@ -1,5 +1,3 @@
-using System;
-
 namespace AzureSpeed.Web.App.Models
 {
     public class ErrorViewModel

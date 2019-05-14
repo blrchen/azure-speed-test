@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Auth;
+using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage.Shared.Protocol;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Auth;
-using Microsoft.WindowsAzure.Storage.Blob;
-using Microsoft.WindowsAzure.Storage.Shared.Protocol;
 
 namespace AzureSpeed.Common.Storage
 {
@@ -21,14 +21,14 @@ namespace AzureSpeed.Common.Storage
                 ? "core.windows.net"
                 : account.EndpointSuffix;
 
-            var stroageCredential = new StorageCredentials(account.Name, account.Key);
-            var storageAccount = new CloudStorageAccount(stroageCredential, endpointSuffix, false);
+            var storageCredentials = new StorageCredentials(account.Name, account.Key);
+            var storageAccount = new CloudStorageAccount(storageCredentials, endpointSuffix, true);
             this.blobClient = storageAccount.CreateCloudBlobClient();
         }
 
         public string GetSasUrl(string blobName, string operation)
         {
-            string containerName = "";
+            string containerName = string.Empty;
             var permissions = SharedAccessBlobPermissions.None;
             if (operation.ToLower() == "upload")
             {
@@ -57,11 +57,11 @@ namespace AzureSpeed.Common.Storage
         public async Task EnableCORSAsync()
         {
             CorsHttpMethods allowedMethods = CorsHttpMethods.None;
-            allowedMethods = allowedMethods | CorsHttpMethods.Get;
-            allowedMethods = allowedMethods | CorsHttpMethods.Put;
-            allowedMethods = allowedMethods | CorsHttpMethods.Post;
-            allowedMethods = allowedMethods | CorsHttpMethods.Delete;
-            allowedMethods = allowedMethods | CorsHttpMethods.Options;
+            allowedMethods |= CorsHttpMethods.Get;
+            allowedMethods |= CorsHttpMethods.Put;
+            allowedMethods |= CorsHttpMethods.Post;
+            allowedMethods |= CorsHttpMethods.Delete;
+            allowedMethods |= CorsHttpMethods.Options;
 
             var delimiter = new[] { "," };
             var corsRule = new CorsRule();
@@ -111,24 +111,6 @@ namespace AzureSpeed.Common.Storage
             await this.blobClient.SetServicePropertiesAsync(serviceProperties);
         }
 
-        //public void CleanUpBlobs()
-        //{
-        //    var container = this.blobClient.GetContainerReference(AzureSpeedConstants.PrivateContainerName);
-        //    var blobs = container.ListBlobs();
-        //    var oneMonthAgo = DateTimeOffset.Now.AddMonths(-1);
-        //    foreach (IListBlobItem blob in blobs)
-        //    {
-        //        var cblob = blob as ICloudBlob;
-        //        if (cblob != null && cblob.Name != AzureSpeedConstants.CallBackBlobName && cblob.Name != AzureSpeedConstants.DownloadTestBlobName)
-        //        {
-        //            if (cblob.Properties.LastModified.Value.CompareTo(oneMonthAgo) < 0)
-        //            {
-        //                cblob.DeleteAsync();
-        //            }
-        //        }
-        //    }
-        //}
-
         public async Task EnableLoggingAsync()
         {
             var serviceProperties = await this.blobClient.GetServicePropertiesAsync();
@@ -164,7 +146,7 @@ namespace AzureSpeed.Common.Storage
             var container = this.blobClient.GetContainerReference(containerName);
             if (container != null)
             {
-                // Create private container with no puublic access permission
+                // Create private container with no public access permission
                 await container.CreateIfNotExistsAsync();
                 var permissions = new BlobContainerPermissions
                 {

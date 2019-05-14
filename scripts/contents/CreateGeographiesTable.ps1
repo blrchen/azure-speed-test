@@ -1,3 +1,6 @@
+# This script generates static contents (html table) used for geographies page
+# http://www.azurespeed.com/Information/AzureGeographies
+
 # Important: these commands only work if you have logged into your Azure account
 # 1. Connect-AzAccount
 # 2. Select-AzSubscription -SubscriptionName "Your sub name"
@@ -171,7 +174,7 @@ $locationHashtable = @{
 # ---            -----
 # Asia Pacific   [Southeast Asia(Hongkong), East Asia(Hongkong)]
 $sorted = New-Object 'System.Collections.Generic.SortedDictionary[String,Array]'
-foreach ( $key in $locationHashtable.Keys) {
+foreach ( $key in $locationHashtable.Keys ) {
     $geography = $locationHashtable[$key].geography
     $list = New-Object 'System.Collections.Generic.List[String]'
     if (-not $sorted.ContainsKey($geography)) {

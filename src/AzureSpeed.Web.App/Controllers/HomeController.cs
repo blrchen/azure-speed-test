@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using AzureSpeed.Web.App.Models;
 using Microsoft.AspNetCore.Mvc;
-using AzureSpeed.Web.App.Models;
+using System.Diagnostics;
 
 namespace AzureSpeed.Web.App.Controllers
 {

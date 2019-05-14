@@ -2,9 +2,6 @@
 
 var gulp = require('gulp'),
   rimraf = require('rimraf'),
-  concat = require('gulp-concat'),
-  cssmin = require('gulp-cssmin'),
-  uglify = require('gulp-uglify'),
   eslint = require('gulp-eslint');
 
 var paths = {
@@ -13,13 +10,6 @@ var paths = {
     lib: './wwwroot/lib/'
 };
 
-paths.js = paths.webroot + 'js/**/*.js';
-paths.minJs = paths.webroot + 'js/**/*.min.js';
-paths.css = paths.webroot + 'css/**/*.css';
-paths.minCss = paths.webroot + 'css/**/*.min.css';
-paths.concatJsDest = paths.webroot + 'js/site.min.js';
-paths.concatCssDest = paths.webroot + 'css/site.min.css';
-
 // Task to copy referenced 3rd js packages from npm node_modules folder to lib folder under wwwroot
 gulp.task('copy', ['clean'], function () {
     var npm = {
@@ -27,11 +17,9 @@ gulp.task('copy', ['clean'], function () {
         'angular-ui-bootstrap': 'angular-ui-bootstrap/dist/ui-bootstrap*.{js,css}',
         'angular-filter': 'angular-filter/dist/*.js',
         'angular-local-storage': 'angular-local-storage/dist/*.js',
-        'bootstrap': 'bootstrap/dist/**/*.{js,map,css,ttf,svg,woff,woff2,eot}',
         'checklist-model': 'checklist-model/checklist-model*.js',
         'd3': 'd3/d3*.js',
         'font-awesome': 'font-awesome/**/*.{js,map,css,ttf,svg,woff,woff2,eot}',
-        'jquery': 'jquery/dist/jquery*.{js,map}',
         'metisMenu': 'metisMenu/dist/*.{js,css}'
     };
 

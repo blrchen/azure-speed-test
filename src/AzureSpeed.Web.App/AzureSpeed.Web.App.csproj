@@ -5,6 +5,13 @@
     <UserSecretsId>5411af76-18a6-4bc2-8bd8-4c9ee2248611</UserSecretsId>
     <ApplicationInsightsResourceId>/subscriptions/8eaf4bf3-36ac-44f2-8f0a-87fc37036d30/resourcegroups/AzureSpeed/providers/microsoft.insights/components/azurespeed-ai-prod</ApplicationInsightsResourceId>
     <ApplicationInsightsAnnotationResourceId>/subscriptions/8eaf4bf3-36ac-44f2-8f0a-87fc37036d30/resourcegroups/AzureSpeed/providers/microsoft.insights/components/azurespeed-ai-prod</ApplicationInsightsAnnotationResourceId>
+    <CodeAnalysisRuleSet>..\CodeAnalysis.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile></DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,6 +24,10 @@
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.6.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />

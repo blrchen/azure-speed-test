@@ -1,18 +1,16 @@
-﻿using System;
-using System.Configuration;
+﻿using AzureSpeed.Common;
+using AzureSpeed.Common.LocalData;
+using AzureSpeed.Common.Storage;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using AzureSpeed.Common.LocalData;
-using AzureSpeed.Common.Storage;
-using Microsoft.Extensions.Configuration;
-using AzureSpeed.Web.App.Common;
-using AzureSpeed.Common;
 
 namespace AzureSpeed.AdminConsole
 {
-    internal class StorageAccountInitilizer
+    internal class StorageAccountInitializer
     {
         public async Task InitializeAsync()
         {
@@ -34,7 +32,7 @@ namespace AzureSpeed.AdminConsole
             {
                 if (account.Name != "sptsouthafricanorth")
                 {
-                    //continue;
+                    // continue;
                 }
 
                 var storageContext = new StorageContext(account);

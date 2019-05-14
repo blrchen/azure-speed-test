@@ -2,7 +2,6 @@
 {
     public static class AzureSpeedConstants
     {
-        public const bool ConnectStorageWithHttps = true;
         public const string PublicContainerName = "public";
         public const string PrivateContainerName = "private";
         public const string UploadContainerName = "upload";

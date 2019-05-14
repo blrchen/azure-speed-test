@@ -1,9 +1,10 @@
-﻿using AzureSpeed.Web.App.Common;
+﻿using AzureSpeed.Common;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 
 namespace AzureSpeed.Web.App
@@ -25,11 +26,10 @@ namespace AzureSpeed.Web.App
             this.hostingEnvironment = env;
         }
 
-
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddOptions();
             services.Configure<AppSettings>(this.configuration.GetSection("AppSettings"));
             services.AddLogging(loggingBuilder =>
@@ -45,7 +45,7 @@ namespace AzureSpeed.Web.App
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -56,7 +56,9 @@ namespace AzureSpeed.Web.App
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            app.UseCors(build => build.WithOrigins("*").WithHeaders("*").WithMethods("*"));
+            app.UseCors(build => build.WithOrigins("*")
+                                    .WithHeaders("*")
+                                    .WithMethods("*"));
 
             app.UseStaticFiles();
 

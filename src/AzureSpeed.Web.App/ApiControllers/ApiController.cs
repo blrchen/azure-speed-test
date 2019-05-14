@@ -1,16 +1,17 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using AzureSpeed.Common;
 using AzureSpeed.Common.LocalData;
 using AzureSpeed.Common.Models.Responses;
 using AzureSpeed.Common.Models.ViewModels;
 using AzureSpeed.Common.Storage;
-using AzureSpeed.Web.App.Common;
 using AzureSpeed.Web.App.Filters;
+using AzureSpeed.Web.App.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace AzureSpeed.Web.App.ApiControllers
 {
@@ -28,8 +29,10 @@ namespace AzureSpeed.Web.App.ApiControllers
             this.appSettings = appSettings;
             this.fileProvider = fileProvider;
             this.hostingEnvironment = hostingEnvironment;
-            this.localDataStoreContext = new LocalDataStoreContext(hostingEnvironment.ContentRootPath,
-                appSettings.Value.AzureIpRangeFileList, appSettings.Value.AwsIpRangeFile,
+            this.localDataStoreContext = new LocalDataStoreContext(
+                hostingEnvironment.ContentRootPath,
+                appSettings.Value.AzureIpRangeFileList,
+                appSettings.Value.AwsIpRangeFile,
                 appSettings.Value.AliCloudIpRangeFile);
         }
 
@@ -73,7 +76,7 @@ namespace AzureSpeed.Web.App.ApiControllers
             foreach (var account in localDataStoreContext.StorageAccounts)
             {
                 var storageContext = new StorageContext(account);
-                files.Add(new DownloadFile(){ Region = account.LocationId , Url = storageContext.GetSasUrl("100MB.bin", "download") });
+                files.Add(new DownloadFile() { Region = account.LocationId, Url = storageContext.GetSasUrl("100MB.bin", "download") });
             }
 
             return files;
@@ -92,6 +95,7 @@ namespace AzureSpeed.Web.App.ApiControllers
                     result = reader.ReadToEnd();
                 }
             }
+
             return result;
         }
 
@@ -108,26 +112,8 @@ namespace AzureSpeed.Web.App.ApiControllers
                     result = reader.ReadToEnd();
                 }
             }
+
             return result;
         }
-
-        //[HttpGet]
-        //[Route("cleanup")]
-        //public string CleanUpBlobs()
-        //{
-        //    foreach (var account in localDataStoreContext.StorageAccounts)
-        //    {
-        //        var storageAccount = new StorageContext(account);
-        //        storageAccount.CleanUpBlobs();
-        //    }
-
-        //    return string.Empty;
-        //}
-    }
-
-    public class DownloadFile
-    {
-        public string Region { get; set; }
-        public string Url { get; set; }
     }
 }

@@ -1,58 +1,58 @@
 ﻿<div id="upload-modal" class="modal fade">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h3 class="modal-title">Upload File</h3>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3 class="modal-title">Upload File</h3>
+      </div>
+      <div class="modal-body form-horizontal">
+        <form>
+          <div class="form-group">
+            <label class="control-label col-md-4">File</label>
+            <div class="col-md-6">
+              <input id="file-input" type="file" class="form-control" />
             </div>
-            <div class="modal-body form-horizontal">
-                <form>
-                    <div class="form-group">
-                        <label class="control-label col-md-4">File</label>
-                        <div class="col-md-6">
-                            <input id="file-input" type="file" class="form-control" />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-4">Region</label>
-                        <div class="col-md-6">
-                            <select class="form-control" ng-options="region.name for region in regions" ng-model="selectedRegion" required>
-                                <option value="">--Please select--</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-4">Block Size(kb)</label>
-                        <div class="col-md-6">
-                            <select class="form-control" ng-options="blockSize for blockSize in blockSizes" ng-model="selectedBlockSize" required>
-                                <option>--Please select--</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-4">Thread</label>
-                        <div class="col-md-6">
-                            <select class="form-control" ng-options="thread for thread in threads" ng-model="selectedThread" required>
-                                <option>--Please select--</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="progress">
-                        <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{progressPercent}}"
-                             ng-style="{'width': progressPercent+'%'}">{{progressPercent}}%</div>
-                    </div>
-                    <div class="alert alert-success" ng-if="progressPercent > 0">file={{fileName}}, size={{fileSize}}, {{message}}</div>
-                    <div class="alert alert-danger" ng-if="error">{{error}}</div>
-                </form>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-4">Region</label>
+            <div class="col-md-6">
+              <select class="form-control" ng-options="region.name for region in regions" ng-model="selectedRegion" required>
+                <option value="">--Please select--</option>
+              </select>
             </div>
-            <div class="modal-footer">
-                <div class="col-xs-6">
-                    <button class="btn btn-success btn-block" ng-click="upload()" ng-disabled="!canUpload()">Upload</button>
-                </div>
-                <div class="col-xs-6">
-                    <button class="btn btn-default btn-block" data-dismiss="modal">Close</button>
-                </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-4">Block Size(kb)</label>
+            <div class="col-md-6">
+              <select class="form-control" ng-options="blockSize for blockSize in blockSizes" ng-model="selectedBlockSize" required>
+                <option>--Please select--</option>
+              </select>
             </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-4">Thread</label>
+            <div class="col-md-6">
+              <select class="form-control" ng-options="thread for thread in threads" ng-model="selectedThread" required>
+                <option>--Please select--</option>
+              </select>
+            </div>
+          </div>
+          <div class="progress">
+            <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{progressPercent}}"
+                 ng-style="{'width': progressPercent+'%'}">{{progressPercent}}%</div>
+          </div>
+          <div class="alert alert-success" ng-if="progressPercent > 0">file={{fileName}}, size={{fileSize}}, {{message}}</div>
+          <div class="alert alert-danger" ng-if="error">{{error}}</div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <div class="col-xs-6">
+          <button class="btn btn-success btn-block" ng-click="upload()" ng-disabled="!canUpload()">Upload</button>
         </div>
+        <div class="col-xs-6">
+          <button class="btn btn-default btn-block" data-dismiss="modal">Close</button>
+        </div>
+      </div>
     </div>
+  </div>
 </div>

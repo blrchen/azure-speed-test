@@ -1,67 +1,67 @@
 ﻿@{
-    ViewBag.Title = "Azure Virtual Mahcine Pricing";
+  ViewBag.Title = "Azure Virtual Mahcine Pricing";
 }
 
 <div class="container-fluid" ng-controller="AzureVMPricingController">
-    <div class="page-header">
-        <h3>@ViewBag.Title</h3>
-        <small>Azure Virtual Machine pricing</small>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    Azure Virtual Mahcine Pricing
-                </div>
-                <div class="panel-body">
-                    <table class="table table-bordered table-striped" style="word-break: break-all">
-                        <thead>
-                            <tr>
-                                <!-- <th>Slug Id</th> -->
-                                <th>OS</th>
-                                <th>Instance</th>
-                                <th>Tier</th>
-                                <th>Cores</th>
-                                <th>Ram</th>
-                                <!-- <th>Category</th> -->
-                                <th>DiskType</th>
-                                <th>Temp Disk</th>
-                                <th>Price ($/hour)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="s in slugs">
-                                <!-- <td>{{s.id}}</td> -->
-                                <td>{{s.os}}</td>
-                                <td>{{s.instanceName}}</td>
-                                <td>{{s.tier}}</td>
-                                <td>{{s.cores}}</td>
-                                <td>{{s.ram.capacity}} {{s.ram.unit}}</td>
-                                <!-- <td>{{s.category}}</td> -->
-                                <td>{{s.diskType}}</td>
-                                <td>{{s.disk.capacity}} {{s.disk.unit}}</td>
-                                <td>
-                                    <ul>
-                                        <li ng-repeat="p in s.prices.pricesByRegion">{{p.region}}: {{p.price}}</li>
-                                    </ul>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+  <div class="page-header">
+    <h3>@ViewBag.Title</h3>
+    <small>Azure Virtual Machine pricing</small>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Azure Virtual Mahcine Pricing
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <h3>References</h3>
-            <p>
-                <ul>
-                    <li>
-                        <a href="https://github.com/Azure-Samples/billing-dotnet-ratecard-api" target="_blank">Microsoft Azure Billing API Code Samples: RateCard API</a>
-                    </li>
-                </ul>
-            </p>
+        <div class="panel-body">
+          <table class="table table-bordered table-striped" style="word-break: break-all">
+            <thead>
+              <tr>
+                <!-- <th>Slug Id</th> -->
+                <th>OS</th>
+                <th>Instance</th>
+                <th>Tier</th>
+                <th>Cores</th>
+                <th>Ram</th>
+                <!-- <th>Category</th> -->
+                <th>DiskType</th>
+                <th>Temp Disk</th>
+                <th>Price ($/hour)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="s in slugs">
+                <!-- <td>{{s.id}}</td> -->
+                <td>{{s.os}}</td>
+                <td>{{s.instanceName}}</td>
+                <td>{{s.tier}}</td>
+                <td>{{s.cores}}</td>
+                <td>{{s.ram.capacity}} {{s.ram.unit}}</td>
+                <!-- <td>{{s.category}}</td> -->
+                <td>{{s.diskType}}</td>
+                <td>{{s.disk.capacity}} {{s.disk.unit}}</td>
+                <td>
+                  <ul>
+                    <li ng-repeat="p in s.prices.pricesByRegion">{{p.region}}: {{p.price}}</li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
+      </div>
     </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <h3>References</h3>
+      <p>
+        <ul>
+          <li>
+            <a href="https://github.com/Azure-Samples/billing-dotnet-ratecard-api" target="_blank">Microsoft Azure Billing API Code Samples: RateCard API</a>
+          </li>
+        </ul>
+      </p>
+    </div>
+  </div>
 </div>

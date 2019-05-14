@@ -4,12 +4,12 @@ namespace AzureSpeed.Web.App.Controllers
 {
     public class InformationController : ControllerBase
     {
-
-        public IActionResult AzureBillingMeters()
+        public IActionResult AzureAvailabilityZones()
         {
             return View();
         }
-        public IActionResult AzureSovereignClouds()
+
+        public IActionResult AzureBillingMeters()
         {
             return View();
         }
@@ -25,6 +25,11 @@ namespace AzureSpeed.Web.App.Controllers
         }
 
         public IActionResult AzureRegions()
+        {
+            return View();
+        }
+
+        public IActionResult AzureSovereignClouds()
         {
             return View();
         }

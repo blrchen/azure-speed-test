@@ -1,57 +1,57 @@
 ﻿@{
-    ViewBag.Title = "Datacenter IP Range";
+  ViewBag.Title = "Datacenter IP Range";
 }
 
 <div class="container-fluid" ng-controller="IpRangeController">
-    <div class="page-header">
-        <h3>@ViewBag.Title</h3>
-        <small>Some funny data for how many public ip address do Microsoft, AWS and Alibaba owns. If you know ip or url, you can use <a href="~/Cloud/RegionFinder">Cloud Region Finder</a> to find our detail cloud and region info</small>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    Datacenter IP Range
-                </div>
-                <div class="panel-body">
-                    <table class="table table-bordered table-striped" style="word-break: break-all">
-                        <thead>
-                            <tr>
-                                <th width="60">Cloud</th>
-                                <th width="100">Region</th>
-                                <th width="80">Total IP</th>
-                                <th>IP Range Detail</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="subnet in subnetList">
-                                <td>{{subnet.cloud}}</td>
-                                <td>{{subnet.region}}</td>
-                                <td>{{subnet.totalIpCount}}</td>
-                                <td>{{subnet.subnet}}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+  <div class="page-header">
+    <h3>@ViewBag.Title</h3>
+    <small>This page lists IP range raw data of Microsoft, AWS and Alibaba clouds. You can use <a href="~/Cloud/RegionFinder">Cloud Region Finder</a> to find our detail cloud and region info</small>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          Datacenter IP Range
         </div>
-    </div>
-    <div class="row">
-        <div class=" col-md-12">
-            <h3>References</h3>
-            <div>
-                <ul>
-                    <li>
-                        <a href="https://www.microsoft.com/en-us/download/details.aspx?id=41653" target="_blank">Microsoft Azure Datacenter IP Ranges</a>
-                    </li>
-                    <li>
-                        <a href="https://www.microsoft.com/en-us/download/details.aspx?id=42064" target="_blank">Windows Azure Datacenter IP Ranges in China</a>
-                    </li>
-                    <li>
-                        <a href="http://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html" target="_blank">AWS IP Address Ranges</a>
-                    </li>
-                </ul>
-            </div>
+        <div class="panel-body">
+          <table class="table table-bordered table-striped" style="word-break: break-all">
+            <thead>
+              <tr>
+                <th width="60">Cloud</th>
+                <th width="100">Region</th>
+                <th width="80">Total IP</th>
+                <th>IP Range Detail</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="subnet in subnetList">
+                <td>{{subnet.cloud}}</td>
+                <td>{{subnet.region}}</td>
+                <td>{{subnet.totalIpCount}}</td>
+                <td>{{subnet.subnet}}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
+      </div>
     </div>
+  </div>
+  <div class="row">
+    <div class=" col-md-12">
+      <h3>References</h3>
+      <div>
+        <ul>
+          <li>
+            <a href="https://www.microsoft.com/en-us/download/details.aspx?id=41653" target="_blank">Microsoft Azure Datacenter IP Ranges</a>
+          </li>
+          <li>
+            <a href="https://www.microsoft.com/en-us/download/details.aspx?id=42064" target="_blank">Windows Azure Datacenter IP Ranges in China</a>
+          </li>
+          <li>
+            <a href="http://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html" target="_blank">AWS IP Address Ranges</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
 </div>

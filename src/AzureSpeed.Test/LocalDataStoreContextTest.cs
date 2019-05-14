@@ -1,11 +1,10 @@
-﻿using System.Configuration;
+﻿using AzureSpeed.Common;
+using AzureSpeed.Common.LocalData;
+using Microsoft.Extensions.Configuration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using AzureSpeed.Common.LocalData;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Extensions.Configuration;
-using AzureSpeed.Web.App.Common;
 
 namespace AzureSpeed.Test
 {
@@ -24,12 +23,6 @@ namespace AzureSpeed.Test
             var appSettings = new AppSettings();
             configuration.GetSection("AppSettings").Bind(appSettings);
 
-            var localDataStoreContext = new LocalDataStoreContext(
-                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-                appSettings.AzureIpRangeFileList,
-                appSettings.AwsIpRangeFile,
-                appSettings.AliCloudIpRangeFile);
-
             this.localDataStoreContext = new LocalDataStoreContext(
                 Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
                 appSettings.AzureIpRangeFileList,
@@ -40,14 +33,14 @@ namespace AzureSpeed.Test
         [TestMethod]
         public void CanGetStorageAccounts()
         {
-            var storageAccounts = localDataStoreContext.StorageAccounts.ToList();
+            var storageAccounts = this.localDataStoreContext.StorageAccounts.ToList();
             Assert.IsTrue(storageAccounts.Count > 0);
         }
 
         [TestMethod]
         public void CanGetSubnets()
         {
-            var subnets = localDataStoreContext.Subnets;
+            var subnets = this.localDataStoreContext.Subnets;
             Assert.IsTrue(subnets.Count > 0);
         }
 

@@ -2,26 +2,22 @@
   "name": "azurespeed",
   "version": "1.0.0",
   "dependencies": {
-    "angular": "1.6.4",
-    "angular-filter": "0.5.16",
-    "angular-local-storage": "0.5.2",
-    "angular-ui-bootstrap": "2.5.0",
-    "bootstrap": "^3.4.1",
-    "checklist-model": "0.11.0",
+    "angular": "^1.7.8",
+    "angular-filter": "^0.5.17",
+    "angular-local-storage": "^0.7.1",
+    "angular-ui-bootstrap": "^2.5.6",
+    "checklist-model": "^1.0.0",
     "d3": "3.5.17",
     "font-awesome": "4.7.0",
-    "jquery": "^3.3.1",
-    "metismenu": "2.7.0"
+    "jquery": "^3.4.1",
+    "metismenu": "^3.0.4"
   },
   "devDependencies": {
     "eslint": "3.19.0",
     "eslint-config-angular": "0.5.0",
     "eslint-plugin-angular": "2.4.0",
-    "gulp": "3.9.1",
-    "gulp-concat": "2.6.1",
-    "gulp-cssmin": "0.1.7",
+    "gulp": "^3.9.1",
     "gulp-eslint": "3.0.1",
-    "gulp-uglify": "2.1.2",
-    "rimraf": "2.6.1"
+    "rimraf": "^2.6.3"
   }
 }

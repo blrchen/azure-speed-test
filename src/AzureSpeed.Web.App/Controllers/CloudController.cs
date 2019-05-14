@@ -12,7 +12,7 @@
         // Redirection: /Cloud/IpRange => /Information/IpRange
         public IActionResult IpRange()
         {
-            return RedirectToAction("IpRange","Information");
+            return RedirectToAction("IpRange", "Information");
         }
     }
 }

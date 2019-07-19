@@ -30,17 +30,17 @@ namespace AzureSpeed.AdminConsole
 
             foreach (var account in localDataStoreContext.StorageAccounts.ToList())
             {
-                if (account.Name != "sptsouthafricanorth")
+                if (account.Name != "astuaenorth")
                 {
-                    // continue;
+                    continue;
                 }
 
                 var storageContext = new StorageContext(account);
 
-                Console.WriteLine($"[{account.Name}] Starting configure stroage account");
+                Console.WriteLine($"[{account.Name}] Starting configure storage account");
 
                 await storageContext.EnableLoggingAsync();
-                Console.WriteLine($"[{account.Name}] Enable logging completed succesfully");
+                Console.WriteLine($"[{account.Name}] Enable logging completed successfully");
 
                 await storageContext.EnableCORSAsync();
                 Console.WriteLine($"[{account.Name}] Successfully enabled CORS");
@@ -57,7 +57,7 @@ namespace AzureSpeed.AdminConsole
                 await storageContext.Upload100MBBlobAsync();
                 Console.WriteLine($"[{account.Name}] Successfully uploaded 100MB.bin blob");
 
-                Console.WriteLine($"[{account.Name}] Successfully initilized storage account");
+                Console.WriteLine($"[{account.Name}] Successfully initialized storage account");
             }
 
             Console.WriteLine("Successfully completed all storage accounts configuration");

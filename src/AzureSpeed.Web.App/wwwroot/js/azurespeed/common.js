@@ -245,7 +245,34 @@ var regions = [
     "geographyGrouping": "Europe"
   },
   {
-    "id": 31,
+    "id": 29,
+    "locationId": "australiacentral",
+    "name": "Australia Central",
+    "storageAccountName": "astaustraliacentral",
+    "location": "Canberra",
+    "geography": "Australia",
+    "geographyGrouping": "Asia Pacific"
+  },
+  {
+    "id": 30,
+    "locationId": "australiacentral2",
+    "name": "Australia Central 2",
+    "storageAccountName": "astaustraliacentral2",
+    "location": "Canberra",
+    "geography": "Australia",
+    "geographyGrouping": "Asia Pacific"
+  },
+  {
+    "id": 32,
+    "locationId": "uaenorth",
+    "name": "UAE North",
+    "storageAccountName": "astuaenorth",
+    "location": "Dubai",
+    "geography": "UAE",
+    "geographyGrouping": "Middle East and Africa"
+  },
+  {
+    "id": 33,
     "locationId": "southafricanorth",
     "name": "South Africa North",
     "storageAccountName": "astsouthafricanorth",
@@ -253,4 +280,5 @@ var regions = [
     "geography": "South Africa",
     "geographyGrouping": "Middle East and Africa"
   }
-];
+]
+;

@@ -2,7 +2,7 @@
   "name": "azurespeed",
   "version": "1.0.0",
   "dependencies": {
-    "angular": "^1.7.8",
+    "angular": "^1.7.9",
     "angular-filter": "^0.5.17",
     "angular-local-storage": "^0.7.1",
     "angular-ui-bootstrap": "^2.5.6",

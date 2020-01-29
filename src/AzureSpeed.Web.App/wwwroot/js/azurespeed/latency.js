@@ -59,8 +59,8 @@
     _ping: function () {
       utils.getRegions().forEach(function (value) {
         latency.startTime[value.storageAccountName] = new Date().getTime();
-        var requestUrl = value.endpointSuffic
-          ? 'http://' + value.storageAccountName + '.blob.' + value.endpointSuffic + '/public/callback.js'
+        var requestUrl = value.geography === 'China'
+          ? 'https://' + value.storageAccountName + '.blob.core.chinacloudapi.cn/public/callback.js'
           : 'https://' + value.storageAccountName + '.blob.core.windows.net/public/callback.js';
         $.ajax({
           url: requestUrl,

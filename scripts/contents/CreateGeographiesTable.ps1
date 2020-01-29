@@ -2,10 +2,10 @@
 # http://www.azurespeed.com/Information/AzureGeographies
 
 # Important: these commands only work if you have logged into your Azure account
-# 1. Connect-AzAccount
+# 1. Connect-AzAccount (or Connect-AzAccount -EnvironmentName "AzureChinaCloud")
 # 2. Select-AzSubscription -SubscriptionName "Your sub name"
 
-$locations = Get-AzLocation | Sort-Object Location
+$locations = Get-AzLocation
 
 # This hashtable contains all metadata of azure locations.
 #  - Key is generated from Get-AzLocation | Sort-Object "Location" | Select-Object "Location"
@@ -82,6 +82,16 @@ $locationHashtable = @{
         geography         = "France"
         geographyGrouping = "Europe"
     }
+    germanynorth       = @{
+        location          = "Berlin"
+        geography         = "Germany"
+        geographyGrouping = "Europe"
+    }
+    germanywestcentral = @{
+        location          = "Frankfurt"
+        geography         = "Germany"
+        geographyGrouping = "Europe"
+    }
     japaneast          = @{
         location          = "Tokyo, Saitama"
         geography         = "Japan"
@@ -112,12 +122,22 @@ $locationHashtable = @{
         geography         = "Europe"
         geographyGrouping = "Europe"
     }
+    norwaywest            = @{
+        location          = "Stavanger"
+        geography         = "Europe"
+        geographyGrouping = "Europe"
+    }
+    norwayeast            = @{
+        location          = "Oslo"
+        geography         = "Europe"
+        geographyGrouping = "Europe"
+    }
     southafricanorth   = @{
         location          = "Johannesburg"
         geography         = "South Africa"
         geographyGrouping = "Middle East and Africa"
     }
-    southafricawest   = @{
+    southafricawest    = @{
         location          = "Cape Town"
         geography         = "South Africa"
         geographyGrouping = "Middle East and Africa"
@@ -137,14 +157,24 @@ $locationHashtable = @{
         geography         = "India"
         geographyGrouping = "Asia Pacific"
     }
+    switzerlandnorth   = @{
+        location          = "Zurich"
+        geography         = "Switzerland"
+        geographyGrouping = "Europe"
+    }
+    switzerlandwest    = @{
+        location          = "Geneva"
+        geography         = "Switzerland"
+        geographyGrouping = "Europe"
+    }
     uaecentral         = @{
         location          = "Abu Dhabi"
-        geography         = "UAE"
+        geography         = "United Arab Emirates"
         geographyGrouping = "Middle East and Africa"
     }
-    uaenorth         = @{
+    uaenorth           = @{
         location          = "Dubai"
-        geography         = "UAE"
+        geography         = "United Arab Emirates"
         geographyGrouping = "Middle East and Africa"
     }
     uksouth            = @{
@@ -183,32 +213,52 @@ $locationHashtable = @{
         geographyGrouping = "Americas"
     }
 }
-
-# Build a sorted directory with following format 
-# Key            Value
-# ---            -----
-# Asia Pacific   [Southeast Asia(Hongkong), East Asia(Hongkong)]
-$sorted = New-Object 'System.Collections.Generic.SortedDictionary[String,Array]'
-foreach ( $key in $locationHashtable.Keys ) {
-    $geography = $locationHashtable[$key].geography
-    $list = New-Object 'System.Collections.Generic.List[String]'
-    if (-not $sorted.ContainsKey($geography)) {
-        foreach ( $key in $locationHashtable.Keys | Sort ) {
-            if ( $locationHashtable[$key].geography -eq $geography ) {
-                $location = $locations | Where-Object {$_.Location -eq $key};
-                $displayName = $location.DisplayName + " ( $($locationHashtable[$key].Location) )"
-                $list.Add($displayName)
-            }
+function ValidationMappingData() {
+    $hasMissingRegion = $false
+    foreach ($location in $locations) {
+        if (!$locationHashtable.ContainsKey($location.Location)) {
+            Write-Host "$($location.Location) is missed in mapping data"
+            $hasMissingRegion = $true
         }
-        $sorted.Add($geography, $list )
+    }
+
+    return $hasMissingRegion
+}
+
+function DumpHtmlTable() {
+    # Build a sorted directory with following format 
+    # Key            Value
+    # ---            -----
+    # Asia Pacific   [Southeast Asia(Hongkong), East Asia(Hongkong)]
+    $sorted = New-Object 'System.Collections.Generic.SortedDictionary[String,Array]'
+    foreach ( $key in $locationHashtable.Keys ) {
+        $geography = $locationHashtable[$key].geography
+        $list = New-Object 'System.Collections.Generic.List[String]'
+        if (-not $sorted.ContainsKey($geography)) {
+            foreach ( $key in $locationHashtable.Keys | Sort-Object ) {
+                if ( $locationHashtable[$key].geography -eq $geography ) {
+                    $location = $locations | Where-Object { $_.Location -eq $key };
+                    $displayName = $location.DisplayName + " ( $($locationHashtable[$key].Location) )"
+                    $list.Add($displayName)
+                }
+            }
+            $sorted.Add($geography, $list )
+        }
+    }
+
+    # Print html table string to console
+    foreach ($key in $sorted.Keys ) {
+        Write-Host "<tr><td>$($key)</td><td>" 
+        foreach ($value in $sorted[$key]) {
+            Write-Host "$($value)<br/>" 
+        }
+        Write-Host "</td></tr>"
     }
 }
 
-# Print html table string to console
-foreach ($key in $sorted.Keys ) {
-    Write-Output "<tr><td>$($key)</td><td>" 
-    foreach ($value in $sorted[$key]) {
-        Write-Output "$($value)<br/>" 
-    }
-    Write-Output "</td></tr>"
+if (ValidationMappingData) {
+    Write-Host "Please fixing missing region(s) first and re-run"
+}
+else {
+    DumpHtmlTable
 }

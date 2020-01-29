@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Logging;
 
 namespace AzureSpeed.Web.App
 {
@@ -29,15 +28,13 @@ namespace AzureSpeed.Web.App
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Add framework services
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddOptions();
             services.Configure<AppSettings>(this.configuration.GetSection("AppSettings"));
-            services.AddLogging(loggingBuilder =>
-            {
-                loggingBuilder.AddConfiguration(this.configuration.GetSection("Logging"));
-                loggingBuilder.AddConsole();
-                loggingBuilder.AddDebug();
-            });
+            services.AddApplicationInsightsTelemetry();
+
+            // Add dependency injection for application services
             services.AddSingleton<IFileProvider>(this.hostingEnvironment.ContentRootFileProvider);
 
             // Enable CORS

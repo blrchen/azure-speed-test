@@ -13,7 +13,6 @@ namespace AzureSpeed.Web.App
         public static IWebHostBuilder CreateWebHostBuilder(string[] args)
         {
             return WebHost.CreateDefaultBuilder(args)
-                    .UseApplicationInsights()
                     .UseStartup<Startup>();
         }
     }

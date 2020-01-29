@@ -39,6 +39,11 @@ namespace AzureSpeed.Web.App.Controllers
             return View();
         }
 
+        public IActionResult RegionToRegionLatency()
+        {
+            return View();
+        }
+
         public IActionResult About()
         {
             return View();

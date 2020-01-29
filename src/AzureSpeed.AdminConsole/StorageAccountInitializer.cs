@@ -30,7 +30,7 @@ namespace AzureSpeed.AdminConsole
 
             foreach (var account in localDataStoreContext.StorageAccounts.ToList())
             {
-                if (account.Name != "astuaenorth")
+                if (account.Name != "astnorwayeast")
                 {
                     continue;
                 }

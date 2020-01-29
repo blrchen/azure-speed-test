@@ -1,144 +1,223 @@
 ﻿{
   "accounts": [
     {
+      "name": "astchinanorth",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
+      "locationId": "chinanorth",
+      "endpointSuffix": "core.chinacloudapi.cn"
+    },
+    {
+      "name": "astchinaeast",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
+      "locationId": "chinaeast",
+      "endpointSuffix": "core.chinacloudapi.cn"
+    },
+    {
+      "name": "astchinanorth2",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
+      "locationId": "chinanorth2",
+      "endpointSuffix": "core.chinacloudapi.cn"
+    },
+    {
+      "name": "astchinaeast2",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
+      "locationId": "chinaeast2",
+      "endpointSuffix": "core.chinacloudapi.cn"
+    },
+    {
       "name": "asteastasia",
-      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
       "locationId": "eastasia"
     },
     {
       "name": "astsoutheastasia",
-      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
       "locationId": "southeastasia"
     },
     {
       "name": "astcentralus",
-      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
       "locationId": "centralus"
     },
     {
       "name": "asteastus",
-      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
       "locationId": "eastus"
     },
     {
       "name": "asteastus2",
-      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
       "locationId": "eastus2"
     },
     {
       "name": "astwestus",
-      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
       "locationId": "westus"
     },
     {
       "name": "astnorthcentralus",
-      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
       "locationId": "northcentralus"
     },
     {
       "name": "astsouthcentralus",
-      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
       "locationId": "southcentralus"
     },
     {
       "name": "astnortheurope",
-      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
       "locationId": "northeurope"
     },
     {
       "name": "astwesteurope",
-      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
       "locationId": "westeurope"
     },
     {
       "name": "astjapanwest",
-      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
       "locationId": "japanwest"
     },
     {
       "name": "astjapaneast",
-      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
       "locationId": "japaneast"
     },
     {
       "name": "astbrazilsouth",
-      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
       "locationId": "brazilsouth"
     },
     {
       "name": "astaustraliaeast",
-      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
       "locationId": "australiaeast"
     },
     {
       "name": "astaustraliasoutheast",
-      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
       "locationId": "australiasoutheast"
     },
     {
       "name": "astsouthindia",
-      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
       "locationId": "southindia"
     },
     {
       "name": "astcentralindia",
-      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
       "locationId": "centralindia"
     },
     {
       "name": "astwestindia",
-      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
       "locationId": "westindia"
     },
     {
       "name": "astcanadacentral",
-      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
       "locationId": "canadacentral"
     },
     {
       "name": "astcanadaeast",
-      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
       "locationId": "canadaeast"
     },
     {
       "name": "astuksouth",
-      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
       "locationId": "uksouth"
     },
     {
       "name": "astukwest",
-      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
       "locationId": "ukwest"
     },
     {
       "name": "astwestcentralus",
-      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
       "locationId": "westcentralus"
     },
     {
       "name": "astwestus2",
-      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
       "locationId": "westus2"
     },
     {
       "name": "astkoreacentral",
-      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
       "locationId": "koreacentral"
     },
     {
       "name": "astkoreasouth",
-      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
       "locationId": "koreasouth"
     },
     {
       "name": "astfrancecentral",
-      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
       "locationId": "francecentral"
     },
     {
+      "name": "astaustraliacentral",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
+      "locationId": "australiacentral"
+    },
+    {
+      "name": "astaustraliacentral2",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
+      "locationId": "australiacentral2"
+    },
+    {
+      "name": "astuaecentral",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
+      "locationId": "uaecentral"
+    },
+    {
+      "name": "astuaenorth",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
+      "locationId": "uaenorth"
+    },
+    {
       "name": "astsouthafricanorth",
-      "key": "==<REPLACE_WITH_YOIUR_KEY>==",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
       "locationId": "southafricanorth"
+    },
+    {
+      "name": "astsouthafricawest",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
+      "locationId": "southafricawest"
+    },
+    {
+      "name": "astswitzerlandnorth",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
+      "locationId": "switzerlandnorth"
+    },
+    {
+      "name": "astswitzerlandwest",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
+      "locationId": "switzerlandwest"
+    },
+    {
+      "name": "astgermanynorth",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
+      "locationId": "germanynorth"
+    },
+    {
+      "name": "astgermanywestcentral",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
+      "locationId": "germanywestcentral"
+    },
+    {
+      "name": "astnorwaywest",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
+      "locationId": "norwaywest"
+    },
+    {
+      "name": "astnorwayeast",
+      "key": "==<Run CreateSettingsJson.ps1 to generage key>==",
+      "locationId": "norwayeast"
     }
   ]
 }

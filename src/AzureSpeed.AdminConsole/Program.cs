@@ -8,8 +8,8 @@ namespace AzureSpeed.AdminConsole
         //
         // It performs following steps
         //   1. Enable CORS
-        //   2. Create a container named azurespeed
-        //   3. Create a test file which is used by latency test
+        //   2. Create 3 containers (public/private/upload)
+        //   3. Upload a cb.js which is used by latency test
         //   4. Upload a 100 MB dummy file for download speed test.
         //
         // Note: to run this tool, you need

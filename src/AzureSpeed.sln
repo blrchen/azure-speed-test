@@ -3,10 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28729.10
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9DED3A7A-F0F4-435A-8C16-4BF55925BD31}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Documents", ".Documents", "{9DED3A7A-F0F4-435A-8C16-4BF55925BD31}"
 	ProjectSection(SolutionItems) = preProject
-		CodeAnalysis.ruleset = CodeAnalysis.ruleset
-		README.md = README.md
+		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSpeed.Web.App", "AzureSpeed.Web.App\AzureSpeed.Web.App.csproj", "{C5019DD8-AF60-4ED1-A73A-A188A7E0D890}"
@@ -17,11 +16,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSpeed.Test", "AzureSpe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSpeed.AdminConsole", "AzureSpeed.AdminConsole\AzureSpeed.AdminConsole.csproj", "{A8126B12-EEA8-4798-BFA3-364A5D2971C3}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{603E9DBC-9530-49E1-919C-CCD27F943993}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Scripts", ".Scripts", "{603E9DBC-9530-49E1-919C-CCD27F943993}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "contents", "contents", "{84909C0E-6861-469B-BF0F-00AA9670D734}"
 	ProjectSection(SolutionItems) = preProject
 		..\scripts\contents\CreateCommonJson.ps1 = ..\scripts\contents\CreateCommonJson.ps1
 		..\scripts\contents\CreateGeographiesTable.ps1 = ..\scripts\contents\CreateGeographiesTable.ps1
 		..\scripts\contents\CreateSettingsJson.ps1 = ..\scripts\contents\CreateSettingsJson.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".CodeAnalysis", ".CodeAnalysis", "{E85930D1-1F26-49F6-AA05-8A9528AEF48A}"
+	ProjectSection(SolutionItems) = preProject
+		CodeAnalysis.ruleset = CodeAnalysis.ruleset
 	EndProjectSection
 EndProject
 Global
@@ -49,6 +55,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{84909C0E-6861-469B-BF0F-00AA9670D734} = {603E9DBC-9530-49E1-919C-CCD27F943993}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EAA7047C-2B34-4A2F-8301-A4A879365359}

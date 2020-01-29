@@ -1,15 +1,20 @@
 # This script generates common.json with following format, used by frontend code
 
 # Important: these commands only work if you have logged into your Azure account
-# 1. Connect-AzAccount
+# 1. Connect-AzAccount (or Connect-AzAccount -EnvironmentName "AzureChinaCloud")
 # 2. Select-AzSubscription -SubscriptionName "Your sub name"
 
 $locations = Get-AzLocation
 $resourceGroupName = "AzureSpeedRG"
 
-IF (!(Get-AzResourceGroup -Name $resourceGroupName -ErrorAction SilentlyContinue)) {
+if (!(Get-AzResourceGroup -Name $resourceGroupName -ErrorAction SilentlyContinue)) {
     New-AzResourceGroup -Name $resourceGroupName -Location "West US"
 }
+
+# TODO: Use geographyGrouping from Get-AzLocation
+# TODO: Add paired regions
+# TODO: Add Associated AZs
+# TODO: Add region detail page
 
 # This hashtable contains all metadata of azure locations.
 #  - Key is generated from Get-AzLocation | Sort-Object "Location" | Select-Object "Location"
@@ -86,6 +91,16 @@ $locationHashtable = @{
         geography         = "France"
         geographyGrouping = "Europe"
     }
+    germanynorth       = @{
+        location          = "Berlin"
+        geography         = "Germany"
+        geographyGrouping = "Europe"
+    }
+    germanywestcentral = @{
+        location          = "Frankfurt"
+        geography         = "Germany"
+        geographyGrouping = "Europe"
+    }
     japaneast          = @{
         location          = "Tokyo, Saitama"
         geography         = "Japan"
@@ -116,12 +131,22 @@ $locationHashtable = @{
         geography         = "Europe"
         geographyGrouping = "Europe"
     }
+    norwaywest            = @{
+        location          = "Stavanger"
+        geography         = "Europe"
+        geographyGrouping = "Europe"
+    }
+    norwayeast            = @{
+        location          = "Oslo"
+        geography         = "Europe"
+        geographyGrouping = "Europe"
+    }
     southafricanorth   = @{
         location          = "Johannesburg"
         geography         = "South Africa"
         geographyGrouping = "Middle East and Africa"
     }
-    southafricawest   = @{
+    southafricawest    = @{
         location          = "Cape Town"
         geography         = "South Africa"
         geographyGrouping = "Middle East and Africa"
@@ -141,14 +166,24 @@ $locationHashtable = @{
         geography         = "India"
         geographyGrouping = "Asia Pacific"
     }
+    switzerlandnorth   = @{
+        location          = "Zurich"
+        geography         = "Switzerland"
+        geographyGrouping = "Europe"
+    }
+    switzerlandwest    = @{
+        location          = "Geneva"
+        geography         = "Switzerland"
+        geographyGrouping = "Europe"
+    }
     uaecentral         = @{
         location          = "Abu Dhabi"
-        geography         = "UAE"
+        geography         = "United Arab Emirates"
         geographyGrouping = "Middle East and Africa"
     }
-    uaenorth         = @{
+    uaenorth           = @{
         location          = "Dubai"
-        geography         = "UAE"
+        geography         = "United Arab Emirates"
         geographyGrouping = "Middle East and Africa"
     }
     uksouth            = @{
@@ -161,7 +196,6 @@ $locationHashtable = @{
         geography         = "United Kingdom"
         geographyGrouping = "Europe"
     }
-
     westcentralus      = @{
         location          = "Wyoming"
         geography         = "United States"
@@ -189,27 +223,55 @@ $locationHashtable = @{
     }
 }
 
-$index = 0;
-$regionList = New-Object System.Collections.Generic.List[System.Object];
-foreach ($location in $locations) {
-    $index++;
-
-    $storageAccountName = "ast" + $location.Location
-    $storageAccount = Get-AzStorageAccount -ResourceGroupName $resourceGroupName -Name $storageAccountName -ErrorAction Ignore
-
-    # Skip those storage accounts not created successfully in current subscription.
-    if ($storageAccount) {
-        $regionObject = [PSCustomObject]@{
-            id                 = $index
-            locationId         = $location.Location
-            name               = $location.DisplayName
-            storageAccountName = $storageAccount.StorageAccountName
-            location           = $locationHashtable[$location.Location].location
-            geography          = $locationHashtable[$location.Location].geography
-            geographyGrouping  = $locationHashtable[$location.Location].geographyGrouping
+function ValidationMappingData() {
+    $hasMissingRegion = $false
+    foreach ($location in $locations) {
+        if (!$locationHashtable.ContainsKey($location.Location)) {
+            Write-Host "$($location.Location) is missed in mapping data"
+            $hasMissingRegion = $true
         }
-        $regionList.Add($regionObject)
     }
+
+    return $hasMissingRegion
 }
 
-$regionList | ConvertTo-Json | Out-File "common.json"
+function CreateCommonJsonFile() {
+    $regionList = New-Object System.Collections.Generic.List[System.Object];
+    $index = 0;
+    foreach ($location in $locations) {
+        $index++;
+
+        $storageAccountName = "ast" + $location.Location
+        $storageAccount = Get-AzStorageAccount -ResourceGroupName $resourceGroupName -Name $storageAccountName -ErrorAction Ignore
+    
+        # Skip those storage accounts not created successfully in current subscription.
+        if ($storageAccount) {
+            $regionObject = [PSCustomObject]@{
+                id                 = $index
+                locationId         = $location.Location
+                name               = $location.DisplayName
+                storageAccountName = $storageAccount.StorageAccountName
+                location           = $locationHashtable[$location.Location].location
+                geography          = $locationHashtable[$location.Location].geography
+                geographyGrouping  = $locationHashtable[$location.Location].geographyGrouping
+            }
+            $regionList.Add($regionObject)
+            Write-Host "Successfully added storage account $storageAccountName is added to common.json"
+        }
+        else {
+            Write-Host "Storage account $storageAccountName not found"
+        }
+    }
+
+    $outFilePath = "..\..\src\AzureSpeed.Web.App\wwwroot\js\azurespeed\common.js"
+    "var regions = " | Out-File -filePath $outFilePath
+    $regionList | ConvertTo-Json | Out-File -filePath $outFilePath -append
+    ";" | Out-File -filePath $outFilePath -append
+}
+
+if (ValidationMappingData) {
+    Write-Host "Please fixing missing region(s) first and re-run"
+}
+else {
+    CreateCommonJsonFile
+}

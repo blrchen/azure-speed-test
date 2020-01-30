@@ -75,64 +75,17 @@
       latency.latest[storage] = elapsed;
     },
     tickloop: function () {
-        var n = 60,                              //number of x coordinates in the graph
-        duration = 600,                          //duration for transitions
-        now = new Date(Date.now() - duration),   //Now
-        //fill an array of arrays with dummy data to start the chart
-        //each item in the top-level array is a line
-        //each item in the line arrays represents the X coordinate across a graph
-        //The 'value' within each line array represents the Y coordinate for that point
-        data = [
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; }),
-          d3.range(n).map(function () { return { value: 0 }; })
-        ];
+      var n = 60, //number of x coordinates in the graph
+        duration = 600, //duration for transitions
+        now = new Date(Date.now() - duration);   //Now
+      //fill an array of arrays with dummy data to start the chart
+      //each item in the top-level array is a line
+      //each item in the line arrays represents the X coordinate across a graph
+      //The 'value' within each line array represents the Y coordinate for that point
+      var data = [];
+      for (var i = 0; i < 100; i++) {
+        data[i] = d3.range(n).map(function () { return { value: 0 }; });
+      }
 
       // Auto generate color
       var color = d3.scale.category10();

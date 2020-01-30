@@ -7,8 +7,8 @@
 Azure speed test tool. Test your network latency and speed to Azure datacenters around the world.
 
 ## Demo
-* Production - http://www.azurespeed.com
-* Staging - https://azurespeed-wus-staging.azurewebsites.net/
+* Production - http://www.azurespeed.com, or https://azurespeed-wus.azurewebsites.net with SSL
+* Staging - https://azurespeed-wus-staging.azurewebsites.net
 
 ## Setup local development environment
 To run the code locally you will need:

@@ -19,18 +19,14 @@ namespace AzureSpeed.Web.App.ApiControllers
     [ApiExceptionFilter]
     public class ApiController : Controller
     {
-        private readonly IOptions<AppSettings> appSettings;
         private readonly IFileProvider fileProvider;
-        private readonly IHostingEnvironment hostingEnvironment;
         private readonly LocalDataStoreContext localDataStoreContext;
 
-        public ApiController(IOptions<AppSettings> appSettings, IFileProvider fileProvider, IHostingEnvironment hostingEnvironment)
+        public ApiController(IOptions<AppSettings> appSettings, IFileProvider fileProvider, IWebHostEnvironment webHostEnvironment)
         {
-            this.appSettings = appSettings;
             this.fileProvider = fileProvider;
-            this.hostingEnvironment = hostingEnvironment;
             this.localDataStoreContext = new LocalDataStoreContext(
-                hostingEnvironment.ContentRootPath,
+                webHostEnvironment.ContentRootPath,
                 appSettings.Value.AzureIpRangeFileList,
                 appSettings.Value.AwsIpRangeFile,
                 appSettings.Value.AliCloudIpRangeFile);

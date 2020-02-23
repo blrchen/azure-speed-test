@@ -8,47 +8,39 @@
 Azure speed test tool. Test your network latency, download and upload speed to Azure datacenters around the world.
 
 ## Demo
-* Production - http://www.azurespeed.com, or https://azurespeed-wus.azurewebsites.net with SSL
-* Staging - https://azurespeed-wus-staging.azurewebsites.net
+* Frontend - http://www.azurespeed.com, or https://azurespeed-ui-wus.azurewebsites.net (with SSL)
+* Backend - http://www.azurespeed.com, or https://azurespeed-api-wus.azurewebsites.net (with SSL)
 
-## Setup local development environment
-To run the code locally you will need:
-* Visual Studio 2019
-* Azure storage accounts for speed testing
-
-### Frontend setups
+## Frontend setup steps
 See README [here](src/frontend/README.md)
 
-### Backend setup steps
-1. Open a command line window, go to src\AzureSpeed.Web.App, run **npm install**
-2. Open PowerShell prompt and go to scripts\provision folder, run ProvisionStorageAccounts.ps1, this will provision Azure storage accounts in every regions in target subscription.
-3. Run CreateCommonJson.ps1 and replace **AzureSpeed.Web.App\Data\settings.json** with outputed **common.json** file
-4. Run AzureSpeed.AdminConsole.exe to initialize storage accounts, this tool will take care of everything needs for a storage account to run speed test
+## Backend setup steps
+1. Open PowerShell prompt and go to **scripts\provision** folder, run **ProvisionStorageAccounts.ps1**, this will provision Azure storage accounts in every regions in target subscription.
+2. Run CreateCommonJson.ps1 and replace **src\backend\AzureSpeed.Web.App\Data\settings.json** with outputed **common.json** file
+3. Run **AzureSpeed.AdminConsole.exe** to initialize storage accounts, this tool will take care of everything needs for a storage account to run speed test
     * Enable CORS
     * Create containers
     * Create a callback.js used for latency test
     * Upload a 100MB dummy file for download speed test (Test file can be downloaded from http://www.azurespeed.com/Azure/Download)
-5. Open **AzureSpeed.sln** in **Visual Studio 2019**
-6. Updated below files with storage accounts created in step #1
-    - **AzureSpeed.Web.App\wwwroot\js\azurespeed\common.js**
-7. You are all set now, enjoy coding!
+4. Open **AzureSpeed.sln** in **Visual Studio 2019**
+5. Updated below files with storage accounts created in step #1
+    - **src\backend\AzureSpeed.Web.App\wwwroot\js\azurespeed\common.js**
+6. You are all set now, enjoy coding!
 
 ## Add a new region
 1. Run CreateSettingsJson.ps1
 2. Run CreateCommonJson.ps1
 
 ## Built on
-* [ASP.NET Core](https://github.com/aspnet/home)
-* [Bootstrap](https://github.com/twbs/bootstrap)
-* [Font Awesome](https://github.com/FortAwesome/Font-Awesome)
-* [jQuery](https://github.com/jquery/jquery)
 * [Angular](https://github.com/angular/angular)
-* [UI Bootstrap](https://github.com/angular-ui/bootstrap)
-* [Angular-filter](https://github.com/a8m/angular-filter)
-* [checklist-model](https://github.com/vitalets/checklist-model)
-* [D3](https://github.com/mbostock/d3)
-* [SB Admin 2 Theme](https://github.com/blackrockdigital/startbootstrap-sb-admin-2/)
-* [jazure](https://github.com/orcame/jazure)
+* [Application Insights JavaScript SDK](https://github.com/microsoft/ApplicationInsights-JS)
+* [ASP.NET Core](https://github.com/aspnet/home)
+* [Azure SDK for JavaScript](https://github.com/Azure/azure-sdk-for-js)
+* [Bootstrap](https://github.com/twbs/bootstrap)
+* [d3-shape](https://github.com/d3/d3-shape)
+* [Font Awesome](https://github.com/FortAwesome/Font-Awesome)
+* [ngx-charts](https://github.com/swimlane/ngx-charts)
+* [RxJS](https://github.com/reactivex/rxjs)
 
 ## License
 [MIT](/LICENSE)

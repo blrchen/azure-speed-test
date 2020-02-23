@@ -1,10 +1,11 @@
+
 # AzureSpeed
 [![licence badge]][licence]
 [![stars badge]][stars]
 [![forks badge]][forks]
 [![issues badge]][issues]
 
-Azure speed test tool. Test your network latency and speed to Azure datacenters around the world.
+Azure speed test tool. Test your network latency, download and upload speed to Azure datacenters around the world.
 
 ## Demo
 * Production - http://www.azurespeed.com, or https://azurespeed-wus.azurewebsites.net with SSL
@@ -15,7 +16,10 @@ To run the code locally you will need:
 * Visual Studio 2019
 * Azure storage accounts for speed testing
 
-### Steps
+### Frontend setups
+See README [here](src/frontend/README.md)
+
+### Backend setup steps
 1. Open a command line window, go to src\AzureSpeed.Web.App, run **npm install**
 2. Open PowerShell prompt and go to scripts\provision folder, run ProvisionStorageAccounts.ps1, this will provision Azure storage accounts in every regions in target subscription.
 3. Run CreateCommonJson.ps1 and replace **AzureSpeed.Web.App\Data\settings.json** with outputed **common.json** file

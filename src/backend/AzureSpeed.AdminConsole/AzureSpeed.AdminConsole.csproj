@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+      <OutputType>Exe</OutputType>
+      <TargetFramework>netcoreapp3.1</TargetFramework>
+      <CodeAnalysisRuleSet>..\CodeAnalysis.ruleset</CodeAnalysisRuleSet>
+      <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Content Include="..\AzureSpeed.Web.App\Data\IpRangeFiles\AliCloud\ip.txt" Link="Data\IpRangeFiles\AliCloud\ip.txt" />
+      <Content Include="..\AzureSpeed.Web.App\Data\IpRangeFiles\AWS\ip-ranges.json" Link="Data\IpRangeFiles\AWS\ip-ranges.json" />
+      <Content Include="..\AzureSpeed.Web.App\Data\IpRangeFiles\Azure\PublicIPs.xml" Link="Data\IpRangeFiles\Azure\PublicIPs.xml" />
+      <Content Include="..\AzureSpeed.Web.App\Data\IpRangeFiles\Azure\PublicIPs_MC.xml" Link="Data\IpRangeFiles\Azure\PublicIPs_MC.xml" />
+      <Content Include="..\AzureSpeed.Web.App\Data\settings.json" Link="Data\settings.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="appsettings.json">
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.1" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.1" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.1" />
+        <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Data\IpRangeFiles\AliCloud\" />
+      <Folder Include="Data\IpRangeFiles\AWS\" />
+      <Folder Include="Data\IpRangeFiles\Azure\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\AzureSpeed.Common\AzureSpeed.Common.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,59 @@
+$headerHeight: 52.4px;
+
+.bd-main {
+  height: calc(100vh - 52.4px);
+}
+
+.navbar-brand {
+  font-size: 18px;
+  color: #333;
+}
+
+.bd-links {
+  border-right: 1px solid #ddd;
+}
+
+@media (max-width: 768px) {
+  .bd-links {
+    border-right: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .bd-links {
+    display: block !important;
+    height: calc(100vh - 52.4px);
+    overflow-y: auto;
+  }
+  .bd-content {
+    flex: 1 1 auto;
+    height: calc(100vh - 52.4px);
+    overflow-y: auto;
+  }
+  .bd-sidebar {
+    flex: 0 0 250px;
+  }
+}
+
+// All levels of nav
+.bd-sidebar .nav > li > a {
+  display: block;
+  padding: 0.7rem 1rem;
+  font-size: 14px;
+  color: #007bff;
+  border-bottom: 1px solid #ddd;
+  background-color: #f8f9fa;
+}
+
+.bd-sidebar .nav > li > a:hover {
+  color: #fff;
+  text-decoration: none;
+  background-color: #007bff;
+}
+
+.bd-sidebar .nav > .active > a,
+.bd-sidebar .nav > .active:hover > a {
+  // font-weight: 600;
+  color: #fff;
+  background-color: #007bff;
+}

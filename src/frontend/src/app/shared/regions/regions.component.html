@@ -1,0 +1,40 @@
+<div>
+  <div class="text-primary">
+    <i class="fa fa-map-marker text-primary" aria-hidden="true"></i>
+    Please select regions
+  </div>
+  <div class="row mx-0 mt-2">
+    <div class="col-lg-4 pl-0 pr-2 mt-2" *ngFor="let group of regionsGroup">
+      <div class="ft-14 border rounded-sm">
+        <div class="d-flex justify-content-between bg-light border-bottom p-2">
+          <strong>{{ group.geographyGrouping }}</strong>
+          <label [attr.for]="group.geographyGrouping" class="mb-0">
+            <input
+              type="checkbox"
+              [attr.id]="group.geographyGrouping"
+              [(ngModel)]="group.checked"
+              (change)="onChange('', group)"
+            />
+            Check all
+          </label>
+        </div>
+        <div class="mt-1 px-3 py-2">
+          <label
+            [attr.for]="location.locationId"
+            class="cursor-pointer mr-3 mb-1"
+            [ngClass]="{ 'text-primary': location.checked }"
+            *ngFor="let location of group?.locations"
+          >
+            <input
+              type="checkbox"
+              [attr.id]="location.locationId"
+              [(ngModel)]="location.checked"
+              (change)="onChange(location, group)"
+            />
+            {{ location.name }}
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,6 +1,4 @@
-﻿using AzureSpeed.Common;
-using AzureSpeed.Common.LocalData;
-using Microsoft.Extensions.Configuration;
+﻿using AzureSpeed.Common.LocalData;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using System.Linq;
@@ -15,19 +13,7 @@ namespace AzureSpeed.Test
 
         public LocalDataStoreContextTest()
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json");
-
-            IConfiguration configuration = builder.Build();
-            var appSettings = new AppSettings();
-            configuration.GetSection("AppSettings").Bind(appSettings);
-
-            this.localDataStoreContext = new LocalDataStoreContext(
-                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-                appSettings.AzureIpRangeFileList,
-                appSettings.AwsIpRangeFile,
-                appSettings.AliCloudIpRangeFile);
+            this.localDataStoreContext = new LocalDataStoreContext(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
         }
 
         [TestMethod]
@@ -67,7 +53,7 @@ namespace AzureSpeed.Test
             Assert.AreEqual("West US", azureSpeedRegion.Region);
             Assert.AreEqual(ipOfAzureSpeedCom, azureSpeedRegion.IpAddress);
 
-            var azureSpeedRegion1 = this.localDataStoreContext.GetRegionInfoByIpOrUrl("http://www.azurespeed.com/");
+            var azureSpeedRegion1 = this.localDataStoreContext.GetRegionInfoByIpOrUrl("https://www.azurespeed.com/");
             Assert.AreEqual("Azure", eastAsiaRegion.Cloud);
             Assert.AreEqual("West US", azureSpeedRegion1.Region);
             Assert.AreEqual(ipOfAzureSpeedCom, azureSpeedRegion1.IpAddress);

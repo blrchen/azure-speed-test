@@ -1,7 +1,6 @@
 ﻿using AzureSpeed.Common;
 using AzureSpeed.Common.LocalData;
 using AzureSpeed.Common.Storage;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
 using System.Linq;
@@ -14,19 +13,7 @@ namespace AzureSpeed.AdminConsole
     {
         public async Task InitializeAsync()
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json");
-
-            IConfiguration configuration = builder.Build();
-            var appSettings = new AppSettings();
-            configuration.GetSection("AppSettings").Bind(appSettings);
-
-            var localDataStoreContext = new LocalDataStoreContext(
-                Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-                appSettings.AzureIpRangeFileList,
-                appSettings.AwsIpRangeFile,
-                appSettings.AliCloudIpRangeFile);
+            var localDataStoreContext = new LocalDataStoreContext(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
 
             foreach (var account in localDataStoreContext.StorageAccounts.ToList())
             {

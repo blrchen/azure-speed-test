@@ -1,11 +1,21 @@
-# This script generates static contents (html table) used for geographies page
-# https://www.azurespeed.com/Information/AzureGeographies
+@@ -0,0 +1,281 @@
+# This script generates regions.json and drops it to frontend assets folder
 
 # Important: these commands only work if you have logged into your Azure account
 # 1. Connect-AzAccount (or Connect-AzAccount -EnvironmentName "AzureChinaCloud")
 # 2. Select-AzSubscription -SubscriptionName "Your sub name"
 
 $locations = Get-AzLocation
+$resourceGroupName = "AzureSpeedRG"
+
+if (!(Get-AzResourceGroup -Name $resourceGroupName -ErrorAction SilentlyContinue)) {
+    New-AzResourceGroup -Name $resourceGroupName -Location "West US"
+}
+
+# TODO: Use geographyGrouping from Get-AzLocation
+# TODO: Add paired regions
+# TODO: Add Associated AZs
+# TODO: Add region detail page
 
 # This hashtable contains all metadata of azure locations.
 #  - Key is generated from Get-AzLocation | Sort-Object "Location" | Select-Object "Location"
@@ -213,6 +223,7 @@ $locationHashtable = @{
         geographyGrouping = "Americas"
     }
 }
+
 function ValidationMappingData() {
     $hasMissingRegion = $false
     foreach ($location in $locations) {
@@ -225,40 +236,47 @@ function ValidationMappingData() {
     return $hasMissingRegion
 }
 
-function DumpHtmlTable() {
-    # Build a sorted directory with following format 
-    # Key            Value
-    # ---            -----
-    # Asia Pacific   [Southeast Asia(Hongkong), East Asia(Hongkong)]
-    $sorted = New-Object 'System.Collections.Generic.SortedDictionary[String,Array]'
-    foreach ( $key in $locationHashtable.Keys ) {
-        $geography = $locationHashtable[$key].geography
-        $list = New-Object 'System.Collections.Generic.List[String]'
-        if (-not $sorted.ContainsKey($geography)) {
-            foreach ( $key in $locationHashtable.Keys | Sort-Object ) {
-                if ( $locationHashtable[$key].geography -eq $geography ) {
-                    $location = $locations | Where-Object { $_.Location -eq $key };
-                    $displayName = $location.DisplayName + " ( $($locationHashtable[$key].Location) )"
-                    $list.Add($displayName)
-                }
+function CreateRegionsJsonFile() {
+    $regionList = New-Object System.Collections.Generic.List[System.Object];
+    $index = 0;
+    foreach ($location in $locations) {
+        $index++;
+
+        $storageAccountName = "ast" + $location.Location
+        $storageAccount = Get-AzStorageAccount -ResourceGroupName $resourceGroupName -Name $storageAccountName -ErrorAction Ignore
+    
+        # Skip those storage accounts not created successfully in current subscription.
+        if ($storageAccount) {
+            $regionObject = [PSCustomObject]@{
+                id                 = $index
+                locationId         = $location.Location
+                name               = $location.DisplayName
+                storageAccountName = $storageAccount.StorageAccountName
+                location           = $locationHashtable[$location.Location].location
+                geography          = $locationHashtable[$location.Location].geography
+                geographyGrouping  = $locationHashtable[$location.Location].geographyGrouping
             }
-            $sorted.Add($geography, $list )
+            $regionList.Add($regionObject)
+            Write-Host "Successfully added storage account $storageAccountName is added to regions.json"
+        }
+        else {
+            Write-Host "Storage account $storageAccountName not found"
         }
     }
 
-    # Print html table string to console
-    foreach ($key in $sorted.Keys ) {
-        Write-Host "<tr><td>$($key)</td><td>" 
-        foreach ($value in $sorted[$key]) {
-            Write-Host "$($value)<br/>" 
-        }
-        Write-Host "</td></tr>"
+    $outFilePath = $outFilePath = "..\..\src\frontend\src\assets\regions.json"
+    if (Test-Path $outFilePath) {
+        Remove-Item $outFilePath
     }
+
+    "var regions = " | Out-File -filePath $outFilePath
+    $regionList | ConvertTo-Json | Out-File -filePath $outFilePath -append
+    ";" | Out-File -filePath $outFilePath -append
 }
 
 if (ValidationMappingData) {
     Write-Host "Please fixing missing region(s) first and re-run"
 }
 else {
-    DumpHtmlTable
+    CreateRegionsJsonFile
 }

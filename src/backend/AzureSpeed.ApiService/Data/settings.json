@@ -1,0 +1,199 @@
+﻿{
+  "accounts": [
+    {
+      "name": "asteastasia",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "eastasia"
+    },
+    {
+      "name": "astsoutheastasia",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "southeastasia"
+    },
+    {
+      "name": "astcentralus",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "centralus"
+    },
+    {
+      "name": "asteastus",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "eastus"
+    },
+    {
+      "name": "asteastus2",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "eastus2"
+    },
+    {
+      "name": "astwestus",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "westus"
+    },
+    {
+      "name": "astnorthcentralus",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "northcentralus"
+    },
+    {
+      "name": "astsouthcentralus",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "southcentralus"
+    },
+    {
+      "name": "astnortheurope",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "northeurope"
+    },
+    {
+      "name": "astwesteurope",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "westeurope"
+    },
+    {
+      "name": "astjapanwest",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "japanwest"
+    },
+    {
+      "name": "astjapaneast",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "japaneast"
+    },
+    {
+      "name": "astbrazilsouth",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "brazilsouth"
+    },
+    {
+      "name": "astaustraliaeast",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "australiaeast"
+    },
+    {
+      "name": "astaustraliasoutheast",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "australiasoutheast"
+    },
+    {
+      "name": "astsouthindia",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "southindia"
+    },
+    {
+      "name": "astcentralindia",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "centralindia"
+    },
+    {
+      "name": "astwestindia",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "westindia"
+    },
+    {
+      "name": "astcanadacentral",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "canadacentral"
+    },
+    {
+      "name": "astcanadaeast",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "canadaeast"
+    },
+    {
+      "name": "astuksouth",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "uksouth"
+    },
+    {
+      "name": "astukwest",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "ukwest"
+    },
+    {
+      "name": "astwestcentralus",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "westcentralus"
+    },
+    {
+      "name": "astwestus2",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "westus2"
+    },
+    {
+      "name": "astkoreacentral",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "koreacentral"
+    },
+    {
+      "name": "astkoreasouth",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "koreasouth"
+    },
+    {
+      "name": "astfrancecentral",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "francecentral"
+    },
+    {
+      "name": "astaustraliacentral",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "australiacentral"
+    },
+    {
+      "name": "astaustraliacentral2",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "australiacentral2"
+    },
+    {
+      "name": "astuaecentral",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "uaecentral"
+    },
+    {
+      "name": "astuaenorth",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "uaenorth"
+    },
+    {
+      "name": "astsouthafricanorth",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "southafricanorth"
+    },
+    {
+      "name": "astsouthafricawest",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "southafricawest"
+    },
+    {
+      "name": "astswitzerlandnorth",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "switzerlandnorth"
+    },
+    {
+      "name": "astswitzerlandwest",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "switzerlandwest"
+    },
+    {
+      "name": "astgermanynorth",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "germanynorth"
+    },
+    {
+      "name": "astgermanywestcentral",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "germanywestcentral"
+    },
+    {
+      "name": "astnorwaywest",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "norwaywest"
+    },
+    {
+      "name": "astnorwayeast",
+      "key": "<==================REPLACE-ME==================>",
+      "locationId": "norwayeast"
+    },
+  ]
+}

@@ -8,28 +8,26 @@
 Azure speed test tool. Test your network latency, download and upload speed to Azure datacenters around the world.
 
 ## Demo
-* Frontend - http://www.azurespeed.com, or https://azurespeed-ui-wus.azurewebsites.net (with SSL)
-* Backend - http://www.azurespeed.com, or https://azurespeed-api-wus.azurewebsites.net (with SSL)
+* Frontend - https://www.azurespeed.com
+* Backend - https://www.azurespeed.com
 
 ## Frontend setup steps
 See README [here](src/frontend/README.md)
 
 ## Backend setup steps
-1. Open PowerShell prompt and go to **scripts\provision** folder, run **ProvisionStorageAccounts.ps1**, this will provision Azure storage accounts in every regions in target subscription.
-2. Run CreateCommonJson.ps1 and replace **src\backend\AzureSpeed.Web.App\Data\settings.json** with outputed **common.json** file
-3. Run **AzureSpeed.AdminConsole.exe** to initialize storage accounts, this tool will take care of everything needs for a storage account to run speed test
+1. Run CreateSettingsJson.ps1 to provision storage accounts and generate settings.json for backend.
+1. Run **AzureSpeed.AdminConsole.exe**, this tool will take care of everything needs for bootstrapping an Azure storage account to run speed test
     * Enable CORS
     * Create containers
     * Create a callback.js used for latency test
-    * Upload a 100MB dummy file for download speed test (Test file can be downloaded from http://www.azurespeed.com/Azure/Download)
-4. Open **AzureSpeed.sln** in **Visual Studio 2019**
-5. Updated below files with storage accounts created in step #1
-    - **src\backend\AzureSpeed.Web.App\wwwroot\js\azurespeed\common.js**
-6. You are all set now, enjoy coding!
+    * Upload a 100MB dummy file for download speed test (File can be downloaded from https://www.azurespeed.com/Azure/Download)
+2. Open **AzureSpeed.sln** in **Visual Studio 2019**
+3. You are all set now, enjoy coding!
 
 ## Add a new region
-1. Run CreateSettingsJson.ps1
-2. Run CreateCommonJson.ps1
+1. Run CreateRegionsJson.ps1 to refresh regions.json used for frontend
+2. Run CreateSettingsJson.ps1 to refresh settings.json
+3. Run **AzureSpeed.AdminConsole.exe** to bootstrap storage account for newly added region(s)
 
 ## Built on
 * [Angular](https://github.com/angular/angular)

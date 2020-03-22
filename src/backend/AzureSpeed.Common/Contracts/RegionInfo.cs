@@ -1,4 +1,4 @@
-﻿namespace AzureSpeed.Common.Models.Responses
+﻿namespace AzureSpeed.Common.Contracts
 {
     public class RegionInfo
     {
@@ -10,6 +10,6 @@
 
         public string Location { get; set; }
 
-        public string IpAddress { get; set; }
+        public string IPAddress { get; set; }
     }
 }

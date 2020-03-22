@@ -1,48 +1,47 @@
-﻿using AzureSpeed.ApiService.Models;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AzureSpeed.ApiService.Contracts;
+using AzureSpeed.ApiService.Providers;
 using AzureSpeed.Common.LocalData;
-using AzureSpeed.Common.Models.Responses;
-using AzureSpeed.Common.Models.ViewModels;
 using AzureSpeed.Common.Storage;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.FileProviders;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace AzureSpeed.ApiService.ApiControllers
 {
     [Route("api")]
     public class ApiController : Controller
     {
-        private readonly IFileProvider fileProvider;
+        private readonly IAzureIPInfoProvider azureIPInfoProvider;
+        private readonly ILogger<ApiController> logger;
         private readonly LocalDataStoreContext localDataStoreContext;
 
-        public ApiController(IFileProvider fileProvider, IWebHostEnvironment webHostEnvironment)
+        public ApiController(
+            IAzureIPInfoProvider azureIPInfoProvider,
+            ILogger<ApiController> logger,
+            IWebHostEnvironment webHostEnvironment)
         {
-            this.fileProvider = fileProvider;
+            this.azureIPInfoProvider = azureIPInfoProvider;
+            this.logger = logger;
             this.localDataStoreContext = new LocalDataStoreContext(webHostEnvironment.ContentRootPath);
         }
 
         [HttpGet]
-        [Route("region")]
-        public RegionInfo GetRegionInfo(string ipOrUrl)
+        [Route("ipinfo")]
+        public async Task<IActionResult> GetRegionInfo(string ipAddressOrUrl)
         {
-            return this.localDataStoreContext.GetRegionInfoByIpOrUrl(ipOrUrl);
-        }
-
-        [HttpGet]
-        [Route("iprange")]
-        public IEnumerable<IpRangeViewModel> GetIpRange()
-        {
-            return this.localDataStoreContext.GetIpRange();
+            logger.LogInformation($"Get ip info for {ipAddressOrUrl}");
+            var result = await this.azureIPInfoProvider.GetAzureIPInfo(ipAddressOrUrl);
+            return Ok(result);
         }
 
         [HttpGet]
         [Route("sas")]
-        public object GetSasLink(string locationId, string blobName, string operation)
+        public IActionResult GetSasLink(string locationId, string blobName, string operation)
         {
-            string url = string.Empty;
+            string url = "";
             if (!string.IsNullOrEmpty(locationId))
             {
                 var account = localDataStoreContext.StorageAccounts.FirstOrDefault(v => v.LocationId == locationId);
@@ -53,55 +52,21 @@ namespace AzureSpeed.ApiService.ApiControllers
                 }
             }
 
-            return new { Url = url };
+            return Ok(new { Url = url });
         }
 
         [HttpGet]
         [Route("download")]
-        public List<DownloadFile> GetDownloadLink()
+        public IActionResult GetDownloadLink()
         {
-            var files = new List<DownloadFile>();
+            var files = new List<DownloadFileInfo>();
             foreach (var account in localDataStoreContext.StorageAccounts)
             {
                 var storageContext = new StorageContext(account);
-                files.Add(new DownloadFile() { Region = account.LocationId, Url = storageContext.GetSasUrl("100MB.bin", "download") });
+                files.Add(new DownloadFileInfo() { Region = account.LocationId, Url = storageContext.GetSasUrl("100MB.bin", "download") });
             }
 
-            return files;
-        }
-
-        [HttpGet]
-        [Route("billingmeters")]
-        public string GetBillingMeters()
-        {
-            var file = fileProvider.GetFileInfo("Data/ratecard.json");
-            string result;
-            using (var stream = file.CreateReadStream())
-            {
-                using (var reader = new StreamReader(stream))
-                {
-                    result = reader.ReadToEnd();
-                }
-            }
-
-            return result;
-        }
-
-        [HttpGet]
-        [Route("vmslugs")]
-        public string GetAzureVMSlugs()
-        {
-            var file = fileProvider.GetFileInfo("Data/vmslugs.json");
-            string result;
-            using (var stream = file.CreateReadStream())
-            {
-                using (var reader = new StreamReader(stream))
-                {
-                    result = reader.ReadToEnd();
-                }
-            }
-
-            return result;
+            return Ok(files);
         }
     }
 }

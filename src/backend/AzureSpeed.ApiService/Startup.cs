@@ -1,4 +1,6 @@
+﻿using AzureSpeed.ApiService.Extensions;
 using AzureSpeed.ApiService.Filters;
+using AzureSpeed.ApiService.Providers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +28,7 @@ namespace AzureSpeed.ApiService
             services.AddApplicationInsightsTelemetry();
 
             services.AddSingleton<IFileProvider>(this.webHostEnvironment.ContentRootFileProvider);
+            services.AddSingleton<IAzureIPInfoProvider, AzureIPInfoProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

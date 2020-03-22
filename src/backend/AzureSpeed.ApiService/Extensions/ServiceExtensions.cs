@@ -1,10 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
 
-namespace AzureSpeed.ApiService
+namespace AzureSpeed.ApiService.Extensions
 {
     public static class ServiceExtensions
     {

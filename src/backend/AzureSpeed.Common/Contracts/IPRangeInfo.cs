@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
 
-namespace AzureSpeed.Common.Models.ViewModels
+namespace AzureSpeed.Common.Contracts
 {
-    public class IpRangeViewModel
+    public class IPRangeInfo
     {
         public string Cloud { get; set; }
 

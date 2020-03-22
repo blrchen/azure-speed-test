@@ -8,12 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="..\AzureSpeed.ApiService\Data\IpRangeFiles\AliCloud\ip.txt" Link="Data\IpRangeFiles\AliCloud\ip.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\AzureSpeed.ApiService\Data\IpRangeFiles\AWS\ip-ranges.json" Link="Data\IpRangeFiles\AWS\ip-ranges.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="..\AzureSpeed.ApiService\Data\IpRangeFiles\Azure\PublicIPs.xml" Link="Data\IpRangeFiles\Azure\PublicIPs.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -27,6 +21,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
+    <PackageReference Include="Moq" Version="4.13.1" />
     <PackageReference Include="MSTest.TestAdapter" Version="2.1.0" />
     <PackageReference Include="MSTest.TestFramework" Version="2.1.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
@@ -36,12 +31,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AzureSpeed.ApiService\AzureSpeed.ApiService.csproj" />
     <ProjectReference Include="..\AzureSpeed.Common\AzureSpeed.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\IpRangeFiles\AliCloud\" />
-    <Folder Include="Data\IpRangeFiles\AWS\" />
     <Folder Include="Data\IpRangeFiles\Azure\" />
   </ItemGroup>
 

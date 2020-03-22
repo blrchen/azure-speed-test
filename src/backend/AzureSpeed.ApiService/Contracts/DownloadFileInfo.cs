@@ -1,6 +1,6 @@
-﻿namespace AzureSpeed.ApiService.Models
+﻿namespace AzureSpeed.ApiService.Contracts
 {
-    public class DownloadFile
+    public class DownloadFileInfo
     {
         public string Region { get; set; }
         public string Url { get; set; }

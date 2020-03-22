@@ -9,9 +9,7 @@
         public const string CallBackBlobName = "callback.js";
         public const string DownloadTestBlobName = "100MB.bin";
 
-        // IP range files
+        // Lagecy IP range files
         public const string AzureIpRangeFileList = "PublicIPs.xml;PublicIPs_MC.xml";
-        public const string AwsIpRangeFile = "ip-ranges.json";
-        public const string AliCloudIpRangeFile = "ip.txt";
     }
 }

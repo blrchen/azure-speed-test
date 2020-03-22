@@ -1,15 +1,11 @@
-﻿using AzureSpeed.Common.Models;
-using AzureSpeed.Common.Models.AWS;
-using AzureSpeed.Common.Models.Responses;
-using AzureSpeed.Common.Models.ViewModels;
-using AzureSpeed.Common.Storage;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Xml;
+using AzureSpeed.Common.Contracts;
+using AzureSpeed.Common.Models;
+using AzureSpeed.Common.Storage;
+using Newtonsoft.Json;
 
 namespace AzureSpeed.Common.LocalData
 {
@@ -82,36 +78,7 @@ namespace AzureSpeed.Common.LocalData
                         { "koreacentral", new CloudRegion { Cloud = "Azure", RegionId = "koreacentral", Region = "Korea Central", Location = "Seoul" } },
                         { "chinaeast", new CloudRegion { Cloud = "Azure", RegionId = "chinaeast", Region = "China East", Location = "Shanghai" } },
                         { "chinanorth", new CloudRegion { Cloud = "Azure", RegionId = "chinanorth", Region = "China North", Location = "Beijing" } },
-
-                        // AWS https://docs.amazonaws.cn/en_us/general/latest/gr/rande.html#autoscaling_region
-                        { "us-east-2", new CloudRegion { Cloud = "AWS", RegionId = "us-east-2", Region = "US East", Location = "Ohio" } },
-                        { "us-east-1", new CloudRegion { Cloud = "AWS", RegionId = "us-east-1", Region = "US East", Location = "N. Virginia" } },
-                        { "us-west-1", new CloudRegion { Cloud = "AWS", RegionId = "us-west-1", Region = "US West", Location = "N. California" } },
-                        { "us-west-2", new CloudRegion { Cloud = "AWS", RegionId = "us-west-2", Region = "US West", Location = "Oregon" } },
-                        { "ap-south-1", new CloudRegion { Cloud = "AWS", RegionId = "ap-south-1", Region = "Asia Pacific", Location = "Mumbai" } },
-                        { "ap-northeast-3", new CloudRegion { Cloud = "AWS", RegionId = "ap-northeast-3", Region = "Asia Pacific", Location = "Osaka-Local" } },
-                        { "ap-northeast-2", new CloudRegion { Cloud = "AWS", RegionId = "ap-northeast-2", Region = "Asia Pacific", Location = "Seoul" } },
-                        { "ap-southeast-1", new CloudRegion { Cloud = "AWS", RegionId = "ap-southeast-1", Region = "Asia Pacific", Location = "Singapore" } },
-                        { "ap-southeast-2", new CloudRegion { Cloud = "AWS", RegionId = "ap-southeast-2", Region = "Asia Pacific", Location = "Sydney" } },
-                        { "ap-northeast-1", new CloudRegion { Cloud = "AWS", RegionId = "ap-northeast-1", Region = "Asia Pacific", Location = "Tokyo" } },
-                        { "ca-central-1", new CloudRegion { Cloud = "AWS", RegionId = "ca-central-1", Region = "Asia Pacific", Location = "Central" } },
-                        { "cn-north-1", new CloudRegion { Cloud = "AWS", RegionId = "cn-north-1", Region = "China", Location = "Beijing" } },
-                        { "cn-northwest-1", new CloudRegion { Cloud = "AWS", RegionId = "cn-northwest-1", Region = "China", Location = "Ningxia" } },
-                        { "eu-central-1", new CloudRegion { Cloud = "AWS", RegionId = "eu-central-1", Region = "EU", Location = "Frankfurt" } },
-                        { "eu-west-1", new CloudRegion { Cloud = "AWS", RegionId = "eu-west-1", Region = "EU", Location = "Ireland" } },
-                        { "eu-west-2", new CloudRegion { Cloud = "AWS", RegionId = "eu-west-2", Region = "EU", Location = "London" } },
-                        { "eu-west-3", new CloudRegion { Cloud = "AWS", RegionId = "eu-west-3", Region = "EU", Location = "Paris" } },
-                        { "eu-north-1", new CloudRegion { Cloud = "AWS", RegionId = "eu-north-1", Region = "EU", Location = "Stockholm" } },
-                        { "sa-east-1", new CloudRegion { Cloud = "AWS", RegionId = "sa-east-1", Region = "South America", Location = "São Paulo" } },
-                        { "us-gov-east-1", new CloudRegion { Cloud = "AWS", RegionId = "us-gov-east-1", Region = "AWS GovCloud", Location = "US-East" } },
-                        { "us-gov-west-1", new CloudRegion { Cloud = "AWS", RegionId = "us-gov-west-1", Region = "AWS GovCloud", Location = "US" } },
-
-                        // AWS GLOBAL means edge locations
-                        { "GLOBAL", new CloudRegion { Cloud = "AWS", RegionId = "GLOBAL", Region = "GLOBAL", Location = "Edge locations" } }
                     };
-
-                    // AliCloud
-                    regionNames.Add("alicloud", new CloudRegion { Cloud = "AliCloud", RegionId = string.Empty, Region = string.Empty });
                 }
 
                 return regionNames;
@@ -131,9 +98,9 @@ namespace AzureSpeed.Common.LocalData
             }
         }
 
-        public List<IpRangeViewModel> GetIpRange()
+        public List<IPRangeInfo> GetIpRange()
         {
-            var result = new List<IpRangeViewModel>();
+            var result = new List<IPRangeInfo>();
 
             string ipFileList = AzureSpeedConstants.AzureIpRangeFileList;
             foreach (string filePath in ipFileList.Split(';'))
@@ -144,7 +111,7 @@ namespace AzureSpeed.Common.LocalData
                 foreach (XmlElement ele in root)
                 {
                     string region = ele.GetAttribute("Name");
-                    var ipRange = new IpRangeViewModel { Cloud = "Azure", Region = region, Subnet = new List<string>() };
+                    var ipRange = new IPRangeInfo { Cloud = "Azure", Region = region, Subnet = new List<string>() };
                     foreach (XmlElement xe in ele)
                     {
                         string subnet = xe.GetAttribute("Subnet");
@@ -156,75 +123,16 @@ namespace AzureSpeed.Common.LocalData
                 }
             }
 
-            // Load AWS ip range data
-            string json = File.ReadAllText($@"{this.dataFilePath}\Data\IpRangeFiles\AWS\{AzureSpeedConstants.AwsIpRangeFile}");
-            var awsIpRangeData = JsonConvert.DeserializeObject<AwsIpRangeData>(json);
-            foreach (var prefix in awsIpRangeData.Prefixes)
-            {
-                string region = prefix.Region;
-                string subnet = prefix.IpPrefix;
-                if (result.Any(v => v.Region == region))
-                {
-                    var ipRange = result.First(v => v.Region == region);
-                    ipRange.Subnet.Add(subnet);
-                    ipRange.TotalIpCount += IPNetwork.Parse(subnet).Total;
-                }
-                else
-                {
-                    var ipRange = new IpRangeViewModel { Cloud = "AWS", Region = region, Subnet = new List<string>() };
-                    ipRange.Subnet.Add(subnet);
-                    ipRange.TotalIpCount += IPNetwork.Parse(subnet).Total;
-                    result.Add(ipRange);
-                }
-            }
-
-            // Load AliCloud ip range data
-            string aliCloudIpFilePath = $@"{this.dataFilePath}\Data\IpRangeFiles\AliCloud\{AzureSpeedConstants.AliCloudIpRangeFile}";
-            string[] lines = File.ReadAllLines(aliCloudIpFilePath);
-            var aliIpRange = new IpRangeViewModel { Cloud = "AliCloud", Region = "AliCloud", Subnet = new List<string>() };
-            foreach (var line in lines)
-            {
-                string subnet = line;
-                aliIpRange.Subnet.Add(subnet);
-                aliIpRange.TotalIpCount += IPNetwork.Parse(subnet).Total;
-            }
-
-            result.Add(aliIpRange);
-
             return result;
         }
 
-        public RegionInfo GetRegionInfoByIpOrUrl(string ipOrUrl)
+        public RegionInfo GetRegionInfo(string ipAddressOrUrl)
         {
-            if (string.IsNullOrEmpty(ipOrUrl))
-            {
-                throw new Exception("Must specify a valid ipAddress or url");
-            }
-
-            var result = new RegionInfo();
-            if (!(ipOrUrl.StartsWith("http://") || ipOrUrl.StartsWith("https://")))
-            {
-                ipOrUrl = "http://" + ipOrUrl;
-            }
-
-            Uri tmp = new Uri(ipOrUrl);
-            ipOrUrl = tmp.Host;
-            IPAddress[] ipAddresses;
-            try
-            {
-                ipAddresses = Dns.GetHostAddresses(ipOrUrl);
-            }
-            catch (Exception)
-            {
-                // Can not resolve host name, return null at this case.
-                return result;
-            }
-
-            var ipAddress = ipAddresses[0];
-            result.IpAddress = ipAddress.ToString();
+            string ipAddress = Utils.ConvertToIPAddress(ipAddressOrUrl);
+            var result = new RegionInfo() { IPAddress = ipAddress };
             foreach (var net in Subnets.Keys)
             {
-                if (net.Contains(ipAddress))
+                if (net.Contains(IPAddress.Parse(ipAddress)))
                 {
                     var regionAlias = Subnets[net];
                     result.Cloud = RegionNames[regionAlias].Cloud;
@@ -260,34 +168,6 @@ namespace AzureSpeed.Common.LocalData
                                 subnets.Add(net, region);
                             }
                         }
-                    }
-                }
-            }
-
-            // Get AWS ip range data
-            string json = File.ReadAllText(this.dataFilePath + @"\Data\IpRangeFiles\AWS\" + AzureSpeedConstants.AwsIpRangeFile);
-
-            var awsIpRangeData = JsonConvert.DeserializeObject<AwsIpRangeData>(json);
-            foreach (var prefix in awsIpRangeData.Prefixes)
-            {
-                if (IPNetwork.TryParse(prefix.IpPrefix, out IPNetwork net))
-                {
-                    if (!subnets.ContainsKey(net))
-                    {
-                        subnets.Add(net, prefix.Region);
-                    }
-                }
-            }
-
-            // Get AliCloud ip range data
-            string[] lines = File.ReadAllLines(this.dataFilePath + @"\Data\IpRangeFiles\AliCloud\" + AzureSpeedConstants.AliCloudIpRangeFile);
-            foreach (var line in lines)
-            {
-                if (IPNetwork.TryParse(line, out IPNetwork net))
-                {
-                    if (!subnets.ContainsKey(net))
-                    {
-                        subnets.Add(net, "alicloud");
                     }
                 }
             }

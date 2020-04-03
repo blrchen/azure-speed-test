@@ -7,11 +7,10 @@
     "declaration": false,
     "downlevelIteration": true,
     "experimentalDecorators": true,
-    "module": "commonjs",
+    "module": "esnext",
     "moduleResolution": "node",
     "importHelpers": true,
     "target": "es2015",
-    "allowSyntheticDefaultImports" :true,
     "typeRoots": [
       "node_modules/@types"
     ],

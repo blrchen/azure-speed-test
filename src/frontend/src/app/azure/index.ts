@@ -1,6 +1,7 @@
 export * from "./about/about.component";
 export * from "./cdn/cdn.component";
 export * from "./download/download.component";
+export * from "./ipLookup/ipLookup.component";
 export * from "./latency/latency.component";
 export * from "./psPing/psPing.component";
 export * from "./regionFinder/regionFinder.component";

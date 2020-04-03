@@ -17,19 +17,16 @@ import { RegionModel } from "../../models";
 export class UploadComponent implements OnInit, OnDestroy {
   tableData = [];
   historyData = {};
-
   subs: Subscription[] = [];
-
   regions: RegionModel[] = [];
-
   count = 0;
 
   constructor(
-    private regionService: RegionService,
     private apiService: APIService,
-    private utilsService: UtilsService,
+    private regionService: RegionService,
     private storageService: StorageService,
-    private titleService: Title
+    private titleService: Title,
+    private utilsService: UtilsService
   ) {}
 
   ngOnInit() {
@@ -53,37 +50,38 @@ export class UploadComponent implements OnInit, OnDestroy {
   getSASUrl(region: RegionModel) {
     const { locationId } = region;
     this.apiService
-      .getUploadUrl(this.utilsService.newGuid(), locationId)
+      .getUploadUrl(this.utilsService.getRandomBlobName(), locationId)
       .toPromise()
       .then(res => {
         const url = res.url || "";
         if (url) {
-          this.onUploadtoBlob(url, region);
+          this.uploadBlob(url, region);
         }
       });
   }
 
-  onUploadtoBlob(url, region: RegionModel) {
+  uploadBlob(url, region: RegionModel) {
     // Geography Region Location
     const { geography, name, location, storageAccountName } = region;
     const sasUrl = this.utilsService.splitUrl(url);
-    const client = this.storageService.createBlobServieClient(sasUrl);
+    const client = this.storageService.createBlobServiceClient(sasUrl);
     const blockId = btoa("block-00000").replace(/=/g, "a");
     const blockBlob = client
       .getContainerClient("upload")
       .getBlockBlobClient(sasUrl.blobName);
-    const size = 256 * 1024;
-    const t1 = new Date().getTime();
+    const sizeBytes = 3 * 1024 * 1024; // 3MB
+    const uploadStartTime = new Date().getTime();
     blockBlob
-      .stageBlock(blockId, this.fileArrayBlob(size), size, {
+      .stageBlock(blockId, this.fileArrayBlob(sizeBytes), sizeBytes, {
         onProgress: ({ loadedBytes }) => {
           // console.log(loadedBytes)
-          const progress = `${((loadedBytes / size) * 100).toFixed(0)}%`;
-          const t2 = (new Date().getTime() - t1) / 1000;
-          const speed = `${this.utilsService.getSizeStr(size / t2)}/s`;
+          const progress = `${((loadedBytes / sizeBytes) * 100).toFixed(0)}%`;
+          const totalTime = (new Date().getTime() - uploadStartTime) / 1000;
+          const speed = `${this.utilsService.getSizeStr(
+            sizeBytes / totalTime
+          )}/s`;
 
           // console.log(progress, speed)
-
           this.historyData[storageAccountName] = {
             storageAccountName,
             geography,

@@ -14,7 +14,7 @@ export class AzureVMPricingComponent implements OnInit {
 
   ngOnInit() {
     this.titleService.setTitle(
-      "Azure Virtual Mahcine Pricing - Azure Speed Test"
+      "Azure Virtual Machine Pricing - Azure Speed Test"
     );
     this.apiService
       .getAzureVMSlugs()

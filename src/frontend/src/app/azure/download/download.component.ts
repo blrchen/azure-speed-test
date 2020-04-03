@@ -28,13 +28,13 @@ export class DownloadComponent implements OnInit, OnDestroy {
       this.regions = res || [];
       this.tableData = res || [];
       this.regions.forEach((item, index) => {
-        this.getDoanloadUrl(item, index);
+        this.getDownloadUrl(item, index);
       });
     });
     this.subs.push(sub);
   }
 
-  getDoanloadUrl(region: RegionModel, index) {
+  getDownloadUrl(region: RegionModel, index) {
     const { locationId } = region;
     const blobName = "100MB.bin";
     this.apiService

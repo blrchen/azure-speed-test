@@ -1,6 +1,6 @@
-﻿namespace AzureSpeed.Common.Contracts
+﻿namespace AzureSpeed.ApiService.Legacy.Contracts
 {
-    public class RegionInfo
+    public class LegacyAzureIPInfo
     {
         public string Cloud { get; set; }
 

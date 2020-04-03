@@ -11,7 +11,7 @@ const routes: Routes = [
     loadChildren: "./information/information.module#InformationModule"
   },
   {
-    path: "",
+    path: "**",
     redirectTo: "Azure",
     pathMatch: "full"
   }

@@ -17,12 +17,12 @@ namespace AzureSpeed.ApiService.Filters
         public void OnException(ExceptionContext context)
         {
             var contextException = context.Exception;
-            if (context.Exception != null)
+            if (contextException != null)
             {
                 context.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 context.Result = new JsonResult(new
                 {
-                    message = "Server error occurred..."
+                    message = $"Server error occurred: {contextException.Message}"
                 });
                 logger.LogError($"Unhandled exception caught when processing http request, message: {contextException.Message}");
             }

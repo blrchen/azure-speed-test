@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  appInsightKey: 'b7b479e4-7d0c-4b86-b779-1882975d8b9f'
+  appInsightKey: "f20b6a71-9d20-4941-8115-83d4609e830f",
+  apiEndpoint: "http://localhost:5000"
 };
 
 /*

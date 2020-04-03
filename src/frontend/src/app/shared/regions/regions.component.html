@@ -1,7 +1,6 @@
 <div>
-  <div class="text-primary">
-    <i class="fa fa-map-marker text-primary" aria-hidden="true"></i>
-    Please select regions
+  <div class="text-danger font-weight-bold" *ngIf="totalCheckedRegions == 0">
+    Please select regions to get started
   </div>
   <div class="row mx-0 mt-2">
     <div class="col-lg-4 pl-0 pr-2 mt-2" *ngFor="let group of regionsGroup">

@@ -12,11 +12,11 @@ export class UtilsService {
   constructor() {}
 
   splitUrl(url) {
-    var regex = new RegExp(
+    const regex = new RegExp(
       "(http[s]?://([^.]+).[^/]*)/([^?/]*)/?([^?]*)(.*)",
       "g"
     );
-    var match = regex.exec(url);
+    const match = regex.exec(url);
     if (!match) {
       throw "invalid blob url.";
     }
@@ -29,24 +29,11 @@ export class UtilsService {
     };
   }
 
-  newGuid() {
-    const s4 = function() {
-      return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
-    };
-    return (
-      s4() +
-      s4() +
-      "-" +
-      s4() +
-      "-" +
-      s4() +
-      "-" +
-      s4() +
-      "-" +
-      s4() +
-      s4() +
-      s4()
-    );
+  getRandomBlobName() {
+    const time = new Date(Date.now());
+    const timestring = `${time.getFullYear()}${time.getMonth()}${time.getDate()}${time.getHours()}${time.getMinutes()}${time.getSeconds()}${time.getMilliseconds()}`;
+
+    return timestring;
   }
 
   getSize(size = 0, orgUnit = "B", targetUnit = "Auto", dif = 0) {
@@ -85,7 +72,7 @@ export class UtilsService {
   }
 
   getSizeStr(size = 0, orgUnit = "B", targetUnit = "Auto", dif = 0) {
-    var v = this.getSize(size, orgUnit, targetUnit, dif);
+    const v = this.getSize(size, orgUnit, targetUnit, dif);
     if (v) {
       return v.value + v.unit;
     }

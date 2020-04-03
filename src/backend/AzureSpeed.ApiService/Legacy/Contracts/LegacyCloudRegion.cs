@@ -1,6 +1,6 @@
-﻿namespace AzureSpeed.Common.Models
+﻿namespace AzureSpeed.ApiService.Legacy.Contracts
 {
-    public class CloudRegion
+    public class LegacyCloudRegion
     {
         public string Cloud { get; set; }
 

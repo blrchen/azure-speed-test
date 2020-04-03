@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace AzureSpeed.Common.Storage
+namespace AzureSpeed.ApiService.Storage
 {
     public class StorageAccount
     {

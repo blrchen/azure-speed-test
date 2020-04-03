@@ -12,8 +12,8 @@ namespace AzureSpeed.Test
         [TestMethod]
         public async Task TestLookupPublicAzureIPByIPAddress()
         {
-            var mock = new Mock<ILogger<AzureIPInfoProvider>>();
-            var provider = new AzureIPInfoProvider(mock.Object);
+            var mockLogger = new Mock<ILogger<AzureIPInfoProvider>>();
+            var provider = new AzureIPInfoProvider(mockLogger.Object);
 
             var result = await provider.GetAzureIPInfo("104.45.231.79");
             Assert.AreEqual("AppService.WestUS", result.ServiceTagId);
@@ -71,12 +71,12 @@ namespace AzureSpeed.Test
             var mock = new Mock<ILogger<AzureIPInfoProvider>>();
             var provider = new AzureIPInfoProvider(mock.Object);
 
-            var result = await provider.GetAzureIPInfo("0.0.0.0");
-            Assert.AreEqual("", result.ServiceTagId);
-            Assert.AreEqual("", result.IPAddress);
-            Assert.AreEqual("", result.IPAddressPrefix);
-            Assert.AreEqual("", result.Region);
-            Assert.AreEqual("", result.SystemService);
+            var result = await provider.GetAzureIPInfo("1.1.1.1");
+            Assert.AreEqual(null, result.ServiceTagId);
+            Assert.AreEqual(null, result.IPAddress);
+            Assert.AreEqual(null, result.IPAddressPrefix);
+            Assert.AreEqual(null, result.Region);
+            Assert.AreEqual(null, result.SystemService);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using AzureSpeed.ApiService.Extensions;
 using AzureSpeed.ApiService.Filters;
 using AzureSpeed.ApiService.Providers;
+using AzureSpeed.ApiService.Storage;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,10 +26,18 @@ namespace AzureSpeed.ApiService
 
             services.AddCors("CorsPolicy");
 
-            services.AddApplicationInsightsTelemetry();
-
             services.AddSingleton<IFileProvider>(this.webHostEnvironment.ContentRootFileProvider);
             services.AddSingleton<IAzureIPInfoProvider, AzureIPInfoProvider>();
+            services.AddSingleton<ILegacyAzureIPInfoProvider, LegacyAzureIPInfoProvider>(serviceProvider =>
+            {
+                var localDataStoreContext = new LegacyAzureIPInfoProvider(webHostEnvironment.ContentRootPath);
+                return localDataStoreContext;
+            });
+            services.AddSingleton<StorageAccountsContext>(serviceProvider =>
+            {
+                var localDataStoreContext = new StorageAccountsContext(webHostEnvironment.ContentRootPath);
+                return localDataStoreContext;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -65,7 +65,6 @@ export class UploadLargeFileComponent implements OnInit, OnDestroy {
   }
 
   onChangeFile($event) {
-    console.log($event.target.files[0]);
     this.file = $event.target.files[0] || "";
   }
 
@@ -79,31 +78,31 @@ export class UploadLargeFileComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-    console.log(this.region, this.file, this.thread, this.blockSize);
     if (!this.region || !this.file) {
       alert("no region or file");
       return;
     }
-    const blobName = this.utilsService.newGuid();
+    const blobName = this.utilsService.getRandomBlobName();
     const locationId = this.region;
     const file = this.file;
-    const size = this.blockSize;
 
     this.apiService.getUploadUrl(blobName, locationId).subscribe(res => {
       const url = res.url || "";
       const sasUrl = this.utilsService.splitUrl(url);
-      const client = this.storageService.createBlobServieClient(sasUrl);
+      const client = this.storageService.createBlobServiceClient(sasUrl);
       const blockId = btoa("block-00000").replace(/=/g, "a");
       const blockBlob = client
         .getContainerClient("upload")
         .getBlockBlobClient(sasUrl.blobName);
-      const t1 = new Date().getTime();
+      const uploadStartTime = new Date().getTime();
       this.uploadProgress = "";
       this.uploadTime = "";
+      console.log("blockSize", this.blockSize);
+      console.log("concurrency", this.thread);
       blockBlob
         .uploadBrowserData(file, {
-          blockSize: this.blockSize,
-          // maxSingleShotSize: 1,
+          blockSize: this.blockSize * 1024, // * 1024 to convert to bytes
+          // TODO: use maxSingleShotSize for muti-thread block blob upload
           concurrency: this.thread,
           onProgress: ({ loadedBytes }) => {
             this.uploadProgress = `${(
@@ -112,68 +111,41 @@ export class UploadLargeFileComponent implements OnInit, OnDestroy {
             ).toFixed(0)}%`;
           }
         })
-        .then(() => {
-          const t2 = (new Date().getTime() - t1) / 1000;
-          const speed = `${this.utilsService.getSizeStr(
-            this.file.size / t2
-          )}/s`;
-          this.uploadFileName = this.file.name;
-          this.uploadFileSize = this.utilsService.getSizeStr(this.file.size);
-          this.uploadTime = `${t2} s`;
-          this.uploadSpeed = speed;
+        .then(
+          () => {
+            const totalTime = (new Date().getTime() - uploadStartTime) / 1000;
+            const speed = `${this.utilsService.getSizeStr(
+              this.file.size / totalTime
+            )}/s`;
+            this.uploadFileName = this.file.name;
+            this.uploadFileSize = this.utilsService.getSizeStr(this.file.size);
+            this.uploadTime = `${totalTime} s`;
+            this.uploadSpeed = speed;
 
-          const regionObj = this.regions.filter(
-            ({ locationId: id }) => id === this.region
-          );
+            const regionObj = this.regions.filter(
+              ({ locationId: id }) => id === this.region
+            );
 
-          const data = {
-            fileName: this.file.name,
-            fileSize: this.utilsService.getSizeStr(this.file.size),
-            region: regionObj[0].name,
-            thread: this.thread,
-            blockSize: this.blockSize,
-            uploadSpeed: speed
-          };
-          this.tableData.push(data);
-        });
-      /* blockBlob.stageBlock(
-        blockId,
-        this.file,
-        size, {
-        onProgress: ({ loadedBytes }) => {
-          // console.log(loadedBytes)
-          const progress = `${((loadedBytes / this.file.size) * 100).toFixed(0)}%`;
-          // console.log(progress, speed)
-          this.uploadProgress = progress;
-        }
-      }
-      ).then(r => {
-        // console.log(r)
-        blockBlob.commitBlockList([blockId]).then(res => {
-          const t2 = (new Date().getTime() - t1) / 1000;
-          const speed = `${this.utilsService.getSizeStr(this.file.size / t2)}/s`;
-          this.uploadFileName = this.file.name;
-          this.uploadFileSize = this.utilsService.getSizeStr(this.file.size);
-          this.uploadTime = `${t2} s`;
-          this.uploadSpeed = speed;
-
-          const regionObj = this.regions.filter(({ locationId }) => locationId === this.region);
-
-          const data = {
-            fileName: this.file.name,
-            fileSize: this.utilsService.getSizeStr(this.file.size),
-            region: regionObj[0].name,
-            thread: this.thread,
-            blockSize: this.blockSize,
-            uploadSpeed: speed
+            const data = {
+              fileName: this.file.name,
+              fileSize: this.utilsService.getSizeStr(this.file.size),
+              region: regionObj[0].name,
+              thread: this.thread,
+              blockSize: this.blockSize,
+              uploadSpeed: speed
+            };
+            this.tableData.push(data);
+          },
+          () => {
+            // TODO: handle upload error
           }
-          this.tableData.push(data);
-        });
-      }); */
+        );
     });
   }
 
-  onCancle() {
+  onUploadComplete() {}
+
+  onCancel() {
     this.modalRef.dismiss();
   }
 

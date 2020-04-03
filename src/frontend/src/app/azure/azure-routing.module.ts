@@ -4,6 +4,7 @@ import {
   AboutComponent,
   CDNComponent,
   DownloadComponent,
+  IPLookupComponent,
   LatencyComponent,
   PSPingComponent,
   RegionFinderComponent,
@@ -32,6 +33,10 @@ const routes: Routes = [
         component: DownloadComponent
       },
       {
+        path: "IPLookup",
+        component: IPLookupComponent
+      },
+      {
         path: "Latency",
         component: LatencyComponent
       },
@@ -56,13 +61,9 @@ const routes: Routes = [
         component: UploadLargeFileComponent
       },
       {
-        path: "",
+        path: "**",
         redirectTo: "Latency",
         pathMatch: "full"
-      },
-      {
-        path: "**",
-        component: NotFoundComponent
       }
     ]
   }

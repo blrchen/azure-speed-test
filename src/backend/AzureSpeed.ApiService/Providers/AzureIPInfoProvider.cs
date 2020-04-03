@@ -5,7 +5,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using AzureSpeed.ApiService.Contracts;
 using AzureSpeed.ApiService.Models;
-using AzureSpeed.Common;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -26,7 +25,7 @@ namespace AzureSpeed.ApiService.Providers
         {
             logger.LogInformation($"Invoke GetAzureIPInfo for {ipAddressOrUrl}");
 
-            string ipAddress = Utils.ConvertToIPAddress(ipAddressOrUrl);
+            string ipAddress = Utils.Utils.ConvertToIPAddress(ipAddressOrUrl);
             var azureIPInfoList = await GetAzureIPInfoList();
 
             foreach (var azureIPInfo in azureIPInfoList)

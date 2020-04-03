@@ -14,12 +14,19 @@
  * Learn more in https://angular.io/guide/browser-support
  */
 
+// IE11 fix
+if (typeof SVGElement.prototype.contains === "undefined") {
+  SVGElement.prototype.contains = HTMLDivElement.prototype.contains;
+}
+
+import "core-js/es";
+
 /***************************************************************************************************
  * BROWSER POLYFILLS
  */
 
 /** IE10 and IE11 requires the following for NgClass support on SVG elements */
-// import 'classlist.js';  // Run `npm install --save classlist.js`.
+import "classlist.js"; // Run `npm install --save classlist.js`.
 
 /**
  * Web Animations `@angular/platform-browser/animations`

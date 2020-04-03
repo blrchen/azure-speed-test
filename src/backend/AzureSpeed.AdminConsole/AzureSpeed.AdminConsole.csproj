@@ -15,7 +15,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\AzureSpeed.Common\AzureSpeed.Common.csproj" />
+      <ProjectReference Include="..\AzureSpeed.ApiService\AzureSpeed.ApiService.csproj" />
     </ItemGroup>
 
 </Project>

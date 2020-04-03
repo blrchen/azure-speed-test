@@ -1,6 +1,6 @@
 <div>
   <div class="border-bottom">
-    <h1 class="h5">PsPing Network Latency Test</h1>
+    <h1 class="h4">PsPing Network Latency Test</h1>
   </div>
   <div class="row">
     <div class="col-md-12">
@@ -21,6 +21,7 @@
           Download PsTools from
           <a
             href="http://technet.microsoft.com/en-us/sysinternals/bb896649.aspx"
+            target="_blank"
             >http://technet.microsoft.com/en-us/sysinternals/bb896649.aspx</a
           >
         </li>
@@ -29,7 +30,7 @@
           command
           <pre>psping target:port</pre>
           The target can be ip or dns name of Virtual Machine, Storage, SQL
-          Database and other endpoints that is public accessable
+          Database and other endpoints that is public accessible
         </li>
       </ol>
       At the end, you will see an output similar to the one below (here I am
@@ -43,7 +44,7 @@
   </div>
   <div class="row">
     <div class="col-md-12">
-      <h3>Read more</h3>
+      <h2 class="h5">Read more</h2>
       <ul>
         <li>
           You can learn the meaning of each parameter of psping in the web page
@@ -53,6 +54,19 @@
           Azure blocks external ICMP protocol so general ping.exe which uses
           ICMP protocol does not work. PsPing test connectivity to a specific
           TCP port directly which is not blocked
+        </li>
+        <li>
+          To test latency between virtual machines in the same VNET or different
+          VNET in different regions, please see
+          <a href="/Azure/Azure/RegionToRegionLatency" target="_blank"
+            >Region to Region Latency</a
+          >
+          or
+          <a
+            href="https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-test-latency"
+            target="_blank"
+            >Test VM network latency</a
+          >
         </li>
       </ul>
     </div>

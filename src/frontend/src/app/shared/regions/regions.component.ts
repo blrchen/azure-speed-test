@@ -1,7 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
 import { Regions } from "./utils";
 import { RegionModel, RegionGroupModel, DefaultRegionsKey } from "../../models";
-
 import { RegionService } from "../../services";
 
 @Component({
@@ -10,10 +9,8 @@ import { RegionService } from "../../services";
   styleUrls: ["./regions.component.scss"]
 })
 export class RegionsComponent implements OnInit {
-  @Input() checkedItems = [];
-
   regionsGroup: RegionGroupModel[] = [];
-
+  totalCheckedRegions = 0;
   ngOnInit() {
     this.initRegions();
   }
@@ -23,13 +20,13 @@ export class RegionsComponent implements OnInit {
       // check region
       const { checked } = region;
       if (checked) {
-        let checkedCache = true;
+        let isGroupChecked = true;
         group.locations.forEach(element => {
           if (!element.checked) {
-            checkedCache = false;
+            isGroupChecked = false;
           }
         });
-        group.checked = checkedCache;
+        group.checked = isGroupChecked;
       } else {
         group.checked = false;
       }
@@ -41,8 +38,6 @@ export class RegionsComponent implements OnInit {
       });
     }
 
-    // console.log(region, group)
-
     const checkedRegions = this.regionsGroup.reduce((arr, item) => {
       const { locations } = item;
       locations.forEach(i => {
@@ -50,36 +45,37 @@ export class RegionsComponent implements OnInit {
           arr.push(i);
         }
       });
+      this.totalCheckedRegions = arr.length;
       return arr;
     }, []);
 
-    // storage
-    // localStorage.setItem(DefaultRegionsKey, JSON.stringify(checkedRegions));
     this.regionService.updateRegions(checkedRegions);
   }
 
   initRegions() {
-    // init region checked status from localstorage
-    // azurespeed.userSelectedRegions
+    // init region checked status from local storage, key = azurespeed.userSelectedRegions
+    //
     const res = localStorage.getItem(DefaultRegionsKey);
     const defaultRegions: RegionModel = res ? JSON.parse(res) : [];
     if (Array.isArray(defaultRegions)) {
       this.regionsGroup.forEach(group => {
         const { locations } = group;
-        let checkedCache = true;
+        let isGroupChecked = true;
         locations.forEach(item => {
-          const { locationId, id, storageAccountName } = item;
+          const { storageAccountName } = item;
           const isDefault = defaultRegions.filter(
             i => i.storageAccountName === storageAccountName
           );
           if (isDefault.length > 0) {
             item.checked = true;
+            this.totalCheckedRegions += 1;
           }
+          // If any item is found un-checked, group must be un-checked as well
           if (!item.checked) {
-            checkedCache = false;
+            isGroupChecked = false;
           }
         });
-        group.checked = checkedCache;
+        group.checked = isGroupChecked;
       });
     }
   }

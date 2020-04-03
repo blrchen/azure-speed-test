@@ -1,5 +1,5 @@
 <div class="border-bottom">
-  <h1 class="h5">Azure Storage Large File Upload Speed Test</h1>
+  <h1 class="h4">Azure Storage Large File Upload Speed Test</h1>
   <small>
     Test upload large file to Azure Blob Storage in worldwide datacenters.
   </small>
@@ -40,12 +40,12 @@
 
 <ng-template #uploadModal>
   <div class="modal-header">
-    <h5 class="modal-title" id="modal-basic-title">Upload file</h5>
+    <h2 class="h5 modal-title" id="modal-basic-title">Upload file</h2>
     <button
       type="button"
       class="close "
       aria-label="Close"
-      (click)="onCancle()"
+      (click)="onCancel()"
     >
       <span aria-hidden="true">&times;</span>
     </button>
@@ -124,7 +124,7 @@
     <button type="button" class="btn btn-success" (click)="onSubmit()">
       Upload
     </button>
-    <button type="button" class="btn btn-secondary" (click)="onCancle()">
+    <button type="button" class="btn btn-secondary" (click)="onCancel()">
       Close
     </button>
   </div>

@@ -13,9 +13,9 @@ export class AppInsightsService {
     if (key) {
       this.appInsights = new ApplicationInsights({
         config: {
+          disableAjaxTracking: true, // Do not track every ajax calls
           instrumentationKey: key,
-          disableAjaxTracking: true,
-          enableAutoRouteTracking: true
+          samplingPercentage: 30
         }
       });
       this.appInsights.loadAppInsights();

@@ -8,8 +8,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Documents", ".Documents", 
 		..\..\README.md = ..\..\README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSpeed.Common", "AzureSpeed.Common\AzureSpeed.Common.csproj", "{F2434CAD-DB53-4A0A-8098-EE0A51933A9A}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSpeed.Test", "AzureSpeed.Test\AzureSpeed.Test.csproj", "{8B9A67D2-506B-498F-9703-1D738E4131DB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSpeed.AdminConsole", "AzureSpeed.AdminConsole\AzureSpeed.AdminConsole.csproj", "{A8126B12-EEA8-4798-BFA3-364A5D2971C3}"
@@ -41,10 +39,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F2434CAD-DB53-4A0A-8098-EE0A51933A9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F2434CAD-DB53-4A0A-8098-EE0A51933A9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F2434CAD-DB53-4A0A-8098-EE0A51933A9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F2434CAD-DB53-4A0A-8098-EE0A51933A9A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8B9A67D2-506B-498F-9703-1D738E4131DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8B9A67D2-506B-498F-9703-1D738E4131DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B9A67D2-506B-498F-9703-1D738E4131DB}.Release|Any CPU.ActiveCfg = Release|Any CPU

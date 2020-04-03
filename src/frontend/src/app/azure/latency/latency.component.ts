@@ -2,18 +2,10 @@ import { Component, OnInit, OnDestroy } from "@angular/core";
 import { Title } from "@angular/platform-browser";
 import { Subscription, timer } from "rxjs";
 import * as shape from "d3-shape";
-import {
-  SingleSeries,
-  MultiSeries,
-  BubbleChartMultiSeries,
-  Series,
-  TreeMapData,
-  colorSets
-} from "@swimlane/ngx-charts";
+import { MultiSeries, colorSets } from "@swimlane/ngx-charts";
 
 import { APIService, RegionService } from "../../services";
-import { RegionModel, DefaultRegionsKey } from "../../models";
-
+import { RegionModel } from "../../models";
 import { LatencyTableModel, HistoryModel } from "./utils";
 
 @Component({
@@ -25,7 +17,7 @@ export class LatencyComponent implements OnInit, OnDestroy {
   regions: RegionModel[] = [];
 
   pingCount = 0;
-  maxPingCount = 180; // 180;
+  maxPingCount = 180;
   updateInterval = 2000;
 
   history: HistoryModel = {};
@@ -50,6 +42,7 @@ export class LatencyComponent implements OnInit, OnDestroy {
 
   yAxisTicks = [0, 100, 200, 300, 400, 500];
   xAxisTicks: any[] = [];
+
   constructor(
     private apiService: APIService,
     private regionService: RegionService,
@@ -79,8 +72,13 @@ export class LatencyComponent implements OnInit, OnDestroy {
 
   pingInterval() {
     this.timer$ = timer(0, this.updateInterval).subscribe(res => {
+      // This ping result is calculated by sending a https request a file hosted in Azure storage
+      // From: https://www.dotcom-tools.com/website-speed-test.aspx
+      // First ping: DNS + Connection + SSL + Request + First Package + Download
+      // Repeat ping: DOM time only
+      // TODO: Consider to switch to http ping to exclude SSL time
       if (this.pingCount < this.maxPingCount) {
-        this.pingFun();
+        this.sendHttpPing();
         this.pingCount++;
       } else {
         if (this.timer$) {
@@ -89,7 +87,6 @@ export class LatencyComponent implements OnInit, OnDestroy {
 
         this.timer$ = null;
       }
-      // console.log(this.pingCount, this.maxPingCount)
     });
   }
 
@@ -122,13 +119,6 @@ export class LatencyComponent implements OnInit, OnDestroy {
   chartTimer() {
     const xLength = 60;
     const timer$ = timer(0, 1000).subscribe(res => {
-      const formatTime = (ts: number) => {
-        // return timeStamp
-        const dateCopy = new Date(ts);
-        return dateCopy.getSeconds() === 0
-          ? dateCopy.toLocaleTimeString("it-IT").slice(0, 5)
-          : `:${dateCopy.getSeconds()}`;
-      };
       const date = new Date();
       const timeStamp = date.getTime() / 1000;
       const second = timeStamp * 1000;
@@ -136,7 +126,6 @@ export class LatencyComponent implements OnInit, OnDestroy {
         const t = timeStamp - i;
         return t * 1000;
       }).reverse();
-      // console.log(second)
       this.tableData.forEach(({ storageAccountName, region }) => {
         let isNew = true;
 
@@ -150,7 +139,10 @@ export class LatencyComponent implements OnInit, OnDestroy {
         if (isNew) {
           this.lineChartData.push({
             name: region,
-            series: secondArr.map(i => ({ name: formatTime(i), value: 0 }))
+            series: secondArr.map(i => ({
+              name: this.formatxAxisTick(i),
+              value: 0
+            }))
           });
           this.lineChartDataCopy.push({
             storageAccountName,
@@ -185,7 +177,7 @@ export class LatencyComponent implements OnInit, OnDestroy {
         return {
           name,
           series: series.map(({ name: name2, value }) => ({
-            name: formatTime(name2),
+            name: this.formatxAxisTick(name2),
             value
           }))
         };
@@ -199,7 +191,7 @@ export class LatencyComponent implements OnInit, OnDestroy {
               const s = new Date(timeStamp2).getSeconds();
               return s % 5 === 0;
             })
-            .map(({ name }) => formatTime(parseInt(String(name), 10)))
+            .map(({ name }) => this.formatxAxisTick(parseInt(String(name), 10)))
         : [];
 
       // console.log(this.xAxisTicks)
@@ -210,32 +202,40 @@ export class LatencyComponent implements OnInit, OnDestroy {
     this.subs.push(timer$);
   }
 
-  pingFun() {
-    // this.tableData = [];
-    // console.log(this.regions)
-
+  sendHttpPing() {
     this.regions.forEach((element, index) => {
       const { storageAccountName, geography, location, name } = element;
       const t1 = new Date().getTime();
       this.startTime[storageAccountName] = t1;
       const sub = this.apiService.ping(element).subscribe(res => {
-        // console.log(11111111111111111)
         const t = (
           new Date().getTime() - this.startTime[storageAccountName]
         ).toFixed(0);
-
+        // console.log("Ping result: ", t, this.pingCount);
         if (!this.history[storageAccountName]) {
           this.history[storageAccountName] = [];
         }
 
-        this.history[storageAccountName].push(t);
-        this.latest[storageAccountName] = t;
+        // Drop first ping result as it includes extra DNS time
+        if (this.pingCount >= 2) {
+          // console.log("Adding to history table", t, this.pingCount);
+          this.history[storageAccountName].push(t);
+          this.latest[storageAccountName] = t;
+        }
 
         this.formatData();
       });
-
-      // this.subs.push(sub);
     });
+  }
+
+  formatxAxisTick(timeStamp: number): string {
+    const date = new Date(timeStamp);
+    const second = date.getSeconds();
+    const h = date.getHours();
+    const m = date.getMinutes();
+    const hStr = h > 9 ? h : `0${h}`;
+    const mStr = m > 9 ? m : `0${m}`;
+    return second === 0 ? `${hStr}:${mStr}` : `:${second}`;
   }
 
   ngOnDestroy() {

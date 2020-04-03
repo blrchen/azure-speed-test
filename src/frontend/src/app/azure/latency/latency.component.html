@@ -1,7 +1,18 @@
 <div>
   <div class="border-bottom">
-    <h1 class="h5">Azure Latency Test</h1>
-    <small>Test network latency from your IP location to Azure datacenters around the world.</small>
+    <h1 class="h4">Azure Latency Test</h1>
+  </div>
+  <div>
+    This tool runs latency test from your IP location to Azure datacenters
+    around the world. For latency test between Azure regions via Azure backbone
+    network, please checkout this
+    <a href="/Azure/RegionToRegionLatency" target="_blank">link</a>. For latency
+    test between Azure availability zones, please check out this
+    <a
+      href="https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/sap/sap-ha-availability-zones#network-latency-between-and-within-zones"
+      target="_blank"
+      >link</a
+    >.
   </div>
   <div class="mt-2">
     <app-regions></app-regions>
@@ -23,9 +34,9 @@
       <tbody>
         <tr *ngFor="let item of tableDataTop3">
           <!-- <td>{{item.geography}}</td> -->
-          <td>{{item.region}}({{item.location}})</td>
+          <td>{{ item.region }}({{ item.location }})</td>
           <!-- <td>{{item.location}}</td> -->
-          <td>{{item.averageLatency}} ms</td>
+          <td>{{ item.averageLatency }} ms</td>
         </tr>
       </tbody>
     </table>
@@ -38,14 +49,33 @@
     <div class="mt-2 border bg-light px-2 pt-4">
       <div style="width:100%; height: 280px;">
         <!-- [yAxisTicks]="yAxisTicks" yScaleMax="500" -->
-        <ngx-charts-line-chart [view]="view" [results]="lineChartData" animations="" [curve]="curve" legend=""
-          legendTitle="Region" yScaleMin="0" rangeFillOpacity="1" minXAxisTickLength="10" [xAxisTicks]="xAxisTicks"
-          legendPosition="right" [xAxis]="1" [yAxis]="1" showXAxisLabel="true" showYAxisLabel="true" xAxisLabel=""
-          yAxisLabel="" showGridLines="true" roundDomains="true" trimXAxisTicks="1" [scheme]="colorScheme"
-          hasRange="true" autoScale="true">
+        <ngx-charts-line-chart
+          [view]="view"
+          [results]="lineChartData"
+          animations=""
+          [curve]="curve"
+          legend=""
+          legendTitle="Region"
+          yScaleMin="0"
+          rangeFillOpacity="1"
+          minXAxisTickLength="10"
+          [xAxisTicks]="xAxisTicks"
+          legendPosition="right"
+          [xAxis]="1"
+          [yAxis]="1"
+          showXAxisLabel="true"
+          showYAxisLabel="true"
+          xAxisLabel=""
+          yAxisLabel=""
+          showGridLines="true"
+          roundDomains="true"
+          trimXAxisTicks="1"
+          [scheme]="colorScheme"
+          hasRange="true"
+          autoScale="true"
+        >
         </ngx-charts-line-chart>
       </div>
-
     </div>
   </div>
   <div class="mt-4">
@@ -64,10 +94,10 @@
       </thead>
       <tbody>
         <tr *ngFor="let item of tableData">
-          <td>{{item.geography}}</td>
-          <td>{{item.region}}</td>
-          <td>{{item.location}}</td>
-          <td>{{item.averageLatency}} ms</td>
+          <td>{{ item.geography }}</td>
+          <td>{{ item.region }}</td>
+          <td>{{ item.location }}</td>
+          <td>{{ item.averageLatency }} ms</td>
         </tr>
       </tbody>
     </table>

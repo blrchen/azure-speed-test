@@ -7,8 +7,8 @@ import {
 import { Injectable } from "@angular/core";
 import { Observable, throwError } from "rxjs";
 import { catchError } from "rxjs/operators";
-
 import { RegionModel } from "../models";
+import { environment } from "../../environments/environment";
 
 @Injectable({
   providedIn: "root"
@@ -41,7 +41,7 @@ export class APIService {
     locationId,
     operation = "upload"
   ): Observable<any> {
-    const url = "http://api.azurespeed.com/api/sas";
+    const url = environment.apiEndpoint + "/api/sas";
     const headers = new HttpHeaders({
       // 'Content-Type': '*/*',
       "Cache-Control": "no-cache"
@@ -62,7 +62,7 @@ export class APIService {
   }
 
   public getAzureBillingMeters(): Observable<any> {
-    const url = "http://api.azurespeed.com/api/billingmeters";
+    const url = environment.apiEndpoint + "/api/billingmeters";
     const headers = new HttpHeaders({
       // 'Content-Type': '*/*',
       "Cache-Control": "no-cache"
@@ -76,7 +76,49 @@ export class APIService {
   }
 
   public getAzureVMSlugs(): Observable<any> {
-    const url = "http://api.azurespeed.com//api/vmslugs";
+    const url = environment.apiEndpoint + "/api/vmslugs";
+    const headers = new HttpHeaders({
+      // 'Content-Type': '*/*',
+      "Cache-Control": "no-cache"
+    });
+    return this.httpClient
+      .get(url, {
+        headers,
+        responseType: "json"
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  public getIpRange(): Observable<any> {
+    const url = environment.apiEndpoint + "/api/iprange";
+    const headers = new HttpHeaders({
+      // 'Content-Type': '*/*',
+      "Cache-Control": "no-cache"
+    });
+    return this.httpClient
+      .get(url, {
+        headers,
+        responseType: "json"
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  public getRegionInfo(ipOrUrl): Observable<any> {
+    const url = environment.apiEndpoint + "/api/region?ipOrUrl=" + ipOrUrl;
+    const headers = new HttpHeaders({
+      // 'Content-Type': '*/*',
+      "Cache-Control": "no-cache"
+    });
+    return this.httpClient
+      .get(url, {
+        headers,
+        responseType: "json"
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  public getIPInfo(ipAddressOrUrl): Observable<any> {
+    const url = environment.apiEndpoint + "/api/ipinfo?ipAddressOrUrl=" + ipAddressOrUrl;
     const headers = new HttpHeaders({
       // 'Content-Type': '*/*',
       "Cache-Control": "no-cache"

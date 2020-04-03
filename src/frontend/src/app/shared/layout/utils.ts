@@ -37,9 +37,9 @@ export const Menus = [
     title: "CDN Test"
   },
   {
-    path: "/Azure/RegionFinder",
+    path: "/Azure/IPLookup",
     icon: "fa fa-search",
-    title: "Cloud Region Finder"
+    title: "Azure IP Lookup"
   },
   {
     path: "/Information/AzureSovereignClouds",
@@ -74,12 +74,17 @@ export const Menus = [
   {
     path: "/Information/AzureVMPricing",
     icon: "fa fa-book",
-    title: "Azure Virtual Mahcine Pricing"
+    title: "Azure Virtual Machine Pricing"
   },
   {
     path: "/Information/IpRange",
     icon: "fa fa-book",
     title: "Datacenter IP Range"
+  },
+  {
+    path: "/Azure/RegionFinder",
+    icon: "fa fa-search",
+    title: "Cloud Region Finder"
   },
   {
     path: "/Information/References",

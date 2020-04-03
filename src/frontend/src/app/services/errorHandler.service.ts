@@ -9,7 +9,7 @@ export class GlobalErrorHandler extends ErrorHandler {
 
   handleError(error) {
     // do something with the exception
-    alert(error);
+    console.error(error);
     this.appInsights.trackException(error);
   }
 }

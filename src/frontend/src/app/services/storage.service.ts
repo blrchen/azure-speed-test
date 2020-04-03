@@ -7,7 +7,7 @@ import { BlobServiceClient } from "@azure/storage-blob";
 export class StorageService {
   constructor() {}
 
-  createBlobServieClient(sasUrl) {
+  createBlobServiceClient(sasUrl) {
     const SASConnectionString = `BlobEndpoint=${sasUrl.endpoint};SharedAccessSignature=${sasUrl.sas}`;
     return BlobServiceClient.fromConnectionString(SASConnectionString);
   }

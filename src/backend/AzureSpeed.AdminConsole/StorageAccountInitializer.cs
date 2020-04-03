@@ -1,11 +1,10 @@
-﻿using AzureSpeed.Common;
-using AzureSpeed.Common.LocalData;
-using AzureSpeed.Common.Storage;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using AzureSpeed.ApiService.Constants;
+using AzureSpeed.ApiService.Storage;
 
 namespace AzureSpeed.AdminConsole
 {
@@ -13,7 +12,7 @@ namespace AzureSpeed.AdminConsole
     {
         public async Task InitializeAsync()
         {
-            var localDataStoreContext = new LocalDataStoreContext(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+            var localDataStoreContext = new StorageAccountsContext(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
 
             foreach (var account in localDataStoreContext.StorageAccounts.ToList())
             {
@@ -35,10 +34,10 @@ namespace AzureSpeed.AdminConsole
                 await storageContext.CreatePublicContainerAsync();
                 Console.WriteLine($"[{account.Name}] Successfully created public container");
 
-                await storageContext.CreatePrivateContainerAsync(AzureSpeedConstants.PrivateContainerName);
+                await storageContext.CreatePrivateContainerAsync(Constants.PrivateContainerName);
                 Console.WriteLine($"[{account.Name}] Successfully created private container");
 
-                await storageContext.CreatePrivateContainerAsync(AzureSpeedConstants.UploadContainerName);
+                await storageContext.CreatePrivateContainerAsync(Constants.UploadContainerName);
                 Console.WriteLine($"[{account.Name}] Successfully created upload container");
 
                 await storageContext.Upload100MBBlobAsync();

@@ -6,7 +6,7 @@ import { Title } from "@angular/platform-browser";
   templateUrl: "./azureEnvironments.component.html",
   styleUrls: ["./azureEnvironments.component.scss"]
 })
-export class AzureEnvironmentsComponent implements OnInit{
+export class AzureEnvironmentsComponent implements OnInit {
   constructor(private titleService: Title) {}
 
   ngOnInit() {

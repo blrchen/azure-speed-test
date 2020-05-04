@@ -1,0 +1,94 @@
+<div>
+  <div class="border-bottom">
+    <h1 class="h4">Cloud Region Finder</h1>
+    <small>
+      Cloud Region Finder enables you to quickly lookup cloud and region
+      information of application deployment, try it by entering url or ip
+      address now! Currently Azure, AWS, AliCloud are supported.
+    </small>
+  </div>
+  <div class="alert alert-danger" role="alert">
+    This feature is deprecated, please click
+    <a href="/Azure/IPLookup">here</a> to access v2 page
+  </div>
+  <div class="form-group mt-3">
+    <div class="input-group">
+      <input
+        class="form-control"
+        type="text"
+        value=""
+        placeholder="Type ip or url to start, examples: 168.62.20.37 or www.azurespeed.com"
+        [(ngModel)]="ipOrUrl"
+      />
+      <span class="input-group-btn">
+        <button class="btn btn-primary" (click)="onSubmit()">
+          <i class="fa fa-search"></i> Search
+        </button>
+      </span>
+    </div>
+  </div>
+  <div class="alert alert-dark" role="alert">
+    <p>
+      <span class="badge badge-danger">{{ result.message }}</span>
+    </p>
+    <p>
+      IPAddress: <span class="badge badge-danger">{{ result.ipAddress }}</span>
+    </p>
+    <p>
+      Cloud: <span class="badge badge-danger">{{ result.cloud }}</span>
+    </p>
+    <p>
+      Region: <span class="badge badge-danger">{{ result.region }}</span>
+    </p>
+    <p>
+      Location: <span class="badge badge-danger">{{ result.location }}</span>
+    </p>
+  </div>
+  <div class="mt-3">
+    <h2 class="h5">Restful API</h2>
+    <p>
+      Restful api is available via https://www.azurespeed.com/api/region, this
+      api returns returns resolved Azure datacenter region information. If the
+      resolved ip address can not be found in azure datacenter ip ranges,
+      returns region not found.
+    </p>
+    <h2 class="h5">Examples:</h2>
+    <ul>
+      <li>
+        <a
+          href="https://www.azurespeed.com/api/region?ipOrUrl=104.45.231.79"
+          target="_blank"
+          >https://www.azurespeed.com/api/region?ipOrUrl=104.45.231.79</a
+        >
+      </li>
+      <li>
+        <a
+          href="https://www.azurespeed.com/api/region?ipOrUrl=www.azurespeed.com"
+          target="_blank"
+          >https://www.azurespeed.com/api/region?ipOrUrl=www.azurespeed.com</a
+        >
+      </li>
+    </ul>
+  </div>
+</div>
+<div class="mt-3">
+  <h2 class="h5">References</h2>
+  <ul>
+    <li>
+      [Deprecated] Azure:
+      <a
+        href="https://www.microsoft.com/en-us/download/details.aspx?id=41653"
+        target="_blank"
+        >https://www.microsoft.com/en-us/download/details.aspx?id=41653</a
+      >
+    </li>
+    <li>
+      [Deprecated] Azure China:
+      <a
+        href="https://www.microsoft.com/en-us/download/details.aspx?id=42064"
+        target="_blank"
+        >https://www.microsoft.com/en-us/download/details.aspx?id=42064</a
+      >
+    </li>
+  </ul>
+</div>

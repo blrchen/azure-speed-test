@@ -8,13 +8,9 @@
 Azure speed test tool. Test your network latency, download and upload speed to Azure datacenters around the world.
 
 ## Demo
-* Frontend - https://www.azurespeed.com
-* Backend - https://www.azurespeed.com
+* https://www.azurespeed.com
 
-## Frontend setup steps
-See README [here](src/frontend/README.md)
-
-## Backend setup steps
+## Local development environment setup steps
 1. Run CreateSettingsJson.ps1 to provision storage accounts and generate settings.json for backend.
 1. Run **AzureSpeed.AdminConsole.exe**, this tool will take care of everything needs for bootstrapping an Azure storage account to run speed test
     * Enable CORS
@@ -23,6 +19,9 @@ See README [here](src/frontend/README.md)
     * Upload a 100MB dummy file for download speed test (File can be downloaded from https://www.azurespeed.com/Azure/Download)
 2. Open **AzureSpeed.sln** in **Visual Studio 2019**
 3. You are all set now, enjoy coding!
+
+## If you are only interested with UI development work
+See README [here](src/frontend/README.md), change environment.ts line 8, replace apiEndpoint from http://localhost:5000 to www.azurespeedc.com to avoid use local api service.
 
 ## Add a new region
 1. Run CreateRegionsJson.ps1 to refresh regions.json used for frontend

@@ -32,7 +32,7 @@ namespace AzureSpeed.WebApp
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
-                configuration.RootPath = "ClientApp/dist";
+                configuration.RootPath = "ClientApp/dist/AzureSpeedFrontend";
             });
 
             services.AddCors("CorsPolicy");
@@ -84,10 +84,6 @@ namespace AzureSpeed.WebApp
                 if (env.IsDevelopment())
                 {
                     spa.UseAngularCliServer(npmScript: "start");
-                }
-                else
-                {
-                    spa.Options.DefaultPage = "/AzureSpeedFrontend/index.html";
                 }
             });
         }

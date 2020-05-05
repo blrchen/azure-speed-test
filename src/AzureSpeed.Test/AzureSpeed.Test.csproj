@@ -8,13 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="..\AzureSpeed.ApiService\Data\IpRangeFiles\Azure\PublicIPs.xml" Link="Data\IpRangeFiles\Azure\PublicIPs.xml">
+    <Content Include="..\AzureSpeed.WebApp\Data\IpRangeFiles\Azure\PublicIPs.xml" Link="Data\IpRangeFiles\Azure\PublicIPs.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\AzureSpeed.ApiService\Data\IpRangeFiles\Azure\PublicIPs_MC.xml" Link="Data\IpRangeFiles\Azure\PublicIPs_MC.xml">
+    <Content Include="..\AzureSpeed.WebApp\Data\IpRangeFiles\Azure\PublicIPs_MC.xml" Link="Data\IpRangeFiles\Azure\PublicIPs_MC.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\AzureSpeed.ApiService\Data\settings.json" Link="Data\settings.json">
+    <Content Include="..\AzureSpeed.WebApp\Data\settings.json" Link="Data\settings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

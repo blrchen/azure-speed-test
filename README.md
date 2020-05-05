@@ -21,7 +21,7 @@ Azure speed test tool. Test your network latency, download and upload speed to A
 3. You are all set now, enjoy coding!
 
 ## If you are only interested with UI development work
-See README [here](src/frontend/README.md), change environment.ts line 8, replace apiEndpoint from http://localhost:5000 to www.azurespeedc.com to avoid use local api service.
+See README [here](src/frontend/README.md), change environment.ts line 8, replace apiEndpoint from https://localhost:5001 to https://www.azurespeed.com to avoid use local api service.
 
 ## Add a new region
 1. Run CreateRegionsJson.ps1 to refresh regions.json used for frontend

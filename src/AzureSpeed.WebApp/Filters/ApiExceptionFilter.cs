@@ -16,9 +16,9 @@ namespace AzureSpeed.ApiService.Filters
 
         public void OnException(ExceptionContext context)
         {
-            var contextException = context.Exception;
-            if (contextException != null)
+            if (context.Exception != null)
             {
+                var contextException = context.Exception;
                 context.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 context.Result = new JsonResult(new
                 {

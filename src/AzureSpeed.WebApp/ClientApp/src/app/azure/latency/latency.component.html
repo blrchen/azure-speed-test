@@ -25,17 +25,13 @@
     <table class="table table-sm table-bordered table-striped ft-14 mt-2">
       <thead>
         <tr>
-          <!-- <th scope="col">Geography</th> -->
           <th scope="col">Region</th>
-          <!-- <th scope="col">Location</th> -->
           <th scope="col">Average Latency (ms)</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let item of tableDataTop3">
-          <!-- <td>{{item.geography}}</td> -->
-          <td>{{ item.region }}({{ item.location }})</td>
-          <!-- <td>{{item.location}}</td> -->
+          <td>{{ item.displayName }} ({{ item.physicalLocation }})</td>
           <td>{{ item.averageLatency }} ms</td>
         </tr>
       </tbody>
@@ -47,7 +43,7 @@
       Azure Latency
     </div>
     <div class="mt-2 border bg-light px-2 pt-4">
-      <div style="width:100%; height: 280px;">
+      <div style="width: 100%; height: 280px;">
         <!-- [yAxisTicks]="yAxisTicks" yScaleMax="500" -->
         <ngx-charts-line-chart
           [view]="view"
@@ -88,15 +84,15 @@
         <tr>
           <th scope="col">Geography</th>
           <th scope="col">Region</th>
-          <th scope="col">Location</th>
+          <th scope="col">Physical Location</th>
           <th scope="col">Average Latency (ms)</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let item of tableData">
           <td>{{ item.geography }}</td>
-          <td>{{ item.region }}</td>
-          <td>{{ item.location }}</td>
+          <td>{{ item.displayName }}</td>
+          <td>{{ item.physicalLocation }}</td>
           <td>{{ item.averageLatency }} ms</td>
         </tr>
       </tbody>

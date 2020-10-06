@@ -8,7 +8,7 @@ using Microsoft.Azure.Storage.Auth;
 using Microsoft.Azure.Storage.Blob;
 using Microsoft.Azure.Storage.Shared.Protocol;
 
-namespace AzureSpeed.ApiService.Storage
+namespace AzureSpeed.WebApp.Storage
 {
     public class StorageContext
     {

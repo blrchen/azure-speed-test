@@ -1,4 +1,4 @@
-﻿namespace AzureSpeed.ApiService.Models
+﻿namespace AzureSpeed.WebApp.Models
 {
     public enum AzureCloudName
     {

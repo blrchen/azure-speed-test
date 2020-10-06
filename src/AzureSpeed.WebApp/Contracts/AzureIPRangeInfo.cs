@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
 
-namespace AzureSpeed.ApiService.Contracts
+namespace AzureSpeed.WebApp.Contracts
 {
     public class AzureIPRangeInfo
     {

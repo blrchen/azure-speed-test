@@ -16,7 +16,7 @@ import {
   RegionFinderComponent,
   RegionToRegionLatencyComponent,
   UploadComponent,
-  UploadLargeFileComponent
+  UploadLargeFileComponent,
 } from "../azure";
 import { ComponentsModule } from "../shared/components.module";
 import {} from "./regionFinder/regionFinder.component";
@@ -33,7 +33,7 @@ import {} from "./regionFinder/regionFinder.component";
     RegionToRegionLatencyComponent,
     AzureComponent,
     UploadComponent,
-    UploadLargeFileComponent
+    UploadLargeFileComponent,
   ],
   imports: [
     CommonModule,
@@ -42,11 +42,11 @@ import {} from "./regionFinder/regionFinder.component";
     HttpClientModule,
     LineChartModule,
     NgbModalModule,
-    FormsModule
+    FormsModule,
   ],
   providers: [],
   bootstrap: [],
   entryComponents: [AzureComponent],
-  exports: []
+  exports: [],
 })
 export class AzureModule {}

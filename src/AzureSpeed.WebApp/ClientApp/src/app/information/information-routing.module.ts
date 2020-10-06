@@ -8,8 +8,8 @@ import {
   AzureRegionsComponent,
   AzureSovereignCloudsComponent,
   AzureVMPricingComponent,
-  IpRangeComponent,
-  ReferencesComponent
+  AzureIpRangeComponent,
+  ReferencesComponent,
 } from "../information";
 import { InformationComponent } from "./information.component";
 import { NotFoundComponent } from "../shared";
@@ -21,50 +21,66 @@ const routes: Routes = [
     children: [
       {
         path: "AzureAvailabilityZones",
-        component: AzureAvailabilityZonesComponent
+        data: { title: "Azure Availability Zones" },
+        component: AzureAvailabilityZonesComponent,
       },
       {
         path: "AzureBillingMeters",
-        component: AzureBillingMetersComponent
+        data: { title: "Azure Billing Meters" },
+        component: AzureBillingMetersComponent,
       },
       {
         path: "AzureEnvironments",
-        component: AzureEnvironmentsComponent
+        data: { title: "Azure Environments" },
+        component: AzureEnvironmentsComponent,
       },
       {
         path: "AzureGeographies",
-        component: AzureGeographiesComponent
+        data: { title: "Azure Geographies" },
+        component: AzureGeographiesComponent,
+      },
+      {
+        path: "AzureIpRange",
+        data: { title: "Azure IP Range" },
+        component: AzureIpRangeComponent,
       },
       {
         path: "AzureRegions",
-        component: AzureRegionsComponent
+        data: { title: "Azure Regions" },
+        component: AzureRegionsComponent,
       },
       {
         path: "AzureSovereignClouds",
-        component: AzureSovereignCloudsComponent
+        data: { title: "Azure Sovereign Clouds" },
+        component: AzureSovereignCloudsComponent,
       },
       {
         path: "AzureVMPricing",
-        component: AzureVMPricingComponent
+        data: { title: "Azure Virtual Machine Pricing" },
+        component: AzureVMPricingComponent,
       },
-      {
-        path: "IpRange",
-        component: IpRangeComponent
-      },
+
       {
         path: "References",
-        component: ReferencesComponent
+        data: { title: "References" },
+        component: ReferencesComponent,
+      },
+      // Legacy, better to use 301 redirect
+      {
+        path: "IpRange",
+        data: { title: "Azure IP Range" },
+        component: AzureIpRangeComponent,
       },
       {
         path: "**",
-        component: NotFoundComponent
-      }
-    ]
-  }
+        component: NotFoundComponent,
+      },
+    ],
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class InformationRoutingModule {}

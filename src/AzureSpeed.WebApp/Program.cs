@@ -23,7 +23,7 @@ namespace AzureSpeed.WebApp
                     logging.ClearProviders();
                     logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
                     logging.AddAzureWebAppDiagnostics();
-                    logging.AddApplicationInsights("43407f18-a7b3-4e20-8d66-f1351293ace3");
+                    logging.AddApplicationInsights("ee81279b-1f31-417b-bed5-ebabb63fff87");
                     logging.AddConsole();
                 })
                 .ConfigureWebHostDefaults(webBuilder =>

@@ -3,26 +3,29 @@ import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 import { environment } from "../../environments/environment";
 
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class AppInsightsService {
-  private appInsights = null;
+  private appInsights: ApplicationInsights;
 
   constructor() {
     const key = environment.appInsightKey;
-    if (key) {
+    const isIEOrLegacyEdge = /msie\s|trident\/|edge\//i.test(
+      window.navigator.userAgent
+    );
+    console.log("isIEOrLegacyEdge = ", isIEOrLegacyEdge);
+    if (key && !isIEOrLegacyEdge) {
       this.appInsights = new ApplicationInsights({
         config: {
           disableAjaxTracking: true, // Do not track every ajax calls
           instrumentationKey: key,
-          samplingPercentage: 30
-        }
+        },
       });
       this.appInsights.loadAppInsights();
     }
   }
 
-  trackException(error) {
+  trackException(error: any) {
     if (this.appInsights) {
       this.appInsights.trackException({ exception: error });
     }

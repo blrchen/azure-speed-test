@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using System.Reflection;
-using AzureSpeed.ApiService.Providers;
+using AzureSpeed.WebApp.Providers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace AzureSpeed.Test

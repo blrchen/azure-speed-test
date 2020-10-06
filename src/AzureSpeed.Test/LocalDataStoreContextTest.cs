@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Reflection;
-using AzureSpeed.ApiService.Storage;
+using AzureSpeed.WebApp.Storage;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace AzureSpeed.Test

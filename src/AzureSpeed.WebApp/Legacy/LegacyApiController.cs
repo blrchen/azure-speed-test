@@ -1,9 +1,9 @@
-﻿using AzureSpeed.ApiService.Providers;
+﻿using AzureSpeed.WebApp.Providers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace AzureSpeed.ApiService.Legacy
+namespace AzureSpeed.WebApp.Legacy
 {
     // TODO: Deprecate this api
     [Route("api")]

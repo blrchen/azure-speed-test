@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using AzureSpeed.ApiService.Providers;
+using AzureSpeed.WebApp.Providers;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;

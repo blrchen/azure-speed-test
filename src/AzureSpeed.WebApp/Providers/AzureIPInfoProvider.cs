@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using AzureSpeed.ApiService.Contracts;
-using AzureSpeed.ApiService.Models;
+using AzureSpeed.WebApp.Contracts;
+using AzureSpeed.WebApp.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace AzureSpeed.ApiService.Providers
+namespace AzureSpeed.WebApp.Providers
 {
     public class AzureIPInfoProvider : IAzureIPInfoProvider
     {

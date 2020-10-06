@@ -11,8 +11,8 @@ import {
   AzureRegionsComponent,
   AzureSovereignCloudsComponent,
   AzureVMPricingComponent,
-  IpRangeComponent,
-  ReferencesComponent
+  AzureIpRangeComponent,
+  ReferencesComponent,
 } from "../information";
 import { ComponentsModule } from "../shared/components.module";
 
@@ -26,13 +26,13 @@ import { ComponentsModule } from "../shared/components.module";
     AzureSovereignCloudsComponent,
     AzureVMPricingComponent,
     InformationComponent,
-    IpRangeComponent,
-    ReferencesComponent
+    AzureIpRangeComponent,
+    ReferencesComponent,
   ],
   imports: [CommonModule, InformationRoutingModule, ComponentsModule],
   providers: [],
   bootstrap: [],
   entryComponents: [InformationComponent],
-  exports: []
+  exports: [],
 })
 export class InformationModule {}

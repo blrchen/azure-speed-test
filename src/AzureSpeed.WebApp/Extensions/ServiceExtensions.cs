@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace AzureSpeed.ApiService.Extensions
+namespace AzureSpeed.WebApp.Extensions
 {
     public static class ServiceExtensions
     {

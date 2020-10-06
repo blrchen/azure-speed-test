@@ -3,30 +3,26 @@ import {
   TemplateRef,
   ViewChild,
   OnInit,
-  OnDestroy
+  OnDestroy,
 } from "@angular/core";
-import { Title } from "@angular/platform-browser";
-import {
-  NgbModal,
-  ModalDismissReasons,
-  NgbModalRef
-} from "@ng-bootstrap/ng-bootstrap";
+import { NgbModal, NgbModalRef } from "@ng-bootstrap/ng-bootstrap";
 import {
   RegionService,
   APIService,
   UtilsService,
-  StorageService
+  StorageService,
 } from "../../services";
 import { Subscription } from "rxjs";
-import { RegionModel } from "src/app/models";
+import { BlobUploadSpeedModel, RegionModel } from "src/app/models";
 
 @Component({
   selector: "app-upload-large-file",
   templateUrl: "./uploadLargeFile.component.html",
-  styleUrls: ["./uploadLargeFile.component.scss"]
+  styleUrls: ["./uploadLargeFile.component.scss"],
 })
 export class UploadLargeFileComponent implements OnInit, OnDestroy {
-  tableData = [];
+  subs: Subscription[] = [];
+  tableData: BlobUploadSpeedModel[] = [];
 
   uploadProgress = "";
   uploadFileName = "";
@@ -46,25 +42,19 @@ export class UploadLargeFileComponent implements OnInit, OnDestroy {
   modalRef: NgbModalRef;
   @ViewChild("uploadModal", { static: true }) modalTpl: TemplateRef<any>;
 
-  subs: Subscription[] = [];
-
   constructor(
     private modalService: NgbModal,
     private regionService: RegionService,
     private apiService: APIService,
     private utilsService: UtilsService,
-    private storageService: StorageService,
-    private titleService: Title
+    private storageService: StorageService
   ) {}
 
   ngOnInit() {
-    this.titleService.setTitle(
-      "Azure Storage Large File Upload Speed Test - Azure Speed Test"
-    );
     this.regions = this.regionService.getAllRegions();
   }
 
-  onChangeFile($event) {
+  onChangeFile($event: any) {
     this.file = $event.target.files[0] || "";
   }
 
@@ -73,7 +63,7 @@ export class UploadLargeFileComponent implements OnInit, OnDestroy {
       size: "",
       centered: true,
       backdrop: "static",
-      windowClass: "modal-md"
+      windowClass: "modal-md",
     });
   }
 
@@ -83,33 +73,30 @@ export class UploadLargeFileComponent implements OnInit, OnDestroy {
       return;
     }
     const blobName = this.utilsService.getRandomBlobName();
-    const locationId = this.region;
+    const regionName = this.region;
     const file = this.file;
 
-    this.apiService.getUploadUrl(blobName, locationId).subscribe(res => {
+    this.apiService.getSasUrl(regionName, blobName).subscribe((res) => {
       const url = res.url || "";
-      const sasUrl = this.utilsService.splitUrl(url);
-      const client = this.storageService.createBlobServiceClient(sasUrl);
-      const blockId = btoa("block-00000").replace(/=/g, "a");
+      const blob = this.utilsService.parseSasUrl(url);
+      const client = this.storageService.createBlobServiceClient(blob);
       const blockBlob = client
         .getContainerClient("upload")
-        .getBlockBlobClient(sasUrl.blobName);
+        .getBlockBlobClient(blob.blobName);
       const uploadStartTime = new Date().getTime();
       this.uploadProgress = "";
       this.uploadTime = "";
-      console.log("blockSize", this.blockSize);
-      console.log("concurrency", this.thread);
       blockBlob
         .uploadBrowserData(file, {
           blockSize: this.blockSize * 1024, // * 1024 to convert to bytes
-          // TODO: use maxSingleShotSize for muti-thread block blob upload
+          // TODO: use maxSingleShotSize for multi-thread block blob upload
           concurrency: this.thread,
           onProgress: ({ loadedBytes }) => {
             this.uploadProgress = `${(
               (loadedBytes / this.file.size) *
               100
             ).toFixed(0)}%`;
-          }
+          },
         })
         .then(
           () => {
@@ -123,16 +110,16 @@ export class UploadLargeFileComponent implements OnInit, OnDestroy {
             this.uploadSpeed = speed;
 
             const regionObj = this.regions.filter(
-              ({ locationId: id }) => id === this.region
+              ({ regionName: id }) => id === this.region
             );
 
             const data = {
               fileName: this.file.name,
               fileSize: this.utilsService.getSizeStr(this.file.size),
-              region: regionObj[0].name,
+              region: regionObj[0].displayName,
               thread: this.thread,
               blockSize: this.blockSize,
-              uploadSpeed: speed
+              uploadSpeed: speed,
             };
             this.tableData.push(data);
           },
@@ -150,7 +137,7 @@ export class UploadLargeFileComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.subs.forEach(sub => {
+    this.subs.forEach((sub) => {
       if (sub) {
         sub.unsubscribe();
       }

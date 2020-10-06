@@ -5,15 +5,15 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Xml;
-using AzureSpeed.ApiService.Contracts;
-using AzureSpeed.ApiService.Providers;
-using AzureSpeed.ApiService.Storage;
+using AzureSpeed.WebApp.Contracts;
+using AzureSpeed.WebApp.Providers;
+using AzureSpeed.WebApp.Storage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace AzureSpeed.ApiService.ApiControllers
+namespace AzureSpeed.WebApp.ApiControllers
 {
     [Route("api")]
     [ApiController]
@@ -47,12 +47,12 @@ namespace AzureSpeed.ApiService.ApiControllers
 
         [HttpGet]
         [Route("sas")]
-        public IActionResult GetSasLink(string locationId, string blobName, string operation)
+        public IActionResult GetSasLink(string regionName, string blobName, string operation)
         {
             string url = "";
-            if (!string.IsNullOrEmpty(locationId))
+            if (!string.IsNullOrEmpty(regionName))
             {
-                var account = storageAccountsContext.StorageAccounts.FirstOrDefault(v => v.LocationId == locationId);
+                var account = storageAccountsContext.StorageAccounts.FirstOrDefault(v => v.LocationId == regionName);
                 if (account != null)
                 {
                     var storageContext = new StorageContext(account);
@@ -61,20 +61,6 @@ namespace AzureSpeed.ApiService.ApiControllers
             }
 
             return Ok(new { Url = url });
-        }
-
-        [HttpGet]
-        [Route("download")]
-        public IActionResult GetDownloadLink()
-        {
-            var files = new List<DownloadFileInfo>();
-            foreach (var account in storageAccountsContext.StorageAccounts)
-            {
-                var storageContext = new StorageContext(account);
-                files.Add(new DownloadFileInfo() { Region = account.LocationId, Url = storageContext.GetSasUrl("100MB.bin", "download") });
-            }
-
-            return Ok(files);
         }
 
         [HttpGet]
@@ -139,6 +125,14 @@ namespace AzureSpeed.ApiService.ApiControllers
             }
 
             return Ok(result);
+        }
+
+        [HttpPost]
+        [Route("error")]
+        public IActionResult LogError([FromBody] UIError error)
+        {
+            logger.LogError(error.Message);
+            return Ok();
         }
     }
 }

@@ -5,5 +5,5 @@ export * from "./azureGeographies/azureGeographies.component";
 export * from "./azureRegions/azureRegions.component";
 export * from "./azureSovereignClouds/azureSovereignClouds.component";
 export * from "./azureVMPricing/azureVMPricing.component";
-export * from "./ipRange/ipRange.component";
+export * from "./azureIpRange/azureIpRange.component";
 export * from "./references/references.component";

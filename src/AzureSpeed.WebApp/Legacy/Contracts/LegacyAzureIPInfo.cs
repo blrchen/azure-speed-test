@@ -1,4 +1,4 @@
-﻿namespace AzureSpeed.ApiService.Legacy.Contracts
+﻿namespace AzureSpeed.WebApp.Legacy.Contracts
 {
     public class LegacyAzureIPInfo
     {

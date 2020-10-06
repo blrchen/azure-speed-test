@@ -1,24 +1,22 @@
 import { Component, OnInit } from "@angular/core";
-import { Title } from "@angular/platform-browser";
 import { APIService } from "../../services";
 
 @Component({
   selector: "app-home",
   templateUrl: "./azureBillingMeters.component.html",
-  styleUrls: ["./azureBillingMeters.component.scss"]
+  styleUrls: ["./azureBillingMeters.component.scss"],
 })
 export class AzureBillingMetersComponent implements OnInit {
-  tableData = [];
+  message: string;
+  tableData: any = [];
 
-  constructor(private apiService: APIService, private titleService: Title) {}
+  constructor(private apiService: APIService) {}
 
   ngOnInit() {
-    this.titleService.setTitle("Azure Billing Meters - Azure Speed Test");
-    this.apiService
-      .getAzureBillingMeters()
-      .toPromise()
-      .then(res => {
-        this.tableData = res;
-      });
+    this.message = "Please wait ...";
+    this.apiService.getAzureBillingMeters().subscribe((res) => {
+      this.message = "";
+      this.tableData = res;
+    });
   }
 }

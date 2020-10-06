@@ -70,8 +70,8 @@
           [(ngModel)]="region"
         >
           <option value="">--Please select region--</option>
-          <option [value]="region.locationId" *ngFor="let region of regions">{{
-            region.name
+          <option [value]="region.regionName" *ngFor="let region of regions">{{
+            region.displayName
           }}</option>
         </select>
       </div>

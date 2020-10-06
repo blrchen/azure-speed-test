@@ -58,7 +58,7 @@ function GetAzureStorages() {
 }
 
 function CreateSettingsJsonFile ($storageJsonObjects) {
-    $outFilePath = "..\..\src\AzureSpeed.ApiService\Data\settings.json"
+    $outFilePath = "..\..\src\AzureSpeed.WebApp\Data\settings.json"
     if (Test-Path $outFilePath) {
         Remove-Item $outFilePath
     }

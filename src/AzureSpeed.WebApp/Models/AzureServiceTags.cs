@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace AzureSpeed.ApiService.Models
+namespace AzureSpeed.WebApp.Models
 {
     public partial class AzureServiceTagsCollection
     {

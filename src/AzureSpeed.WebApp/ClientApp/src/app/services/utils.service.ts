@@ -1,32 +1,31 @@
-import { BehaviorSubject, Observable } from "rxjs";
 import { Injectable } from "@angular/core";
-
-import { DefaultRegionsKey, RegionModel } from "../models";
+import { BlobModel } from "../models";
 
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class UtilsService {
-  private regionSubject = new BehaviorSubject<RegionModel[]>([]);
-
   constructor() {}
 
-  splitUrl(url) {
+  parseSasUrl(sasUrl: string): BlobModel {
     const regex = new RegExp(
       "(http[s]?://([^.]+).[^/]*)/([^?/]*)/?([^?]*)(.*)",
       "g"
     );
-    const match = regex.exec(url);
+
+    const match = regex.exec(sasUrl);
     if (!match) {
-      throw "invalid blob url.";
+      throw new Error("invalid blob url.");
     }
-    return {
+    const blob: BlobModel = {
       endpoint: match[1],
       accountName: match[2],
       containerName: match[3],
       blobName: match[4],
-      sas: match[5]
+      sas: match[5],
     };
+
+    return blob;
   }
 
   getRandomBlobName() {
@@ -68,7 +67,7 @@ export class UtilsService {
       dsize = dsize / 1024;
     }
     unit = units[idx - 1];
-    return { value: Math.round(dsize * 100) / 100 + " ", unit: unit };
+    return { value: Math.round(dsize * 100) / 100 + " ", unit };
   }
 
   getSizeStr(size = 0, orgUnit = "B", targetUnit = "Auto", dif = 0) {
@@ -77,40 +76,5 @@ export class UtilsService {
       return v.value + v.unit;
     }
     return null;
-  }
-
-  convertSizeStrToFloat(v) {
-    const units = ["KB", "MB", "GB", "TB", "PB", "B"];
-    let idx = -1;
-    let num = 0;
-    for (idx = 0; idx < units.length; idx++) {
-      if (v.toLowerCase().contains(units[idx].toLowerCase())) {
-        num = v.toLowerCase().replace(units[idx].toLowerCase(), "");
-        break;
-      }
-    }
-    switch (units[idx].toLowerCase()) {
-      case "b":
-        num = parseFloat(String(num));
-        break;
-      case "kb":
-        num = parseFloat(String(num)) * 1024;
-        break;
-      case "mb":
-        num = parseFloat(String(num)) * 1024 * 1024;
-        break;
-      case "gb":
-        num = parseFloat(String(num)) * 1024 * 1024 * 1024;
-        break;
-      case "tb":
-        num = parseFloat(String(num)) * 1024 * 1024 * 1024 * 1024;
-        break;
-      case "pb":
-        num = parseFloat(String(num)) * 1024 * 1024 * 1024 * 1024 * 1024;
-        break;
-      default:
-        break;
-    }
-    return num;
   }
 }

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { Regions } from "./utils";
 import { RegionModel, RegionGroupModel, DefaultRegionsKey } from "../../models";
 import { RegionService } from "../../services";
@@ -6,7 +6,7 @@ import { RegionService } from "../../services";
 @Component({
   selector: "app-regions",
   templateUrl: "./regions.component.html",
-  styleUrls: ["./regions.component.scss"]
+  styleUrls: ["./regions.component.scss"],
 })
 export class RegionsComponent implements OnInit {
   regionsGroup: RegionGroupModel[] = [];
@@ -15,13 +15,13 @@ export class RegionsComponent implements OnInit {
     this.initRegions();
   }
 
-  onChange(region, group) {
+  onChange(region: RegionModel, group: RegionGroupModel) {
     if (region) {
       // check region
       const { checked } = region;
       if (checked) {
         let isGroupChecked = true;
-        group.locations.forEach(element => {
+        group.regions.forEach((element) => {
           if (!element.checked) {
             isGroupChecked = false;
           }
@@ -32,15 +32,15 @@ export class RegionsComponent implements OnInit {
       }
     } else {
       // check group
-      const { checked, locations } = group;
-      locations.forEach(i => {
+      const { checked, regions } = group;
+      regions.forEach((i) => {
         i.checked = checked;
       });
     }
 
     const checkedRegions = this.regionsGroup.reduce((arr, item) => {
-      const { locations } = item;
-      locations.forEach(i => {
+      const { regions } = item;
+      regions.forEach((i) => {
         if (i.checked) {
           arr.push(i);
         }
@@ -53,18 +53,16 @@ export class RegionsComponent implements OnInit {
   }
 
   initRegions() {
-    // init region checked status from local storage, key = azurespeed.userSelectedRegions
-    //
     const res = localStorage.getItem(DefaultRegionsKey);
-    const defaultRegions: RegionModel = res ? JSON.parse(res) : [];
+    const defaultRegions: RegionModel[] = res ? JSON.parse(res) : [];
     if (Array.isArray(defaultRegions)) {
-      this.regionsGroup.forEach(group => {
-        const { locations } = group;
+      this.regionsGroup.forEach((group) => {
+        const { regions } = group;
         let isGroupChecked = true;
-        locations.forEach(item => {
+        regions.forEach((item) => {
           const { storageAccountName } = item;
           const isDefault = defaultRegions.filter(
-            i => i.storageAccountName === storageAccountName
+            (i) => i.storageAccountName === storageAccountName
           );
           if (isDefault.length > 0) {
             item.checked = true;
@@ -82,29 +80,26 @@ export class RegionsComponent implements OnInit {
 
   constructor(private regionService: RegionService) {
     const groups = Regions.reduce((arr, item) => {
-      const { geographyGrouping } = item;
-      if (!arr.includes(geographyGrouping)) {
-        arr.push(geographyGrouping);
+      const { geography } = item;
+      if (!arr.includes(geography)) {
+        arr.push(geography);
       }
       return arr;
     }, []);
-    // console.log(groups)
     this.regionsGroup = groups.reduce((arr, item) => {
-      const geographyGrouping = item;
-      const locations = Regions.filter(
-        i => i.geographyGrouping === geographyGrouping
-      ).map(i => ({
-        ...i,
-        checked: false
-      }));
+      const geography = item;
+      const regions = Regions.filter((i) => i.geography === geography).map(
+        (i) => ({
+          ...i,
+          checked: false,
+        })
+      );
       arr.push({
-        geographyGrouping,
+        geography,
         checked: false,
-        locations
+        regions,
       });
       return arr;
     }, []);
-
-    // console.log(this.regionsGroup)
   }
 }

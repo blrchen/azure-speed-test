@@ -24,8 +24,8 @@
       <tbody>
         <tr *ngFor="let item of tableData">
           <td>{{ item.geography }}</td>
-          <td>{{ item.name }}</td>
-          <td>{{ item.location }}</td>
+          <td>{{ item.displayName }}</td>
+          <td>{{ item.physicalLocation }}</td>
           <td>
             <a
               *ngIf="item.url"

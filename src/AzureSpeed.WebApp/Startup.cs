@@ -1,7 +1,7 @@
-using AzureSpeed.ApiService.Extensions;
-using AzureSpeed.ApiService.Filters;
-using AzureSpeed.ApiService.Providers;
-using AzureSpeed.ApiService.Storage;
+using AzureSpeed.WebApp.Extensions;
+using AzureSpeed.WebApp.Filters;
+using AzureSpeed.WebApp.Providers;
+using AzureSpeed.WebApp.Storage;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.AngularCli;

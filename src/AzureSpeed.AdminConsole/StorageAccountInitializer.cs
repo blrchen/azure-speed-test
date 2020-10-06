@@ -3,8 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using AzureSpeed.ApiService.Constants;
-using AzureSpeed.ApiService.Storage;
+using AzureSpeed.WebApp.Constants;
+using AzureSpeed.WebApp.Storage;
 
 namespace AzureSpeed.AdminConsole
 {

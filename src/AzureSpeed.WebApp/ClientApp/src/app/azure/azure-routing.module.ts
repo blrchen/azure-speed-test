@@ -10,10 +10,9 @@ import {
   RegionFinderComponent,
   RegionToRegionLatencyComponent,
   UploadComponent,
-  UploadLargeFileComponent
+  UploadLargeFileComponent,
 } from "../azure";
 import { AzureComponent } from "./azure.component";
-import { NotFoundComponent } from "../shared";
 
 const routes: Routes = [
   {
@@ -22,55 +21,65 @@ const routes: Routes = [
     children: [
       {
         path: "About",
-        component: AboutComponent
+        data: { title: "About" },
+        component: AboutComponent,
       },
       {
         path: "CDN",
-        component: CDNComponent
+        data: { title: "Azure CDN Speed Test" },
+        component: CDNComponent,
       },
       {
         path: "Download",
-        component: DownloadComponent
+        data: { title: "Azure Storage Blob Download Speed Test" },
+        component: DownloadComponent,
       },
       {
         path: "IPLookup",
-        component: IPLookupComponent
+        data: { title: "Azure IP Lookup" },
+        component: IPLookupComponent,
       },
       {
         path: "Latency",
-        component: LatencyComponent
+        data: { title: "Azure Latency Test" },
+        component: LatencyComponent,
       },
       {
         path: "PsPing",
-        component: PSPingComponent
+        data: { title: "PsPing Network Latency Test" },
+        component: PSPingComponent,
       },
       {
         path: "RegionFinder",
-        component: RegionFinderComponent
+        data: { title: "Cloud Region Finder" },
+        component: RegionFinderComponent,
       },
       {
         path: "RegionToRegionLatency",
-        component: RegionToRegionLatencyComponent
+        data: { title: "Azure Region to Region Latency" },
+        component: RegionToRegionLatencyComponent,
       },
       {
         path: "Upload",
-        component: UploadComponent
+        data: { title: "Azure Storage Blob Upload Speed Test" },
+        component: UploadComponent,
       },
       {
         path: "UploadLargeFile",
-        component: UploadLargeFileComponent
+        data: { title: "Azure Storage Large File Upload Speed Test" },
+        component: UploadLargeFileComponent,
       },
       {
         path: "**",
         redirectTo: "Latency",
-        pathMatch: "full"
-      }
-    ]
-  }
+        pathMatch: "full",
+      },
+    ],
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class AzureRoutingModule {}

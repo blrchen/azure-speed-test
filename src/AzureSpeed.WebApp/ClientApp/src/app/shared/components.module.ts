@@ -8,6 +8,6 @@ import { LayoutComponent, NotFoundComponent, RegionsComponent } from "./index";
 @NgModule({
   declarations: [LayoutComponent, NotFoundComponent, RegionsComponent],
   imports: [CommonModule, RouterModule, FormsModule],
-  exports: [LayoutComponent, NotFoundComponent, RegionsComponent]
+  exports: [LayoutComponent, NotFoundComponent, RegionsComponent],
 })
 export class ComponentsModule {}

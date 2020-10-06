@@ -2,7 +2,7 @@
 using System.IO;
 using Newtonsoft.Json;
 
-namespace AzureSpeed.ApiService.Storage
+namespace AzureSpeed.WebApp.Storage
 {
     public class StorageAccountsContext
     {

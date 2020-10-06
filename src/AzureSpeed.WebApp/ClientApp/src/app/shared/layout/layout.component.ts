@@ -4,7 +4,7 @@ import { Menus } from "./utils";
 @Component({
   templateUrl: "./layout.component.html",
   selector: "app-layout",
-  styleUrls: ["./layout.component.scss"]
+  styleUrls: ["./layout.component.scss"],
 })
 export class LayoutComponent {
   collapse = false;

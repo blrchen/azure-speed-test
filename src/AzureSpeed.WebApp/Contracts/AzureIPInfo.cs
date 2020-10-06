@@ -1,4 +1,4 @@
-﻿namespace AzureSpeed.ApiService.Contracts
+﻿namespace AzureSpeed.WebApp.Contracts
 {
     public class AzureIPInfo
     {

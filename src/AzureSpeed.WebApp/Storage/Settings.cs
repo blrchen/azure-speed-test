@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace AzureSpeed.ApiService.Storage
+namespace AzureSpeed.WebApp.Storage
 {
     public class Settings
     {

@@ -1,27 +1,38 @@
 import { Component, OnInit } from "@angular/core";
-import { Title } from "@angular/platform-browser";
 import { APIService } from "../../services";
+import { IpInfo } from "src/app/models";
 @Component({
   selector: "app-home",
   templateUrl: "./ipLookup.component.html",
-  styleUrls: ["./ipLookup.component.scss"]
+  styleUrls: ["./ipLookup.component.scss"],
 })
 export class IPLookupComponent implements OnInit {
-  ipAddressOrUrl = "";
-  result: any = {};
+  message: string;
+  result: IpInfo;
+  ipAddressOrUrl: string;
 
-  constructor(private apiService: APIService, private titleService: Title) {}
+  constructor(private apiService: APIService) {}
 
   ngOnInit() {
-    this.titleService.setTitle("Azure IP Lookup - Azure Speed Test");
+    this.result = {
+      serviceTagId: "",
+      ipAddress: "",
+      ipAddressPrefix: "",
+      region: "",
+      systemService: "",
+    };
   }
 
   onSubmit() {
-    this.apiService
-      .getIPInfo(this.ipAddressOrUrl)
-      .toPromise()
-      .then(res => {
+    this.message = "Please wait ...";
+    this.apiService.getIPInfo(this.ipAddressOrUrl).subscribe(
+      (res) => {
+        this.message = "";
         this.result = res;
-      });
+      },
+      () => {
+        this.message = "Server error, please try again";
+      }
+    );
   }
 }

@@ -1,137 +1,119 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
-import { Title } from "@angular/platform-browser";
 import { Subscription } from "rxjs";
 import {
   APIService,
   RegionService,
   StorageService,
-  UtilsService
+  UtilsService,
 } from "../../services";
 import { RegionModel } from "../../models";
 
 @Component({
   selector: "app-upload",
   templateUrl: "./upload.component.html",
-  styleUrls: ["./upload.component.scss"]
+  styleUrls: ["./upload.component.scss"],
 })
 export class UploadComponent implements OnInit, OnDestroy {
-  tableData = [];
-  historyData = {};
   subs: Subscription[] = [];
+  tableData: RegionModel[] = [];
+  historyData = new Map<string, any>();
   regions: RegionModel[] = [];
-  count = 0;
 
   constructor(
     private apiService: APIService,
     private regionService: RegionService,
     private storageService: StorageService,
-    private titleService: Title,
     private utilsService: UtilsService
   ) {}
 
   ngOnInit() {
-    this.titleService.setTitle(
-      "Azure Storage Blob Upload Speed Test - Azure Speed Test"
-    );
-    const sub = this.regionService.getRegions().subscribe(res => {
+    const sub = this.regionService.getRegions().subscribe((res) => {
       this.regions = res || [];
     });
     this.subs.push(sub);
   }
 
-  onStartTest() {
+  async onStartTest() {
     this.tableData = [];
-    const region = this.regions[this.count] || "";
-    if (region) {
-      this.getSASUrl(region);
+    // DO NOT use forEach as await not working inside forEach
+    // this.regions.forEach(async (region) => {
+    //   await this.uploadBlob(region);
+    // });
+
+    for (const region of this.regions) {
+      await this.uploadBlob(region);
     }
   }
 
-  getSASUrl(region: RegionModel) {
-    const { locationId } = region;
-    this.apiService
-      .getUploadUrl(this.utilsService.getRandomBlobName(), locationId)
-      .toPromise()
-      .then(res => {
-        const url = res.url || "";
-        if (url) {
-          this.uploadBlob(url, region);
-        }
-      });
-  }
-
-  uploadBlob(url, region: RegionModel) {
-    // Geography Region Location
-    const { geography, name, location, storageAccountName } = region;
-    const sasUrl = this.utilsService.splitUrl(url);
-    const client = this.storageService.createBlobServiceClient(sasUrl);
+  async uploadBlob(region: RegionModel) {
+    const {
+      geography,
+      displayName,
+      physicalLocation,
+      regionName,
+      storageAccountName,
+    } = region;
+    console.log("uploadBlob starts for", regionName);
+    const res = await this.apiService
+      .getSasUrl(regionName, this.utilsService.getRandomBlobName())
+      .toPromise();
+    console.log("get sas url for ", regionName, res.url);
+    const blob = this.utilsService.parseSasUrl(res.url);
+    const client = this.storageService.createBlobServiceClient(blob);
     const blockId = btoa("block-00000").replace(/=/g, "a");
     const blockBlob = client
       .getContainerClient("upload")
-      .getBlockBlobClient(sasUrl.blobName);
-    const sizeBytes = 3 * 1024 * 1024; // 3MB
+      .getBlockBlobClient(blob.blobName);
+    const sizeBytes = 100 * 1024 * 1024; // 100MB
     const uploadStartTime = new Date().getTime();
-    blockBlob
-      .stageBlock(blockId, this.fileArrayBlob(sizeBytes), sizeBytes, {
-        onProgress: ({ loadedBytes }) => {
-          // console.log(loadedBytes)
-          const progress = `${((loadedBytes / sizeBytes) * 100).toFixed(0)}%`;
-          const totalTime = (new Date().getTime() - uploadStartTime) / 1000;
-          const speed = `${this.utilsService.getSizeStr(
-            sizeBytes / totalTime
-          )}/s`;
+    await blockBlob.stageBlock(blockId, this.createBlob(sizeBytes), sizeBytes, {
+      onProgress: ({ loadedBytes }) => {
+        console.log("onProgress fired for ", regionName);
+        const progress = `${((loadedBytes / sizeBytes) * 100).toFixed(0)}%`;
+        const totalTime = (new Date().getTime() - uploadStartTime) / 1000;
+        const speed = `${this.utilsService.getSizeStr(
+          sizeBytes / totalTime
+        )}/s`;
+        this.historyData.set(storageAccountName, {
+          storageAccountName,
+          geography,
+          displayName,
+          physicalLocation,
+          progress,
+          speed,
+        });
 
-          // console.log(progress, speed)
-          this.historyData[storageAccountName] = {
-            storageAccountName,
-            geography,
-            region: name,
-            location,
-            progress,
-            speed
-          };
-
-          let index = -1;
-          this.tableData.forEach(({ storageAccountName: account2 }, i) => {
-            if (storageAccountName === account2) {
-              index = i;
-            }
-          });
-
-          if (index > -1) {
-            this.tableData.splice(
-              index,
-              1,
-              this.historyData[storageAccountName]
-            );
-          } else {
-            this.tableData.push(this.historyData[storageAccountName]);
-          }
-        }
-      })
-      .then(r => {
-        // console.log(r)
-        blockBlob.commitBlockList([blockId]).then(res => {
-          // console.log(res)
-          // console.log(this.tableData)
-          this.count++;
-          const nextRegion = this.regions[this.count];
-          if (nextRegion) {
-            this.getSASUrl(nextRegion);
-          } else {
-            this.count = 0;
+        let index = -1;
+        this.tableData.forEach(({ storageAccountName: account2 }, i) => {
+          if (storageAccountName === account2) {
+            index = i;
           }
         });
-      });
+
+        if (index > -1) {
+          this.tableData.splice(
+            index,
+            1,
+            this.historyData.get(storageAccountName)
+          );
+        } else {
+          this.tableData.push(this.historyData.get(storageAccountName));
+        }
+      },
+    });
+    console.log("stageBlock done for ", regionName);
+
+    await blockBlob.commitBlockList([blockId]);
+    console.log("commitBlockList done for ", regionName);
   }
 
-  fileArrayBlob(size = 0): Blob {
-    const array = Array.from({ length: size }, () => ".");
-    return new Blob(array);
+  createBlob(size = 0): Blob {
+    const arr = new Uint8Array(size);
+    return new Blob([arr], { type: "application/octet-stream" });
   }
 
   ngOnDestroy() {
-    this.subs.forEach(sub => {
+    this.subs.forEach((sub) => {
       if (sub) {
         sub.unsubscribe();
       }

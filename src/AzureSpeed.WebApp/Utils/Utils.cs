@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 
-namespace AzureSpeed.ApiService.Utils
+namespace AzureSpeed.WebApp.Utils
 {
     public static class Utils
     {

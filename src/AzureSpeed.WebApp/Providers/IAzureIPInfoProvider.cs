@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using AzureSpeed.ApiService.Contracts;
+using AzureSpeed.WebApp.Contracts;
 
-namespace AzureSpeed.ApiService.Providers
+namespace AzureSpeed.WebApp.Providers
 {
     public interface IAzureIPInfoProvider
     {

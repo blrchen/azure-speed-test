@@ -1,4 +1,4 @@
-﻿namespace AzureSpeed.ApiService.Constants
+﻿namespace AzureSpeed.WebApp.Constants
 {
     public static class Constants
     {

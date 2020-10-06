@@ -1,6 +1,6 @@
-﻿using AzureSpeed.ApiService.Legacy.Contracts;
+﻿using AzureSpeed.WebApp.Legacy.Contracts;
 
-namespace AzureSpeed.ApiService.Providers
+namespace AzureSpeed.WebApp.Providers
 {
     public interface ILegacyAzureIPInfoProvider
     {

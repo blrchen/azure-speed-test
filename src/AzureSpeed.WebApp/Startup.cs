@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 
 namespace AzureSpeed.WebApp
@@ -37,7 +36,7 @@ namespace AzureSpeed.WebApp
 
             services.AddCors("CorsPolicy");
 
-            services.AddSingleton<IAzureIPInfoProvider, AzureIPInfoProvider>();
+            services.AddHttpClient();
             services.AddSingleton<ILegacyAzureIPInfoProvider, LegacyAzureIPInfoProvider>(serviceProvider =>
             {
                 var localDataStoreContext = new LegacyAzureIPInfoProvider(webHostEnvironment.ContentRootPath);

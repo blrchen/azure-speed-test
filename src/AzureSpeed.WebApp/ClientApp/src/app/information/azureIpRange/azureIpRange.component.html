@@ -14,15 +14,13 @@
     >
       <thead>
         <tr>
-          <th width="60">Cloud</th>
           <th width="100">Region</th>
-          <th width="80">Total # of IP Address</th>
-          <th>IP Range Detail</th>
+          <th width="80">Total #</th>
+          <th>IP Addresses</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let subnet of tableData">
-          <td>{{ subnet.cloud }}</td>
           <td>{{ subnet.region }}</td>
           <td>{{ subnet.totalIp }}</td>
           <td>{{ subnet.subnet }}</td>

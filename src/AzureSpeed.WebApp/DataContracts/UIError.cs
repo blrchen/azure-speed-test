@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace AzureSpeed.WebApp.Contracts
+namespace AzureSpeed.WebApp.DataContracts
 {
     public class UIError
     {

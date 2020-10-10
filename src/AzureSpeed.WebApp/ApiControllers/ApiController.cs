@@ -1,15 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
-using System.Xml;
-using AzureSpeed.WebApp.Contracts;
-using AzureSpeed.WebApp.Providers;
+using AzureSpeed.WebApp.DataContracts;
 using AzureSpeed.WebApp.Storage;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace AzureSpeed.WebApp.ApiControllers
 {
@@ -17,16 +12,16 @@ namespace AzureSpeed.WebApp.ApiControllers
     [ApiController]
     public class ApiController : ControllerBase
     {
-        private readonly IAzureIPInfoProvider azureIPInfoProvider;
+        private readonly HttpClient httpClient;
         private readonly ILogger<ApiController> logger;
         private readonly StorageAccountsContext storageAccountsContext;
 
         public ApiController(
-            IAzureIPInfoProvider azureIPInfoProvider,
+            HttpClient httpClient,
             ILogger<ApiController> logger,
             StorageAccountsContext storageAccountsContext)
         {
-            this.azureIPInfoProvider = azureIPInfoProvider;
+            this.httpClient = httpClient;
             this.storageAccountsContext = storageAccountsContext;
             this.logger = logger;
         }
@@ -35,8 +30,8 @@ namespace AzureSpeed.WebApp.ApiControllers
         [Route("ipinfo")]
         public async Task<IActionResult> GetAzureIPInfo(string ipAddressOrUrl)
         {
-            var result = await this.azureIPInfoProvider.GetAzureIPInfo(ipAddressOrUrl);
-            logger.LogInformation($"Get ip info for {ipAddressOrUrl}, result = {JsonConvert.SerializeObject(result)}");
+            string url = $"https://azureiplookup.azurewebsites.net/api/ipinfo?ip={ipAddressOrUrl}";
+            var result = await httpClient.GetStringAsync(url);
             return Ok(result);
         }
 

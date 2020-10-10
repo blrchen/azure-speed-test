@@ -53,23 +53,8 @@ export class APIService {
       .pipe(catchError(this.handleError));
   }
 
-  public getAzureBillingMeters(): Observable<any> {
-    const url = environment.apiEndpoint + "/api/billingmeters";
-    return this.httpClient.get<any>(url).pipe(catchError(this.handleError));
-  }
-
-  public getAzureVMPrices(): Observable<any> {
-    const url = environment.apiEndpoint + "/api/vmPrices";
-    return this.httpClient.get<any>(url).pipe(catchError(this.handleError));
-  }
-
-  public getIpRange(): Observable<any> {
-    const url = environment.apiEndpoint + "/api/iprange";
-    return this.httpClient.get<any>(url).pipe(catchError(this.handleError));
-  }
-
   // To be deprecated
-  public getRegionInfo(ipOrUrl: string): Observable<IpRangeInfo> {
+  public getLegacyAzureIPInfo(ipOrUrl: string): Observable<IpRangeInfo> {
     const url = environment.apiEndpoint + "/api/region?ipOrUrl=" + ipOrUrl;
     return this.httpClient
       .get<IpRangeInfo>(url)
@@ -108,5 +93,5 @@ export class APIService {
     // Return an observable with a user-facing error message.
     console.error(errorMessage);
     return throwError(errorMessage);
-  }
+  };
 }

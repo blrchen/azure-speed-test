@@ -5,6 +5,8 @@
     "noUnusedParameters": true,
     "noUnusedLocals": true,
     // "noImplicitAny": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "sourceMap": true,

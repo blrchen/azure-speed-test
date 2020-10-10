@@ -14,7 +14,7 @@ export class RegionFinderComponent implements OnInit {
   ngOnInit() {}
 
   onSubmit() {
-    this.apiService.getRegionInfo(this.ipOrUrl).subscribe((res) => {
+    this.apiService.getLegacyAzureIPInfo(this.ipOrUrl).subscribe((res) => {
       this.result = res;
     });
   }

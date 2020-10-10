@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Xml;
 using AzureSpeed.WebApp.Contracts;
@@ -20,25 +18,22 @@ namespace AzureSpeed.WebApp.ApiControllers
     public class ApiController : ControllerBase
     {
         private readonly IAzureIPInfoProvider azureIPInfoProvider;
-        private readonly IFileProvider fileProvider;
         private readonly ILogger<ApiController> logger;
         private readonly StorageAccountsContext storageAccountsContext;
 
         public ApiController(
             IAzureIPInfoProvider azureIPInfoProvider,
-            IFileProvider fileProvider,
             ILogger<ApiController> logger,
             StorageAccountsContext storageAccountsContext)
         {
             this.azureIPInfoProvider = azureIPInfoProvider;
-            this.fileProvider = fileProvider;
             this.storageAccountsContext = storageAccountsContext;
             this.logger = logger;
         }
 
         [HttpGet]
         [Route("ipinfo")]
-        public async Task<IActionResult> GetRegionInfo(string ipAddressOrUrl)
+        public async Task<IActionResult> GetAzureIPInfo(string ipAddressOrUrl)
         {
             var result = await this.azureIPInfoProvider.GetAzureIPInfo(ipAddressOrUrl);
             logger.LogInformation($"Get ip info for {ipAddressOrUrl}, result = {JsonConvert.SerializeObject(result)}");
@@ -61,70 +56,6 @@ namespace AzureSpeed.WebApp.ApiControllers
             }
 
             return Ok(new { Url = url });
-        }
-
-        [HttpGet]
-        [Route("iprange")]
-        public IActionResult GetIpRange()
-        {
-            var result = new List<AzureIPRangeInfo>();
-
-            string ipFileList = Constants.Constants.AzureIpRangeFileList;
-            foreach (string filePath in ipFileList.Split(';'))
-            {
-                var file = fileProvider.GetFileInfo($"Data/IpRangeFiles/Azure/{filePath}");
-                var xmlDoc = new XmlDocument();
-                xmlDoc.Load(file.PhysicalPath);
-                var root = xmlDoc.DocumentElement;
-                foreach (XmlElement ele in root)
-                {
-                    string region = ele.GetAttribute("Name");
-                    var ipRange = new AzureIPRangeInfo { Cloud = "Azure", Region = region, Subnet = new List<string>() };
-                    foreach (XmlElement xe in ele)
-                    {
-                        string subnet = xe.GetAttribute("Subnet");
-                        ipRange.Subnet.Add(subnet);
-                        ipRange.TotalIpCount += IPNetwork.Parse(subnet).Total;
-                    }
-
-                    result.Add(ipRange);
-                }
-            }
-
-            result.ForEach(r => r.TotalIp = r.TotalIpCount.ToString());
-
-            return Ok(result);
-        }
-
-        [HttpGet]
-        [Route("billingmeters")]
-        public IActionResult GetBillingMeters()
-        {
-            var file = fileProvider.GetFileInfo("Data/ratecard.json");
-            string result;
-            using (var stream = file.CreateReadStream())
-            {
-                using (var reader = new StreamReader(stream))
-                {
-                    result = reader.ReadToEnd();
-                }
-            }
-
-            return Ok(result);
-        }
-
-        [HttpGet]
-        [Route("vmPrices")]
-        public async Task<IActionResult> GetAzureVMPricing()
-        {
-            const string vmPricingDownloadUrl = "https://azureiplookup.blob.core.windows.net/ipfiles/vmprices.json";
-            string result;
-            using (var httpClient = new HttpClient())
-            {
-                result = await httpClient.GetStringAsync(vmPricingDownloadUrl);
-            }
-
-            return Ok(result);
         }
 
         [HttpPost]

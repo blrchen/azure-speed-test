@@ -21,35 +21,31 @@ namespace AzureSpeed.Test
         {
             // ip of azure.com
             string ipOfAzureCom = "168.62.225.23";
-            var eastAsiaRegion = this.legacyAzureIpInfoProvider.GetRegionInfo(ipOfAzureCom);
+            var eastAsiaRegion = this.legacyAzureIpInfoProvider.GetLegacyAzureIPInfo(ipOfAzureCom);
             Assert.AreEqual("Azure", eastAsiaRegion.Cloud);
             Assert.AreEqual("North Central US", eastAsiaRegion.Region);
             Assert.AreEqual(ipOfAzureCom, eastAsiaRegion.IPAddress);
 
             // ip of azure.cn
             string ipOfAzureCN = "42.159.5.43";
-            var eastChinaRegion = this.legacyAzureIpInfoProvider.GetRegionInfo(ipOfAzureCN);
+            var eastChinaRegion = this.legacyAzureIpInfoProvider.GetLegacyAzureIPInfo(ipOfAzureCN);
             Assert.AreEqual("Azure", eastAsiaRegion.Cloud);
             Assert.AreEqual("China North", eastChinaRegion.Region);
             Assert.AreEqual(ipOfAzureCN, eastChinaRegion.IPAddress);
 
             string ipOfAzureSpeedCom = "104.45.231.79";
-            var azureSpeedRegion = this.legacyAzureIpInfoProvider.GetRegionInfo("www.azurespeed.com");
+            var azureSpeedRegion = this.legacyAzureIpInfoProvider.GetLegacyAzureIPInfo("www.azurespeed.com");
             Assert.AreEqual("Azure", eastAsiaRegion.Cloud);
             Assert.AreEqual("West US", azureSpeedRegion.Region);
             Assert.AreEqual(ipOfAzureSpeedCom, azureSpeedRegion.IPAddress);
 
-            var azureSpeedRegion1 = this.legacyAzureIpInfoProvider.GetRegionInfo("https://www.azurespeed.com/");
+            var azureSpeedRegion1 = this.legacyAzureIpInfoProvider.GetLegacyAzureIPInfo("https://www.azurespeed.com/");
             Assert.AreEqual("Azure", eastAsiaRegion.Cloud);
             Assert.AreEqual("West US", azureSpeedRegion1.Region);
             Assert.AreEqual(ipOfAzureSpeedCom, azureSpeedRegion1.IPAddress);
 
-            var noRegion = this.legacyAzureIpInfoProvider.GetRegionInfo("1.1.1.1");
+            var noRegion = this.legacyAzureIpInfoProvider.GetLegacyAzureIPInfo("1.1.1.1");
             Assert.IsTrue(string.IsNullOrEmpty(noRegion.Region));
-
-            // TODO
-            // var invalidHostRegion = this.legacyAzureIpInfoProvider.GetRegionInfo("88888888888888888888.888");
-            // Assert.IsTrue(string.IsNullOrEmpty(invalidHostRegion.Region));
         }
     }
 }

@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { APIService } from "../../services";
+import data from "../../../assets/data/ratecard.json";
 
 @Component({
   selector: "app-home",
@@ -7,16 +7,11 @@ import { APIService } from "../../services";
   styleUrls: ["./azureBillingMeters.component.scss"],
 })
 export class AzureBillingMetersComponent implements OnInit {
-  message: string;
   tableData: any = [];
 
-  constructor(private apiService: APIService) {}
+  constructor() {}
 
   ngOnInit() {
-    this.message = "Please wait ...";
-    this.apiService.getAzureBillingMeters().subscribe((res) => {
-      this.message = "";
-      this.tableData = res;
-    });
+    this.tableData = data;
   }
 }

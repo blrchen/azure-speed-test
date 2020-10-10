@@ -7,14 +7,14 @@ namespace AzureSpeed.WebApp.Providers
 {
     public class LegacyAzureIPInfoProvider : ILegacyAzureIPInfoProvider
     {
-        private string path;
+        private readonly string path;
 
         public LegacyAzureIPInfoProvider(string path)
         {
             this.path = path;
         }
 
-        public LegacyAzureIPInfo GetRegionInfo(string ipAddressOrUrl)
+        public LegacyAzureIPInfo GetLegacyAzureIPInfo(string ipAddressOrUrl)
         {
             var regionNames = GetRegionNames();
             var subnets = GetSubnetDictionary();

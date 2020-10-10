@@ -16,7 +16,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Scripts", ".Scripts", "{60
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "contents", "contents", "{84909C0E-6861-469B-BF0F-00AA9670D734}"
 	ProjectSection(SolutionItems) = preProject
-		..\scripts\contents\CreateGeographiesTable.ps1 = ..\scripts\contents\CreateGeographiesTable.ps1
 		..\scripts\contents\CreateSettingsJson.ps1 = ..\scripts\contents\CreateSettingsJson.ps1
 	EndProjectSection
 EndProject

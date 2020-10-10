@@ -15,7 +15,7 @@ export class UtilsService {
 
     const match = regex.exec(sasUrl);
     if (!match) {
-      throw new Error("invalid blob url.");
+      throw new Error(`Invalid blob sas url: ${sasUrl}`);
     }
     const blob: BlobModel = {
       endpoint: match[1],

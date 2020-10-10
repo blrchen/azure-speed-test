@@ -6,7 +6,6 @@
       regions, that preserves data residency and compliance boundaries
     </small>
   </div>
-
   <div class="mt-3">
     <table class="table table-sm table-bordered table-striped ft-14 mt-2">
       <thead>
@@ -16,117 +15,12 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>Asia Pacific</td>
+        <tr *ngFor="let g of tableData">
+          <td>{{ g.Geography }}</td>
           <td>
-            East Asia ( Hong Kong )<br />
-            Southeast Asia ( Singapore )<br />
-          </td>
-        </tr>
-        <tr>
-          <td>Australia</td>
-          <td>
-            Australia Central ( Canberra )<br />
-            Australia Central 2 ( Canberra )<br />
-            Australia East ( New South Wales )<br />
-            Australia Southeast ( Victoria )<br />
-          </td>
-        </tr>
-        <tr>
-          <td>Brazil</td>
-          <td>Brazil South ( Sao Paulo State )<br /></td>
-        </tr>
-        <tr>
-          <td>Canada</td>
-          <td>
-            Canada Central ( Toronto )<br />
-            Canada East ( Quebec City )<br />
-          </td>
-        </tr>
-        <tr>
-          <td>Europe</td>
-          <td>
-            North Europe ( Ireland )<br />
-            Norway East ( Oslo )<br />
-            Norway West ( Stavanger )<br />
-            West Europe ( Netherlands )<br />
-          </td>
-        </tr>
-        <tr>
-          <td>France</td>
-          <td>
-            France Central ( Paris )<br />
-            France South ( Marseille )<br />
-          </td>
-        </tr>
-        <tr>
-          <td>Germany</td>
-          <td>
-            Germany North ( Berlin )<br />
-            Germany West Central ( Frankfurt )<br />
-          </td>
-        </tr>
-        <tr>
-          <td>India</td>
-          <td>
-            Central India ( Pune )<br />
-            South India ( Chennai )<br />
-            West India ( Mumbai )<br />
-          </td>
-        </tr>
-        <tr>
-          <td>Japan</td>
-          <td>
-            Japan East ( Tokyo, Saitama )<br />
-            Japan West ( Osaka )<br />
-          </td>
-        </tr>
-        <tr>
-          <td>Korea</td>
-          <td>
-            Korea Central ( Seoul )<br />
-            Korea South ( Busan )<br />
-          </td>
-        </tr>
-        <tr>
-          <td>South Africa</td>
-          <td>
-            South Africa North ( Johannesburg )<br />
-            South Africa West ( Cape Town )<br />
-          </td>
-        </tr>
-        <tr>
-          <td>Switzerland</td>
-          <td>
-            Switzerland North ( Zurich )<br />
-            Switzerland West ( Geneva )<br />
-          </td>
-        </tr>
-        <tr>
-          <td>United Arab Emirates</td>
-          <td>
-            UAE Central ( Abu Dhabi )<br />
-            UAE North ( Dubai )<br />
-          </td>
-        </tr>
-        <tr>
-          <td>United Kingdom</td>
-          <td>
-            UK South ( London )<br />
-            UK West ( Cardiff )<br />
-          </td>
-        </tr>
-        <tr>
-          <td>United States</td>
-          <td>
-            Central US ( Iowa )<br />
-            East US ( Virginia )<br />
-            East US 2 ( Virginia )<br />
-            North Central US ( Illinois )<br />
-            South Central US ( Texas )<br />
-            West Central US ( Wyoming )<br />
-            West US ( California )<br />
-            West US 2 ( Washington )<br />
+            <span *ngFor="let r of g.Regions"
+              >{{ r.DisplayName }} ({{ r.Metadata.PhysicalLocation }})<br
+            /></span>
           </td>
         </tr>
       </tbody>

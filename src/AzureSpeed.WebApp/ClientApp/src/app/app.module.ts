@@ -10,8 +10,6 @@ import {
   GlobalErrorHandler,
   RegionService,
 } from "./services";
-import { AzureModule } from "./azure/azure.module";
-import { InformationModule } from "./information/information.module";
 
 @NgModule({
   declarations: [AppComponent],
@@ -20,8 +18,6 @@ import { InformationModule } from "./information/information.module";
     BrowserAnimationsModule,
     BrowserModule,
     HttpClientModule,
-    AzureModule, // TODO: can this import be removed?
-    InformationModule, // TODO: can this import be removed?
   ],
   providers: [
     ErrorTelemetryService,

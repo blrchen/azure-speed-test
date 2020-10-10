@@ -1,4 +1,5 @@
 import { Component, OnInit } from "@angular/core";
+import data from "../../../assets/data/geographies.json";
 
 @Component({
   selector: "app-home",
@@ -6,7 +7,11 @@ import { Component, OnInit } from "@angular/core";
   styleUrls: ["./azureGeographies.component.scss"],
 })
 export class AzureGeographiesComponent implements OnInit {
+  tableData: any = [];
+
   constructor() {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.tableData = data;
+  }
 }

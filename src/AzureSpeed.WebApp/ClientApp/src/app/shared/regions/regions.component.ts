@@ -1,5 +1,4 @@
 import { Component, OnInit } from "@angular/core";
-import { Regions } from "./utils";
 import { RegionModel, RegionGroupModel, DefaultRegionsKey } from "../../models";
 import { RegionService } from "../../services";
 
@@ -79,7 +78,7 @@ export class RegionsComponent implements OnInit {
   }
 
   constructor(private regionService: RegionService) {
-    const groups = Regions.reduce((arr, item) => {
+    const groups = regionService.getAllRegions().reduce((arr, item) => {
       const { geography } = item;
       if (!arr.includes(geography)) {
         arr.push(geography);
@@ -88,7 +87,7 @@ export class RegionsComponent implements OnInit {
     }, []);
     this.regionsGroup = groups.reduce((arr, item) => {
       const geography = item;
-      const regions = Regions.filter((i) => i.geography === geography).map(
+      const regions = regionService.getAllRegions().filter((i) => i.geography === geography).map(
         (i) => ({
           ...i,
           checked: false,

@@ -4,11 +4,11 @@ import { Routes, RouterModule } from "@angular/router";
 const routes: Routes = [
   {
     path: "Azure",
-    loadChildren: "./azure/azure.module#AzureModule",
+    loadChildren: () => import("./azure/azure.module").then(m => m.AzureModule),
   },
   {
     path: "Information",
-    loadChildren: "./information/information.module#InformationModule",
+    loadChildren: () => import("./information/information.module").then(m => m.InformationModule),
   },
   {
     path: "**",
@@ -21,4 +21,4 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

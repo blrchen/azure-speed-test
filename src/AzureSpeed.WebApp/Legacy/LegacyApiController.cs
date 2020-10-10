@@ -25,7 +25,7 @@ namespace AzureSpeed.WebApp.Legacy
         [Route("region")]
         public IActionResult GetAzureInfo(string ipOrUrl)
         {
-            var result = this.legacyAzureIpInfoProvider.GetRegionInfo(ipOrUrl);
+            var result = this.legacyAzureIpInfoProvider.GetLegacyAzureIPInfo(ipOrUrl);
             logger.LogInformation($"Get region info for {ipOrUrl}, result = {JsonConvert.SerializeObject(result)}");
             return Ok(result);
         }

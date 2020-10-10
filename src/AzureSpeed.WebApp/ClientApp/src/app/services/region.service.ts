@@ -1,9 +1,7 @@
 import { BehaviorSubject, Observable } from "rxjs";
 import { Injectable } from "@angular/core";
-
 import { DefaultRegionsKey, RegionModel } from "../models";
-
-import { Regions } from "../shared/regions/utils";
+import data from "../../assets/data/regions.json";
 
 @Injectable({
   providedIn: "root",
@@ -32,7 +30,7 @@ export class RegionService {
   }
 
   getAllRegions(): RegionModel[] {
-    return Regions;
+    return data;
   }
 
   clearRegions() {

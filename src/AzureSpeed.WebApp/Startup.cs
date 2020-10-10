@@ -37,7 +37,6 @@ namespace AzureSpeed.WebApp
 
             services.AddCors("CorsPolicy");
 
-            services.AddSingleton<IFileProvider>(this.webHostEnvironment.ContentRootFileProvider);
             services.AddSingleton<IAzureIPInfoProvider, AzureIPInfoProvider>();
             services.AddSingleton<ILegacyAzureIPInfoProvider, LegacyAzureIPInfoProvider>(serviceProvider =>
             {

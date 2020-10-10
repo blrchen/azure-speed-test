@@ -77,14 +77,9 @@ export const Menus = [
     title: "Azure Virtual Machine Pricing",
   },
   {
-    path: "/Information/AzureIpRange",
+    path: "/Information/AzureIpRanges",
     icon: "fa fa-book",
-    title: "Azure IP Range",
-  },
-  {
-    path: "/Azure/RegionFinder",
-    icon: "fa fa-search",
-    title: "Cloud Region Finder",
+    title: "Azure IP Ranges",
   },
   {
     path: "/Information/References",

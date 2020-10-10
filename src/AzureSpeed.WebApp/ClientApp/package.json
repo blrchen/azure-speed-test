@@ -27,7 +27,7 @@
     "@angular/router": "10.1.1",
     "@azure/storage-blob": "12.2.1",
     "@fortawesome/fontawesome-free": "5.15.1",
-    "@microsoft/applicationinsights-web": "2.5.8",
+    "@microsoft/applicationinsights-web": "2.5.9",
     "@ng-bootstrap/ng-bootstrap": "7.0.0",
     "@swimlane/ngx-charts": "16.0.0",
     "bootstrap": "4.5.2",

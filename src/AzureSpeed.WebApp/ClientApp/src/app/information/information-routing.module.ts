@@ -40,8 +40,8 @@ const routes: Routes = [
         component: AzureGeographiesComponent,
       },
       {
-        path: "AzureIpRange",
-        data: { title: "Azure IP Range" },
+        path: "AzureIpRanges",
+        data: { title: "Azure IP Ranges" },
         component: AzureIpRangeComponent,
       },
       {
@@ -64,12 +64,6 @@ const routes: Routes = [
         path: "References",
         data: { title: "References" },
         component: ReferencesComponent,
-      },
-      // Legacy, better to use 301 redirect
-      {
-        path: "IpRange",
-        data: { title: "Azure IP Range" },
-        component: AzureIpRangeComponent,
       },
       {
         path: "**",

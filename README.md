@@ -13,11 +13,11 @@ Azure speed test tool. Test your network latency, download and upload speed to A
 
 ## Local development environment setup steps
 
-1. Run CreateSettingsJson.ps1 to provision storage accounts and generate settings.json for backend.
+1. Run **CreateSettingsJson.ps1** to provision Azure storage accounts and generate **settings.json** for backend.
 2. Run **AzureSpeed.AdminConsole.exe**, this tool will take care of everything needs for bootstrapping an Azure storage account to run speed test
     * Enable CORS
     * Create containers
-    * Create a callback.js used for latency test
+    * Upload latency-test.json used for latency test
     * Upload a 100MB dummy file for download speed test (File can be downloaded from <https://www.azurespeed.com/Azure/Download>)
 3. Open **AzureSpeed.sln** in **Visual Studio 2019**
 4. You are all set now, enjoy coding!
@@ -26,9 +26,9 @@ Azure speed test tool. Test your network latency, download and upload speed to A
 
 See README [here](src/frontend/README.md), change environment.ts line 8, replace apiEndpoint from <https://localhost:5001> to <https://www.azurespeed.com> to avoid use local api service.
 
-## Add a new region
+## Refresh region list after new region launches
 
-1. Run CreateSettingsJson.ps1 to refresh settings.json
+1. Run **CreateSettingsJson.ps1** to refresh settings.json
 2. Run **AzureSpeed.AdminConsole.exe** to bootstrap storage account for newly added region(s)
 
 ## Built on

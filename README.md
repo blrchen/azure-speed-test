@@ -9,7 +9,7 @@ Azure speed test tool. Test your network latency, download and upload speed to A
 
 ## Demo
 
-* https://www.azurespeed.com
+* <https://www.azurespeed.com>
 
 ## Local development environment setup steps
 
@@ -18,13 +18,13 @@ Azure speed test tool. Test your network latency, download and upload speed to A
     * Enable CORS
     * Create containers
     * Create a callback.js used for latency test
-    * Upload a 100MB dummy file for download speed test (File can be downloaded from https://www.azurespeed.com/Azure/Download)
+    * Upload a 100MB dummy file for download speed test (File can be downloaded from <https://www.azurespeed.com/Azure/Download>)
 3. Open **AzureSpeed.sln** in **Visual Studio 2019**
 4. You are all set now, enjoy coding!
 
 ## If you are only interested with UI development work
 
-See README [here](src/frontend/README.md), change environment.ts line 8, replace apiEndpoint from https://localhost:5001 to https://www.azurespeed.com to avoid use local api service.
+See README [here](src/frontend/README.md), change environment.ts line 8, replace apiEndpoint from <https://localhost:5001> to <https://www.azurespeed.com> to avoid use local api service.
 
 ## Add a new region
 
@@ -35,7 +35,8 @@ See README [here](src/frontend/README.md), change environment.ts line 8, replace
 
 * [Angular](https://github.com/angular/angular)
 * [Application Insights JavaScript SDK](https://github.com/microsoft/ApplicationInsights-JS)
-* [ASP.NET Core](https://github.com/aspnet/home)
+* [ASP.NET Core](https://github.com/dotnet/aspnetcore)
+* [Auzre IP Lookup](https://github.com/blrchen/AzureIPLookup)
 * [Azure SDK for JavaScript](https://github.com/Azure/azure-sdk-for-js)
 * [Bootstrap](https://github.com/twbs/bootstrap)
 * [d3-shape](https://github.com/d3/d3-shape)

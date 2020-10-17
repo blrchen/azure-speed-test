@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using AzureSpeed.WebApp.Common;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Auth;
 using Microsoft.Azure.Storage.Blob;
@@ -33,13 +34,13 @@ namespace AzureSpeed.WebApp.Storage
             if (operation.ToLower() == "upload")
             {
                 permissions |= SharedAccessBlobPermissions.Write;
-                containerName = Constants.Constants.UploadContainerName;
+                containerName = AzureSpeedConstants.UploadContainerName;
             }
 
             if (operation.ToLower() == "download")
             {
                 permissions |= SharedAccessBlobPermissions.Read;
-                containerName = Constants.Constants.PrivateContainerName;
+                containerName = AzureSpeedConstants.PrivateContainerName;
             }
 
             var policy = new SharedAccessBlobPolicy
@@ -121,7 +122,7 @@ namespace AzureSpeed.WebApp.Storage
 
         public async Task CreatePublicContainerAsync()
         {
-            var container = this.blobClient.GetContainerReference(Constants.Constants.PublicContainerName);
+            var container = this.blobClient.GetContainerReference(AzureSpeedConstants.PublicContainerName);
             if (container != null)
             {
                 // Create container with blob public access permission
@@ -131,13 +132,13 @@ namespace AzureSpeed.WebApp.Storage
                     PublicAccess = BlobContainerPublicAccessType.Blob
                 };
                 await container.SetPermissionsAsync(permissions);
+            }
 
-                // Create callback.js blob
-                var blob = container.GetBlockBlobReference(Constants.Constants.CallBackBlobName);
-                if (blob != null && !await blob.ExistsAsync())
-                {
-                    await CreateCallbackJsBlob();
-                }
+            // Create test.json blob
+            var blob = container.GetBlockBlobReference(AzureSpeedConstants.LatencyTestBlobName);
+            if (blob != null && !await blob.ExistsAsync())
+            {
+                await CreateCallbackJsBlob();
             }
         }
 
@@ -158,23 +159,23 @@ namespace AzureSpeed.WebApp.Storage
 
         public async Task CreateCallbackJsBlob()
         {
-            var container = this.blobClient.GetContainerReference(Constants.Constants.PublicContainerName);
-            string blobContent = $"latency._pingCallback('{blobClient.Credentials.AccountName}');";
+            var container = this.blobClient.GetContainerReference(AzureSpeedConstants.PublicContainerName);
+            string blobContent = "";
             using (var stream = GenerateStreamFromString(blobContent))
             {
-                var blob = container.GetBlockBlobReference(Constants.Constants.CallBackBlobName);
+                var blob = container.GetBlockBlobReference(AzureSpeedConstants.LatencyTestBlobName);
                 await blob.UploadFromStreamAsync(stream);
-                blob.Properties.ContentType = "application/javascript";
+                blob.Properties.ContentType = "application/json";
                 await blob.SetPropertiesAsync();
             }
         }
 
         public async Task Upload100MBBlobAsync()
         {
-            var container = this.blobClient.GetContainerReference(Constants.Constants.PrivateContainerName);
+            var container = this.blobClient.GetContainerReference(AzureSpeedConstants.PrivateContainerName);
 
             // Create 100MB.bin blob
-            var blob = container.GetBlockBlobReference(Constants.Constants.DownloadTestBlobName);
+            var blob = container.GetBlockBlobReference(AzureSpeedConstants.DownloadTestBlobName);
             if (blob != null && !await blob.ExistsAsync())
             {
                 var fullFilePath = @"C:\DelMe\100MB.bin";

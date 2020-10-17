@@ -12,16 +12,16 @@ namespace AzureSpeed.WebApp.ApiControllers
     [ApiController]
     public class ApiController : ControllerBase
     {
-        private readonly HttpClient httpClient;
+        private readonly IHttpClientFactory httpClientFactory;
         private readonly ILogger<ApiController> logger;
         private readonly StorageAccountsContext storageAccountsContext;
 
         public ApiController(
-            HttpClient httpClient,
+            IHttpClientFactory httpClientFactory,
             ILogger<ApiController> logger,
             StorageAccountsContext storageAccountsContext)
         {
-            this.httpClient = httpClient;
+            this.httpClientFactory = httpClientFactory;
             this.storageAccountsContext = storageAccountsContext;
             this.logger = logger;
         }
@@ -30,8 +30,8 @@ namespace AzureSpeed.WebApp.ApiControllers
         [Route("ipinfo")]
         public async Task<IActionResult> GetAzureIPInfo(string ipAddressOrUrl)
         {
-            string url = $"https://azureiplookup.azurewebsites.net/api/ipinfo?ip={ipAddressOrUrl}";
-            var result = await httpClient.GetStringAsync(url);
+            string url = $"https://azureiplookup.azurewebsites.net/api/ipinfo?ipOrDomain={ipAddressOrUrl}";
+            var result = await this.httpClientFactory.CreateClient().GetStringAsync(url);
             return Ok(result);
         }
 

@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using AzureSpeed.WebApp.Constants;
+using AzureSpeed.WebApp.Common;
 using AzureSpeed.WebApp.Storage;
 
 namespace AzureSpeed.AdminConsole
@@ -16,9 +16,9 @@ namespace AzureSpeed.AdminConsole
 
             foreach (var account in localDataStoreContext.StorageAccounts.ToList())
             {
-                if (account.Name != "astnorwayeast")
+                if (account.Name != "asteastasia")
                 {
-                    continue;
+                    // continue;
                 }
 
                 var storageContext = new StorageContext(account);
@@ -34,10 +34,10 @@ namespace AzureSpeed.AdminConsole
                 await storageContext.CreatePublicContainerAsync();
                 Console.WriteLine($"[{account.Name}] Successfully created public container");
 
-                await storageContext.CreatePrivateContainerAsync(Constants.PrivateContainerName);
+                await storageContext.CreatePrivateContainerAsync(AzureSpeedConstants.PrivateContainerName);
                 Console.WriteLine($"[{account.Name}] Successfully created private container");
 
-                await storageContext.CreatePrivateContainerAsync(Constants.UploadContainerName);
+                await storageContext.CreatePrivateContainerAsync(AzureSpeedConstants.UploadContainerName);
                 Console.WriteLine($"[{account.Name}] Successfully created upload container");
 
                 await storageContext.Upload100MBBlobAsync();

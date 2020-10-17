@@ -1,6 +1,5 @@
 using AzureSpeed.WebApp.Extensions;
 using AzureSpeed.WebApp.Filters;
-using AzureSpeed.WebApp.Providers;
 using AzureSpeed.WebApp.Storage;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -37,11 +36,6 @@ namespace AzureSpeed.WebApp
             services.AddCors("CorsPolicy");
 
             services.AddHttpClient();
-            services.AddSingleton<ILegacyAzureIPInfoProvider, LegacyAzureIPInfoProvider>(serviceProvider =>
-            {
-                var localDataStoreContext = new LegacyAzureIPInfoProvider(webHostEnvironment.ContentRootPath);
-                return localDataStoreContext;
-            });
             services.AddSingleton<StorageAccountsContext>(serviceProvider =>
             {
                 var localDataStoreContext = new StorageAccountsContext(webHostEnvironment.ContentRootPath);

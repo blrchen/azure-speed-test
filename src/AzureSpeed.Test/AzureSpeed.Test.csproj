@@ -8,12 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="..\AzureSpeed.WebApp\Data\IpRangeFiles\Azure\PublicIPs.xml" Link="Data\IpRangeFiles\Azure\PublicIPs.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\AzureSpeed.WebApp\Data\IpRangeFiles\Azure\PublicIPs_MC.xml" Link="Data\IpRangeFiles\Azure\PublicIPs_MC.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Compile Remove="Data\IpRangeFiles\**" />
+    <EmbeddedResource Remove="Data\IpRangeFiles\**" />
+    <None Remove="Data\IpRangeFiles\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="..\AzureSpeed.WebApp\Data\settings.json" Link="Data\settings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -21,17 +21,13 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
-    <PackageReference Include="Moq" Version="4.14.5" />
+    <PackageReference Include="Moq" Version="4.14.7" />
     <PackageReference Include="MSTest.TestAdapter" Version="2.1.2" />
     <PackageReference Include="MSTest.TestFramework" Version="2.1.2" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Data\IpRangeFiles\Azure\" />
   </ItemGroup>
 
   <ItemGroup>

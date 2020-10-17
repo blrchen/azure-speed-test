@@ -10,9 +10,7 @@ export class AppInsightsService {
 
   constructor() {
     const key = environment.appInsightKey;
-    const isIEOrLegacyEdge = /msie\s|trident\/|edge\//i.test(
-      window.navigator.userAgent
-    );
+    const isIEOrLegacyEdge = /msie\s|trident\/|edge\//i.test(window.navigator.userAgent);
     console.log("isIEOrLegacyEdge = ", isIEOrLegacyEdge);
     if (key && !isIEOrLegacyEdge) {
       this.appInsights = new ApplicationInsights({

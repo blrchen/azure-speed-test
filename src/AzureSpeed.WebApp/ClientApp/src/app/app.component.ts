@@ -11,29 +11,18 @@ import { DefaultRegionsKey } from "./models";
   styleUrls: ["./app.component.scss"],
 })
 export class AppComponent implements OnInit {
-  constructor(
-    private readonly router: Router,
-    private title: Title,
-    private regionService: RegionService
-  ) {
+  constructor(private readonly router: Router, private title: Title, private regionService: RegionService) {
     const regions = localStorage.getItem(DefaultRegionsKey);
     this.regionService.updateRegions(regions ? JSON.parse(regions) : []);
   }
 
   ngOnInit() {
-    this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe((_) => {
-        const title = this.getFromRouteData("title");
-        this.title.setTitle(
-          (title && `${title} - Azure Speed Test`) || "Azure Speed Test"
-        );
-      });
+    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((_) => {
+      const title = this.getFromRouteData("title");
+      this.title.setTitle((title && `${title} - Azure Speed Test`) || "Azure Speed Test");
+    });
   }
-  private getFromRouteData(
-    name: string,
-    routeSnapshot = this.router.routerState.snapshot.root
-  ): string {
+  private getFromRouteData(name: string, routeSnapshot = this.router.routerState.snapshot.root): string {
     let value = (routeSnapshot.data && routeSnapshot.data[name]) || null;
     if (routeSnapshot.firstChild) {
       value = this.getFromRouteData(name, routeSnapshot.firstChild) || value;

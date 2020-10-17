@@ -1,17 +1,6 @@
-import {
-  Component,
-  TemplateRef,
-  ViewChild,
-  OnInit,
-  OnDestroy,
-} from "@angular/core";
+import { Component, TemplateRef, ViewChild, OnInit, OnDestroy } from "@angular/core";
 import { NgbModal, NgbModalRef } from "@ng-bootstrap/ng-bootstrap";
-import {
-  RegionService,
-  APIService,
-  UtilsService,
-  StorageService,
-} from "../../services";
+import { RegionService, APIService, UtilsService, StorageService } from "../../services";
 import { Subscription } from "rxjs";
 import { BlobUploadSpeedModel, RegionModel } from "src/app/models";
 
@@ -80,9 +69,7 @@ export class UploadLargeFileComponent implements OnInit, OnDestroy {
       const url = res.url || "";
       const blob = this.utilsService.parseSasUrl(url);
       const client = this.storageService.createBlobServiceClient(blob);
-      const blockBlob = client
-        .getContainerClient("upload")
-        .getBlockBlobClient(blob.blobName);
+      const blockBlob = client.getContainerClient("upload").getBlockBlobClient(blob.blobName);
       const uploadStartTime = new Date().getTime();
       this.uploadProgress = "";
       this.uploadTime = "";
@@ -92,26 +79,19 @@ export class UploadLargeFileComponent implements OnInit, OnDestroy {
           // TODO: use maxSingleShotSize for multi-thread block blob upload
           concurrency: this.thread,
           onProgress: ({ loadedBytes }) => {
-            this.uploadProgress = `${(
-              (loadedBytes / this.file.size) *
-              100
-            ).toFixed(0)}%`;
+            this.uploadProgress = `${((loadedBytes / this.file.size) * 100).toFixed(0)}%`;
           },
         })
         .then(
           () => {
             const totalTime = (new Date().getTime() - uploadStartTime) / 1000;
-            const speed = `${this.utilsService.getSizeStr(
-              this.file.size / totalTime
-            )}/s`;
+            const speed = `${this.utilsService.getSizeStr(this.file.size / totalTime)}/s`;
             this.uploadFileName = this.file.name;
             this.uploadFileSize = this.utilsService.getSizeStr(this.file.size);
             this.uploadTime = `${totalTime} s`;
             this.uploadSpeed = speed;
 
-            const regionObj = this.regions.filter(
-              ({ regionName: id }) => id === this.region
-            );
+            const regionObj = this.regions.filter(({ regionName: id }) => id === this.region);
 
             const data = {
               fileName: this.file.name,

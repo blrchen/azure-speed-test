@@ -39,10 +39,7 @@ export class LatencyComponent implements OnInit, OnDestroy {
 
   xAxisTicks: any[] = [];
 
-  constructor(
-    private apiService: APIService,
-    private regionService: RegionService
-  ) {}
+  constructor(private apiService: APIService, private regionService: RegionService) {}
 
   ngOnInit() {
     const sub = this.regionService.getRegions().subscribe((res) => {
@@ -84,13 +81,7 @@ export class LatencyComponent implements OnInit, OnDestroy {
   formatData() {
     const tableDataCache: RegionModel[] = [];
     this.regions.forEach((item, index) => {
-      const {
-        regionName,
-        displayName,
-        storageAccountName,
-        physicalLocation,
-        geography,
-      } = item;
+      const { regionName, displayName, storageAccountName, physicalLocation, geography } = item;
       const t = this.latestPingTime.get(storageAccountName);
       if (t > 0) {
         tableDataCache.push({
@@ -127,13 +118,11 @@ export class LatencyComponent implements OnInit, OnDestroy {
       this.tableData.forEach(({ storageAccountName, displayName }) => {
         let isNew = true;
 
-        this.lineChartRawData.forEach(
-          ({ storageAccountName: storageAccountName2 }) => {
-            if (storageAccountName === storageAccountName2) {
-              isNew = false;
-            }
+        this.lineChartRawData.forEach(({ storageAccountName: storageAccountName2 }) => {
+          if (storageAccountName === storageAccountName2) {
+            isNew = false;
           }
-        );
+        });
         if (isNew) {
           this.lineChartData.push({
             name: displayName,
@@ -154,13 +143,11 @@ export class LatencyComponent implements OnInit, OnDestroy {
         const { storageAccountName, series } = item;
         const t = this.latestPingTime.get(storageAccountName) || 0;
         let isRemove = true;
-        this.tableData.forEach(
-          ({ storageAccountName: storageAccountName2 }) => {
-            if (storageAccountName === storageAccountName2) {
-              isRemove = false;
-            }
+        this.tableData.forEach(({ storageAccountName: storageAccountName2 }) => {
+          if (storageAccountName === storageAccountName2) {
+            isRemove = false;
           }
-        );
+        });
         if (series.length > xLength - 1) {
           series.shift();
         }
@@ -200,9 +187,7 @@ export class LatencyComponent implements OnInit, OnDestroy {
       this.startTime.set(storageAccountName, new Date().getTime());
       // TODO(blair): review all sub pattern to ensure disposal logic
       const sub = this.apiService.ping(region).subscribe(() => {
-        const pingTime = (
-          new Date().getTime() - this.startTime.get(storageAccountName)
-        ).toFixed(0);
+        const pingTime = (new Date().getTime() - this.startTime.get(storageAccountName)).toFixed(0);
 
         if (!this.history[storageAccountName]) {
           this.history[storageAccountName] = [];
@@ -210,9 +195,7 @@ export class LatencyComponent implements OnInit, OnDestroy {
 
         // Drop first ping result as it includes extra DNS time
         if (this.pingCount >= 2) {
-          console.log(
-            `region = ${region.displayName}, ping count = ${this.pingCount}, ping time = ${pingTime}`
-          );
+          console.log(`region = ${region.displayName}, ping count = ${this.pingCount}, ping time = ${pingTime}`);
           this.latestPingTime.set(storageAccountName, Number(pingTime));
           this.history[storageAccountName].push(pingTime);
         }

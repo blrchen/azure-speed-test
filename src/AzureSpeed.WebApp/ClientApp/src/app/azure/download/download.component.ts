@@ -13,10 +13,7 @@ export class DownloadComponent implements OnInit, OnDestroy {
   tableData: RegionModel[] = [];
   regions: RegionModel[] = [];
 
-  constructor(
-    private apiService: APIService,
-    private regionService: RegionService
-  ) {}
+  constructor(private apiService: APIService, private regionService: RegionService) {}
 
   ngOnInit() {
     const sub = this.regionService.getRegions().subscribe((res) => {
@@ -32,14 +29,12 @@ export class DownloadComponent implements OnInit, OnDestroy {
   getDownloadUrl(region: RegionModel, index: number) {
     const { regionName } = region;
     const blobName = "100MB.bin";
-    const sub = this.apiService
-      .getSasUrl(regionName, blobName, "download")
-      .subscribe((res) => {
-        const url = res.url || "";
-        if (url) {
-          this.tableData[index].url = url;
-        }
-      });
+    const sub = this.apiService.getSasUrl(regionName, blobName, "download").subscribe((res) => {
+      const url = res.url || "";
+      if (url) {
+        this.tableData[index].url = url;
+      }
+    });
     this.subs.push(sub);
   }
 

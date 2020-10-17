@@ -1,11 +1,6 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { Subscription } from "rxjs";
-import {
-  APIService,
-  RegionService,
-  StorageService,
-  UtilsService,
-} from "../../services";
+import { APIService, RegionService, StorageService, UtilsService } from "../../services";
 import { RegionModel } from "../../models";
 
 @Component({
@@ -46,24 +41,14 @@ export class UploadComponent implements OnInit, OnDestroy {
   }
 
   async uploadBlob(region: RegionModel) {
-    const {
-      geography,
-      displayName,
-      physicalLocation,
-      regionName,
-      storageAccountName,
-    } = region;
+    const { geography, displayName, physicalLocation, regionName, storageAccountName } = region;
     console.log("uploadBlob starts for", regionName);
-    const res = await this.apiService
-      .getSasUrl(regionName, this.utilsService.getRandomBlobName())
-      .toPromise();
+    const res = await this.apiService.getSasUrl(regionName, this.utilsService.getRandomBlobName()).toPromise();
     console.log("get sas url for ", regionName, res.url);
     const blob = this.utilsService.parseSasUrl(res.url);
     const client = this.storageService.createBlobServiceClient(blob);
     const blockId = btoa("block-00000").replace(/=/g, "a");
-    const blockBlob = client
-      .getContainerClient("upload")
-      .getBlockBlobClient(blob.blobName);
+    const blockBlob = client.getContainerClient("upload").getBlockBlobClient(blob.blobName);
     const sizeBytes = 100 * 1024 * 1024; // 100MB
     const uploadStartTime = new Date().getTime();
     await blockBlob.stageBlock(blockId, this.createBlob(sizeBytes), sizeBytes, {
@@ -71,9 +56,7 @@ export class UploadComponent implements OnInit, OnDestroy {
         console.log("onProgress fired for ", regionName);
         const progress = `${((loadedBytes / sizeBytes) * 100).toFixed(0)}%`;
         const totalTime = (new Date().getTime() - uploadStartTime) / 1000;
-        const speed = `${this.utilsService.getSizeStr(
-          sizeBytes / totalTime
-        )}/s`;
+        const speed = `${this.utilsService.getSizeStr(sizeBytes / totalTime)}/s`;
         this.historyData.set(storageAccountName, {
           storageAccountName,
           geography,
@@ -91,11 +74,7 @@ export class UploadComponent implements OnInit, OnDestroy {
         });
 
         if (index > -1) {
-          this.tableData.splice(
-            index,
-            1,
-            this.historyData.get(storageAccountName)
-          );
+          this.tableData.splice(index, 1, this.historyData.get(storageAccountName));
         } else {
           this.tableData.push(this.historyData.get(storageAccountName));
         }

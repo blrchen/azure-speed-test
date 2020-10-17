@@ -4,7 +4,6 @@ export * from "./download/download.component";
 export * from "./ipLookup/ipLookup.component";
 export * from "./latency/latency.component";
 export * from "./psPing/psPing.component";
-export * from "./regionFinder/regionFinder.component";
 export * from "./regionToRegionLatency/regionToRegionLatency.component";
 export * from "./upload/upload.component";
 export * from "./uploadLargeFile/uploadLargeFile.component";

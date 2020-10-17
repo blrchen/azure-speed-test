@@ -1,26 +1,25 @@
 <div>
   <div class="border-bottom">
     <h1 class="h4">Azure IP Lookup</h1>
-    <small
-      >Azure IP Lookup tool enables you to quickly lookup service tag and region
-      info based on ip address or url
-    </small>
+    <small>Azure IP Lookup tool enables you to quickly lookup service tag and region info based on ip address or domain </small>
   </div>
   <div class="form-group mt-3">
-    <div class="input-group">
-      <input
-        class="form-control"
-        type="text"
-        value=""
-        placeholder="Type ip or url to start, examples: 168.62.20.37 or www.azurespeed.com"
-        [(ngModel)]="ipAddressOrUrl"
-      />
-      <span class="input-group-btn">
-        <button class="btn btn-primary" (click)="onSubmit()">
-          <i class="fa fa-search"></i> Search
-        </button>
-      </span>
-    </div>
+    <form autocomplete="off" novalidate>
+      <div class="input-group">
+        <input
+          class="form-control"
+          type="text"
+          name="ipAddressOrUrl"
+          placeholder="Enter ip or domain in this format: 168.62.20.37 or www.azurespeed.com"
+          [(ngModel)]="ipAddressOrUrl"
+          (keyup.enter)="onSubmit()"
+          required
+        />
+        <span class="input-group-btn">
+          <button class="btn btn-primary" type="submit" (click)="onSubmit()"><i class="fa fa-search"></i> Search</button>
+        </span>
+      </div>
+    </form>
   </div>
   <div class="alert alert-dark" role="alert">
     <p>
@@ -48,22 +47,15 @@
   </div>
   <div class="mt-3">
     <h2 class="h5">Restful API</h2>
-    <p>
-      Restful api is available via https://www.azurespeed.com/api/ipinfo,
-      examples:
-    </p>
+    <p>Restful api is available via https://www.azurespeed.com/api/ipinfo, examples:</p>
     <ul>
       <li>
-        <a
-          href="https://www.azurespeed.com/api/ipinfo?ipAddressOrUrl=104.45.231.79"
-          target="_blank"
+        <a href="https://www.azurespeed.com/api/ipinfo?ipAddressOrUrl=104.45.231.79" target="_blank"
           >https://www.azurespeed.com/api/ipinfo?ipAddressOrUrl=104.45.231.79</a
         >
       </li>
       <li>
-        <a
-          href="https://www.azurespeed.com/api/ipinfo?ipAddressOrUrl=www.azurespeed.com"
-          target="_blank"
+        <a href="https://www.azurespeed.com/api/ipinfo?ipAddressOrUrl=www.azurespeed.com" target="_blank"
           >https://www.azurespeed.com/api/ipinfo?ipAddressOrUrl=www.azurespeed.com</a
         >
       </li>
@@ -75,50 +67,35 @@
   <ul>
     <li>
       API Source Code:
-      <a href="https://github.com/blrchen/AzureIPLookup" target="_blank"
-        >https://github.com/blrchen/AzureIPLookup</a
-      >
+      <a href="https://github.com/blrchen/AzureIPLookup" target="_blank">https://github.com/blrchen/AzureIPLookup</a>
     </li>
     <li>
       Service Tags:
-      <a
-        href="https://docs.microsoft.com/en-us/azure/virtual-network/security-overview#service-tags"
-        target="_blank"
+      <a href="https://docs.microsoft.com/en-us/azure/virtual-network/security-overview#service-tags" target="_blank"
         >https://docs.microsoft.com/en-us/azure/virtual-network/security-overview#service-tags</a
       >
     </li>
     <li>
       Service Tags API:
-      <a
-        href="https://docs.microsoft.com/en-us/rest/api/virtualnetwork/servicetags/list"
-        target="_blank"
+      <a href="https://docs.microsoft.com/en-us/rest/api/virtualnetwork/servicetags/list" target="_blank"
         >https://docs.microsoft.com/en-us/rest/api/virtualnetwork/servicetags/list</a
       >
     </li>
     <li>
-      Azure's IP range and service tag data can be downloaded from the following
-      pages (updated weekly):
-      <a
-        href="https://www.microsoft.com/en-us/download/details.aspx?id=56519"
-        target="_blank"
+      Azure's IP range and service tag data can be downloaded from the following pages (updated weekly):
+      <a href="https://www.microsoft.com/en-us/download/details.aspx?id=56519" target="_blank"
         >https://www.microsoft.com/en-us/download/details.aspx?id=56519</a
       ><br />
       Azure China Cloud:
-      <a
-        href="https://www.microsoft.com/en-us/download/details.aspx?id=57062"
-        target="_blank"
+      <a href="https://www.microsoft.com/en-us/download/details.aspx?id=57062" target="_blank"
         >https://www.microsoft.com/en-us/download/details.aspx?id=57062</a
       ><br />
       Azure US Government Cloud:
-      <a
-        href="https://www.microsoft.com/en-us/download/details.aspx?id=57063"
-        target="_blank"
+      <a href="https://www.microsoft.com/en-us/download/details.aspx?id=57063" target="_blank"
         >https://www.microsoft.com/en-us/download/details.aspx?id=57063</a
       ><br />
       Azure Germany Cloud:
-      <a
-        href="https://www.microsoft.com/en-us/download/details.aspx?id=57064"
-        target="_blank"
+      <a href="https://www.microsoft.com/en-us/download/details.aspx?id=57064" target="_blank"
         >https://www.microsoft.com/en-us/download/details.aspx?id=57064</a
       >
     </li>

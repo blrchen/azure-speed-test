@@ -60,9 +60,7 @@ export class RegionsComponent implements OnInit {
         let isGroupChecked = true;
         regions.forEach((item) => {
           const { storageAccountName } = item;
-          const isDefault = defaultRegions.filter(
-            (i) => i.storageAccountName === storageAccountName
-          );
+          const isDefault = defaultRegions.filter((i) => i.storageAccountName === storageAccountName);
           if (isDefault.length > 0) {
             item.checked = true;
             this.totalCheckedRegions += 1;
@@ -87,12 +85,13 @@ export class RegionsComponent implements OnInit {
     }, []);
     this.regionsGroup = groups.reduce((arr, item) => {
       const geography = item;
-      const regions = regionService.getAllRegions().filter((i) => i.geography === geography).map(
-        (i) => ({
+      const regions = regionService
+        .getAllRegions()
+        .filter((i) => i.geography === geography)
+        .map((i) => ({
           ...i,
           checked: false,
-        })
-      );
+        }));
       arr.push({
         geography,
         checked: false,

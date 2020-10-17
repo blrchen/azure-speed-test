@@ -1,9 +1,4 @@
-import {
-  HttpClient,
-  HttpHeaders,
-  HttpParams,
-  HttpErrorResponse,
-} from "@angular/common/http";
+import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable, throwError } from "rxjs";
 import { catchError } from "rxjs/operators";
@@ -15,31 +10,22 @@ import { ErrorTelemetryService } from "./errorTelemetry.service";
   providedIn: "root",
 })
 export class APIService {
-  constructor(
-    private errorTelemetryService: ErrorTelemetryService,
-    private httpClient: HttpClient
-  ) {}
+  constructor(private errorTelemetryService: ErrorTelemetryService, private httpClient: HttpClient) {}
 
   public ping(region: RegionModel): Observable<any> {
     const { storageAccountName, geography } = region;
     const url =
       geography === "China"
-        ? `https://${storageAccountName}.blob.core.chinacloudapi.cn/public/callback.js`
-        : `https://${storageAccountName}.blob.core.windows.net/public/callback.js`;
+        ? `https://${storageAccountName}.blob.core.chinacloudapi.cn/public/latency-test.json`
+        : `https://${storageAccountName}.blob.core.windows.net/public/latency-test.json`;
     const headers = new HttpHeaders({
       "Cache-Control": "no-cache",
       Accept: "*/*",
     });
-    return this.httpClient
-      .get(url, { headers, responseType: "text" })
-      .pipe(catchError(this.handleError));
+    return this.httpClient.get(url, { headers, responseType: "text" }).pipe(catchError(this.handleError));
   }
 
-  public getSasUrl(
-    regionName: string,
-    blobName: string,
-    operation = "upload"
-  ): Observable<SasUrlInfo> {
+  public getSasUrl(regionName: string, blobName: string, operation = "upload"): Observable<SasUrlInfo> {
     const url = environment.apiEndpoint + "/api/sas";
     const params = new HttpParams({
       fromObject: {
@@ -56,14 +42,11 @@ export class APIService {
   // To be deprecated
   public getLegacyAzureIPInfo(ipOrUrl: string): Observable<IpRangeInfo> {
     const url = environment.apiEndpoint + "/api/region?ipOrUrl=" + ipOrUrl;
-    return this.httpClient
-      .get<IpRangeInfo>(url)
-      .pipe(catchError(this.handleError));
+    return this.httpClient.get<IpRangeInfo>(url).pipe(catchError(this.handleError));
   }
 
   public getIPInfo(ipAddressOrUrl: string): Observable<IpInfo> {
-    const url =
-      environment.apiEndpoint + "/api/ipinfo?ipAddressOrUrl=" + ipAddressOrUrl;
+    const url = environment.apiEndpoint + "/api/ipinfo?ipAddressOrUrl=" + ipAddressOrUrl;
     return this.httpClient.get<IpInfo>(url).pipe(catchError(this.handleError));
   }
 

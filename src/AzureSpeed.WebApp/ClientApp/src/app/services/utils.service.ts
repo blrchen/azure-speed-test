@@ -8,10 +8,7 @@ export class UtilsService {
   constructor() {}
 
   parseSasUrl(sasUrl: string): BlobModel {
-    const regex = new RegExp(
-      "(http[s]?://([^.]+).[^/]*)/([^?/]*)/?([^?]*)(.*)",
-      "g"
-    );
+    const regex = new RegExp("(http[s]?://([^.]+).[^/]*)/([^?/]*)/?([^?]*)(.*)", "g");
 
     const match = regex.exec(sasUrl);
     if (!match) {

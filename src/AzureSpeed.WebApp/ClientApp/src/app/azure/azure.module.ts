@@ -13,13 +13,11 @@ import {
   IPLookupComponent,
   LatencyComponent,
   PSPingComponent,
-  RegionFinderComponent,
   RegionToRegionLatencyComponent,
   UploadComponent,
   UploadLargeFileComponent,
 } from "../azure";
 import { ComponentsModule } from "../shared/components.module";
-import {} from "./regionFinder/regionFinder.component";
 
 @NgModule({
   declarations: [
@@ -29,21 +27,12 @@ import {} from "./regionFinder/regionFinder.component";
     IPLookupComponent,
     LatencyComponent,
     PSPingComponent,
-    RegionFinderComponent,
     RegionToRegionLatencyComponent,
     AzureComponent,
     UploadComponent,
     UploadLargeFileComponent,
   ],
-  imports: [
-    CommonModule,
-    AzureRoutingModule,
-    ComponentsModule,
-    HttpClientModule,
-    LineChartModule,
-    NgbModalModule,
-    FormsModule,
-  ],
+  imports: [CommonModule, AzureRoutingModule, ComponentsModule, HttpClientModule, LineChartModule, NgbModalModule, FormsModule],
   providers: [],
   bootstrap: [],
   entryComponents: [AzureComponent],

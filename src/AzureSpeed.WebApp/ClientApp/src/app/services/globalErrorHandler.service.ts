@@ -5,10 +5,7 @@ import { HttpErrorResponse } from "@angular/common/http";
 
 @Injectable()
 export class GlobalErrorHandler extends ErrorHandler {
-  constructor(
-    private appInsights: AppInsightsService,
-    private errorTelemetryService: ErrorTelemetryService
-  ) {
+  constructor(private appInsights: AppInsightsService, private errorTelemetryService: ErrorTelemetryService) {
     super();
   }
 

@@ -7,7 +7,6 @@ import {
   IPLookupComponent,
   LatencyComponent,
   PSPingComponent,
-  RegionFinderComponent,
   RegionToRegionLatencyComponent,
   UploadComponent,
   UploadLargeFileComponent,
@@ -48,11 +47,6 @@ const routes: Routes = [
         path: "PsPing",
         data: { title: "PsPing Network Latency Test" },
         component: PSPingComponent,
-      },
-      {
-        path: "RegionFinder",
-        data: { title: "Cloud Region Finder" },
-        component: RegionFinderComponent,
       },
       {
         path: "RegionToRegionLatency",

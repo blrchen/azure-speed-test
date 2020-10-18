@@ -30,7 +30,10 @@
               "src/assets"
             ],
             "styles": ["src/styles.scss"],
-            "scripts": []
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "@opentelemetry/api"
+            ]
           },
           "configurations": {
             "production": {

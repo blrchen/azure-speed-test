@@ -6,7 +6,7 @@
     "lintAutofix": "tslint -p . --fix",
     "lintVso": "tslint -p . -t vso",
     "ng": "ng",
-    "start": "ng serve",
+    "start": "echo Starting... && ng serve",
     "build": "ng build --prod --aot",
     "build:prod": "ng build --prod --aot",
     "build-aot": "ng build --aot",

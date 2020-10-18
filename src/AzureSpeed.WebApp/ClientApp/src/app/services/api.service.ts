@@ -10,7 +10,11 @@ import { ErrorTelemetryService } from "./errorTelemetry.service";
   providedIn: "root",
 })
 export class APIService {
-  constructor(private errorTelemetryService: ErrorTelemetryService, private httpClient: HttpClient) {}
+  private apiEndpoint = "";
+
+  constructor(private errorTelemetryService: ErrorTelemetryService, private httpClient: HttpClient) {
+    this.apiEndpoint = environment.apiEndpoint;
+  }
 
   public ping(region: RegionModel): Observable<any> {
     const { storageAccountName, geography } = region;
@@ -26,7 +30,7 @@ export class APIService {
   }
 
   public getSasUrl(regionName: string, blobName: string, operation = "upload"): Observable<SasUrlInfo> {
-    const url = environment.apiEndpoint + "/api/sas";
+    const url = this.apiEndpoint + "/api/sas";
     const params = new HttpParams({
       fromObject: {
         regionName,
@@ -41,12 +45,12 @@ export class APIService {
 
   // To be deprecated
   public getLegacyAzureIPInfo(ipOrUrl: string): Observable<IpRangeInfo> {
-    const url = environment.apiEndpoint + "/api/region?ipOrUrl=" + ipOrUrl;
+    const url = this.apiEndpoint + "/api/region?ipOrUrl=" + ipOrUrl;
     return this.httpClient.get<IpRangeInfo>(url).pipe(catchError(this.handleError));
   }
 
   public getIPInfo(ipAddressOrUrl: string): Observable<IpInfo> {
-    const url = environment.apiEndpoint + "/api/ipinfo?ipAddressOrUrl=" + ipAddressOrUrl;
+    const url = this.apiEndpoint + "/api/ipinfo?ipAddressOrUrl=" + ipAddressOrUrl;
     return this.httpClient.get<IpInfo>(url).pipe(catchError(this.handleError));
   }
 

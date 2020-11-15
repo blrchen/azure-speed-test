@@ -1,5 +1,3 @@
-// http://www.fontawesome.com.cn/faicons/
-
 export const Menus = [
   {
     path: "/Azure/Latency",
@@ -81,11 +79,11 @@ export const Menus = [
     icon: "fa fa-book",
     title: "Azure IP Ranges",
   },
-  {
-    path: "/Information/References",
-    icon: "fa fa-book",
-    title: "References",
-  },
+  // {
+  //   path: "/Information/References",
+  //   icon: "fa fa-book",
+  //   title: "References",
+  // },
   {
     path: "/Azure/About",
     icon: "fa fa-book",

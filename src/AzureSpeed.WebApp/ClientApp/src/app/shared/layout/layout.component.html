@@ -1,13 +1,6 @@
-<header
-  class="navbar navbar-expand navbar-light bg-light shadow-sm flex-md-row bd-navbar"
->
-  <a class="navbar-brand mr-0 mr-md-2" href="/" aria-label="AzureSpeed"
-    >AzureSpeed.com</a
-  >
-  <button
-    class="btn btn-link bd-search-docs-toggle d-md-none p-0 ml-auto"
-    type="button"
-  >
+<header class="navbar navbar-expand navbar-light bg-light shadow-sm flex-md-row bd-navbar">
+  <a class="navbar-brand mr-0 mr-md-2" href="/" aria-label="AzureSpeed">AzureSpeed.com</a>
+  <button class="btn btn-link bd-search-docs-toggle d-md-none p-0 ml-auto" type="button">
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="30"
@@ -18,13 +11,7 @@
       (click)="collapse = !collapse"
     >
       <title>Menu</title>
-      <path
-        stroke="currentColor"
-        stroke-linecap="round"
-        stroke-miterlimit="10"
-        stroke-width="2"
-        d="M4 7h22M4 15h22M4 23h22"
-      ></path>
+      <path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path>
     </svg>
   </button>
 </header>
@@ -36,11 +23,7 @@
         <ul class="nav flex-column bd-sidenav">
           <ng-container *ngFor="let item of menus">
             <li class="nav-item" routerLinkActive="active" *ngIf="!item.hide">
-              <a
-                class="nav-link"
-                [routerLink]="item.path"
-                routerLinkActive="active"
-              >
+              <a class="nav-link" [routerLink]="item.path" routerLinkActive="active">
                 <i [class]="item.icon" aria-hidden="true" *ngIf="item.icon"></i>
                 <span class="ml-2">{{ item.title }}</span>
               </a>
@@ -50,7 +33,7 @@
       </nav>
     </div>
 
-    <main class="bd-content ">
+    <main class="bd-content">
       <div class="py-3 px-xl-5 px-3">
         <ng-content></ng-content>
       </div>

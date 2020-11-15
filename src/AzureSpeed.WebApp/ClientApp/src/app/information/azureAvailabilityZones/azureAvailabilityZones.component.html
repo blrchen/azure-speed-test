@@ -2,59 +2,26 @@
   <div class="border-bottom">
     <h1 class="h4">Azure Availability Zones</h1>
     <small>
-      Availability Zones are physically separate locations within an Azure
-      region. Each Availability Zone is made up of one or more datacenters
-      equipped with independent power, cooling, and networking.
+      Availability Zones are physically separate locations within an Azure region. Each Availability Zone is made up of one or more
+      datacenters equipped with independent power, cooling, and networking.
     </small>
   </div>
   <div class="mt-3">
     <table class="table table-sm table-bordered table-striped ft-14 mt-2">
       <thead>
         <tr>
+          <td>Geography</td>
           <th>Regions</th>
           <th>Availability Zone #</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>Central US</td>
-          <td>3</td>
-        </tr>
-        <tr>
-          <td>East US</td>
-          <td>3</td>
-        </tr>
-        <tr>
-          <td>East US 2</td>
-          <td>3</td>
-        </tr>
-        <tr>
-          <td>West US 2</td>
-          <td>3</td>
-        </tr>
-        <tr>
-          <td>France Central</td>
-          <td>3</td>
-        </tr>
-        <tr>
-          <td>North Europe</td>
-          <td>3</td>
-        </tr>
-        <tr>
-          <td>UK South</td>
-          <td>3</td>
-        </tr>
-        <tr>
-          <td>West Europe</td>
-          <td>3</td>
-        </tr>
-        <tr>
-          <td>Japan East</td>
-          <td>3</td>
-        </tr>
-        <tr>
-          <td>Southeast Asia</td>
-          <td>3</td>
+        <tr *ngFor="let r of tableData">
+          <td>{{ r.geography }}</td>
+          <td>
+            <strong>{{ r.displayName }}</strong>
+          </td>
+          <td>{{ r.availabilityZoneStatus }}</td>
         </tr>
       </tbody>
     </table>
@@ -63,22 +30,19 @@
     <h2 class="h5">References</h2>
     <ul>
       <li>
-        <a href="https://aka.ms/AZoverview" target="_blank"
-          >Learn more about Availability Zones</a
-        >
+        <a href="https://aka.ms/AZoverview" target="_blank">Learn more about Availability Zones</a>
       </li>
       <li>
-        <a href="https://aka.ms/resiliency" target="_blank"
-          >Build a comprehensive resiliency strategy</a
-        >
+        <a href="https://aka.ms/resiliency" target="_blank">Build a comprehensive resiliency strategy</a>
       </li>
       <li>
-        <a
-          href="https://azure.microsoft.com/en-us/resources/azure-resiliency-infographic/"
-          target="_blank"
-          >Download</a
-        >
+        <a href="https://azure.microsoft.com/en-us/resources/azure-resiliency-infographic/" target="_blank">Download</a>
         the Azure resiliency infographic
+      </li>
+      <li>
+        <a href="https://docs.microsoft.com/en-us/rest/api/compute/resourceskus/list" target="_blank"
+          >Azure resource SKUs API provides the regional zones availability information</a
+        >
       </li>
     </ul>
   </div>

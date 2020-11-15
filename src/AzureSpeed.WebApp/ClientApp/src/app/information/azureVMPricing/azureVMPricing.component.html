@@ -20,9 +20,7 @@
           <td>{{ s.RAM }}</td>
           <td>
             <ul>
-              <li *ngFor="let p of s.RegionalVMPrices">
-                {{ p.Region }}: {{ p.Price }}
-              </li>
+              <li *ngFor="let p of s.RegionalVMPrices">{{ p.Region }}: {{ p.Price }}</li>
             </ul>
           </td>
         </tr>
@@ -33,9 +31,7 @@
     <h2 class="h5">References</h2>
     <ul>
       <li>
-        <a
-          href="https://github.com/Azure-Samples/billing-dotnet-ratecard-api"
-          target="_blank"
+        <a href="https://github.com/Azure-Samples/billing-dotnet-ratecard-api" target="_blank"
           >Microsoft Azure Billing API Code Samples: RateCard API</a
         >
       </li>

@@ -3,11 +3,10 @@
     <h1 class="h4">Azure Latency Test</h1>
   </div>
   <div>
-    This tool runs latency test from your IP location to Azure datacenters
-    around the world. For latency test between Azure regions via Azure backbone
-    network, please checkout this
-    <a href="/Azure/RegionToRegionLatency" target="_blank">link</a>. For latency
-    test between Azure availability zones, please check out this
+    This tool runs latency test from your IP location to Azure datacenters around the world. For latency test between Azure regions via
+    Azure backbone network, please checkout this
+    <a href="/Azure/RegionToRegionLatency" target="_blank">link</a>. For latency test between Azure availability zones, please check out
+    this
     <a
       href="https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/sap/sap-ha-availability-zones#network-latency-between-and-within-zones"
       target="_blank"
@@ -38,13 +37,8 @@
     </table>
   </div>
   <div class="mt-4">
-    <div class="text-primary">
-      <i class="fa fa-bar-chart text-primary" aria-hidden="true"></i>
-      Azure Latency
-    </div>
     <div class="mt-2 border bg-light px-2 pt-4">
-      <div style="width: 100%; height: 280px;">
-        <!-- [yAxisTicks]="yAxisTicks" yScaleMax="500" -->
+      <div style="width: 100%; height: 280px">
         <ngx-charts-line-chart
           [view]="view"
           [results]="lineChartData"

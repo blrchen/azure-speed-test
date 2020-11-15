@@ -1,19 +1,12 @@
 <div>
-  <div class="text-danger font-weight-bold" *ngIf="totalCheckedRegions == 0">
-    Please select regions to get started
-  </div>
+  <div class="text-danger font-weight-bold" *ngIf="totalCheckedRegions == 0">Please select regions to get started</div>
   <div class="row mx-0 mt-2">
     <div class="col-lg-4 pl-0 pr-2 mt-2" *ngFor="let group of regionsGroup">
       <div class="ft-14 border rounded-sm">
         <div class="d-flex justify-content-between bg-light border-bottom p-2">
           <strong>{{ group.geography }}</strong>
           <label [attr.for]="group.geography" class="mb-0">
-            <input
-              type="checkbox"
-              [attr.id]="group.geography"
-              [(ngModel)]="group.checked"
-              (change)="onChange(null, group)"
-            />
+            <input type="checkbox" [attr.id]="group.geography" [(ngModel)]="group.checked" (change)="onChange(null, group)" />
             Check all
           </label>
         </div>
@@ -24,12 +17,7 @@
             class="cursor-pointer mr-3 mb-1"
             [ngClass]="{ 'text-primary': region.checked }"
           >
-            <input
-              type="checkbox"
-              [attr.id]="region.regionName"
-              [(ngModel)]="region.checked"
-              (change)="onChange(region, group)"
-            />
+            <input type="checkbox" [attr.id]="region.regionName" [(ngModel)]="region.checked" (change)="onChange(region, group)" />
             {{ region.displayName }}
           </label>
         </div>

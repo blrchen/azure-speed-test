@@ -3,8 +3,7 @@ import { Subscription, timer } from "rxjs";
 import * as shape from "d3-shape";
 import { MultiSeries, colorSets } from "@swimlane/ngx-charts";
 import { APIService, RegionService } from "../../services";
-import { RegionModel } from "../../models";
-import { HistoryModel } from "./utils";
+import { HistoryModel, RegionModel } from "../../models";
 
 @Component({
   selector: "app-azure-latency",
@@ -62,7 +61,7 @@ export class LatencyComponent implements OnInit, OnDestroy {
   pingTimer() {
     this.pingTimer$ = timer(0, this.updateInterval).subscribe(() => {
       // This ping result is calculated by sending a https request a file hosted in Azure storage
-      // From: https://www.dotcom-tools.com/website-speed-test.aspx
+      // Resource: https://www.dotcom-tools.com/website-speed-test.aspx
       // First ping: DNS + Connection + SSL + Request + First Package + Download
       // Repeat ping: DOM time only
       // TODO: Consider to switch to http ping to exclude SSL time

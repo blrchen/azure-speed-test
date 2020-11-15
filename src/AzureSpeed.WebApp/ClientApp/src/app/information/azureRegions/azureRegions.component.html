@@ -2,8 +2,8 @@
   <div class="border-bottom">
     <h1 class="h4">Azure Regions</h1>
     <small>
-      A region is a set of datacenters deployed within a latency-defined
-      perimeter and connected through a dedicated regional low-latency network.
+      A region is a set of datacenters deployed within a latency-defined perimeter and connected through a dedicated regional low-latency
+      network. All Azure resources are created in an Azure region and subscription.
     </small>
   </div>
 
@@ -12,135 +12,21 @@
       <thead>
         <tr>
           <th>Geography</th>
-          <th>Region</th>
+          <th>Region Name</th>
+          <th>Physical Location</th>
+          <th>Availability Zone</th>
           <th>Paired Region</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>Asia</td>
-          <td>East Asia</td>
-          <td>Southeast Asia</td>
-        </tr>
-        <tr>
-          <td>Australia</td>
-          <td>Australia East</td>
-          <td>Australia Southeast</td>
-        </tr>
-        <tr>
-          <td>Australia</td>
-          <td>Australia Central</td>
-          <td>Australia Central 2</td>
-        </tr>
-        <tr>
-          <td>Brazil</td>
-          <td>Brazil South</td>
-          <td>South Central US</td>
-        </tr>
-        <tr>
-          <td>Canada</td>
-          <td>Canada Central</td>
-          <td>Canada East</td>
-        </tr>
-        <tr>
-          <td>China</td>
-          <td>China North</td>
-          <td>China East</td>
-        </tr>
-        <tr>
-          <td>China</td>
-          <td>China North 2</td>
-          <td>China East 2</td>
-        </tr>
-        <tr>
-          <td>Europe</td>
-          <td>North Europe</td>
-          <td>West Europe</td>
-        </tr>
-        <tr>
-          <td>France</td>
-          <td>France Central</td>
-          <td>France South</td>
-        </tr>
-        <tr>
-          <td>Germany</td>
-          <td>Germany Central</td>
-          <td>Germany Northeast</td>
-        </tr>
-        <tr>
-          <td>India</td>
-          <td>Central India</td>
-          <td>South India</td>
-        </tr>
-        <tr>
-          <td>India</td>
-          <td>West India</td>
-          <td>South India</td>
-        </tr>
-        <tr>
-          <td>Japan</td>
-          <td>Japan East</td>
-          <td>Japan West</td>
-        </tr>
-        <tr>
-          <td>Korea</td>
-          <td>Korea Central</td>
-          <td>Korea South</td>
-        </tr>
-        <tr>
-          <td>North America</td>
-          <td>East US</td>
-          <td>West US</td>
-        </tr>
-        <tr>
-          <td>North America</td>
-          <td>East US 2</td>
-          <td>Central US</td>
-        </tr>
-        <tr>
-          <td>North America</td>
-          <td>North Central US</td>
-          <td>South Central US</td>
-        </tr>
-        <tr>
-          <td>North America</td>
-          <td>West US 2</td>
-          <td>West Central US</td>
-        </tr>
-        <tr>
-          <td>South Africa</td>
-          <td>South Africa North</td>
-          <td>South Africa West</td>
-        </tr>
-        <tr>
-          <td>UK</td>
-          <td>UK West</td>
-          <td>UK South</td>
-        </tr>
-        <tr>
-          <td>United Arab Emirates</td>
-          <td>UAE North</td>
-          <td>UAE Central</td>
-        </tr>
-        <tr>
-          <td>US Department of Defense</td>
-          <td>US DoD East</td>
-          <td>US DoD Central</td>
-        </tr>
-        <tr>
-          <td>US Government</td>
-          <td>US Gov Arizona</td>
-          <td>US Gov Texas</td>
-        </tr>
-        <tr>
-          <td>US Government</td>
-          <td>US Gov Iowa</td>
-          <td>US Gov Virginia</td>
-        </tr>
-        <tr>
-          <td>US Government</td>
-          <td>US Gov Virginia</td>
-          <td>US Gov Texas</td>
+        <tr *ngFor="let r of tableData">
+          <td>{{ r.geography }}</td>
+          <td>
+            <strong>{{ r.displayName }}</strong>
+          </td>
+          <td>{{ r.physicalLocation }}</td>
+          <td>{{ r.availabilityZoneStatus }}</td>
+          <td>{{ r.pairedRegion }}</td>
         </tr>
       </tbody>
     </table>
@@ -152,30 +38,24 @@
         <a href="https://aka.ms/AzureRegions" target="_blank">Azure regions</a>
       </li>
       <li>
-        <a
-          href="https://docs.microsoft.com/en-us/azure/best-practices-availability-paired-regions"
-          target="_blank"
-          >Business continuity and disaster recovery (BCDR): Azure Paired
-          Regions</a
+        <a href="https://docs.microsoft.com/en-us/azure/best-practices-availability-paired-regions" target="_blank"
+          >Business continuity and disaster recovery (BCDR): Azure Paired Regions</a
         >
       </li>
       <li>
-        <a href="https://aka.ms/AZoverview" target="_blank"
-          >Learn more about Availability Zones</a
-        >
+        <a href="https://aka.ms/AZoverview" target="_blank">Learn more about Availability Zones</a>
       </li>
       <li>
-        <a href="https://aka.ms/resiliency" target="_blank"
-          >Build a comprehensive resiliency strategy</a
-        >
+        <a href="https://aka.ms/resiliency" target="_blank">Build a comprehensive resiliency strategy</a>
       </li>
       <li>
-        <a
-          href="https://azure.microsoft.com/en-us/resources/azure-resiliency-infographic/"
-          target="_blank"
-          >Download</a
-        >
+        <a href="https://azure.microsoft.com/en-us/resources/azure-resiliency-infographic/" target="_blank">Download</a>
         the Azure resiliency infographic
+      </li>
+      <li>
+        <a href="https://docs.microsoft.com/en-us/rest/api/compute/resourceskus/list" target="_blank"
+          >Azure resource SKUs API provides the regional zones availability information</a
+        >
       </li>
     </ul>
   </div>

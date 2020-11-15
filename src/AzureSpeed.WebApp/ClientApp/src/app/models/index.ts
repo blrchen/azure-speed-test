@@ -1,2 +1,2 @@
-export * from "./azure.model";
+export * from "./ui.model";
 export * from "./contracts";

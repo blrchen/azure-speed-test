@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   appInsightKey: "",
-  apiEndpoint: "https://localhost:5001",
+  apiEndpoint: "https://www.azurespeed.com",
 };
 
 /*

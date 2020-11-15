@@ -1,4 +1,4 @@
-# AzureSpeed
+# azure-speed-test
 
 [![licence badge]][licence]
 [![stars badge]][stars]
@@ -36,7 +36,7 @@ See README [here](src/frontend/README.md), change environment.ts line 8, replace
 * [Angular](https://github.com/angular/angular)
 * [Application Insights JavaScript SDK](https://github.com/microsoft/ApplicationInsights-JS)
 * [ASP.NET Core](https://github.com/dotnet/aspnetcore)
-* [Auzre IP Lookup](https://github.com/blrchen/AzureIPLookup)
+* [Azure IP Lookup](https://github.com/blrchen/azure-ip-lookup)
 * [Azure SDK for JavaScript](https://github.com/Azure/azure-sdk-for-js)
 * [Bootstrap](https://github.com/twbs/bootstrap)
 * [d3-shape](https://github.com/d3/d3-shape)
@@ -49,11 +49,11 @@ See README [here](src/frontend/README.md), change environment.ts line 8, replace
 [MIT](/LICENSE)
 
 [licence badge]:https://img.shields.io/badge/license-MIT-blue.svg
-[stars badge]:https://img.shields.io/github/stars/blrchen/AzureSpeed.svg
-[forks badge]:https://img.shields.io/github/forks/blrchen/AzureSpeed.svg
-[issues badge]:https://img.shields.io/github/issues/blrchen/AzureSpeed.svg
+[stars badge]:https://img.shields.io/github/stars/blrchen/azure-speed-test.svg
+[forks badge]:https://img.shields.io/github/forks/blrchen/azure-speed-test.svg
+[issues badge]:https://img.shields.io/github/issues/blrchen/azure-speed-test.svg
 
-[licence]:https://github.com/blrchen/AzureSpeed/blob/master/LICENSE
-[stars]:https://github.com/blrchen/AzureSpeed/stargazers
-[forks]:https://github.com/blrchen/AzureSpeed/network
-[issues]:https://github.com/blrchen/AzureSpeed/issues
+[licence]:https://github.com/blrchen/azure-speed-test/blob/master/LICENSE
+[stars]:https://github.com/blrchen/azure-speed-test/stargazers
+[forks]:https://github.com/blrchen/azure-speed-test/network
+[issues]:https://github.com/blrchen/azure-speed-test/issues

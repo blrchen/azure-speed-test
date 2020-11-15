@@ -2,8 +2,7 @@
   <div class="border-bottom">
     <h1 class="h4">Azure Geographies</h1>
     <small>
-      A geography is a discrete market, typically containing two or more
-      regions, that preserves data residency and compliance boundaries
+      A geography is a discrete market, typically containing two or more regions, that preserves data residency and compliance boundaries
     </small>
   </div>
   <div class="mt-3">
@@ -18,9 +17,7 @@
         <tr *ngFor="let g of tableData">
           <td>{{ g.Geography }}</td>
           <td>
-            <span *ngFor="let r of g.Regions"
-              >{{ r.DisplayName }} ({{ r.Metadata.PhysicalLocation }})<br
-            /></span>
+            <span *ngFor="let r of g.Regions">{{ r.DisplayName }} ({{ r.Metadata.PhysicalLocation }})<br /></span>
           </td>
         </tr>
       </tbody>
@@ -30,11 +27,8 @@
     <h2 class="h5">References</h2>
     <ul>
       <li>
-        <a
-          href="https://docs.microsoft.com/en-us/azure/best-practices-availability-paired-regions"
-          target="_blank"
-          >Business continuity and disaster recovery (BCDR): Azure Paired
-          Regions</a
+        <a href="https://docs.microsoft.com/en-us/azure/best-practices-availability-paired-regions" target="_blank"
+          >Business continuity and disaster recovery (BCDR): Azure Paired Regions</a
         >
       </li>
     </ul>

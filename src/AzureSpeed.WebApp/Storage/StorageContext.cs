@@ -66,7 +66,7 @@ namespace AzureSpeed.WebApp.Storage
 
             var delimiter = new[] { "," };
             var corsRule = new CorsRule();
-            const string AllowedOrigins = "*";
+            const string AllowedOrigins = "https://www.azurespeed.com,http://azurespeed-vnext.azurewebsites.net,http://localhost:4200";
             const string AllowedHeaders = "*";
             const string ExposedHeaders = "";
 

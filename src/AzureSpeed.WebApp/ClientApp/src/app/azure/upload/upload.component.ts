@@ -41,7 +41,11 @@ export class UploadComponent implements OnInit, OnDestroy {
   }
 
   async uploadBlob(region: RegionModel) {
-    const { geography, displayName, physicalLocation, regionName, storageAccountName } = region;
+    console.log(region);
+    const { geography, displayName, physicalLocation, regionName, regionAccess, storageAccountName } = region;
+    if (!regionAccess) {
+      return;
+    }
     console.log("uploadBlob starts for", regionName);
     const res = await this.apiService.getSasUrl(regionName, this.utilsService.getRandomBlobName()).toPromise();
     console.log("get sas url for ", regionName, res.url);

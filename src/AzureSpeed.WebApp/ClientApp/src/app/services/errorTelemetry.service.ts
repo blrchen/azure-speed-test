@@ -12,6 +12,7 @@ export class ErrorTelemetryService {
   }
 
   public ingestError(message: string): Observable<void> {
+    return;
     const change = Math.random() * 100;
     if (change < 2) {
       // 1

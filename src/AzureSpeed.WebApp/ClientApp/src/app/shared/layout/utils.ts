@@ -65,24 +65,14 @@ export const Menus = [
     title: "Azure Environments",
   },
   {
-    path: "/Information/AzureBillingMeters",
-    icon: "fa fa-book",
-    title: "Azure Billing Meters",
-  },
-  {
-    path: "/Information/AzureVMPricing",
-    icon: "fa fa-book",
-    title: "Azure Virtual Machine Pricing",
-  },
-  {
     path: "/Information/AzureIpRanges",
     icon: "fa fa-book",
     title: "Azure IP Ranges",
   },
   // {
-  //   path: "/Information/References",
+  //   path: "/Information/Resources",
   //   icon: "fa fa-book",
-  //   title: "References",
+  //   title: "Resources",
   // },
   {
     path: "/Azure/About",

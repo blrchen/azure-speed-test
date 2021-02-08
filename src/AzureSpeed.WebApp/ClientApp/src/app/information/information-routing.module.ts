@@ -2,14 +2,12 @@ import { NgModule } from "@angular/core";
 import { Routes, RouterModule } from "@angular/router";
 import {
   AzureAvailabilityZonesComponent,
-  AzureBillingMetersComponent,
   AzureEnvironmentsComponent,
   AzureGeographiesComponent,
   AzureRegionsComponent,
   AzureSovereignCloudsComponent,
-  AzureVMPricingComponent,
   AzureIpRangeComponent,
-  ReferencesComponent,
+  ResourcesComponent,
 } from "../information";
 import { InformationComponent } from "./information.component";
 import { NotFoundComponent } from "../shared";
@@ -23,11 +21,6 @@ const routes: Routes = [
         path: "AzureAvailabilityZones",
         data: { title: "Azure Availability Zones" },
         component: AzureAvailabilityZonesComponent,
-      },
-      {
-        path: "AzureBillingMeters",
-        data: { title: "Azure Billing Meters" },
-        component: AzureBillingMetersComponent,
       },
       {
         path: "AzureEnvironments",
@@ -55,15 +48,9 @@ const routes: Routes = [
         component: AzureSovereignCloudsComponent,
       },
       {
-        path: "AzureVMPricing",
-        data: { title: "Azure Virtual Machine Pricing" },
-        component: AzureVMPricingComponent,
-      },
-
-      {
-        path: "References",
-        data: { title: "References" },
-        component: ReferencesComponent,
+        path: "Resources",
+        data: { title: "Resources" },
+        component: ResourcesComponent,
       },
       {
         path: "**",

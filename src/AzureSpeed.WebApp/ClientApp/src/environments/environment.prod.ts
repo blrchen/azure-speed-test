@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  appInsightKey: "106fd649-4e78-4902-98ed-fc892c65909d",
+  appInsightKey: "12a8b65c-2b64-45bd-a1e6-2722a2c8bc9f",
   apiEndpoint: "https://www.azurespeed.com",
 };

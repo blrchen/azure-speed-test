@@ -3,15 +3,22 @@
     <h1 class="h4">Azure Latency Test</h1>
   </div>
   <div>
-    This tool runs latency test from your IP location to Azure datacenters around the world. For latency test between Azure regions via
-    Azure backbone network, please checkout this
-    <a href="/Azure/RegionToRegionLatency" target="_blank">link</a>. For latency test between Azure availability zones, please check out
-    this
-    <a
-      href="https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/sap/sap-ha-availability-zones#network-latency-between-and-within-zones"
-      target="_blank"
-      >link</a
-    >.
+    This tool runs latency test from your IP location to Azure datacenters around the world.
+    <ul>
+      <li>
+        For latency test between Azure regions via Azure backbone network, please checkout
+        <a href="/Azure/RegionToRegionLatency" target="_blank">Azure Region to Region Latency</a>.
+      </li>
+      <li>
+        For latency test between Azure availability zones, please check out
+        <a
+          href="https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/sap/sap-ha-availability-zones#network-latency-between-and-within-zones"
+          target="_blank"
+          >Network latency between and within zones</a
+        >
+      </li>
+      <li>For AWS region latency test, please checkout <a href="https://www.awsspeedtest.com" target="_blank">AWS Speed Test</a></li>
+    </ul>
   </div>
   <div class="mt-2">
     <app-regions></app-regions>
@@ -42,27 +49,21 @@
         <ngx-charts-line-chart
           [view]="view"
           [results]="lineChartData"
+          [scheme]="colorScheme"
           animations=""
-          [curve]="curve"
-          legend=""
-          legendTitle="Region"
-          yScaleMin="0"
           rangeFillOpacity="1"
-          minXAxisTickLength="10"
-          [xAxisTicks]="xAxisTicks"
-          legendPosition="right"
           [xAxis]="1"
           [yAxis]="1"
+          roundDomains="true"
           showXAxisLabel="true"
           showYAxisLabel="true"
           xAxisLabel=""
           yAxisLabel=""
-          showGridLines="true"
-          roundDomains="true"
           trimXAxisTicks="1"
-          [scheme]="colorScheme"
-          hasRange="true"
+          [curve]="curve"
+          [xAxisTicks]="xAxisTicks"
           autoScale="true"
+          yScaleMin="0"
         >
         </ngx-charts-line-chart>
       </div>

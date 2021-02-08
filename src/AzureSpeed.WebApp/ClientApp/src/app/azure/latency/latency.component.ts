@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { Subscription, timer } from "rxjs";
-import * as shape from "d3-shape";
-import { MultiSeries, colorSets } from "@swimlane/ngx-charts";
+import { curveBasis } from "d3-shape";
+import { colorSets, DataItem, MultiSeries } from "@swimlane/ngx-charts";
 import { APIService, RegionService } from "../../services";
 import { HistoryModel, RegionModel } from "../../models";
 
@@ -25,17 +25,16 @@ export class LatencyComponent implements OnInit, OnDestroy {
   tableData: RegionModel[] = [];
   tableDataTop3: RegionModel[] = [];
 
-  lineChartData: MultiSeries = [];
   lineChartRawData: any = [];
 
   pingTimer$: Subscription = null;
   chartTimer$: Subscription = null;
 
-  // chart params
+  // Line Chart settings
+  view: number[] = undefined; // Chart will fit to the parent container size
+  lineChartData: MultiSeries = [];
   colorScheme = colorSets.find((s) => s.name === "picnic");
-  view = undefined;
-  curve = shape.curveBasis;
-
+  curve = curveBasis;
   xAxisTicks: any[] = [];
 
   constructor(private apiService: APIService, private regionService: RegionService) {}
@@ -80,11 +79,12 @@ export class LatencyComponent implements OnInit, OnDestroy {
   formatData() {
     const tableDataCache: RegionModel[] = [];
     this.regions.forEach((item, index) => {
-      const { regionName, displayName, storageAccountName, physicalLocation, geography } = item;
+      const { regionName, regionAccess, displayName, storageAccountName, physicalLocation, geography } = item;
       const t = this.latestPingTime.get(storageAccountName);
       if (t > 0) {
         tableDataCache.push({
           regionName,
+          regionAccess,
           displayName,
           storageAccountName,
           physicalLocation,
@@ -117,8 +117,8 @@ export class LatencyComponent implements OnInit, OnDestroy {
       this.tableData.forEach(({ storageAccountName, displayName }) => {
         let isNew = true;
 
-        this.lineChartRawData.forEach(({ storageAccountName: storageAccountName2 }) => {
-          if (storageAccountName === storageAccountName2) {
+        this.lineChartRawData.forEach((item: any) => {
+          if (storageAccountName === item.storageAccountName) {
             isNew = false;
           }
         });
@@ -138,12 +138,12 @@ export class LatencyComponent implements OnInit, OnDestroy {
         }
       });
 
-      this.lineChartRawData.forEach((item) => {
+      this.lineChartRawData.forEach((item: any) => {
         const { storageAccountName, series } = item;
         const t = this.latestPingTime.get(storageAccountName) || 0;
         let isRemove = true;
-        this.tableData.forEach(({ storageAccountName: storageAccountName2 }) => {
-          if (storageAccountName === storageAccountName2) {
+        this.tableData.forEach((item) => {
+          if (storageAccountName === item.storageAccountName) {
             isRemove = false;
           }
         });
@@ -157,12 +157,12 @@ export class LatencyComponent implements OnInit, OnDestroy {
         });
       });
 
-      const arr = this.lineChartRawData.map(({ name, series }) => {
+      const arr = this.lineChartRawData.map((item: any) => {
         return {
-          name,
-          series: series.map(({ name: name2, value }) => ({
-            name: this.formatxAxisTick(name2),
-            value,
+          name: item.name,
+          series: item.series.map((seriesItem: DataItem) => ({
+            name: this.formatxAxisTick(Number(seriesItem.name)),
+            value: seriesItem.value,
           })),
         };
       });
@@ -170,19 +170,22 @@ export class LatencyComponent implements OnInit, OnDestroy {
 
       this.xAxisTicks = this.lineChartRawData[0]
         ? this.lineChartRawData[0].series
-            .filter(({ name }) => {
-              const timeStamp2 = parseInt(String(name), 10);
-              const s = new Date(timeStamp2).getSeconds();
+            .filter((seriesItem: DataItem) => {
+              const timestamp = parseInt(String(seriesItem.name), 10);
+              const s = new Date(timestamp).getSeconds();
               return s % 5 === 0;
             })
-            .map(({ name }) => this.formatxAxisTick(parseInt(String(name), 10)))
+            .map((seriesItem: DataItem) => this.formatxAxisTick(parseInt(String(seriesItem.name), 10)))
         : [];
     });
   }
 
   sendHttpPing() {
     this.regions.forEach((region) => {
-      const { storageAccountName } = region;
+      const { regionAccess, storageAccountName } = region;
+      if (!regionAccess) {
+        return;
+      }
       this.startTime.set(storageAccountName, new Date().getTime());
       // TODO(blair): review all sub pattern to ensure disposal logic
       const sub = this.apiService.ping(region).subscribe(() => {

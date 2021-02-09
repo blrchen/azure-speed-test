@@ -9,17 +9,17 @@ namespace AzureSpeed.Test
     [TestClass]
     public class LocalDataStoreContextTest
     {
-        private readonly StorageAccountsContext storageAccountsContext;
+        private readonly StorageAccountsProvider storageAccountsProvider;
 
         public LocalDataStoreContextTest()
         {
-            this.storageAccountsContext = new StorageAccountsContext(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+            storageAccountsProvider = new StorageAccountsProvider(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
         }
 
         [TestMethod]
         public void CanGetStorageAccounts()
         {
-            var storageAccounts = this.storageAccountsContext.StorageAccounts.ToList();
+            var storageAccounts = this.storageAccountsProvider.StorageAccounts.ToList();
             Assert.IsTrue(storageAccounts.Count > 0);
         }
     }

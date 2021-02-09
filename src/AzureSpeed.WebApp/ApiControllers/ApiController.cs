@@ -14,15 +14,15 @@ namespace AzureSpeed.WebApp.ApiControllers
     {
         private readonly IHttpClientFactory httpClientFactory;
         private readonly ILogger<ApiController> logger;
-        private readonly StorageAccountsContext storageAccountsContext;
+        private readonly StorageAccountsProvider storageAccountsProvider;
 
         public ApiController(
             IHttpClientFactory httpClientFactory,
             ILogger<ApiController> logger,
-            StorageAccountsContext storageAccountsContext)
+            StorageAccountsProvider storageAccountsProvider)
         {
             this.httpClientFactory = httpClientFactory;
-            this.storageAccountsContext = storageAccountsContext;
+            this.storageAccountsProvider = storageAccountsProvider;
             this.logger = logger;
         }
 
@@ -31,7 +31,7 @@ namespace AzureSpeed.WebApp.ApiControllers
         public async Task<IActionResult> GetAzureIPInfo(string ipAddressOrUrl)
         {
             string url = $"https://azureiplookup.azurewebsites.net/api/ipinfo?ipOrDomain={ipAddressOrUrl}";
-            var result = await this.httpClientFactory.CreateClient().GetStringAsync(url);
+            string result = await this.httpClientFactory.CreateClient().GetStringAsync(url);
             return Ok(result);
         }
 
@@ -42,10 +42,10 @@ namespace AzureSpeed.WebApp.ApiControllers
             string url = "";
             if (!string.IsNullOrEmpty(regionName))
             {
-                var account = storageAccountsContext.StorageAccounts.FirstOrDefault(v => v.LocationId == regionName);
+                var account = storageAccountsProvider.StorageAccounts.FirstOrDefault(v => v.LocationId == regionName);
                 if (account != null)
                 {
-                    var storageContext = new StorageContext(account);
+                    var storageContext = new StorageProvider(account);
                     url = storageContext.GetSasUrl(blobName, operation);
                 }
             }

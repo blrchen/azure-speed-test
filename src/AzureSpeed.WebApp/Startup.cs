@@ -36,9 +36,9 @@ namespace AzureSpeed.WebApp
             services.AddCors("CorsPolicy");
 
             services.AddHttpClient();
-            services.AddSingleton<StorageAccountsContext>(serviceProvider =>
+            services.AddSingleton<StorageAccountsProvider>(serviceProvider =>
             {
-                var localDataStoreContext = new StorageAccountsContext(webHostEnvironment.ContentRootPath);
+                var localDataStoreContext = new StorageAccountsProvider(webHostEnvironment.ContentRootPath);
                 return localDataStoreContext;
             });
         }

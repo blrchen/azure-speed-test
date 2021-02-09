@@ -4,12 +4,12 @@ using Newtonsoft.Json;
 
 namespace AzureSpeed.WebApp.Storage
 {
-    public class StorageAccountsContext
+    public class StorageAccountsProvider
     {
         private readonly string dataFilePath;
         private IEnumerable<StorageAccount> accounts;
 
-        public StorageAccountsContext(string dataPath)
+        public StorageAccountsProvider(string dataPath)
         {
             this.dataFilePath = dataPath;
         }

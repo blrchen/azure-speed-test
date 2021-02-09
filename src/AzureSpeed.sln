@@ -10,8 +10,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Documents", ".Documents", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSpeed.Test", "AzureSpeed.Test\AzureSpeed.Test.csproj", "{8B9A67D2-506B-498F-9703-1D738E4131DB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSpeed.AdminConsole", "AzureSpeed.AdminConsole\AzureSpeed.AdminConsole.csproj", "{A8126B12-EEA8-4798-BFA3-364A5D2971C3}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Scripts", ".Scripts", "{603E9DBC-9530-49E1-919C-CCD27F943993}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "contents", "contents", "{84909C0E-6861-469B-BF0F-00AA9670D734}"
@@ -41,10 +39,6 @@ Global
 		{8B9A67D2-506B-498F-9703-1D738E4131DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B9A67D2-506B-498F-9703-1D738E4131DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B9A67D2-506B-498F-9703-1D738E4131DB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A8126B12-EEA8-4798-BFA3-364A5D2971C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A8126B12-EEA8-4798-BFA3-364A5D2971C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A8126B12-EEA8-4798-BFA3-364A5D2971C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A8126B12-EEA8-4798-BFA3-364A5D2971C3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{841FEF07-AF17-413D-A055-E1E7C10B6813}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{841FEF07-AF17-413D-A055-E1E7C10B6813}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{841FEF07-AF17-413D-A055-E1E7C10B6813}.Release|Any CPU.ActiveCfg = Release|Any CPU

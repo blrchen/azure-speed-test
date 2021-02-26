@@ -378,8 +378,8 @@
     "regionAccess": true
   },
   {
-    "availabilityZoneCount": 0,
-    "availabilityZoneStatus": "Not supported",
+    "availabilityZoneCount": 3,
+    "availabilityZoneStatus": "3 zones",
     "displayName": "South Central US",
     "geography": "US",
     "latitude": "29.4167",

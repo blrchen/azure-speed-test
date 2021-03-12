@@ -56,8 +56,8 @@
     "regionAccess": true
   },
   {
-    "availabilityZoneCount": 0,
-    "availabilityZoneStatus": "Not supported",
+    "availabilityZoneCount": 3,
+    "availabilityZoneStatus": "3 zones",
     "displayName": "Brazil South",
     "geography": "South America",
     "latitude": "-23.55",

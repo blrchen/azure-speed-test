@@ -22,12 +22,7 @@
     "member-ordering": [
       true,
       {
-        "order": [
-          "static-field",
-          "instance-field",
-          "static-method",
-          "instance-method"
-        ]
+        "order": ["static-field", "instance-field", "static-method", "instance-method"]
       }
     ],
     "no-console": [true, "debug", "info", "time", "timeEnd", "trace"],
@@ -51,7 +46,7 @@
         "named": "never"
       }
     },
-    "typedef": [true, "call-signature"],
+    "typedef": [false, "call-signature"],
     "typedef-whitespace": {
       "options": [
         {
@@ -74,14 +69,7 @@
       "options": ["ban-keywords", "check-format", "allow-pascal-case"]
     },
     "whitespace": {
-      "options": [
-        "check-branch",
-        "check-decl",
-        "check-operator",
-        "check-separator",
-        "check-type",
-        "check-typecast"
-      ]
+      "options": ["check-branch", "check-decl", "check-operator", "check-separator", "check-type", "check-typecast"]
     },
     "component-class-suffix": true,
     "contextual-lifecycle": true,

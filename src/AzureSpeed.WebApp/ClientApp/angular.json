@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "AzureSpeedFrontend": {
+    "azure-speed-test": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,18 +17,13 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/AzureSpeedFrontend",
+            "outputPath": "dist/azure-speed-test",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "aot": true,
-            "assets": [
-              "src/ads.txt",
-              "src/favicon.ico",
-              "src/web.config",
-              "src/assets"
-            ],
+            "assets": ["src/ads.txt", "src/favicon.ico", "src/web.config", "src/assets"],
             "styles": ["src/styles.scss"],
             "scripts": []
           },
@@ -66,18 +61,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "AzureSpeedFrontend:build"
+            "browserTarget": "azure-speed-test:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "AzureSpeedFrontend:build:production"
+              "browserTarget": "azure-speed-test:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "AzureSpeedFrontend:build"
+            "browserTarget": "azure-speed-test:build"
           }
         },
         "test": {
@@ -95,11 +90,7 @@
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "tsconfig.app.json",
-              "tsconfig.spec.json",
-              "tsconfig.json"
-            ],
+            "tsConfig": ["tsconfig.app.json", "tsconfig.spec.json", "tsconfig.json"],
             "exclude": ["**/node_modules/**"]
           }
         },
@@ -107,18 +98,18 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "AzureSpeedFrontend:serve"
+            "devServerTarget": "azure-speed-test:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "AzureSpeedFrontend:serve:production"
+              "devServerTarget": "azure-speed-test:serve:production"
             }
           }
         }
       }
     }
   },
-  "defaultProject": "AzureSpeedFrontend",
+  "defaultProject": "azure-speed-test",
   "cli": {
     "analytics": false
   }

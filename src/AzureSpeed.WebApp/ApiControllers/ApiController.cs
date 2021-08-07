@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using AzureSpeed.WebApp.DataContracts;
 using AzureSpeed.WebApp.Storage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -51,14 +50,6 @@ namespace AzureSpeed.WebApp.ApiControllers
             }
 
             return Ok(new { Url = url });
-        }
-
-        [HttpPost]
-        [Route("error")]
-        public IActionResult LogError([FromBody] UIError error)
-        {
-            logger.LogError(error.Message);
-            return Ok();
         }
     }
 }

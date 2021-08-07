@@ -4,7 +4,6 @@ import { Observable, throwError } from "rxjs";
 import { catchError } from "rxjs/operators";
 import { RegionModel, IpInfo, SasUrlInfo, IpRangeInfo } from "../models";
 import { environment } from "../../environments/environment";
-import { ErrorTelemetryService } from "./errorTelemetry.service";
 
 @Injectable({
   providedIn: "root",
@@ -12,7 +11,7 @@ import { ErrorTelemetryService } from "./errorTelemetry.service";
 export class APIService {
   private apiEndpoint = "";
 
-  constructor(private errorTelemetryService: ErrorTelemetryService, private httpClient: HttpClient) {
+  constructor(private httpClient: HttpClient) {
     this.apiEndpoint = environment.apiEndpoint;
   }
 
@@ -73,9 +72,6 @@ export class APIService {
         errorMessage += `Server response: ${error.error.message}`;
       }
     }
-
-    // Ingest error to backend
-    this.errorTelemetryService.ingestError(errorMessage).subscribe();
 
     // Return an observable with a user-facing error message.
     console.error(errorMessage);

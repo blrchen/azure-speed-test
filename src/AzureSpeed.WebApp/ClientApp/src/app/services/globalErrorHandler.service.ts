@@ -1,11 +1,10 @@
 import { ErrorHandler, Injectable } from "@angular/core";
 import { AppInsightsService } from "./appInsights.service";
-import { ErrorTelemetryService } from "./errorTelemetry.service";
 import { HttpErrorResponse } from "@angular/common/http";
 
 @Injectable()
 export class GlobalErrorHandler extends ErrorHandler {
-  constructor(private appInsights: AppInsightsService, private errorTelemetryService: ErrorTelemetryService) {
+  constructor(private appInsights: AppInsightsService) {
     super();
   }
 
@@ -18,8 +17,7 @@ export class GlobalErrorHandler extends ErrorHandler {
     } else {
       errorMessage = error.toString();
     }
-
-    this.errorTelemetryService.ingestError(errorMessage).subscribe();
+    console.error(errorMessage);
     this.appInsights.trackException(error);
   }
 }

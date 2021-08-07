@@ -4,12 +4,12 @@ import { NgModule, ErrorHandler } from "@angular/core";
 import { HttpClientModule } from "@angular/common/http";
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
-import { APIService, ErrorTelemetryService, GlobalErrorHandler, RegionService } from "./services";
+import { APIService, GlobalErrorHandler, RegionService } from "./services";
 
 @NgModule({
   declarations: [AppComponent],
   imports: [AppRoutingModule, BrowserAnimationsModule, BrowserModule, HttpClientModule],
-  providers: [ErrorTelemetryService, APIService, RegionService, Title, { provide: ErrorHandler, useClass: GlobalErrorHandler }],
+  providers: [APIService, RegionService, Title, { provide: ErrorHandler, useClass: GlobalErrorHandler }],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

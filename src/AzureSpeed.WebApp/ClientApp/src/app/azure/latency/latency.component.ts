@@ -42,7 +42,6 @@ export class LatencyComponent implements OnInit, OnDestroy {
   ngOnInit() {
     const sub = this.regionService.getRegions().subscribe((res) => {
       if (res.length > this.regions.length && !this.pingTimer$) {
-        console.log("will set pingcount to 0");
         this.pingCount = 0;
         this.regions = res;
       } else {
@@ -126,7 +125,7 @@ export class LatencyComponent implements OnInit, OnDestroy {
           this.lineChartData.push({
             name: displayName,
             series: secondArr.map((i) => ({
-              name: this.formatxAxisTick(i),
+              name: this.formatXAxisTick(i),
               value: 0,
             })),
           });
@@ -142,8 +141,8 @@ export class LatencyComponent implements OnInit, OnDestroy {
         const { storageAccountName, series } = item;
         const t = this.latestPingTime.get(storageAccountName) || 0;
         let isRemove = true;
-        this.tableData.forEach((item) => {
-          if (storageAccountName === item.storageAccountName) {
+        this.tableData.forEach((td) => {
+          if (storageAccountName === td.storageAccountName) {
             isRemove = false;
           }
         });
@@ -161,7 +160,7 @@ export class LatencyComponent implements OnInit, OnDestroy {
         return {
           name: item.name,
           series: item.series.map((seriesItem: DataItem) => ({
-            name: this.formatxAxisTick(Number(seriesItem.name)),
+            name: this.formatXAxisTick(Number(seriesItem.name)),
             value: seriesItem.value,
           })),
         };
@@ -175,7 +174,7 @@ export class LatencyComponent implements OnInit, OnDestroy {
               const s = new Date(timestamp).getSeconds();
               return s % 5 === 0;
             })
-            .map((seriesItem: DataItem) => this.formatxAxisTick(parseInt(String(seriesItem.name), 10)))
+            .map((seriesItem: DataItem) => this.formatXAxisTick(parseInt(String(seriesItem.name), 10)))
         : [];
     });
   }
@@ -208,7 +207,7 @@ export class LatencyComponent implements OnInit, OnDestroy {
     });
   }
 
-  formatxAxisTick(timeStamp: number): string {
+  formatXAxisTick(timeStamp: number): string {
     const date = new Date(timeStamp);
     const second = date.getSeconds();
     const h = date.getHours();

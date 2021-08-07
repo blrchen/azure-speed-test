@@ -30,7 +30,7 @@ namespace AzureSpeed.WebApp
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
-                configuration.RootPath = "ClientApp/dist/AzureSpeedFrontend";
+                configuration.RootPath = "ClientApp/dist/azure-speed-test";
             });
 
             services.AddCors("CorsPolicy");

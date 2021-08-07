@@ -15,7 +15,8 @@
 # 2. Select-AzSubscription -SubscriptionName "Your sub name"
 
 function GetAzureStorages() {
-    $resourceGroupName = "AzureSpeedRG"
+    $resourceGroupName = "azure-speed-test"
+    $storageAccountPrefix = "a1"
     $storageJsonObjects = New-Object System.Collections.Generic.List[System.Object];
 
     if (!(Get-AzResourceGroup -Name $resourceGroupName -ErrorAction SilentlyContinue)) {
@@ -23,20 +24,13 @@ function GetAzureStorages() {
     }
 
     $locations = Get-AzLocation
+
     foreach ($location in $locations) {
         $locationId = $location.Location
         # Note: storage name length can not exceed 24
-        $storageAccountName = "ast" + $locationId
-        
-        if ((Get-AzStorageAccountNameAvailability -Name $storageAccountName).NameAvailable) {
-            Write-Host "Provisioning storage account $storageAccountName in location $locationId"
-            New-AzStorageAccount -ResourceGroupName $resourceGroupName `
-                -Name $storageAccountName `
-                -Location $locationId `
-                -SkuName 'Standard_LRS' `
-                -Kind StorageV2
-        }
-    
+        $storageAccountName = $storageAccountPrefix  + $locationId
+
+
         $storageAccount = Get-AzStorageAccount -ResourceGroupName $resourceGroupName -Name $storageAccountName -ErrorAction Ignore
         if ($storageAccount) {
             $storageAccountKey = (Get-AzStorageAccountKey -Name $storageAccountName -ResourceGroupName $resourceGroupName).Value[0]
@@ -50,7 +44,7 @@ function GetAzureStorages() {
             Write-Host "Successfully fetch storage account details for $storageAccountName"
         }
         else {
-            Write-Error "Storage account $storageAccountName not provisioned successfully"
+            Write-Error "Error provisioned storage account $storageAccountName, current subscription might not have access to region $locationId"
         }
     }
 

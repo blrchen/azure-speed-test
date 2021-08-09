@@ -78,12 +78,12 @@ export class LatencyComponent implements OnInit, OnDestroy {
   formatData() {
     const tableDataCache: RegionModel[] = [];
     this.regions.forEach((item, index) => {
-      const { regionName, regionAccess, displayName, storageAccountName, physicalLocation, geography } = item;
+      const { regionName, accessEnabled, displayName, storageAccountName, physicalLocation, geography } = item;
       const t = this.latestPingTime.get(storageAccountName);
       if (t > 0) {
         tableDataCache.push({
           regionName,
-          regionAccess,
+          accessEnabled,
           displayName,
           storageAccountName,
           physicalLocation,
@@ -181,8 +181,8 @@ export class LatencyComponent implements OnInit, OnDestroy {
 
   sendHttpPing() {
     this.regions.forEach((region) => {
-      const { regionAccess, storageAccountName } = region;
-      if (!regionAccess) {
+      const { accessEnabled, storageAccountName } = region;
+      if (!accessEnabled) {
         return;
       }
       this.startTime.set(storageAccountName, new Date().getTime());

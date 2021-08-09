@@ -22,6 +22,6 @@ foreach ($location in $locations) {
         Set-AzStorageAccountManagementPolicy -ResourceGroupName $resourceGroupName -StorageAccountName $storageAccountName -Rule $rule
     }
     else {
-        Write-Error "Storage account not found, current subscription might not have access to region $locationId"
+        Write-Error "Storage account $storageAccountName not found, or subscription does not have access to region $locationId"
     }
 }

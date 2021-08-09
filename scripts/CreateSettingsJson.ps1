@@ -28,13 +28,12 @@ function GetAzureStorages() {
     foreach ($location in $locations) {
         $locationId = $location.Location
         # Note: storage name length can not exceed 24
-        $storageAccountName = $storageAccountPrefix  + $locationId
-
+        $storageAccountName = $storageAccountPrefix + $locationId
 
         $storageAccount = Get-AzStorageAccount -ResourceGroupName $resourceGroupName -Name $storageAccountName -ErrorAction Ignore
         if ($storageAccount) {
             $storageAccountKey = (Get-AzStorageAccountKey -Name $storageAccountName -ResourceGroupName $resourceGroupName).Value[0]
-    
+
             $storageJsonObject = [PSCustomObject]@{
                 name       = $storageAccountName
                 key        = $storageAccountKey
@@ -44,7 +43,7 @@ function GetAzureStorages() {
             Write-Host "Successfully fetch storage account details for $storageAccountName"
         }
         else {
-            Write-Error "Error provisioned storage account $storageAccountName, current subscription might not have access to region $locationId"
+            Write-Error "Storage account $storageAccountName not found, or subscription does not have access to region $locationId"
         }
     }
 
@@ -52,7 +51,7 @@ function GetAzureStorages() {
 }
 
 function CreateSettingsJsonFile ($storageJsonObjects) {
-    $outFilePath = "..\..\src\AzureSpeed.WebApp\Data\settings.json"
+    $outFilePath = "..\src\AzureSpeed.WebApp\Data\settings.json"
     if (Test-Path $outFilePath) {
         Remove-Item $outFilePath
     }

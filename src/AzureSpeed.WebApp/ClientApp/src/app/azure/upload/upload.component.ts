@@ -42,8 +42,8 @@ export class UploadComponent implements OnInit, OnDestroy {
 
   async uploadBlob(region: RegionModel) {
     console.log(region);
-    const { geography, displayName, physicalLocation, regionName, regionAccess, storageAccountName } = region;
-    if (!regionAccess) {
+    const { geography, displayName, physicalLocation, regionName, accessEnabled, storageAccountName } = region;
+    if (!accessEnabled) {
       return;
     }
     console.log("uploadBlob starts for", regionName);

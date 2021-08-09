@@ -11,7 +11,7 @@ export interface Region {
   physicalLocation?: string;
   regionalDisplayName?: string;
   regionName: string;
-  regionAccess: boolean; // TODO: globally remove unaccessible regions
+  accessEnabled: boolean;
   storageAccountName: string;
 }
 

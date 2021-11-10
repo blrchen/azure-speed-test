@@ -150,8 +150,8 @@
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 0,
-    "availabilityZoneStatus": "Not supported",
+    "availabilityZoneCount": 3,
+    "availabilityZoneStatus": "3 zones",
     "displayName": "East Asia",
     "geography": "Asia Pacific",
     "latitude": "22.267",
@@ -315,8 +315,8 @@
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 0,
-    "availabilityZoneStatus": "Not supported",
+    "availabilityZoneCount": 3,
+    "availabilityZoneStatus": "3 zones",
     "displayName": "Korea Central",
     "geography": "Asia Pacific",
     "latitude": "37.5665",
@@ -341,7 +341,7 @@
     "regionalDisplayName": "(Asia Pacific) Korea South",
     "regionName": "koreasouth",
     "storageAccountName": "a1koreasouth",
-    "restricted": false,
+    "restricted": true,
     "accessEnabled": true
   },
   {
@@ -375,8 +375,8 @@
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 0,
-    "availabilityZoneStatus": "Not supported",
+    "availabilityZoneCount": 3,
+    "availabilityZoneStatus": "3 zones",
     "displayName": "Norway East",
     "geography": "Europe",
     "latitude": "59.913868",
@@ -405,8 +405,8 @@
     "accessEnabled": false
   },
   {
-    "availabilityZoneCount": 0,
-    "availabilityZoneStatus": "Not supported",
+    "availabilityZoneCount": 3,
+    "availabilityZoneStatus": "3 zones",
     "displayName": "South Africa North",
     "geography": "Africa",
     "latitude": "-25.731340",
@@ -480,8 +480,8 @@
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 0,
-    "availabilityZoneStatus": "Not supported",
+    "availabilityZoneCount": 3,
+    "availabilityZoneStatus": "3 zones",
     "displayName": "Sweden Central",
     "geography": "Europe",
     "latitude": "60.67488",

@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders, HttpParams, HttpErrorResponse } from "@angular
 import { Injectable } from "@angular/core";
 import { Observable, throwError } from "rxjs";
 import { catchError } from "rxjs/operators";
-import { RegionModel, IpInfo, SasUrlInfo, IpRangeInfo } from "../models";
+import { RegionModel, IpInfo, SasUrlInfo } from "../models";
 import { environment } from "../../environments/environment";
 
 @Injectable({
@@ -37,20 +37,12 @@ export class APIService {
         operation,
       },
     });
-    return this.httpClient
-      .get<SasUrlInfo>(url, { params })
-      .pipe(catchError(this.handleError));
+    return this.httpClient.get<SasUrlInfo>(url, { params }).pipe(catchError(this.handleError));
   }
 
-  // To be deprecated
-  public getLegacyAzureIPInfo(ipOrUrl: string): Observable<IpRangeInfo> {
-    const url = this.apiEndpoint + "/api/region?ipOrUrl=" + ipOrUrl;
-    return this.httpClient.get<IpRangeInfo>(url).pipe(catchError(this.handleError));
-  }
-
-  public getIPInfo(ipAddressOrUrl: string): Observable<IpInfo> {
+  public getIpInfo(ipAddressOrUrl: string): Observable<IpInfo[]> {
     const url = this.apiEndpoint + "/api/ipinfo?ipAddressOrUrl=" + ipAddressOrUrl;
-    return this.httpClient.get<IpInfo>(url).pipe(catchError(this.handleError));
+    return this.httpClient.get<IpInfo[]>(url).pipe(catchError(this.handleError));
   }
 
   // Use arrow function so this context is not lost

@@ -8,27 +8,21 @@ import { IpInfo } from "src/app/models";
 })
 export class IPLookupComponent implements OnInit {
   message: string;
-  result: IpInfo;
+  tableData: IpInfo[];
   ipAddressOrUrl: string;
 
   constructor(private apiService: APIService) {}
 
   ngOnInit() {
-    this.result = {
-      serviceTagId: "",
-      ipAddress: "",
-      ipAddressPrefix: "",
-      region: "",
-      systemService: "",
-    };
+    this.tableData = [];
   }
 
   onSubmit() {
     this.message = "Please wait ...";
-    this.apiService.getIPInfo(this.ipAddressOrUrl).subscribe(
+    this.apiService.getIpInfo(this.ipAddressOrUrl).subscribe(
       (res) => {
         this.message = "";
-        this.result = res;
+        this.tableData = res;
       },
       () => {
         this.message = "Server error, please try again";

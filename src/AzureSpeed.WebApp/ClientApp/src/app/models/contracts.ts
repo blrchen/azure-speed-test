@@ -4,6 +4,7 @@ export interface IpInfo {
   ipAddressPrefix: string;
   region: string;
   systemService: string;
+  networkFeatures: string;
 }
 
 // To be deprecated

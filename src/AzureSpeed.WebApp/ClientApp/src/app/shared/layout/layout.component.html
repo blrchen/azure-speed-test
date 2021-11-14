@@ -22,7 +22,7 @@
       <nav class="collapse bd-links" id="bd-nav" [ngClass]="{ show: collapse }">
         <ul class="nav flex-column bd-sidenav">
           <ng-container *ngFor="let item of menus">
-            <li class="nav-item" routerLinkActive="active" *ngIf="!item.hide">
+            <li class="nav-item" routerLinkActive="active">
               <a class="nav-link" [routerLink]="item.path" routerLinkActive="active">
                 <i [class]="item.icon" aria-hidden="true" *ngIf="item.icon"></i>
                 <span class="ml-2">{{ item.title }}</span>

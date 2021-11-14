@@ -47,23 +47,18 @@
     <div class="mt-2 border bg-light px-2 pt-4">
       <div style="width: 100%; height: 280px">
         <ngx-charts-line-chart
-          [view]="view"
           [results]="lineChartData"
           [scheme]="colorScheme"
-          animations=""
-          rangeFillOpacity="1"
-          [xAxis]="1"
-          [yAxis]="1"
-          roundDomains="true"
-          showXAxisLabel="true"
-          showYAxisLabel="true"
-          xAxisLabel=""
-          yAxisLabel=""
-          trimXAxisTicks="1"
+          [animations]="false"
+          [rangeFillOpacity]="1"
+          [xAxis]="true"
+          [yAxis]="true"
+          [roundDomains]="true"
+          [showXAxisLabel]="true"
+          [showYAxisLabel]="true"
           [curve]="curve"
           [xAxisTicks]="xAxisTicks"
-          autoScale="true"
-          yScaleMin="0"
+          [yScaleMin]="0"
         >
         </ngx-charts-line-chart>
       </div>

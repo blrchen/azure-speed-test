@@ -30,7 +30,7 @@ export class RegionService {
   }
 
   getAllRegions(): RegionModel[] {
-    return data;
+    return data.filter((region) => region.accessEnabled);
   }
 
   clearRegions() {

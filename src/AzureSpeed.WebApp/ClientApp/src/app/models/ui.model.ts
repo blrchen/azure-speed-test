@@ -11,7 +11,6 @@ export interface Region {
   physicalLocation?: string;
   regionalDisplayName?: string;
   regionName: string;
-  accessEnabled: boolean;
   storageAccountName: string;
 }
 

@@ -120,8 +120,8 @@
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 0,
-    "availabilityZoneStatus": "Not supported",
+    "availabilityZoneCount": 3,
+    "availabilityZoneStatus": "3 zones",
     "displayName": "Central India",
     "geography": "Asia Pacific",
     "latitude": "18.5822",

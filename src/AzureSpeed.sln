@@ -24,7 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".CodeAnalysis", ".CodeAnaly
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Pipelines", ".Pipelines", "{1A4340E0-95AA-4E9E-BF44-B89D932EB246}"
 	ProjectSection(SolutionItems) = preProject
-		..\azurespeed-pipelines.yml = ..\azurespeed-pipelines.yml
+		..\azurespeed-ci.yml = ..\azurespeed-ci.yml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSpeed.WebApp", "AzureSpeed.WebApp\AzureSpeed.WebApp.csproj", "{841FEF07-AF17-413D-A055-E1E7C10B6813}"

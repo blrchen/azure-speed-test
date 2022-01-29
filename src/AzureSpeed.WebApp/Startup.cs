@@ -12,6 +12,7 @@ namespace AzureSpeed.WebApp
 {
     public class Startup
     {
+        private const string CorsPolicyName = "AzureSpeedTestCorsPolicy";
         private readonly IWebHostEnvironment webHostEnvironment;
 
         public Startup(IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
@@ -25,6 +26,8 @@ namespace AzureSpeed.WebApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddApplicationInsightsTelemetry();
+            services.AddCors(CorsPolicyName);
             services.AddControllers(options => { options.Filters.Add(typeof(ApiExceptionFilter)); });
 
             // In production, the Angular files will be served from this directory
@@ -32,8 +35,6 @@ namespace AzureSpeed.WebApp
             {
                 configuration.RootPath = "ClientApp/dist/azure-speed-test";
             });
-
-            services.AddCors("CorsPolicy");
 
             services.AddHttpClient();
             services.AddSingleton<StorageAccountsProvider>(serviceProvider =>
@@ -51,21 +52,21 @@ namespace AzureSpeed.WebApp
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseHttpsRedirection();
+
+            app.UseRouting();
+            app.UseCors(CorsPolicyName);
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+
+            // Angular SPA client app
             app.UseStaticFiles();
             if (!env.IsDevelopment())
             {
                 app.UseSpaStaticFiles();
             }
-
-            app.UseCors("CorsPolicy");
-            app.UseRouting();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller}/{action=Index}/{id?}");
-            });
 
             app.UseSpa(spa =>
             {

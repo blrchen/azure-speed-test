@@ -5,11 +5,11 @@ using AzureSpeed.WebApp.Common;
 
 namespace AzureSpeed.WebApp.Storage
 {
-    public class StorageProvider
+    public class BlobProvider
     {
         private readonly string connectionString;
 
-        public StorageProvider(StorageAccount account)
+        public BlobProvider(StorageAccount account)
         {
             connectionString = $"DefaultEndpointsProtocol=https;AccountName={account.Name};AccountKey={account.Key}";
         }

@@ -179,6 +179,50 @@
         }
       },
       {
+        "Id": "/subscriptions/00000000-0000-0000-0000-000000000000/locations/jioindiacentral",
+        "SubscriptionId": null,
+        "Name": "jioindiacentral",
+        "DisplayName": "Jio India Central",
+        "RegionalDisplayName": "(Asia Pacific) Jio India Central",
+        "Metadata": {
+          "RegionType": {},
+          "RegionCategory": {},
+          "GeographyGroup": "Asia Pacific",
+          "Longitude": "79.08886",
+          "Latitude": "21.146633",
+          "PhysicalLocation": "Nagpur",
+          "PairedRegion": [
+            {
+              "Name": "jioindiawest",
+              "Id": "/subscriptions/00000000-0000-0000-0000-000000000000/locations/jioindiawest",
+              "SubscriptionId": null
+            }
+          ]
+        }
+      },
+      {
+        "Id": "/subscriptions/00000000-0000-0000-0000-000000000000/locations/jioindiawest",
+        "SubscriptionId": null,
+        "Name": "jioindiawest",
+        "DisplayName": "Jio India West",
+        "RegionalDisplayName": "(Asia Pacific) Jio India West",
+        "Metadata": {
+          "RegionType": {},
+          "RegionCategory": {},
+          "GeographyGroup": "Asia Pacific",
+          "Longitude": "70.05773",
+          "Latitude": "22.470701",
+          "PhysicalLocation": "Jamnagar",
+          "PairedRegion": [
+            {
+              "Name": "jioindiacentral",
+              "Id": "/subscriptions/00000000-0000-0000-0000-000000000000/locations/jioindiacentral",
+              "SubscriptionId": null
+            }
+          ]
+        }
+      },
+      {
         "Id": "/subscriptions/00000000-0000-0000-0000-000000000000/locations/koreacentral",
         "SubscriptionId": null,
         "Name": "koreacentral",
@@ -787,6 +831,28 @@
             {
               "Name": "norwayeast",
               "Id": "/subscriptions/00000000-0000-0000-0000-000000000000/locations/norwayeast",
+              "SubscriptionId": null
+            }
+          ]
+        }
+      },
+      {
+        "Id": "/subscriptions/00000000-0000-0000-0000-000000000000/locations/swedencentral",
+        "SubscriptionId": null,
+        "Name": "swedencentral",
+        "DisplayName": "Sweden Central",
+        "RegionalDisplayName": "(Europe) Sweden Central",
+        "Metadata": {
+          "RegionType": {},
+          "RegionCategory": {},
+          "GeographyGroup": "Europe",
+          "Longitude": "17.14127",
+          "Latitude": "60.67488",
+          "PhysicalLocation": "Gävle",
+          "PairedRegion": [
+            {
+              "Name": "swedensouth",
+              "Id": "/subscriptions/00000000-0000-0000-0000-000000000000/locations/swedensouth",
               "SubscriptionId": null
             }
           ]

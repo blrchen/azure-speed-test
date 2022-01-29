@@ -1,7 +1,5 @@
 [
   {
-    "availabilityZoneCount": 0,
-    "availabilityZoneStatus": "Not supported",
     "displayName": "Australia Central",
     "geography": "Asia Pacific",
     "latitude": "-35.3075",
@@ -10,13 +8,11 @@
     "physicalLocation": "Canberra",
     "regionalDisplayName": "(Asia Pacific) Australia Central",
     "regionName": "australiacentral",
-    "storageAccountName": "a1australiacentral",
+    "availabilityZoneCount": 0,
     "restricted": false,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 0,
-    "availabilityZoneStatus": "Not supported",
     "displayName": "Australia Central 2",
     "geography": "Asia Pacific",
     "latitude": "-35.3075",
@@ -25,13 +21,11 @@
     "physicalLocation": "Canberra",
     "regionalDisplayName": "(Asia Pacific) Australia Central 2",
     "regionName": "australiacentral2",
-    "storageAccountName": "a1australiacentral2",
+    "availabilityZoneCount": 0,
     "restricted": true,
     "accessEnabled": false
   },
   {
-    "availabilityZoneCount": 3,
-    "availabilityZoneStatus": "3 zones",
     "displayName": "Australia East",
     "geography": "Asia Pacific",
     "latitude": "-33.86",
@@ -40,13 +34,11 @@
     "physicalLocation": "New South Wales",
     "regionalDisplayName": "(Asia Pacific) Australia East",
     "regionName": "australiaeast",
-    "storageAccountName": "a1australiaeast",
+    "availabilityZoneCount": 3,
     "restricted": false,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 0,
-    "availabilityZoneStatus": "Not supported",
     "displayName": "Australia Southeast",
     "geography": "Asia Pacific",
     "latitude": "-37.8136",
@@ -55,13 +47,11 @@
     "physicalLocation": "Victoria",
     "regionalDisplayName": "(Asia Pacific) Australia Southeast",
     "regionName": "australiasoutheast",
-    "storageAccountName": "a1australiasoutheast",
+    "availabilityZoneCount": 0,
     "restricted": false,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 3,
-    "availabilityZoneStatus": "3 zones",
     "displayName": "Brazil South",
     "geography": "South America",
     "latitude": "-23.55",
@@ -70,13 +60,11 @@
     "physicalLocation": "Sao Paulo State",
     "regionalDisplayName": "(South America) Brazil South",
     "regionName": "brazilsouth",
-    "storageAccountName": "a1brazilsouth",
+    "availabilityZoneCount": 3,
     "restricted": false,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 0,
-    "availabilityZoneStatus": "Not supported",
     "displayName": "Brazil Southeast",
     "geography": "South America",
     "latitude": "-22.90278",
@@ -85,13 +73,11 @@
     "physicalLocation": "Rio",
     "regionalDisplayName": "(South America) Brazil Southeast",
     "regionName": "brazilsoutheast",
-    "storageAccountName": "a1brazilsoutheast",
+    "availabilityZoneCount": 0,
     "restricted": true,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 3,
-    "availabilityZoneStatus": "3 zones",
     "displayName": "Canada Central",
     "geography": "Canada",
     "latitude": "43.653",
@@ -100,13 +86,11 @@
     "physicalLocation": "Toronto",
     "regionalDisplayName": "(Canada) Canada Central",
     "regionName": "canadacentral",
-    "storageAccountName": "a1canadacentral",
+    "availabilityZoneCount": 3,
     "restricted": false,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 0,
-    "availabilityZoneStatus": "Not supported",
     "displayName": "Canada East",
     "geography": "Canada",
     "latitude": "46.817",
@@ -115,13 +99,11 @@
     "physicalLocation": "Quebec",
     "regionalDisplayName": "(Canada) Canada East",
     "regionName": "canadaeast",
-    "storageAccountName": "a1canadaeast",
+    "availabilityZoneCount": 0,
     "restricted": false,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 3,
-    "availabilityZoneStatus": "3 zones",
     "displayName": "Central India",
     "geography": "Asia Pacific",
     "latitude": "18.5822",
@@ -130,13 +112,11 @@
     "physicalLocation": "Pune",
     "regionalDisplayName": "(Asia Pacific) Central India",
     "regionName": "centralindia",
-    "storageAccountName": "a1centralindia",
+    "availabilityZoneCount": 3,
     "restricted": false,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 3,
-    "availabilityZoneStatus": "3 zones",
     "displayName": "Central US",
     "geography": "US",
     "latitude": "41.5908",
@@ -145,13 +125,11 @@
     "physicalLocation": "Iowa",
     "regionalDisplayName": "(US) Central US",
     "regionName": "centralus",
-    "storageAccountName": "a1centralus",
+    "availabilityZoneCount": 3,
     "restricted": false,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 3,
-    "availabilityZoneStatus": "3 zones",
     "displayName": "East Asia",
     "geography": "Asia Pacific",
     "latitude": "22.267",
@@ -160,13 +138,11 @@
     "physicalLocation": "Hong Kong",
     "regionalDisplayName": "(Asia Pacific) East Asia",
     "regionName": "eastasia",
-    "storageAccountName": "a1eastasia",
+    "availabilityZoneCount": 3,
     "restricted": false,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 3,
-    "availabilityZoneStatus": "3 zones",
     "displayName": "East US",
     "geography": "US",
     "latitude": "37.3719",
@@ -175,13 +151,11 @@
     "physicalLocation": "Virginia",
     "regionalDisplayName": "(US) East US",
     "regionName": "eastus",
-    "storageAccountName": "a1eastus",
+    "availabilityZoneCount": 3,
     "restricted": false,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 3,
-    "availabilityZoneStatus": "3 zones",
     "displayName": "East US 2",
     "geography": "US",
     "latitude": "36.6681",
@@ -190,13 +164,11 @@
     "physicalLocation": "Virginia",
     "regionalDisplayName": "(US) East US 2",
     "regionName": "eastus2",
-    "storageAccountName": "a1eastus2",
+    "availabilityZoneCount": 3,
     "restricted": false,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 3,
-    "availabilityZoneStatus": "3 zones",
     "displayName": "France Central",
     "geography": "Europe",
     "latitude": "46.3772",
@@ -205,13 +177,11 @@
     "physicalLocation": "Paris",
     "regionalDisplayName": "(Europe) France Central",
     "regionName": "francecentral",
-    "storageAccountName": "a1francecentral",
+    "availabilityZoneCount": 3,
     "restricted": false,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 0,
-    "availabilityZoneStatus": "Not supported",
     "displayName": "France South",
     "geography": "Europe",
     "latitude": "43.8345",
@@ -220,13 +190,11 @@
     "physicalLocation": "Marseille",
     "regionalDisplayName": "(Europe) France South",
     "regionName": "francesouth",
-    "storageAccountName": "a1francesouth",
+    "availabilityZoneCount": 0,
     "restricted": true,
     "accessEnabled": false
   },
   {
-    "availabilityZoneCount": 0,
-    "availabilityZoneStatus": "Not supported",
     "displayName": "Germany North",
     "geography": "Europe",
     "latitude": "53.073635",
@@ -235,13 +203,11 @@
     "physicalLocation": "Berlin",
     "regionalDisplayName": "(Europe) Germany North",
     "regionName": "germanynorth",
-    "storageAccountName": "a1germanynorth",
+    "availabilityZoneCount": 0,
     "restricted": true,
     "accessEnabled": false
   },
   {
-    "availabilityZoneCount": 3,
-    "availabilityZoneStatus": "3 zones",
     "displayName": "Germany West Central",
     "geography": "Europe",
     "latitude": "50.110924",
@@ -250,13 +216,11 @@
     "physicalLocation": "Frankfurt",
     "regionalDisplayName": "(Europe) Germany West Central",
     "regionName": "germanywestcentral",
-    "storageAccountName": "a1germanywestcentral",
+    "availabilityZoneCount": 3,
     "restricted": false,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 3,
-    "availabilityZoneStatus": "3 zones",
     "displayName": "Japan East",
     "geography": "Asia Pacific",
     "latitude": "35.68",
@@ -265,13 +229,11 @@
     "physicalLocation": "Tokyo, Saitama",
     "regionalDisplayName": "(Asia Pacific) Japan East",
     "regionName": "japaneast",
-    "storageAccountName": "a1japaneast",
+    "availabilityZoneCount": 3,
     "restricted": false,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 0,
-    "availabilityZoneStatus": "Not supported",
     "displayName": "Japan West",
     "geography": "Asia Pacific",
     "latitude": "34.6939",
@@ -280,13 +242,11 @@
     "physicalLocation": "Osaka",
     "regionalDisplayName": "(Asia Pacific) Japan West",
     "regionName": "japanwest",
-    "storageAccountName": "a1japanwest",
+    "availabilityZoneCount": 0,
     "restricted": false,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 0,
-    "availabilityZoneStatus": "Not supported",
     "displayName": "Jio India Central",
     "geography": "Asia Pacific",
     "latitude": "21.146633",
@@ -295,13 +255,11 @@
     "physicalLocation": "Nagpur",
     "regionalDisplayName": "(Asia Pacific) Jio India Central",
     "regionName": "jioindiacentral",
-    "storageAccountName": "a1jioindiacentral",
+    "availabilityZoneCount": 0,
     "restricted": true,
     "accessEnabled": false
   },
   {
-    "availabilityZoneCount": 0,
-    "availabilityZoneStatus": "Not supported",
     "displayName": "Jio India West",
     "geography": "Asia Pacific",
     "latitude": "22.470701",
@@ -310,13 +268,11 @@
     "physicalLocation": "Jamnagar",
     "regionalDisplayName": "(Asia Pacific) Jio India West",
     "regionName": "jioindiawest",
-    "storageAccountName": "a1jioindiawest",
-    "restricted": false,
-    "accessEnabled": true
+    "availabilityZoneCount": 0,
+    "restricted": true,
+    "accessEnabled": false
   },
   {
-    "availabilityZoneCount": 3,
-    "availabilityZoneStatus": "3 zones",
     "displayName": "Korea Central",
     "geography": "Asia Pacific",
     "latitude": "37.5665",
@@ -325,13 +281,11 @@
     "physicalLocation": "Seoul",
     "regionalDisplayName": "(Asia Pacific) Korea Central",
     "regionName": "koreacentral",
-    "storageAccountName": "a1koreacentral",
+    "availabilityZoneCount": 3,
     "restricted": false,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 0,
-    "availabilityZoneStatus": "Not supported",
     "displayName": "Korea South",
     "geography": "Asia Pacific",
     "latitude": "35.1796",
@@ -340,13 +294,11 @@
     "physicalLocation": "Busan",
     "regionalDisplayName": "(Asia Pacific) Korea South",
     "regionName": "koreasouth",
-    "storageAccountName": "a1koreasouth",
+    "availabilityZoneCount": 0,
     "restricted": true,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 0,
-    "availabilityZoneStatus": "Not supported",
     "displayName": "North Central US",
     "geography": "US",
     "latitude": "41.8819",
@@ -355,13 +307,11 @@
     "physicalLocation": "Illinois",
     "regionalDisplayName": "(US) North Central US",
     "regionName": "northcentralus",
-    "storageAccountName": "a1northcentralus",
+    "availabilityZoneCount": 0,
     "restricted": false,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 3,
-    "availabilityZoneStatus": "3 zones",
     "displayName": "North Europe",
     "geography": "Europe",
     "latitude": "53.3478",
@@ -370,13 +320,11 @@
     "physicalLocation": "Ireland",
     "regionalDisplayName": "(Europe) North Europe",
     "regionName": "northeurope",
-    "storageAccountName": "a1northeurope",
+    "availabilityZoneCount": 3,
     "restricted": false,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 3,
-    "availabilityZoneStatus": "3 zones",
     "displayName": "Norway East",
     "geography": "Europe",
     "latitude": "59.913868",
@@ -385,13 +333,11 @@
     "physicalLocation": "Norway",
     "regionalDisplayName": "(Europe) Norway East",
     "regionName": "norwayeast",
-    "storageAccountName": "a1norwayeast",
+    "availabilityZoneCount": 3,
     "restricted": false,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 0,
-    "availabilityZoneStatus": "Not supported",
     "displayName": "Norway West",
     "geography": "Europe",
     "latitude": "58.969975",
@@ -400,13 +346,11 @@
     "physicalLocation": "Norway",
     "regionalDisplayName": "(Europe) Norway West",
     "regionName": "norwaywest",
-    "storageAccountName": "a1norwaywest",
+    "availabilityZoneCount": 0,
     "restricted": true,
     "accessEnabled": false
   },
   {
-    "availabilityZoneCount": 3,
-    "availabilityZoneStatus": "3 zones",
     "displayName": "South Africa North",
     "geography": "Africa",
     "latitude": "-25.731340",
@@ -415,13 +359,11 @@
     "physicalLocation": "Johannesburg",
     "regionalDisplayName": "(Africa) South Africa North",
     "regionName": "southafricanorth",
-    "storageAccountName": "a1southafricanorth",
+    "availabilityZoneCount": 3,
     "restricted": false,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 0,
-    "availabilityZoneStatus": "Not supported",
     "displayName": "South Africa West",
     "geography": "Africa",
     "latitude": "-34.075691",
@@ -430,13 +372,11 @@
     "physicalLocation": "Cape Town",
     "regionalDisplayName": "(Africa) South Africa West",
     "regionName": "southafricawest",
-    "storageAccountName": "a1southafricawest",
+    "availabilityZoneCount": 0,
     "restricted": true,
     "accessEnabled": false
   },
   {
-    "availabilityZoneCount": 3,
-    "availabilityZoneStatus": "3 zones",
     "displayName": "South Central US",
     "geography": "US",
     "latitude": "29.4167",
@@ -445,13 +385,11 @@
     "physicalLocation": "Texas",
     "regionalDisplayName": "(US) South Central US",
     "regionName": "southcentralus",
-    "storageAccountName": "a1southcentralus",
+    "availabilityZoneCount": 3,
     "restricted": false,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 3,
-    "availabilityZoneStatus": "3 zones",
     "displayName": "Southeast Asia",
     "geography": "Asia Pacific",
     "latitude": "1.283",
@@ -460,13 +398,11 @@
     "physicalLocation": "Singapore",
     "regionalDisplayName": "(Asia Pacific) Southeast Asia",
     "regionName": "southeastasia",
-    "storageAccountName": "a1southeastasia",
+    "availabilityZoneCount": 3,
     "restricted": false,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 0,
-    "availabilityZoneStatus": "Not supported",
     "displayName": "South India",
     "geography": "Asia Pacific",
     "latitude": "12.9822",
@@ -475,43 +411,24 @@
     "physicalLocation": "Chennai",
     "regionalDisplayName": "(Asia Pacific) South India",
     "regionName": "southindia",
-    "storageAccountName": "a1southindia",
+    "availabilityZoneCount": 0,
     "restricted": false,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 3,
-    "availabilityZoneStatus": "3 zones",
     "displayName": "Sweden Central",
     "geography": "Europe",
     "latitude": "60.67488",
     "longitude": "17.14127",
-    "pairedRegion": "Sweden South",
+    "pairedRegion": null,
     "physicalLocation": "Gävle",
     "regionalDisplayName": "(Europe) Sweden Central",
     "regionName": "swedencentral",
-    "storageAccountName": "a1swedencentral",
-    "restricted": true,
-    "accessEnabled": false
+    "availabilityZoneCount": 3,
+    "restricted": false,
+    "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 0,
-    "availabilityZoneStatus": "Not supported",
-    "displayName": "Sweden South",
-    "geography": "Europe",
-    "latitude": "55.6059",
-    "longitude": "13.0007",
-    "pairedRegion": "Sweden Central",
-    "physicalLocation": "Malmo",
-    "regionalDisplayName": "(Europe) Sweden South",
-    "regionName": "swedensouth",
-    "storageAccountName": "a1swedensouth",
-    "restricted": true,
-    "accessEnabled": false
-  },
-  {
-    "availabilityZoneCount": 0,
-    "availabilityZoneStatus": "Not supported",
     "displayName": "Switzerland North",
     "geography": "Europe",
     "latitude": "47.451542",
@@ -520,13 +437,11 @@
     "physicalLocation": "Zurich",
     "regionalDisplayName": "(Europe) Switzerland North",
     "regionName": "switzerlandnorth",
-    "storageAccountName": "a1switzerlandnorth",
+    "availabilityZoneCount": 0,
     "restricted": false,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 0,
-    "availabilityZoneStatus": "Not supported",
     "displayName": "Switzerland West",
     "geography": "Europe",
     "latitude": "46.204391",
@@ -535,13 +450,11 @@
     "physicalLocation": "Geneva",
     "regionalDisplayName": "(Europe) Switzerland West",
     "regionName": "switzerlandwest",
-    "storageAccountName": "a1switzerlandwest",
+    "availabilityZoneCount": 0,
     "restricted": true,
     "accessEnabled": false
   },
   {
-    "availabilityZoneCount": 0,
-    "availabilityZoneStatus": "Not supported",
     "displayName": "UAE Central",
     "geography": "Middle East",
     "latitude": "24.466667",
@@ -550,13 +463,11 @@
     "physicalLocation": "Abu Dhabi",
     "regionalDisplayName": "(Middle East) UAE Central",
     "regionName": "uaecentral",
-    "storageAccountName": "a1uaecentral",
+    "availabilityZoneCount": 0,
     "restricted": true,
     "accessEnabled": false
   },
   {
-    "availabilityZoneCount": 0,
-    "availabilityZoneStatus": "Not supported",
     "displayName": "UAE North",
     "geography": "Middle East",
     "latitude": "25.266666",
@@ -565,13 +476,11 @@
     "physicalLocation": "Dubai",
     "regionalDisplayName": "(Middle East) UAE North",
     "regionName": "uaenorth",
-    "storageAccountName": "a1uaenorth",
+    "availabilityZoneCount": 0,
     "restricted": false,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 3,
-    "availabilityZoneStatus": "3 zones",
     "displayName": "UK South",
     "geography": "Europe",
     "latitude": "50.941",
@@ -580,13 +489,11 @@
     "physicalLocation": "London",
     "regionalDisplayName": "(Europe) UK South",
     "regionName": "uksouth",
-    "storageAccountName": "a1uksouth",
+    "availabilityZoneCount": 3,
     "restricted": false,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 0,
-    "availabilityZoneStatus": "Not supported",
     "displayName": "UK West",
     "geography": "Europe",
     "latitude": "53.427",
@@ -595,13 +502,11 @@
     "physicalLocation": "Cardiff",
     "regionalDisplayName": "(Europe) UK West",
     "regionName": "ukwest",
-    "storageAccountName": "a1ukwest",
+    "availabilityZoneCount": 0,
     "restricted": false,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 0,
-    "availabilityZoneStatus": "Not supported",
     "displayName": "West Central US",
     "geography": "US",
     "latitude": "40.890",
@@ -610,13 +515,11 @@
     "physicalLocation": "Wyoming",
     "regionalDisplayName": "(US) West Central US",
     "regionName": "westcentralus",
-    "storageAccountName": "a1westcentralus",
+    "availabilityZoneCount": 0,
     "restricted": false,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 3,
-    "availabilityZoneStatus": "3 zones",
     "displayName": "West Europe",
     "geography": "Europe",
     "latitude": "52.3667",
@@ -625,13 +528,11 @@
     "physicalLocation": "Netherlands",
     "regionalDisplayName": "(Europe) West Europe",
     "regionName": "westeurope",
-    "storageAccountName": "a1westeurope",
+    "availabilityZoneCount": 3,
     "restricted": false,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 0,
-    "availabilityZoneStatus": "Not supported",
     "displayName": "West India",
     "geography": "Asia Pacific",
     "latitude": "19.088",
@@ -640,13 +541,11 @@
     "physicalLocation": "Mumbai",
     "regionalDisplayName": "(Asia Pacific) West India",
     "regionName": "westindia",
-    "storageAccountName": "a1westindia",
+    "availabilityZoneCount": 0,
     "restricted": false,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 0,
-    "availabilityZoneStatus": "Not supported",
     "displayName": "West US",
     "geography": "US",
     "latitude": "37.783",
@@ -655,13 +554,11 @@
     "physicalLocation": "California",
     "regionalDisplayName": "(US) West US",
     "regionName": "westus",
-    "storageAccountName": "a1westus",
+    "availabilityZoneCount": 0,
     "restricted": false,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 3,
-    "availabilityZoneStatus": "3 zones",
     "displayName": "West US 2",
     "geography": "US",
     "latitude": "47.233",
@@ -670,13 +567,11 @@
     "physicalLocation": "Washington",
     "regionalDisplayName": "(US) West US 2",
     "regionName": "westus2",
-    "storageAccountName": "a1westus2",
+    "availabilityZoneCount": 3,
     "restricted": false,
     "accessEnabled": true
   },
   {
-    "availabilityZoneCount": 3,
-    "availabilityZoneStatus": "3 zones",
     "displayName": "West US 3",
     "geography": "US",
     "latitude": "33.448376",
@@ -685,7 +580,7 @@
     "physicalLocation": "Phoenix",
     "regionalDisplayName": "(US) West US 3",
     "regionName": "westus3",
-    "storageAccountName": "a1westus3",
+    "availabilityZoneCount": 3,
     "restricted": false,
     "accessEnabled": true
   }

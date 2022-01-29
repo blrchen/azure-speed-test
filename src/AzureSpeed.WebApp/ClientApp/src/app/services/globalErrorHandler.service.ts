@@ -17,6 +17,12 @@ export class GlobalErrorHandler extends ErrorHandler {
     } else {
       errorMessage = error.toString();
     }
+
+    // Skip error with message: AJAX request was cancelled
+    if (errorMessage === "AJAX request was cancelled. ") {
+      return;
+    }
+
     console.error(errorMessage);
     this.appInsights.trackException(error);
   }

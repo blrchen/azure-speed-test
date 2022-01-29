@@ -69,11 +69,6 @@ export const Menus = [
     icon: "fa fa-book",
     title: "Azure IP Ranges",
   },
-  // {
-  //   path: "/Information/Resources",
-  //   icon: "fa fa-book",
-  //   title: "Resources",
-  // },
   {
     path: "/Azure/About",
     icon: "fa fa-book",

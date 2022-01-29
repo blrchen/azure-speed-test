@@ -3,7 +3,8 @@
     <h1 class="h4">Azure Regions</h1>
     <small>
       A region is a set of datacenters deployed within a latency-defined perimeter and connected through a dedicated regional low-latency
-      network. All Azure resources are created in an Azure region and subscription.
+      network. All Azure resources are created in an Azure region and subscription. Some regions are access restricted by default,
+      <a href="https://docs.microsoft.com/en-us/troubleshoot/azure/general/region-access-request-process" target="_blank">Learn more</a>
     </small>
   </div>
 
@@ -14,8 +15,9 @@
           <th>Geography</th>
           <th>Region Name</th>
           <th>Physical Location</th>
-          <th>Availability Zone</th>
+          <th>Availability Zone #</th>
           <th>Paired Region</th>
+          <th>Restriction Status</th>
         </tr>
       </thead>
       <tbody>
@@ -25,8 +27,9 @@
             <strong>{{ r.displayName }}</strong>
           </td>
           <td>{{ r.physicalLocation }}</td>
-          <td>{{ r.availabilityZoneStatus }}</td>
+          <td>{{ r.availabilityZoneCount == 0 ? "Not supported" : r.availabilityZoneCount }}</td>
           <td>{{ r.pairedRegion }}</td>
+          <td>{{ r.restricted ? "Access Restricted" : "Enabled by default" }}</td>
         </tr>
       </tbody>
     </table>
@@ -58,7 +61,12 @@
       </li>
       <li>
         Download the
-        <a href="https://azure.microsoft.com/en-us/resources/azure-resiliency-infographic/" target="_blank">Azure resiliency infographic</a>
+        <a href="https://azure.microsoft.com/en-us/resources/azure-resiliency-infographic" target="_blank">Azure resiliency infographic</a>
+      </li>
+      <li>
+        <a href="https://docs.microsoft.com/en-us/troubleshoot/azure/general/region-access-request-process" target="_blank"
+          >Request access to restricted regions</a
+        >
       </li>
     </ul>
   </div>

@@ -4,8 +4,6 @@ import { HttpClientModule } from "@angular/common/http";
 import { FormsModule } from "@angular/forms";
 import { LineChartModule } from "@swimlane/ngx-charts";
 import { NgbModalModule } from "@ng-bootstrap/ng-bootstrap";
-import { AzureRoutingModule } from "./azure-routing.module";
-import { AzureComponent } from "./azure.component";
 import {
   AboutComponent,
   CDNComponent,
@@ -18,6 +16,8 @@ import {
   UploadLargeFileComponent,
 } from "../azure";
 import { ComponentsModule } from "../shared/components.module";
+import { AzureRoutingModule } from "./azure-routing.module";
+import { AzureComponent } from "./azure.component";
 
 @NgModule({
   declarations: [

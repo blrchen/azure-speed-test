@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { RegionModel } from "src/app/models";
+import { Region } from "src/app/models";
 import data from "../../../assets/data/regions.json";
 
 @Component({
@@ -8,7 +8,7 @@ import data from "../../../assets/data/regions.json";
   styleUrls: ["./azureRegions.component.scss"],
 })
 export class AzureRegionsComponent implements OnInit {
-  tableData: RegionModel[] = [];
+  tableData: Region[] = [];
 
   constructor() {}
 

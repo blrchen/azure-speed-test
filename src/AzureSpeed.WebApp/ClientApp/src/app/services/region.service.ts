@@ -11,12 +11,16 @@ export class RegionService {
 
   constructor() {
     const res = localStorage.getItem(DefaultRegionsKey);
-    // If v1 local storage items found, clear it
-    const defaultRegions: RegionModel[] = JSON.parse(res);
-    if (defaultRegions && defaultRegions[0]) {
-      if (!defaultRegions[0].geography || !defaultRegions[0].regionName) {
-        this.clearRegions();
+    // If fetched region items from local storage is not valid, clear it
+    try {
+      const defaultRegions: RegionModel[] = JSON.parse(res);
+      if (defaultRegions && defaultRegions[0]) {
+        if (!defaultRegions[0].geography || !defaultRegions[0].regionName || !defaultRegions[0].storageAccountName.startsWith("a1")) {
+          this.clearRegions();
+        }
       }
+    } catch (e) {
+      this.clearRegions();
     }
   }
 
@@ -30,7 +34,16 @@ export class RegionService {
   }
 
   getAllRegions(): RegionModel[] {
-    return data.filter((region) => region.accessEnabled);
+    const regions = data
+      .map((_) => {
+        const r = new RegionModel(_);
+        const prefix = "a1";
+        r.storageAccountName = `${prefix}${_.regionName}`;
+        return r;
+      })
+      .filter((_) => _.accessEnabled);
+
+    return regions;
   }
 
   clearRegions() {

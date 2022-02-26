@@ -139,5 +139,3 @@ dotnet_diagnostic.SA1413.severity = suggestion
 dotnet_diagnostic.SA1600.severity = none
 # SA1633: File should have header
 dotnet_diagnostic.SA1633.severity = none
-
-

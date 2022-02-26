@@ -3,14 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <IsPackable>false</IsPackable>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Data\IpRangeFiles\**" />
-    <EmbeddedResource Remove="Data\IpRangeFiles\**" />
-    <None Remove="Data\IpRangeFiles\**" />
-  </ItemGroup>
 
   <ItemGroup>
     <Content Include="..\AzureSpeed.WebApp\Data\settings.json" Link="Data\settings.json">
@@ -23,10 +16,6 @@
     <PackageReference Include="Moq" Version="4.16.1" />
     <PackageReference Include="MSTest.TestAdapter" Version="2.2.8" />
     <PackageReference Include="MSTest.TestFramework" Version="2.2.8" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>

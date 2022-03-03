@@ -124,18 +124,21 @@ csharp_space_between_method_call_empty_parameter_list_parentheses = false
 # Wrapping preferences
 csharp_preserve_single_line_statements = true
 csharp_preserve_single_line_blocks = true
+
 ###############################
 # StyleCop Analyzers          #
 ###############################
-# SA0001: XML comment analysis is disabled due to project configuration
-dotnet_diagnostic.SA0001.severity = none
 # SA1101: Prefix local calls with this
 dotnet_diagnostic.SA1101.severity = none
 # SA1200: Using directives should be placed correctly
 dotnet_diagnostic.SA1200.severity = none
 # SA1413: Use trailing comma in multi-line initializers
-dotnet_diagnostic.SA1413.severity = suggestion
+dotnet_diagnostic.SA1413.severity = none
+# SA1516: Elements should be separated by blank line
+dotnet_diagnostic.SA1516.severity = error
 # SA1600: Elements should be documented
 dotnet_diagnostic.SA1600.severity = none
+# SA1629: Documentation text should end with a period
+dotnet_diagnostic.SA1629.severity = none
 # SA1633: File should have header
 dotnet_diagnostic.SA1633.severity = none

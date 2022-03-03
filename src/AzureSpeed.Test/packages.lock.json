@@ -42,6 +42,12 @@
           "System.Diagnostics.TextWriterTraceListener": "4.3.0"
         }
       },
+      "StyleCop.Analyzers": {
+        "type": "Direct",
+        "requested": "[1.1.118, )",
+        "resolved": "1.1.118",
+        "contentHash": "Onx6ovGSqXSK07n/0eM3ZusiNdB6cIlJdabQhWGgJp3Vooy9AaLS/tigeybOJAobqbtggTamoWndz72JscZBvw=="
+      },
       "Azure.Core": {
         "type": "Transitive",
         "resolved": "1.19.0",

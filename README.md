@@ -50,7 +50,7 @@ See README [here](src/AzureSpeed.WebApp/ClientApp/README.md), change environment
 [forks badge]:https://img.shields.io/github/forks/blrchen/azure-speed-test.svg
 [issues badge]:https://img.shields.io/github/issues/blrchen/azure-speed-test.svg
 
-[licence]:https://github.com/blrchen/azure-speed-test/blob/master/LICENSE
+[license]:https://github.com/blrchen/azure-speed-test/blob/master/LICENSE
 [stars]:https://github.com/blrchen/azure-speed-test/stargazers
 [forks]:https://github.com/blrchen/azure-speed-test/network
 [issues]:https://github.com/blrchen/azure-speed-test/issues

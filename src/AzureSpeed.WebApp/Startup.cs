@@ -37,11 +37,7 @@ namespace AzureSpeed.WebApp
             });
 
             services.AddHttpClient();
-            services.AddSingleton<StorageAccountsProvider>(serviceProvider =>
-            {
-                var localDataStoreContext = new StorageAccountsProvider(webHostEnvironment.ContentRootPath);
-                return localDataStoreContext;
-            });
+            services.AddSingleton<StorageAccountsProvider>(_ => new (webHostEnvironment.ContentRootPath));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

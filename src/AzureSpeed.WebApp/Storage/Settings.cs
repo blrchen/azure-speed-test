@@ -4,6 +4,6 @@ namespace AzureSpeed.WebApp.Storage
 {
     public class Settings
     {
-        public List<StorageAccount> Accounts { get; set; }
+        public IEnumerable<StorageAccount> Accounts { get; set; }
     }
 }

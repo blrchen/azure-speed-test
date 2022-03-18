@@ -18,13 +18,15 @@ namespace AzureSpeed.WebApp.Storage
         {
             get
             {
-                if (this.accounts == null)
+                if (this.accounts != null)
                 {
-                    string filePath = Path.Combine(dataFilePath, @"Data\settings.json");
-                    var text = File.ReadAllText(filePath);
-                    var setting = JsonConvert.DeserializeObject<Settings>(text);
-                    this.accounts = setting.Accounts;
+                    return this.accounts;
                 }
+
+                string filePath = Path.Combine(dataFilePath, @"Data\settings.json");
+                var text = File.ReadAllText(filePath);
+                var setting = JsonConvert.DeserializeObject<Settings>(text);
+                this.accounts = setting.Accounts;
 
                 return this.accounts;
             }

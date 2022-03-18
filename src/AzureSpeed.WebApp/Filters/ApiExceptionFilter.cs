@@ -7,7 +7,7 @@ namespace AzureSpeed.WebApp.Filters
 {
     public class ApiExceptionFilter : IExceptionFilter
     {
-        private readonly ILogger logger;
+        private readonly ILogger<ApiExceptionFilter> logger;
 
         public ApiExceptionFilter(ILogger<ApiExceptionFilter> logger)
         {
@@ -16,16 +16,16 @@ namespace AzureSpeed.WebApp.Filters
 
         public void OnException(ExceptionContext context)
         {
-            if (context.Exception != null)
+            if (context.Exception == null)
             {
-                var contextException = context.Exception;
-                context.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                context.Result = new JsonResult(new
-                {
-                    message = $"Server error occurred: {contextException.Message}"
-                });
-                logger.LogError($"Unhandled exception caught when processing http request, message: {contextException.Message}");
+                return;
             }
+
+            var contextException = context.Exception;
+            context.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            context.Result = new JsonResult(new { message = $"Server error occurred: {contextException.Message}" });
+
+            logger.LogError($"Unhandled exception caught when processing http request, error: {contextException}");
         }
     }
 }

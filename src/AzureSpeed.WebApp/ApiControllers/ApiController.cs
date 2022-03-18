@@ -27,7 +27,7 @@ namespace AzureSpeed.WebApp.ApiControllers
 
         [HttpGet]
         [Route("ipinfo")]
-        public async Task<IActionResult> GetAzureIPInfo(string ipAddressOrUrl)
+        public async Task<IActionResult> GetAzureIpInfo(string ipAddressOrUrl)
         {
             logger.LogInformation($"GetAzureIPInfo ipAddressOrUrl = {ipAddressOrUrl}");
             if (string.IsNullOrEmpty(ipAddressOrUrl))
@@ -35,7 +35,7 @@ namespace AzureSpeed.WebApp.ApiControllers
                 return BadRequest("Query string ipAddressOrUrl can not be null");
             }
 
-            string url = $"https://azureiplookup.azurewebsites.net/api/ipinfo?ipOrDomain={ipAddressOrUrl}";
+            string url = $"https://azure-speed-jobs.azurewebsites.net/api/ipinfo?ipOrDomain={ipAddressOrUrl}";
             string result = await this.httpClientFactory.CreateClient().GetStringAsync(url);
             return Ok(result);
         }

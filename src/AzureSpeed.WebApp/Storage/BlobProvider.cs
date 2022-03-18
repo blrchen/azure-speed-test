@@ -18,16 +18,16 @@ namespace AzureSpeed.WebApp.Storage
         {
             string containerName = string.Empty;
             var blobSasPermissions = BlobSasPermissions.List;
-            if (operation.ToLower() == "upload")
+            switch (operation.ToLower())
             {
-                blobSasPermissions |= BlobSasPermissions.Write;
-                containerName = AzureSpeedConstants.UploadContainerName;
-            }
-
-            if (operation.ToLower() == "download")
-            {
-                blobSasPermissions |= BlobSasPermissions.Read;
-                containerName = AzureSpeedConstants.PrivateContainerName;
+                case "upload":
+                    blobSasPermissions |= BlobSasPermissions.Write;
+                    containerName = AzureSpeedConstants.UploadContainerName;
+                    break;
+                case "download":
+                    blobSasPermissions |= BlobSasPermissions.Read;
+                    containerName = AzureSpeedConstants.PrivateContainerName;
+                    break;
             }
 
             var blobContainerClient = new BlobContainerClient(connectionString, containerName);

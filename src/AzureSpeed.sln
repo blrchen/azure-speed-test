@@ -1,33 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28729.10
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Documents", ".Documents", "{9DED3A7A-F0F4-435A-8C16-4BF55925BD31}"
-	ProjectSection(SolutionItems) = preProject
-		..\README.md = ..\README.md
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSpeed.Test", "AzureSpeed.Test\AzureSpeed.Test.csproj", "{8B9A67D2-506B-498F-9703-1D738E4131DB}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Scripts", ".Scripts", "{603E9DBC-9530-49E1-919C-CCD27F943993}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSpeed.WebApp", "AzureSpeed.WebApp\AzureSpeed.WebApp.csproj", "{841FEF07-AF17-413D-A055-E1E7C10B6813}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "contents", "contents", "{84909C0E-6861-469B-BF0F-00AA9670D734}"
-	ProjectSection(SolutionItems) = preProject
-		..\scripts\contents\CreateSettingsJson.ps1 = ..\scripts\contents\CreateSettingsJson.ps1
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".CodeAnalysis", ".CodeAnalysis", "{E85930D1-1F26-49F6-AA05-8A9528AEF48A}"
-	ProjectSection(SolutionItems) = preProject
-		CodeAnalysis.ruleset = CodeAnalysis.ruleset
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Pipelines", ".Pipelines", "{1A4340E0-95AA-4E9E-BF44-B89D932EB246}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1C41E9DB-9C86-4AB5-8BBD-332B37F97261}"
 	ProjectSection(SolutionItems) = preProject
 		..\azurespeed-ci.yml = ..\azurespeed-ci.yml
+		global.json = global.json
+		..\README.md = ..\README.md
+		Directory.Build.props = Directory.Build.props
 	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSpeed.WebApp", "AzureSpeed.WebApp\AzureSpeed.WebApp.csproj", "{841FEF07-AF17-413D-A055-E1E7C10B6813}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,9 +32,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{84909C0E-6861-469B-BF0F-00AA9670D734} = {603E9DBC-9530-49E1-919C-CCD27F943993}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EAA7047C-2B34-4A2F-8301-A4A879365359}

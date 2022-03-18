@@ -1,6 +1,6 @@
 # azure-speed-test
 
-[![licence badge]][licence]
+[![license badge]][license]
 [![stars badge]][stars]
 [![forks badge]][forks]
 [![issues badge]][issues]
@@ -19,12 +19,13 @@ Azure speed test tool. Test your network latency, download and upload speed to A
     * Create container named private (access level = no public) and upload 100MB dummy file (File can be downloaded from <https://www.azurespeed.com/Azure/Download>)
     * Create container named upload (access level =  no public)
 2. Run **CreateSettingsJson.ps1** to generate **settings.json** for backend.
-3. Open **AzureSpeed.sln** in **Visual Studio 2019**
-4. You are all set now, enjoy coding!
+3. Install dotnet core sdk 6.
+4. Open **AzureSpeed.sln** in **Visual Studio 2022**
+5. You are all set now, enjoy coding!
 
 ## If you are only interested with UI development work
 
-See README [here](src/frontend/README.md), change environment.ts line 8, replace apiEndpoint from <https://localhost:5001> to <https://www.azurespeed.com> to avoid use local api service.
+See README [here](src/AzureSpeed.WebApp/ClientApp/README.md), change environment.ts line 8, replace apiEndpoint from <https://localhost:5001> to <https://www.azurespeed.com> to avoid use local api service.
 
 ## Built on
 
@@ -44,7 +45,7 @@ See README [here](src/frontend/README.md), change environment.ts line 8, replace
 
 [MIT](/LICENSE)
 
-[licence badge]:https://img.shields.io/badge/license-MIT-blue.svg
+[license badge]:https://img.shields.io/badge/license-MIT-blue.svg
 [stars badge]:https://img.shields.io/github/stars/blrchen/azure-speed-test.svg
 [forks badge]:https://img.shields.io/github/forks/blrchen/azure-speed-test.svg
 [issues badge]:https://img.shields.io/github/issues/blrchen/azure-speed-test.svg

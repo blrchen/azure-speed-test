@@ -1,3 +1,4 @@
+export * from "./azure.component";
 export * from "./about/about.component";
 export * from "./cdn/cdn.component";
 export * from "./download/download.component";

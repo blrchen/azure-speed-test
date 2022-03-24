@@ -5,8 +5,6 @@ import { BlobModel } from "../models";
   providedIn: "root",
 })
 export class UtilsService {
-  constructor() {}
-
   parseSasUrl(sasUrl: string): BlobModel {
     const regex = new RegExp("(http[s]?://([^.]+).[^/]*)/([^?/]*)/?([^?]*)(.*)", "g");
 

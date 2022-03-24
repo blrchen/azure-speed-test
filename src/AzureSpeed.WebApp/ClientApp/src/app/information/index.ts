@@ -4,4 +4,4 @@ export * from "./azureGeographies/azureGeographies.component";
 export * from "./azureRegions/azureRegions.component";
 export * from "./azureSovereignClouds/azureSovereignClouds.component";
 export * from "./azureIpRange/azureIpRange.component";
-export * from "./resources/resources.component";
+export * from "./information.component";

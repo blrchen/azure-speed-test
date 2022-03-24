@@ -3,14 +3,12 @@ import { Region } from "src/app/models";
 import data from "../../../assets/data/regions.json";
 
 @Component({
-  selector: "app-home",
+  selector: "app-azure-availability-zones",
   templateUrl: "./azureAvailabilityZones.component.html",
   styleUrls: ["./azureAvailabilityZones.component.scss"],
 })
 export class AzureAvailabilityZonesComponent implements OnInit {
   tableData: Region[] = [];
-
-  constructor() {}
 
   ngOnInit() {
     this.tableData = data.filter((region) => {

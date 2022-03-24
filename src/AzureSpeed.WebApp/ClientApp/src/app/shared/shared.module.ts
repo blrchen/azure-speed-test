@@ -10,4 +10,4 @@ import { LayoutComponent, NotFoundComponent, RegionsComponent } from "./index";
   imports: [CommonModule, RouterModule, FormsModule],
   exports: [LayoutComponent, NotFoundComponent, RegionsComponent],
 })
-export class ComponentsModule {}
+export class SharedModule {}

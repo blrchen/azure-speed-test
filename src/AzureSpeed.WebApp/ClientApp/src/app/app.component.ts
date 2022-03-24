@@ -17,11 +17,12 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((_) => {
+    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
       const title = this.getFromRouteData("title");
       this.title.setTitle((title && `${title} - Azure Speed Test`) || "Azure Speed Test");
     });
   }
+
   private getFromRouteData(name: string, routeSnapshot = this.router.routerState.snapshot.root): string {
     let value = (routeSnapshot.data && routeSnapshot.data[name]) || null;
     if (routeSnapshot.firstChild) {

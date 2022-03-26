@@ -1,5 +1,6 @@
 import { NgModule } from "@angular/core";
 import { Routes, RouterModule } from "@angular/router";
+import { NotFoundComponent } from "../shared";
 import {
   AzureAvailabilityZonesComponent,
   AzureEnvironmentsComponent,
@@ -7,10 +8,8 @@ import {
   AzureRegionsComponent,
   AzureSovereignCloudsComponent,
   AzureIpRangeComponent,
-  ResourcesComponent,
-} from "../information";
-import { InformationComponent } from "./information.component";
-import { NotFoundComponent } from "../shared";
+  InformationComponent,
+} from ".";
 
 const routes: Routes = [
   {
@@ -46,11 +45,6 @@ const routes: Routes = [
         path: "AzureSovereignClouds",
         data: { title: "Azure Sovereign Clouds" },
         component: AzureSovereignCloudsComponent,
-      },
-      {
-        path: "Resources",
-        data: { title: "Resources" },
-        component: ResourcesComponent,
       },
       {
         path: "**",

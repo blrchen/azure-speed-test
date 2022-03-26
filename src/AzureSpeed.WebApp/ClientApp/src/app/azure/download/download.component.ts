@@ -4,7 +4,7 @@ import { APIService, RegionService } from "../../services";
 import { RegionModel } from "../../models";
 
 @Component({
-  selector: "app-home",
+  selector: "app-download",
   templateUrl: "./download.component.html",
   styleUrls: ["./download.component.scss"],
 })

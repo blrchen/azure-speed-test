@@ -1,8 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
 
-import { InformationRoutingModule } from "./information-routing.module";
-import { InformationComponent } from "./information.component";
 import {
   AzureAvailabilityZonesComponent,
   AzureEnvironmentsComponent,
@@ -10,9 +8,10 @@ import {
   AzureRegionsComponent,
   AzureSovereignCloudsComponent,
   AzureIpRangeComponent,
-  ResourcesComponent,
 } from "../information";
-import { ComponentsModule } from "../shared/components.module";
+import { SharedModule } from "../shared/shared.module";
+import { InformationRoutingModule } from "./information-routing.module";
+import { InformationComponent } from "./information.component";
 
 @NgModule({
   declarations: [
@@ -23,9 +22,8 @@ import { ComponentsModule } from "../shared/components.module";
     AzureSovereignCloudsComponent,
     InformationComponent,
     AzureIpRangeComponent,
-    ResourcesComponent,
   ],
-  imports: [CommonModule, InformationRoutingModule, ComponentsModule],
+  imports: [CommonModule, InformationRoutingModule, SharedModule],
   providers: [],
   bootstrap: [],
   entryComponents: [InformationComponent],

@@ -3,9 +3,9 @@ import { RegionService } from "src/app/services";
 import { DefaultRegionsKey, RegionGroupModel, RegionModel } from "src/app/models";
 
 @Component({
-  selector: "app-regions",
-  templateUrl: "./regions.component.html",
-  styleUrls: ["./regions.component.scss"],
+  selector: "app-region-group",
+  templateUrl: "./region-group.component.html",
+  styleUrls: ["./region-group.component.scss"],
 })
 export class RegionsComponent implements OnInit {
   regionsGroup: RegionGroupModel[] = [];

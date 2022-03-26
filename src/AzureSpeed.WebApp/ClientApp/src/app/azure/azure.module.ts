@@ -4,6 +4,9 @@ import { HttpClientModule } from "@angular/common/http";
 import { FormsModule } from "@angular/forms";
 import { LineChartModule } from "@swimlane/ngx-charts";
 import { NgbModalModule } from "@ng-bootstrap/ng-bootstrap";
+import { SharedModule } from "../shared/shared.module";
+import { AzureRoutingModule } from "./azure-routing.module";
+import { AzureComponent } from "./azure.component";
 import {
   AboutComponent,
   CDNComponent,
@@ -14,10 +17,7 @@ import {
   RegionToRegionLatencyComponent,
   UploadComponent,
   UploadLargeFileComponent,
-} from "../azure";
-import { ComponentsModule } from "../shared/components.module";
-import { AzureRoutingModule } from "./azure-routing.module";
-import { AzureComponent } from "./azure.component";
+} from ".";
 
 @NgModule({
   declarations: [
@@ -32,7 +32,7 @@ import { AzureComponent } from "./azure.component";
     UploadComponent,
     UploadLargeFileComponent,
   ],
-  imports: [CommonModule, AzureRoutingModule, ComponentsModule, HttpClientModule, LineChartModule, NgbModalModule, FormsModule],
+  imports: [CommonModule, AzureRoutingModule, SharedModule, HttpClientModule, LineChartModule, NgbModalModule, FormsModule],
   providers: [],
   bootstrap: [],
   entryComponents: [AzureComponent],

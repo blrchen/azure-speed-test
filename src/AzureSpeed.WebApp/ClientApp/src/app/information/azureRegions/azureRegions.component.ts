@@ -3,14 +3,12 @@ import { Region } from "src/app/models";
 import data from "../../../assets/data/regions.json";
 
 @Component({
-  selector: "app-home",
+  selector: "app-azure-region",
   templateUrl: "./azureRegions.component.html",
   styleUrls: ["./azureRegions.component.scss"],
 })
 export class AzureRegionsComponent implements OnInit {
   tableData: Region[] = [];
-
-  constructor() {}
 
   ngOnInit() {
     this.tableData = data.sort((a, b) => a.geography.localeCompare(b.geography));

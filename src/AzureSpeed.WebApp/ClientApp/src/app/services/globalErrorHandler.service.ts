@@ -1,6 +1,6 @@
 import { ErrorHandler, Injectable } from "@angular/core";
-import { AppInsightsService } from "./appInsights.service";
 import { HttpErrorResponse } from "@angular/common/http";
+import { AppInsightsService } from "./appInsights.service";
 
 @Injectable()
 export class GlobalErrorHandler extends ErrorHandler {
@@ -8,8 +8,8 @@ export class GlobalErrorHandler extends ErrorHandler {
     super();
   }
 
-  handleError(error: any) {
-    let errorMessage = "";
+  override handleError(error: any) {
+    let errorMessage: string;
     if (error instanceof Error) {
       errorMessage = `${error.name} - ${error.message}, stack: ${error.stack}`;
     } else if (error instanceof HttpErrorResponse) {

@@ -1,8 +1,8 @@
 import { Component, TemplateRef, ViewChild, OnInit, OnDestroy } from "@angular/core";
 import { NgbModal, NgbModalRef } from "@ng-bootstrap/ng-bootstrap";
-import { RegionService, APIService, UtilsService, StorageService } from "../../services";
 import { Subscription } from "rxjs";
 import { BlobUploadSpeedModel, RegionModel } from "src/app/models";
+import { RegionService, APIService, UtilsService, StorageService } from "../../services";
 
 @Component({
   selector: "app-upload-large-file",

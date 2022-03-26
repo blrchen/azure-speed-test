@@ -2,6 +2,7 @@ import { NgModule } from "@angular/core";
 import { Routes, RouterModule } from "@angular/router";
 import {
   AboutComponent,
+  AzureComponent,
   CDNComponent,
   DownloadComponent,
   IPLookupComponent,
@@ -10,8 +11,7 @@ import {
   RegionToRegionLatencyComponent,
   UploadComponent,
   UploadLargeFileComponent,
-} from "../azure";
-import { AzureComponent } from "./azure.component";
+} from ".";
 
 const routes: Routes = [
   {

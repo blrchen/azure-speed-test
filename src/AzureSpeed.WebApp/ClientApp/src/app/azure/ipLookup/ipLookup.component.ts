@@ -1,8 +1,8 @@
 import { Component, OnInit } from "@angular/core";
-import { APIService } from "../../services";
 import { IpInfo } from "src/app/models";
+import { APIService } from "../../services";
 @Component({
-  selector: "app-home",
+  selector: "app-ip-lookup",
   templateUrl: "./ipLookup.component.html",
   styleUrls: ["./ipLookup.component.scss"],
 })

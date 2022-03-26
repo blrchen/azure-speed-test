@@ -6,8 +6,6 @@ import { BlobModel } from "../models";
   providedIn: "root",
 })
 export class StorageService {
-  constructor() {}
-
   createBlobServiceClient(blob: BlobModel) {
     const SASConnectionString = `BlobEndpoint=${blob.endpoint};SharedAccessSignature=${blob.sas}`;
     return BlobServiceClient.fromConnectionString(SASConnectionString);

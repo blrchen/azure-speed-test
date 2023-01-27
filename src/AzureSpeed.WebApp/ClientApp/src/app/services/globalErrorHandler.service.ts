@@ -1,10 +1,9 @@
 import { ErrorHandler, Injectable } from "@angular/core";
 import { HttpErrorResponse } from "@angular/common/http";
-import { AppInsightsService } from "./appInsights.service";
 
 @Injectable()
 export class GlobalErrorHandler extends ErrorHandler {
-  constructor(private appInsights: AppInsightsService) {
+  constructor() {
     super();
   }
 
@@ -24,6 +23,5 @@ export class GlobalErrorHandler extends ErrorHandler {
     }
 
     console.error(errorMessage);
-    this.appInsights.trackException(error);
   }
 }

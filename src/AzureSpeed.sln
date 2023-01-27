@@ -7,11 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSpeed.Test", "AzureSpe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSpeed.WebApp", "AzureSpeed.WebApp\AzureSpeed.WebApp.csproj", "{841FEF07-AF17-413D-A055-E1E7C10B6813}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1C41E9DB-9C86-4AB5-8BBD-332B37F97261}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Files", ".Files", "{1C41E9DB-9C86-4AB5-8BBD-332B37F97261}"
 	ProjectSection(SolutionItems) = preProject
-		global.json = global.json
-		..\README.md = ..\README.md
 		Directory.Build.props = Directory.Build.props
+		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
 Global

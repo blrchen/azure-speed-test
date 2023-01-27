@@ -23,7 +23,7 @@ namespace AzureSpeed.WebApp.Storage
                     return this.accounts;
                 }
 
-                string filePath = Path.Combine(dataFilePath, @"Data\settings.json");
+                string filePath = Path.Combine(dataFilePath, "Data", "settings.json");
                 var text = File.ReadAllText(filePath);
                 var setting = JsonConvert.DeserializeObject<Settings>(text);
                 this.accounts = setting.Accounts;

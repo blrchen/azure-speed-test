@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AzureSpeed.WebApp.Storage;
@@ -27,7 +28,9 @@ namespace AzureSpeed.WebApp.ApiControllers
 
         [HttpGet]
         [Route("ipinfo")]
+#pragma warning disable CA1054 // URI-like parameters should not be strings
         public async Task<IActionResult> GetAzureIpInfo(string ipAddressOrUrl)
+#pragma warning restore CA1054 // URI-like parameters should not be strings
         {
             logger.LogInformation($"GetAzureIPInfo ipAddressOrUrl = {ipAddressOrUrl}");
             if (string.IsNullOrEmpty(ipAddressOrUrl))
@@ -35,8 +38,11 @@ namespace AzureSpeed.WebApp.ApiControllers
                 return BadRequest("Query string ipAddressOrUrl can not be null");
             }
 
-            string url = $"https://azure-speed-jobs.azurewebsites.net/api/ipinfo?ipOrDomain={ipAddressOrUrl}";
-            string result = await this.httpClientFactory.CreateClient().GetStringAsync(url);
+            string url = $"https://azureiplookup.azurewebsites.net/api/ipinfo?ipOrDomain={ipAddressOrUrl}";
+            var uri = new Uri(url);
+#pragma warning disable CA2000 // Dispose objects before losing scope
+            string result = await this.httpClientFactory.CreateClient().GetStringAsync(uri);
+#pragma warning restore CA2000 // Dispose objects before losing scope
             return Ok(result);
         }
 
@@ -67,7 +73,7 @@ namespace AzureSpeed.WebApp.ApiControllers
             }
 
             var blobProvider = new BlobProvider(account);
-            string url = blobProvider.GetSasUrl(blobName, operation);
+            string url = blobProvider.GetSasUrl(blobName, operation).ToString();
             return Ok(new { Url = url });
         }
     }

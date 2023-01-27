@@ -13,29 +13,42 @@ Azure speed test tool. Test your network latency, download and upload speed to A
 
 ## Local development environment setup steps
 
-1. Create storage accounts, configure each storage account with following:
-    * Enable CORS
-    * Create container named public (access level = public blob) and upload latency-test.json
-    * Create container named private (access level = no public) and upload 100MB dummy file (File can be downloaded from <https://www.azurespeed.com/Azure/Download>)
-    * Create container named upload (access level =  no public)
-2. Run **CreateSettingsJson.ps1** to generate **settings.json** for backend.
-3. Install dotnet core sdk 6.
-4. Open **AzureSpeed.sln** in **Visual Studio 2022**
-5. You are all set now, enjoy coding!
+### Prerequisites
 
-## If you are only interested with UI development work
+* .NET 6.0
+* [For Windows only] Visual Studio 2022 with the ASP.NET and web development workload.
+* [For Mac only] Rider
+* Azure Storage Accounts
+  * Enable CORS
+  * Create container named public (access level = public blob) and upload latency-test.json
+  * Create container named private (access level = no public) and upload 100MB dummy file (File can be downloaded from <https://www.azurespeed.com/Azure/Download>)
+  * Create container named upload (access level =  no public)
 
-See README [here](src/AzureSpeed.WebApp/ClientApp/README.md), change environment.ts line 8, replace apiEndpoint from <https://localhost:5001> to <https://www.azurespeed.com> to avoid use local api service.
+### Steps to setup local development environment with both frontend and backend
+
+By default, frontend talks to backend api service running on `https://localhost:5001`, you can replace `apiEndpoint` in `environment.ts` from `https://localhost:5001` to `https://www.azurespeed.com` to avoid use local api service, this is helpful for frontend only development.
+
+1. Run `CreateSettingsJson.ps1` to generate `settings.json` and replace `src/AzureSpeed.WebApp/Data/settings.json` with it.
+2. Open `AzureSpeed.sln` with **Visual Studio 2022** or **Rider**.
+3. Launch **AzureSpeed.WebApp** project and then open <https://localhost:5001> in browser, you should see the website up and running locally.
+
+### Steps to setup local development environment for frontend only
+
+By default, frontend talks to backend api service running on <https://localhost:5001>, you can replace `apiEndpoint` in `environment.ts` from <https://localhost:5001> to <https://www.azurespeed.com> to avoid use local api service, this is helpful for frontend only development.
+
+1. Open directory `src/AzureSpeed.WebApp/ClientApp` in Visual Studio Code
+2. Run `npm install` to install all npm packages
+3. Run `npm run start` to start frontend development server, you should see <http://localhost:4200> up and running locally, it will automatically reload if you change any of the source files.
 
 ## Built on
 
 * [Angular](https://github.com/angular/angular)
 * [Application Insights JavaScript SDK](https://github.com/microsoft/ApplicationInsights-JS)
 * [ASP.NET Core](https://github.com/dotnet/aspnetcore)
-* [Azure Data Lab](https://github.com/blrchen/azure-data-lab)
 * [Azure IP Lookup](https://github.com/blrchen/azure-ip-lookup)
 * [Azure SDK for JavaScript](https://github.com/Azure/azure-sdk-for-js)
 * [Bootstrap](https://github.com/twbs/bootstrap)
+* [Cloud Infrastructure](https://github.com/blrchen/cloud-infrastructure)
 * [d3-shape](https://github.com/d3/d3-shape)
 * [Font Awesome](https://github.com/FortAwesome/Font-Awesome)
 * [ngx-charts](https://github.com/swimlane/ngx-charts)

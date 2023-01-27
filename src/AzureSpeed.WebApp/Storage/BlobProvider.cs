@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using Azure.Storage.Blobs;
 using Azure.Storage.Sas;
 using AzureSpeed.WebApp.Common;
@@ -14,17 +15,17 @@ namespace AzureSpeed.WebApp.Storage
             connectionString = $"DefaultEndpointsProtocol=https;AccountName={account.Name};AccountKey={account.Key}";
         }
 
-        public string GetSasUrl(string blobName, string operation)
+        public Uri GetSasUrl(string blobName, string operation)
         {
             string containerName = string.Empty;
             var blobSasPermissions = BlobSasPermissions.List;
-            switch (operation.ToLower())
+            switch (operation.ToUpperInvariant())
             {
-                case "upload":
+                case "UPLOAD":
                     blobSasPermissions |= BlobSasPermissions.Write;
                     containerName = AzureSpeedConstants.UploadContainerName;
                     break;
-                case "download":
+                case "DOWNLOAD":
                     blobSasPermissions |= BlobSasPermissions.Read;
                     containerName = AzureSpeedConstants.PrivateContainerName;
                     break;
@@ -33,7 +34,7 @@ namespace AzureSpeed.WebApp.Storage
             var blobContainerClient = new BlobContainerClient(connectionString, containerName);
             var blobClient = blobContainerClient.GetBlobClient(blobName);
             var uri = blobClient.GenerateSasUri(blobSasPermissions, DateTimeOffset.UtcNow.AddMinutes(5));
-            return uri.ToString();
+            return uri;
         }
     }
 }

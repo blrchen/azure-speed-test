@@ -37,7 +37,9 @@ export class RegionService {
     const regions = data
       .map((_) => {
         const r = new RegionModel(_);
-        const prefix = "a1";
+        const prefix = r.geography === "China"
+          ? `ast`
+          : `a8`;
         r.storageAccountName = `${prefix}${_.regionName}`;
         return r;
       })

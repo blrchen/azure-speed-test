@@ -2,7 +2,8 @@
   <div class="border-bottom">
     <h1 class="h4">Azure Geographies</h1>
     <small>
-      A geography is a discrete market, typically containing two or more regions, that preserves data residency and compliance boundaries
+      Azure Geographies refer to distinct markets that usually encompass two or more regions, designed to maintain data residency and
+      compliance boundaries.
     </small>
   </div>
   <div class="mt-3">
@@ -15,19 +16,21 @@
       </thead>
       <tbody>
         <tr *ngFor="let g of tableData">
-          <td>{{ g.Geography }}</td>
+          <td>{{ g.geography }}</td>
           <td>
-            <span *ngFor="let r of g.Regions">{{ r.DisplayName }} ({{ r.Metadata.PhysicalLocation }})<br /></span>
+            <span *ngFor="let r of g.regions">{{ r.displayName }} ({{ r.physicalLocation }})<br /></span>
           </td>
         </tr>
       </tbody>
     </table>
   </div>
   <div class="mt-3">
-    <h2 class="h5">Resources</h2>
+    <h2 class="h5">Here are a few links with more information</h2>
     <ul>
       <li>
-        <a href="https://github.com/blrchen/cloud-catalog/blob/main/ui/public/data/azure/geographies.json" target="_blank">geographies.json</a>
+        <a href="https://github.com/blrchen/cloud-catalog/blob/main/ui/public/data/azure/geographies.json" target="_blank"
+          >geographies.json</a
+        >
       </li>
       <li>
         <a href="https://docs.microsoft.com/en-us/azure/best-practices-availability-paired-regions" target="_blank"
@@ -36,4 +39,6 @@
       </li>
     </ul>
   </div>
+  <div class="mt-4"><br /><br /><br /><br /></div>
+  <!-- This space is reserved for a Google ad. The empty area above it is intended to prevent any overlap with the ad. -->
 </div>

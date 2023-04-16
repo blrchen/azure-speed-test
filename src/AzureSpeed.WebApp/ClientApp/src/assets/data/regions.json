@@ -75,7 +75,7 @@
     "regionName": "brazilsoutheast",
     "availabilityZoneCount": 0,
     "restricted": true,
-    "accessEnabled": true
+    "accessEnabled": false
   },
   {
     "displayName": "Canada Central",
@@ -295,7 +295,7 @@
     "regionalDisplayName": "(Asia Pacific) Korea South",
     "regionName": "koreasouth",
     "availabilityZoneCount": 0,
-    "restricted": true,
+    "restricted": false,
     "accessEnabled": true
   },
   {
@@ -349,6 +349,32 @@
     "availabilityZoneCount": 0,
     "restricted": true,
     "accessEnabled": false
+  },
+  {
+    "displayName": "Poland Central",
+    "geography": "Europe",
+    "latitude": "52.23334",
+    "longitude": "21.01666",
+    "pairedRegion": null,
+    "physicalLocation": "Warsaw",
+    "regionalDisplayName": "(Europe) Poland Central",
+    "regionName": "polandcentral",
+    "availabilityZoneCount": 3,
+    "restricted": false,
+    "accessEnabled": true
+  },
+  {
+    "displayName": "Qatar Central",
+    "geography": "Middle East",
+    "latitude": "25.551462",
+    "longitude": "51.439327",
+    "pairedRegion": null,
+    "physicalLocation": "Doha",
+    "regionalDisplayName": "(Middle East) Qatar Central",
+    "regionName": "qatarcentral",
+    "availabilityZoneCount": 3,
+    "restricted": false,
+    "accessEnabled": true
   },
   {
     "displayName": "South Africa North",
@@ -421,7 +447,7 @@
     "latitude": "60.67488",
     "longitude": "17.14127",
     "pairedRegion": null,
-    "physicalLocation": "GÃ¤vle",
+    "physicalLocation": "Gävle",
     "regionalDisplayName": "(Europe) Sweden Central",
     "regionName": "swedencentral",
     "availabilityZoneCount": 3,
@@ -437,7 +463,7 @@
     "physicalLocation": "Zurich",
     "regionalDisplayName": "(Europe) Switzerland North",
     "regionName": "switzerlandnorth",
-    "availabilityZoneCount": 0,
+    "availabilityZoneCount": 3,
     "restricted": false,
     "accessEnabled": true
   },
@@ -476,7 +502,7 @@
     "physicalLocation": "Dubai",
     "regionalDisplayName": "(Middle East) UAE North",
     "regionName": "uaenorth",
-    "availabilityZoneCount": 0,
+    "availabilityZoneCount": 3,
     "restricted": false,
     "accessEnabled": true
   },

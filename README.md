@@ -5,40 +5,34 @@
 [![forks badge]][forks]
 [![issues badge]][issues]
 
-Azure speed test tool. Test your network latency, download and upload speed to Azure datacenters around the world.
+Azure Speed Test Tool: Measure network latency, download, and upload speeds to Azure datacenters worldwide.
 
-## Demo
+## Live Demo
 
 * <https://www.azurespeed.com>
 
-## Local development environment setup steps
+## Local Development Environment Setup Steps
 
 ### Prerequisites
 
 * .NET 6.0
-* [For Windows only] Visual Studio 2022 with the ASP.NET and web development workload.
-* [For Mac only] Rider
-* Azure Storage Accounts
+* [Windows only] Visual Studio 2022 with ASP.NET and web development workload.
+* [Mac only] Rider
+* Azure Storage Accounts:
   * Enable CORS
-  * Create container named public (access level = public blob) and upload latency-test.json
-  * Create container named private (access level = no public) and upload 100MB dummy file (File can be downloaded from <https://www.azurespeed.com/Azure/Download>)
-  * Create container named upload (access level =  no public)
+  * Create a public container (access level = Blob) named `public` and upload latency-test.json.
+  * Create a private container (access level = Private) named `private` and upload a 100MB dummy file (downloadable from <https://www.azurespeed.com/Azure/Download>).
+  * Create an upload container (access level = Private) named `upload`.
 
-### Steps to setup local development environment with both frontend and backend
+### Setting Up Local Development Environment for Frontend & Backend
 
-By default, frontend talks to backend api service running on `https://localhost:5001`, you can replace `apiEndpoint` in `environment.ts` from `https://localhost:5001` to `https://www.azurespeed.com` to avoid use local api service, this is helpful for frontend only development.
+1. Run `CreateSettingsJson.ps1` to generate `settings.json`, then replace `src/AzureSpeed.WebApp/Data/settings.json` with it.
+2. Open `AzureSpeed.sln` in **Visual Studio 2022** or **Rider**.
+3. Launch the **AzureSpeed.WebApp** project, then open <https://localhost:5001> in your browser to view the locally running website.
 
-1. Run `CreateSettingsJson.ps1` to generate `settings.json` and replace `src/AzureSpeed.WebApp/Data/settings.json` with it.
-2. Open `AzureSpeed.sln` with **Visual Studio 2022** or **Rider**.
-3. Launch **AzureSpeed.WebApp** project and then open <https://localhost:5001> in browser, you should see the website up and running locally.
+### [Optional] Configuring Local Frontend Development Environment
 
-### Steps to setup local development environment for frontend only
-
-By default, frontend talks to backend api service running on <https://localhost:5001>, you can replace `apiEndpoint` in `environment.ts` from <https://localhost:5001> to <https://www.azurespeed.com> to avoid use local api service, this is helpful for frontend only development.
-
-1. Open directory `src/AzureSpeed.WebApp/ClientApp` in Visual Studio Code
-2. Run `npm install` to install all npm packages
-3. Run `npm run start` to start frontend development server, you should see <http://localhost:4200> up and running locally, it will automatically reload if you change any of the source files.
+The frontend connects to the backend API service at <https://localhost:5001> by default. To switch to a cloud API service for frontend development, update `apiEndpoint` in `environment.ts` from <https://localhost:5001> to <https://www.azurespeed.com>.
 
 ## Built on
 
@@ -48,15 +42,11 @@ By default, frontend talks to backend api service running on <https://localhost:
 * [Azure IP Lookup](https://github.com/blrchen/azure-ip-lookup)
 * [Azure SDK for JavaScript](https://github.com/Azure/azure-sdk-for-js)
 * [Bootstrap](https://github.com/twbs/bootstrap)
-* [Cloud Infrastructure](https://github.com/blrchen/cloud-infrastructure)
+* [Cloud Catalog](https://github.com/blrchen/cloud-catalog)
 * [d3-shape](https://github.com/d3/d3-shape)
 * [Font Awesome](https://github.com/FortAwesome/Font-Awesome)
 * [ngx-charts](https://github.com/swimlane/ngx-charts)
 * [RxJS](https://github.com/reactivex/rxjs)
-
-## License
-
-[MIT](/LICENSE)
 
 [license badge]:https://img.shields.io/badge/license-MIT-blue.svg
 [stars badge]:https://img.shields.io/github/stars/blrchen/azure-speed-test.svg

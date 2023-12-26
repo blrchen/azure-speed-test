@@ -1,0 +1,49 @@
+<main class="container">
+  <header>
+    <h1 id="title">ChatGPT Shell Command Generator</h1>
+  </header>
+  <section>
+    <p id="description">
+      Use the ChatGPT Shell Command Generator to translate natural language descriptions into
+      executable shell commands.
+    </p>
+  </section>
+  <form [formGroup]="userContentForm" (submit)="submitForm()">
+    <fieldset class="form-group">
+      <label for="userContent">
+        Input the details of the action you want to execute in the terminal below. Click 'Generate'
+        to produce the corresponding shell command.
+      </label>
+      <textarea
+        class="form-control"
+        id="userContent"
+        placeholder="Describe operations like file manipulation, directory navigation, or other terminal tasks."
+        formControlName="userContent"
+        required
+        rows="4"
+      ></textarea>
+      <div class="text-info">{{ userContentForm.get('userContent').value.length }}/5000</div>
+      <div
+        *ngIf="userContentForm.controls['userContent'].errors?.['maxlength']"
+        class="error text-danger"
+      >
+        Character limit exceeded. Please limit your text to 5000 characters.
+      </div>
+    </fieldset>
+    <button type="submit" class="btn btn-primary" [disabled]="userContentForm.invalid || isLoading">
+      Generate
+    </button>
+    <button type="button" class="btn btn-secondary ml-2" (click)="resetForm()">Reset</button>
+  </form>
+  <div *ngIf="isLoading" class="spinner-border text-primary" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+  <section *ngIf="result">
+    <h2>Generated Command:</h2>
+    <p>{{ result }}</p>
+  </section>
+  <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+    {{ errorMessage }}
+  </div>
+  <assistant-footer></assistant-footer>
+</main>

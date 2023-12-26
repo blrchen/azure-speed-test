@@ -1,0 +1,68 @@
+<main class="container">
+  <header>
+    <h1 id="title">ChatGPT Code Generator</h1>
+  </header>
+  <section>
+    <p id="description">
+      Welcome to ChatGPT Code Generator. This tool uses AI technology to generate code based on your
+      natural language descriptions.
+    </p>
+  </section>
+  <form [formGroup]="userContentForm" (submit)="submitForm()">
+    <fieldset class="form-group">
+      <label for="userContent">
+        Provide a brief description of the code functionality you need. Then, click the 'Generate'
+        button.
+      </label>
+      <textarea
+        class="form-control"
+        id="userContent"
+        placeholder="Example: 'I need a function to sort a list of numbers.'"
+        formControlName="userContent"
+        required
+        rows="4"
+      ></textarea>
+      <div class="text-info">{{ userContentForm.get('userContent').value.length }}/5000</div>
+      <div
+        *ngIf="userContentForm.controls['userContent'].errors?.['maxlength']"
+        class="error text-danger"
+      >
+        Character limit exceeded. Please limit your text to 5000 characters.
+      </div>
+    </fieldset>
+    <fieldset class="form-group">
+      <legend>Select Your Preferred Programming Language</legend>
+      <div class="d-flex flex-row flex-wrap">
+        <div *ngFor="let lang of languages" class="mr-3">
+          <input
+            type="radio"
+            id="{{ lang }}"
+            name="programLanguage"
+            [value]="lang"
+            formControlName="programLanguage"
+            required
+            class="mr-1"
+            [checked]="lang === userContentForm.get('programLanguage').value"
+            (change)="onProgramLanguageChange(lang)"
+          />
+          <label for="{{ lang }}">{{ lang }}</label>
+        </div>
+      </div>
+    </fieldset>
+    <button type="submit" class="btn btn-primary" [disabled]="userContentForm.invalid || isLoading">
+      Generate Code
+    </button>
+    <button type="button" class="btn btn-secondary ml-2" (click)="resetForm()">Reset</button>
+  </form>
+  <div *ngIf="isLoading" class="spinner-border text-primary" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+  <section *ngIf="result">
+    <h2>Your Generated Code:</h2>
+    <p>{{ result }}</p>
+  </section>
+  <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+    {{ errorMessage }}
+  </div>
+  <assistant-footer></assistant-footer>
+</main>

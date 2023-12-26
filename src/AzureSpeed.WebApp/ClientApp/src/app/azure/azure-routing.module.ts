@@ -1,5 +1,5 @@
-import { NgModule } from "@angular/core";
-import { Routes, RouterModule } from "@angular/router";
+import { NgModule } from '@angular/core'
+import { Routes, RouterModule } from '@angular/router'
 import {
   AboutComponent,
   AzureComponent,
@@ -10,70 +10,70 @@ import {
   PSPingComponent,
   RegionToRegionLatencyComponent,
   UploadComponent,
-  UploadLargeFileComponent,
-} from ".";
+  UploadLargeFileComponent
+} from '.'
 
 const routes: Routes = [
   {
-    path: "",
+    path: '',
     component: AzureComponent,
     children: [
       {
-        path: "About",
-        data: { title: "About" },
-        component: AboutComponent,
+        path: 'About',
+        data: { title: 'About' },
+        component: AboutComponent
       },
       {
-        path: "CDN",
-        data: { title: "Azure CDN Speed Test" },
-        component: CDNComponent,
+        path: 'CDN',
+        data: { title: 'Azure CDN Speed Test' },
+        component: CDNComponent
       },
       {
-        path: "Download",
-        data: { title: "Azure Storage Blob Download Speed Test" },
-        component: DownloadComponent,
+        path: 'Download',
+        data: { title: 'Azure Storage Blob Download Speed Test' },
+        component: DownloadComponent
       },
       {
-        path: "IPLookup",
-        data: { title: "Azure IP Lookup" },
-        component: IPLookupComponent,
+        path: 'IPLookup',
+        data: { title: 'Azure IP Lookup' },
+        component: IPLookupComponent
       },
       {
-        path: "Latency",
-        data: { title: "Azure Latency Test" },
-        component: LatencyComponent,
+        path: 'Latency',
+        data: { title: 'Azure Latency Test' },
+        component: LatencyComponent
       },
       {
-        path: "PsPing",
-        data: { title: "PsPing Network Latency Test" },
-        component: PSPingComponent,
+        path: 'PsPing',
+        data: { title: 'PsPing Network Latency Test' },
+        component: PSPingComponent
       },
       {
-        path: "RegionToRegionLatency",
-        data: { title: "Azure Region to Region Latency" },
-        component: RegionToRegionLatencyComponent,
+        path: 'RegionToRegionLatency',
+        data: { title: 'Azure Region to Region Latency' },
+        component: RegionToRegionLatencyComponent
       },
       {
-        path: "Upload",
-        data: { title: "Azure Storage Blob Upload Speed Test" },
-        component: UploadComponent,
+        path: 'Upload',
+        data: { title: 'Azure Storage Blob Upload Speed Test' },
+        component: UploadComponent
       },
       {
-        path: "UploadLargeFile",
-        data: { title: "Azure Storage Large File Upload Speed Test" },
-        component: UploadLargeFileComponent,
+        path: 'UploadLargeFile',
+        data: { title: 'Azure Storage Large File Upload Speed Test' },
+        component: UploadLargeFileComponent
       },
       {
-        path: "**",
-        redirectTo: "Latency",
-        pathMatch: "full",
-      },
-    ],
-  },
-];
+        path: '**',
+        redirectTo: 'Latency',
+        pathMatch: 'full'
+      }
+    ]
+  }
+]
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
+  exports: [RouterModule]
 })
 export class AzureRoutingModule {}

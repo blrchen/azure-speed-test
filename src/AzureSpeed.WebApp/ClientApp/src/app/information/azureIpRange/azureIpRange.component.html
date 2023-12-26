@@ -1,61 +1,74 @@
-<div>
-  <div class="border-bottom">
-    <h1 class="h4">Azure IP Ranges</h1>
-    <small>
-      This page offers a complete list of IP ranges for Microsoft Azure clouds. Use the <a href="/Azure/IPLookup">Azure IP Lookup</a> to
-      quickly access regional and service tag information.
-    </small>
-  </div>
-  <div class="mt-3">
-    <table class="table table-bordered table-striped" style="word-break: break-all">
-      <thead>
-        <tr>
-          <th width="100">Region</th>
-          <th width="80">Total #</th>
-          <th>IP Addresses</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let subnet of tableData">
-          <td>{{ subnet.region }}</td>
-          <td>{{ subnet.totalIp }}</td>
-          <td>{{ subnet.subnet }}</td>
-        </tr>
-      </tbody>
-    </table>
+<main class="container">
+  <header>
+    <h1 id="title">Azure IP Ranges</h1>
+    <p>
+      This page provides a comprehensive list of IP ranges for Microsoft Azure Clouds. Utilize the
+      <a href="/Azure/IPLookup" title="Azure IP Lookup">Azure IP Lookup</a>
+      tool to expedite the access to regional and service tag data.
+    </p>
+  </header>
+  <section>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Region</th>
+            <th scope="col">Total #</th>
+            <th scope="col">IP Addresses</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let subnet of tableData">
+            <td style="min-width: 100px">{{ subnet.region }}</td>
+            <td style="min-width: 100px">{{ subnet.totalIp }}</td>
+            <td>{{ subnet.subnet }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+  <section>
+    <h2>Additional Resources</h2>
     <ul>
       <li>
-        Azure:
-        <a href="https://www.microsoft.com/en-us/download/details.aspx?id=56519" target="_blank"
-          >https://www.microsoft.com/en-us/download/details.aspx?id=56519</a
+        <a
+          href="https://www.microsoft.com/en-us/download/details.aspx?id=56519"
+          target="_blank"
+          title="Azure IP Ranges and Service Tags – Public Cloud"
         >
+          Azure IP Ranges and Service Tags – Public Cloud
+        </a>
       </li>
       <li>
-        [Deprecated] Azure:
-        <a href="https://www.microsoft.com/en-us/download/details.aspx?id=41653" target="_blank"
-          >https://www.microsoft.com/en-us/download/details.aspx?id=41653</a
+        <a
+          href="https://www.microsoft.com/en-us/download/details.aspx?id=41653"
+          target="_blank"
+          title="[Deprecated] Azure Datacenter IP Ranges"
         >
+          [Deprecated] Azure Datacenter IP Ranges
+        </a>
       </li>
       <li>
-        Azure China:
-        <a href="https://www.microsoft.com/en-us/download/details.aspx?id=57062" target="_blank"
-          >https://www.microsoft.com/en-us/download/details.aspx?id=57062</a
+        <a
+          href="https://www.microsoft.com/en-us/download/details.aspx?id=57062"
+          target="_blank"
+          title="Azure IP Ranges and Service Tags – China Cloud"
         >
+          Azure IP Ranges and Service Tags – China Cloud
+        </a>
       </li>
       <li>
-        [Deprecated] Azure China:
-        <a href="https://www.microsoft.com/en-us/download/details.aspx?id=42064" target="_blank"
-          >https://www.microsoft.com/en-us/download/details.aspx?id=42064</a
+        <a
+          href="https://www.microsoft.com/en-us/download/details.aspx?id=42064"
+          target="_blank"
+          title="[Deprecated] Azure Datacenter IP Ranges in China"
         >
-      </li>
-      <li>
-        AWS:
-        <a href="http://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html" target="_blank"
-          >http://docs.aws.amazon.com/general/latest/gr/aws-ip-ranges.html</a
-        >
+          [Deprecated] Azure Datacenter IP Ranges in China
+        </a>
       </li>
     </ul>
-  </div>
-  <div class="mt-4"><br /><br /><br /><br /></div>
-  <!-- This space is reserved for a Google ad. The empty area above it is intended to prevent any overlap with the ad. -->
-</div>
+  </section>
+  <section>
+    <div class="ad-space"></div>
+  </section>
+</main>

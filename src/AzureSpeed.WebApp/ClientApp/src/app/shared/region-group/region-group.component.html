@@ -1,27 +1,39 @@
 <div>
-  <div class="text-danger font-weight-bold" *ngIf="totalCheckedRegions == 0">Choose one or more regions to begin</div>
-  <div class="row mx-0 mt-2">
-    <div class="col-lg-4 pl-0 pr-2 mt-2" *ngFor="let group of regionsGroup">
-      <div class="ft-14 border rounded-sm">
-        <div class="d-flex justify-content-between bg-light border-bottom p-2">
+  <div class="text-danger font-weight-bold" *ngIf="!totalCheckedRegions">
+    Please select at least one region to start testing.
+  </div>
+  <div class="row px-1">
+    <div class="col-12 col-md-4 pl-md-1 pr-md-1 mt-2" *ngFor="let group of regionsGroup">
+      <section class="border rounded-sm">
+        <div class="d-flex justify-content-between bg-light border-bottom p-1">
           <strong>{{ group.geography }}</strong>
           <label [attr.for]="group.geography" class="mb-0">
-            <input type="checkbox" [attr.id]="group.geography" [(ngModel)]="group.checked" (change)="onChange(null, group)" />
-            Check all
+            <input
+              type="checkbox"
+              [attr.id]="group.geography"
+              [(ngModel)]="group.checked"
+              (change)="onChange(null, group)"
+            />
+            Select all
           </label>
         </div>
-        <div class="mt-1 px-3 py-2">
+        <div class="mt-1 px-2 py-1">
           <label
             *ngFor="let region of group?.regions"
             [attr.for]="region.regionName"
-            class="cursor-pointer mr-3 mb-1"
+            class="cursor-pointer mr-2 mb-1"
             [ngClass]="{ 'text-primary': region.checked }"
           >
-            <input type="checkbox" [attr.id]="region.regionName" [(ngModel)]="region.checked" (change)="onChange(region, group)" />
+            <input
+              type="checkbox"
+              [attr.id]="region.regionName"
+              [(ngModel)]="region.checked"
+              (change)="onChange(region, group)"
+            />
             {{ region.displayName }}
           </label>
         </div>
-      </div>
+      </section>
     </div>
   </div>
 </div>

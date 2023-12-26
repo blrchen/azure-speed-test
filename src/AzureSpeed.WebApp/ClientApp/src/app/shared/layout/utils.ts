@@ -1,77 +1,70 @@
 export const Menus = [
   {
-    path: "/Azure/Latency",
-    icon: "fa fa-cloud",
-    title: "Latency Test",
+    path: '/ChatGPT/CodeAssistant',
+    title: 'ChatGPT Code Assistant'
   },
   {
-    path: "/Azure/RegionToRegionLatency",
-    icon: "fa fa-cloud-upload",
-    title: "Region to Region Latency",
+    path: '/ChatGPT/WritingAssistant',
+    title: 'ChatGPT Writing Assistant'
   },
   {
-    path: "/Azure/PsPing",
-    icon: "fa fa-cloud",
-    title: "PsPing Network Latency Test",
+    path: '/Azure/Latency',
+    title: 'Latency Test'
   },
   {
-    path: "/Azure/Download",
-    icon: "fa fa-cloud-download",
-    title: "Download Speed Test",
+    path: '/Azure/RegionToRegionLatency',
+    title: 'Region to Region Latency'
   },
   {
-    path: "/Azure/Upload",
-    icon: "fa fa-cloud-upload",
-    title: "Upload Speed Test",
+    path: '/Azure/PsPing',
+    title: 'PsPing Network Latency Test'
   },
   {
-    path: "/Azure/UploadLargeFile",
-    icon: "fa fa-upload",
-    title: "Large File Upload Speed Test",
+    path: '/Azure/Download',
+    title: 'Download Speed Test'
   },
   {
-    path: "/Azure/CDN",
-    icon: "fa fa-upload",
-    title: "CDN Test",
+    path: '/Azure/Upload',
+    title: 'Upload Speed Test'
   },
   {
-    path: "/Azure/IPLookup",
-    icon: "fa fa-search",
-    title: "Azure IP Lookup",
+    path: '/Azure/UploadLargeFile',
+    title: 'Large File Upload Speed Test'
   },
   {
-    path: "/Information/AzureSovereignClouds",
-    icon: "fa fa-book",
-    title: "Azure Sovereign Clouds",
+    path: '/Azure/CDN',
+    title: 'CDN Test'
   },
   {
-    path: "/Information/AzureGeographies",
-    icon: "fa fa-book",
-    title: "Azure Geographies",
+    path: '/Azure/IPLookup',
+    title: 'Azure IP Lookup'
   },
   {
-    path: "/Information/AzureRegions",
-    icon: "fa fa-book",
-    title: "Azure Regions",
+    path: '/Information/AzureSovereignClouds',
+    title: 'Azure Sovereign Clouds'
   },
   {
-    path: "/Information/AzureAvailabilityZones",
-    icon: "fa fa-book",
-    title: "Azure Availability Zones",
+    path: '/Information/AzureGeographies',
+    title: 'Azure Geographies'
   },
   {
-    path: "/Information/AzureEnvironments",
-    icon: "fa fa-book",
-    title: "Azure Environments",
+    path: '/Information/AzureRegions',
+    title: 'Azure Regions'
   },
   {
-    path: "/Information/AzureIpRanges",
-    icon: "fa fa-book",
-    title: "Azure IP Ranges",
+    path: '/Information/AzureAvailabilityZones',
+    title: 'Azure Availability Zones'
   },
   {
-    path: "/Azure/About",
-    icon: "fa fa-book",
-    title: "About",
+    path: '/Information/AzureEnvironments',
+    title: 'Azure Environments'
   },
-];
+  {
+    path: '/Information/AzureIpRanges',
+    title: 'Azure IP Ranges'
+  },
+  {
+    path: '/Azure/About',
+    title: 'About'
+  }
+]

@@ -1,33 +1,43 @@
-<div>
-  <div class="border-bottom">
-    <h1 class="h4">Azure Storage Blob Download Speed Test</h1>
-    <small>Test the upload speed to Azure Storage Service across different regions worldwide.</small>
-  </div>
-  <div class="mt-2">
+<main class="container">
+  <header>
+    <h1 id="title">Azure Storage Blob Download Speed Test</h1>
+    <p id="description">
+      Test the upload speed to Azure Storage Service across different regions worldwide.
+    </p>
+  </header>
+  <section>
     <app-region-group></app-region-group>
-  </div>
-  <div class="mt-3">
-    <table class="table table-sm table-bordered table-striped ft-14 mt-2" style="table-layout: fixed">
-      <thead>
-        <tr>
-          <th scope="col">Geography</th>
-          <th scope="col">Region</th>
-          <th scope="col">Location</th>
-          <th scope="col">Test File</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let item of tableData">
-          <td>{{ item.geography }}</td>
-          <td>{{ item.displayName }}</td>
-          <td>{{ item.physicalLocation }}</td>
-          <td>
-            <a *ngIf="item.url" class="btn btn-sm btn-outline-secondary" href="{{ item.url }}">Download File</a>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="mt-4"><br /><br /><br /><br /></div>
-  <!-- This space is reserved for a Google ad. The empty area above it is intended to prevent any overlap with the ad. -->
-</div>
+  </section>
+  <section>
+    <div class="text-danger font-weight-bold">
+      Click "Download Test File" for your target region to start testing.
+    </div>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Geography</th>
+            <th scope="col">Region</th>
+            <th scope="col">Location</th>
+            <th scope="col">Test File</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of tableData">
+            <td>{{ item.geography }}</td>
+            <td>{{ item.displayName }}</td>
+            <td>{{ item.physicalLocation }}</td>
+            <td>
+              <a *ngIf="item.url" class="btn btn-sm btn-outline-secondary" href="{{ item.url }}">
+                Download Test File
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+  <section>
+    <div class="ad-space"></div>
+  </section>
+</main>

@@ -1,9 +1,8 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit } from '@angular/core'
 
 @Component({
-  selector: "app-psping",
-  templateUrl: "./psPing.component.html",
-  styleUrls: ["./psPing.component.scss"],
+  selector: 'app-psping',
+  templateUrl: './psPing.component.html'
 })
 export class PSPingComponent implements OnInit {
   ngOnInit() {}

@@ -1,0 +1,28 @@
+<main class="container">
+  <header>
+    <h1 id="title">ChatGPT Code Assistant</h1>
+  </header>
+  <section>
+    <p id="description">
+      Welcome to ChatGPT Code Assistant, your tool for transforming the coding experience. This
+      AI-based assistant is perfect for developers, hobbyists, and anyone eager to explore the world
+      of coding with confidence and simplicity. Are you ready to revolutionize your coding approach?
+    </p>
+  </section>
+  <section id="code-demo-section">
+    <div class="row">
+      <div class="col-lg-6 col-md-6 col-sm-12 mb-2" *ngFor="let card of codeCards">
+        <section class="card">
+          <div class="card-body">
+            <h3 class="card-title">{{ card.title }}</h3>
+            <p class="card-text">{{ card.text }}</p>
+            <a [href]="card.link" class="btn btn-primary" role="button">Try it now</a>
+          </div>
+        </section>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="ad-space"></div>
+  </section>
+</main>

@@ -1,13 +1,13 @@
-import { Injectable } from "@angular/core";
-import { BlobServiceClient } from "@azure/storage-blob";
-import { BlobModel } from "../models";
+import { Injectable } from '@angular/core'
+import { BlobServiceClient } from '@azure/storage-blob'
+import { BlobModel } from '../models'
 
 @Injectable({
-  providedIn: "root",
+  providedIn: 'root'
 })
 export class StorageService {
   createBlobServiceClient(blob: BlobModel) {
-    const SASConnectionString = `BlobEndpoint=${blob.endpoint};SharedAccessSignature=${blob.sas}`;
-    return BlobServiceClient.fromConnectionString(SASConnectionString);
+    const SASConnectionString = `BlobEndpoint=${blob.endpoint};SharedAccessSignature=${blob.sas}`
+    return BlobServiceClient.fromConnectionString(SASConnectionString)
   }
 }

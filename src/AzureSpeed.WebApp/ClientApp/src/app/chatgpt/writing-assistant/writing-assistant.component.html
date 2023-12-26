@@ -1,0 +1,30 @@
+<main class="container">
+  <header>
+    <h1 id="title">ChatGPT Writing Assistant</h1>
+  </header>
+  <section>
+    <p id="description">
+      Welcome to ChatGPT Writing Assistant, your companion for mastering the art of written
+      communication. This AI-driven assistant is ideal for writers, students, professionals, and
+      anyone passionate about crafting compelling narratives with ease and precision. Are you
+      prepared to elevate your writing prowess to new heights?
+    </p>
+  </section>
+  <section id="text-demo-section">
+    <h2 class="text-primary">Writing Assistant</h2>
+    <div class="row">
+      <div class="col-lg-6 col-md-6 col-sm-12 mb-2" *ngFor="let card of textCards">
+        <section class="card">
+          <div class="card-body">
+            <h3 class="card-title">{{ card.title }}</h3>
+            <p class="card-text">{{ card.text }}</p>
+            <a [href]="card.link" class="btn btn-primary" role="button">Try it now</a>
+          </div>
+        </section>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="ad-space"></div>
+  </section>
+</main>

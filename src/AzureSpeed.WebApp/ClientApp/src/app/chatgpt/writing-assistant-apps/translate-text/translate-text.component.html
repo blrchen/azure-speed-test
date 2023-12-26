@@ -1,0 +1,66 @@
+<main class="container">
+  <header>
+    <h1 id="title">ChatGPT Text Translator</h1>
+  </header>
+  <section>
+    <p id="description">
+      Use our ChatGPT-powered text translator to instantly translate text into over 20 languages.
+    </p>
+  </section>
+  <form [formGroup]="userContentForm" (submit)="submitForm()">
+    <fieldset class="form-group">
+      <label for="userContent">
+        Type or paste the text you want to translate in the box below, then click 'Translate'.
+      </label>
+      <textarea
+        class="form-control"
+        id="userContent"
+        placeholder="Type or paste your text here..."
+        formControlName="userContent"
+        required
+        rows="4"
+      ></textarea>
+      <div class="text-info">{{ userContentForm.get('userContent').value.length }}/5000</div>
+      <div
+        *ngIf="userContentForm.controls['userContent'].errors?.['maxlength']"
+        class="error text-danger"
+      >
+        Character limit exceeded. Please limit your text to 5000 characters.
+      </div>
+    </fieldset>
+    <fieldset class="form-group">
+      <legend>Select Translation Language</legend>
+      <div class="d-flex flex-row flex-wrap">
+        <div *ngFor="let lang of languages" class="mr-3">
+          <input
+            type="radio"
+            id="{{ lang }}"
+            name="responseLanguage"
+            [value]="lang"
+            formControlName="responseLanguage"
+            required
+            class="mr-1"
+            [checked]="lang === userContentForm.get('responseLanguage').value"
+            (change)="onResponseLanguageChange(lang)"
+          />
+          <label for="{{ lang }}">{{ lang }}</label>
+        </div>
+      </div>
+    </fieldset>
+    <button type="submit" class="btn btn-primary" [disabled]="userContentForm.invalid || isLoading">
+      Translate
+    </button>
+    <button type="button" class="btn btn-secondary ml-2" (click)="resetForm()">Reset</button>
+  </form>
+  <div *ngIf="isLoading" class="spinner-border text-primary" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+  <section *ngIf="result">
+    <h2>Translation:</h2>
+    <p>{{ result }}</p>
+  </section>
+  <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+    {{ errorMessage }}
+  </div>
+  <assistant-footer></assistant-footer>
+</main>

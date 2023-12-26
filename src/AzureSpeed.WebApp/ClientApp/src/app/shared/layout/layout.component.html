@@ -11,7 +11,13 @@
       (click)="collapse = !collapse"
     >
       <title>Menu</title>
-      <path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path>
+      <path
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-miterlimit="10"
+        stroke-width="2"
+        d="M4 7h22M4 15h22M4 23h22"
+      ></path>
     </svg>
   </button>
 </header>
@@ -24,7 +30,6 @@
           <ng-container *ngFor="let item of menus">
             <li class="nav-item" routerLinkActive="active">
               <a class="nav-link" [routerLink]="item.path" routerLinkActive="active">
-                <i [class]="item.icon" aria-hidden="true" *ngIf="item.icon"></i>
                 <span class="ml-2">{{ item.title }}</span>
               </a>
             </li>
@@ -34,7 +39,7 @@
     </div>
 
     <main class="bd-content">
-      <div class="py-3 px-xl-5 px-3">
+      <div class="px-3 py-3">
         <ng-content></ng-content>
       </div>
     </main>

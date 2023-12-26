@@ -1,97 +1,105 @@
-<div class="border-bottom">
-  <h1 class="h4">Azure Storage Large File Upload Speed Test</h1>
-  <small>Test the upload of large files to Azure Blob Storage across global data centers.</small>
-</div>
-<div class="mt-3">
-  <div class="text-primary">
-    <i class="fa fa-list-alt text-primary" aria-hidden="true"></i>
-    File Upload Speed Test
-  </div>
-  <div class="mt-2 border-top pt-2">
-    <button class="btn btn-sm btn-primary" (click)="onOpen()">
-      Start testing <i class="fa fa-angle-double-right" aria-hidden="true"></i>
-    </button>
-  </div>
-  <table class="table table-sm table-bordered table-striped ft-14 mt-2">
-    <thead>
-      <tr>
-        <th scope="col" width="30%">File Name</th>
-        <th scope="col">File Size</th>
-        <th scope="col">Region</th>
-        <th scope="col">Block Size(kb)</th>
-        <th scope="col">Thread</th>
-        <th scope="col">Upload Speed</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let item of tableData">
-        <td>{{ item.fileName }}</td>
-        <td>{{ item.fileSize }}</td>
-        <td>{{ item.region }}</td>
-        <td>{{ item.blockSize }}</td>
-        <td>{{ item.thread }}</td>
-        <td>{{ item.uploadSpeed }}</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+<main class="container">
+  <header>
+    <h1 id="title">Azure Storage Large File Upload Speed Test</h1>
+    <p id="description">
+      Test the upload of large files to Azure Blob Storage across global data centers.
+    </p>
+  </header>
+  <section>
+    <h2 class="text-primary">File Upload Speed Test</h2>
+    <div class="border-top pt-2">
+      <button class="btn btn-sm btn-primary" (click)="onOpen()">Start testing</button>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">File Name</th>
+            <th scope="col">File Size</th>
+            <th scope="col">Region</th>
+            <th scope="col">Block Size(kb)</th>
+            <th scope="col">Thread</th>
+            <th scope="col">Upload Speed</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of tableData">
+            <td>{{ item.fileName }}</td>
+            <td>{{ item.fileSize }}</td>
+            <td>{{ item.region }}</td>
+            <td>{{ item.blockSize }}</td>
+            <td>{{ item.thread }}</td>
+            <td>{{ item.uploadSpeed }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
 
-<ng-template #uploadModal>
-  <div class="modal-header">
-    <h2 class="h5 modal-title" id="modal-basic-title">Upload file</h2>
-    <button type="button" class="close" aria-label="Close" (click)="onCancel()">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-  <div class="modal-body">
-    <div class="px-4 ft-14">
-      <div class="form-group row mr-0">
-        <label for="" class="col-sm-4 col-form-label">File</label>
-        <input type="file" class="col-sm-8 form-control-file pl-0" (change)="onChangeFile($event)" placeholder="" />
-      </div>
-      <div class="form-group row mr-0">
-        <label for="" class="col-sm-4 col-form-label">Region</label>
-        <select name="" id="" class="form-control col-sm-8" [(ngModel)]="region">
-          <option value="">--Please select region--</option>
-          <option [value]="region.regionName" *ngFor="let region of regions">{{ region.displayName }}</option>
-        </select>
-      </div>
-      <div class="form-group row mr-0">
-        <label for="" class="col-sm-4 col-form-label">Block Size(kb)</label>
-        <select name="" id="" class="form-control col-sm-8" [(ngModel)]="blockSize">
-          <option [value]="b" *ngFor="let b of blockSizes">{{ b }}</option>
-        </select>
-      </div>
-      <div class="form-group row mr-0">
-        <label for="" class="col-sm-4 col-form-label">Thread</label>
-        <select name="" id="" class="form-control col-sm-8" [(ngModel)]="thread">
-          <option [value]="t" *ngFor="let t of threads">{{ t }}</option>
-        </select>
-      </div>
+  <ng-template #uploadModal>
+    <div class="modal-header">
+      <h2 class="h5 modal-title" id="modal-basic-title">Upload file</h2>
+      <button type="button" class="close" aria-label="Close" (click)="onCancel()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div>
+        <div class="form-group row mr-0">
+          <label for="" class="col-sm-4 col-form-label">File</label>
+          <input
+            type="file"
+            class="col-sm-8 form-control-file pl-0"
+            (change)="onChangeFile($event)"
+            placeholder=""
+          />
+        </div>
+        <div class="form-group row mr-0">
+          <label for="" class="col-sm-4 col-form-label">Region</label>
+          <select name="" class="form-control col-sm-8" [(ngModel)]="region">
+            <option value="">--Please select region--</option>
+            <option [value]="region.regionName" *ngFor="let region of regions">
+              {{ region.displayName }}
+            </option>
+          </select>
+        </div>
+        <div class="form-group row mr-0">
+          <label for="" class="col-sm-4 col-form-label">Block Size(kb)</label>
+          <select name="" class="form-control col-sm-8" [(ngModel)]="blockSize">
+            <option [value]="b" *ngFor="let b of blockSizes">{{ b }}</option>
+          </select>
+        </div>
+        <div class="form-group row mr-0">
+          <label for="" class="col-sm-4 col-form-label">Thread</label>
+          <select name="" id="" class="form-control col-sm-8" [(ngModel)]="thread">
+            <option [value]="t" *ngFor="let t of threads">{{ t }}</option>
+          </select>
+        </div>
 
-      <div class="progress mt-3" *ngIf="uploadProgress">
-        <div
-          class="progress-bar progress-bar-striped bg-success"
-          role="progressbar"
-          [ngClass]="{ 'progress-bar-animated': uploadProgress != '100%' }"
-          [ngStyle]="{ width: uploadProgress }"
-          aria-valuenow=""
-          aria-valuemin="0"
-          aria-valuemax="100"
-        >
-          {{ uploadProgress }}
+        <div class="progress" *ngIf="uploadProgress">
+          <div
+            class="progress-bar progress-bar-striped bg-success"
+            role="progressbar"
+            [ngClass]="{ 'progress-bar-animated': uploadProgress != '100%' }"
+            [ngStyle]="{ width: uploadProgress }"
+            aria-valuenow=""
+            aria-valuemin="0"
+            aria-valuemax="100"
+          >
+            {{ uploadProgress }}
+          </div>
+        </div>
+        <div class="text-success" role="alert" *ngIf="uploadTime">
+          <span class="ml-1">
+            file = {{ uploadFileName }}; size = {{ uploadFileSize }}; upload time =
+            {{ uploadTime }}; speed = {{ uploadSpeed }}
+          </span>
         </div>
       </div>
-      <div class="text-success mt-2" role="alert" *ngIf="uploadTime">
-        <i class="fa fa-info-circle" aria-hidden="true"></i>
-        <span class="ml-1">
-          file = {{ uploadFileName }}; size = {{ uploadFileSize }}; upload time = {{ uploadTime }}; speed = {{ uploadSpeed }}
-        </span>
-      </div>
     </div>
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-success" (click)="onSubmit()">Upload</button>
-    <button type="button" class="btn btn-secondary" (click)="onCancel()">Close</button>
-  </div>
-</ng-template>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-success" (click)="onSubmit()">Upload</button>
+      <button type="button" class="btn btn-secondary" (click)="onCancel()">Close</button>
+    </div>
+  </ng-template>
+</main>

@@ -3,13 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSpeed.Test", "AzureSpeed.Test\AzureSpeed.Test.csproj", "{8B9A67D2-506B-498F-9703-1D738E4131DB}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureSpeed.WebApp", "AzureSpeed.WebApp\AzureSpeed.WebApp.csproj", "{841FEF07-AF17-413D-A055-E1E7C10B6813}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Files", ".Files", "{1C41E9DB-9C86-4AB5-8BBD-332B37F97261}"
 	ProjectSection(SolutionItems) = preProject
-		Directory.Build.props = Directory.Build.props
+		..\.dockerignore = ..\.dockerignore
+		..\Dockerfile = ..\Dockerfile
 		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
@@ -19,10 +18,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{8B9A67D2-506B-498F-9703-1D738E4131DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8B9A67D2-506B-498F-9703-1D738E4131DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8B9A67D2-506B-498F-9703-1D738E4131DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8B9A67D2-506B-498F-9703-1D738E4131DB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{841FEF07-AF17-413D-A055-E1E7C10B6813}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{841FEF07-AF17-413D-A055-E1E7C10B6813}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{841FEF07-AF17-413D-A055-E1E7C10B6813}.Release|Any CPU.ActiveCfg = Release|Any CPU

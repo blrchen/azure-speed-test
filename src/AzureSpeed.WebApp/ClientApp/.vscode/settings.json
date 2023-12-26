@@ -1,8 +1,9 @@
 {
   "editor.formatOnSave": true,
   "files.exclude": {
+    ".angular": true,
+    "dist":true,
     "node_modules": true,
-    "dist": true,
     "package-lock.json": true
   }
 }

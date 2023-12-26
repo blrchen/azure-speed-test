@@ -1,221 +1,233 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { timer, Subject, of } from 'rxjs';
-import { takeUntil, catchError } from 'rxjs/operators';
-import { curveBasis } from 'd3-shape';
-import { colorSets, DataItem, MultiSeries } from '@swimlane/ngx-charts';
-import { RegionService } from '../../services';
-import { HistoryModel, RegionModel } from '../../models';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Component, OnDestroy, OnInit } from '@angular/core'
+import { HttpClient, HttpHeaders } from '@angular/common/http'
+import { curveBasis } from 'd3-shape'
+import { colorSets, DataItem, MultiSeries } from '@swimlane/ngx-charts'
+import { of, Subject, timer } from 'rxjs'
+import { catchError, takeUntil } from 'rxjs/operators'
+import { RegionService } from '../../services'
+import { RegionModel } from '../../models'
 
-interface LineChartRawData {
-  storageAccountName: string;
-  name: string;
-  series: DataItem[];
+interface ChartRawData {
+  name: string
+  storageAccountName: string
+  series: DataItem[]
 }
 
 @Component({
   selector: 'app-azure-latency',
-  templateUrl: './latency.component.html',
+  templateUrl: './latency.component.html'
 })
 export class LatencyComponent implements OnInit, OnDestroy {
-  private static readonly MAX_PING_COUNT = 180;
-  private static readonly PING_INTERVAL = 2000;
-  private static readonly CHART_X_LENGTH = 60;
-  private static readonly CHART_UPDATE_INTERVAL = 1000;
+  private static readonly MAX_PING_ATTEMPTS = 180
+  private static readonly PING_INTERVAL_MS = 2000
+  private static readonly CHART_X_AXIS_LENGTH = 60
+  private static readonly CHART_UPDATE_INTERVAL_MS = 1000
 
-  private destroy$ = new Subject<void>();
-  private firstPingMap = new Map<string, boolean>();
-  private pingCount = 0;
-  private regions: RegionModel[] = [];
-  private history: HistoryModel = {};
-  private latestPingTime = new Map<string, number>();
-  private lineChartRawData: LineChartRawData[] = [];
+  private destroy$ = new Subject<void>()
+  private regions: RegionModel[] = []
+  private pingAttemptCount = 0
+  private pingHistory: Map<string, number[]> = new Map()
+  private latestPingTime = new Map<string, number>()
+  private chartRawData: ChartRawData[] = []
 
-  public tableData: RegionModel[] = [];
-  public tableDataTop3: RegionModel[] = [];
-  public lineChartData: MultiSeries = [];
-  public colorScheme = colorSets.find((s) => s.name === 'picnic');
-  public curve = curveBasis;
-  public xAxisTicks: any[] = [];
+  public tableData: RegionModel[] = []
+  public tableDataTop3: RegionModel[] = []
+  public chartDataSeries: MultiSeries = []
+  public colorScheme = colorSets.find((s) => s.name === 'picnic')
+  public curve = curveBasis
+  public xAxisTicks: string[] = []
 
   constructor(
     private httpClient: HttpClient,
-    private regionService: RegionService,
+    private regionService: RegionService
   ) {}
 
-  ngOnInit() {
-    this.fetchRegionData();
-    this.startChartTimer();
+  ngOnInit(): void {
+    this.fetchRegionData()
+    this.startChartTimer()
   }
 
-  fetchRegionData() {
+  ngOnDestroy(): void {
+    this.destroy$.next()
+    this.destroy$.complete()
+  }
+
+  private fetchRegionData(): void {
     this.regionService
       .getRegions()
       .pipe(takeUntil(this.destroy$))
-      .subscribe((res) => {
-        this.regions = res;
-        this.formatData();
-        this.startPingTimer();
-      });
+      .subscribe((res: RegionModel[]) => {
+        this.regions = res
+        this.startPingTimer()
+      })
   }
 
-  startPingTimer() {
-    timer(0, LatencyComponent.PING_INTERVAL)
+  private startPingTimer(): void {
+    timer(0, LatencyComponent.PING_INTERVAL_MS)
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
-        if (this.pingCount < LatencyComponent.MAX_PING_COUNT) {
-          this.sendHttpPing();
-          this.pingCount++;
+        if (this.pingAttemptCount < LatencyComponent.MAX_PING_ATTEMPTS) {
+          this.pingAllRegions()
+          this.pingAttemptCount++
         }
-      });
+      })
   }
 
-  formatData() {
+  private pingAllRegions(): void {
+    this.regions.forEach((region) => {
+      this.pingRegion(region)
+    })
+  }
+
+  private pingRegion(region: RegionModel): void {
+    const url = this.constructPingUrl(region)
+    const headers = new HttpHeaders({
+      'Cache-Control': 'no-cache',
+      Accept: '*/*'
+    })
+    const pingStartTime = performance.now()
+    this.httpClient
+      .get(url, { headers, responseType: 'text' })
+      .pipe(
+        takeUntil(this.destroy$),
+        catchError((error) => {
+          console.error(`Error pinging region: ${region.displayName}`, error)
+          return of(null)
+        })
+      )
+      .subscribe(() => {
+        const pingEndTime = performance.now()
+        const pingDuration = pingEndTime - pingStartTime
+        this.processPing(region.storageAccountName, pingDuration)
+      })
+  }
+
+  private processPing(storageAccountName: string, pingDuration: number): void {
+    const pingDurationMs = Math.round(pingDuration)
+    if (pingDurationMs <= 500) {
+      this.latestPingTime.set(storageAccountName, pingDurationMs)
+      let history = this.pingHistory.get(storageAccountName) || []
+      history.push(pingDuration)
+
+      this.pingHistory.set(storageAccountName, history)
+      this.formatData()
+    }
+  }
+
+  private constructPingUrl({ geography, storageAccountName }: RegionModel): string {
+    const endpoint = geography === 'China' ? 'chinacloudapi.cn' : 'windows.net'
+    return `https://${storageAccountName}.blob.core.${endpoint}/public/latency-test.json`
+  }
+
+  private formatData(): void {
     this.tableData = this.regions
       .filter(({ storageAccountName }) => this.latestPingTime.get(storageAccountName) > 0)
-      .map((item) => ({ ...item, averageLatency: this.latestPingTime.get(item.storageAccountName) }));
+      .map((region) => {
+        const pingTimes = this.pingHistory.get(region.storageAccountName) || []
+
+        // Exclude the highest ping time which might have extra DNS look up time
+        const sortedPingTimes = [...pingTimes].sort((a, b) => a - b)
+        sortedPingTimes.pop()
+        const sum = sortedPingTimes.reduce((a, b) => a + Number(b), 0)
+        const avg = sortedPingTimes.length > 0 ? Math.floor(sum / sortedPingTimes.length) : 0
+        return { ...region, averageLatency: avg }
+      })
 
     this.tableDataTop3 = [...this.tableData]
-      .sort((a, b) => a.averageLatency - b.averageLatency)
-      .slice(0, 3);
+      .sort((a, b) => (a.averageLatency || 0) - (b.averageLatency || 0))
+      .slice(0, 3)
   }
 
-  startChartTimer() {
-    timer(0, LatencyComponent.CHART_UPDATE_INTERVAL)
+  private startChartTimer(): void {
+    timer(0, LatencyComponent.CHART_UPDATE_INTERVAL_MS)
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
-        this.updateLineChart();
-      });
+        this.updateChart()
+      })
   }
 
-  updateLineChart() {
-    const date = new Date();
-    const timeStamp = date.getTime() / 1000;
-    const second = timeStamp * 1000;
-    const secondArr = Array.from({ length: LatencyComponent.CHART_X_LENGTH }, (_j, i) => {
-      const t = timeStamp - i;
-      return t * 1000;
-    }).reverse();
+  private updateChart(): void {
+    const now = new Date()
+    const currentSecond = now.getTime()
+    const secondArr = Array.from({ length: LatencyComponent.CHART_X_AXIS_LENGTH }, (_j, i) => {
+      return currentSecond - i * 1000
+    }).reverse()
     this.tableData.forEach(({ storageAccountName, displayName }) => {
-      let isNew = true;
+      let isNew = true
 
-      this.lineChartRawData.forEach((item: LineChartRawData) => {
+      this.chartRawData.forEach((item: ChartRawData) => {
         if (storageAccountName === item.storageAccountName) {
-          isNew = false;
+          isNew = false
         }
-      });
+      })
       if (isNew) {
-        this.lineChartData.push({
+        this.chartDataSeries.push({
           name: displayName,
           series: secondArr.map((i) => ({
             name: this.formatXAxisTick(i),
-            value: 0,
-          })),
-        });
-        this.lineChartRawData.push({
+            value: 0
+          }))
+        })
+        this.chartRawData.push({
           storageAccountName,
           name: displayName,
-          series: secondArr.map((i) => ({ name: i, value: 0 })),
-        });
+          series: secondArr.map((i) => ({ name: i, value: 0 }))
+        })
       }
-    });
+    })
 
-    this.lineChartRawData.forEach((item: LineChartRawData) => {
-      const { storageAccountName, series } = item;
-      const t = this.latestPingTime.get(storageAccountName) || 0;
-      let isRemove = true;
-      this.tableData.forEach((td) => {
-        if (storageAccountName === td.storageAccountName) {
-          isRemove = false;
-        }
-      });
-      if (series.length > LatencyComponent.CHART_X_LENGTH - 1) {
-        series.shift();
+    this.updateChartRawData(currentSecond)
+    this.updateChartData()
+    this.updateXAxisTicks()
+  }
+
+  private updateChartRawData(currentSecond: number) {
+    this.chartRawData.forEach((item: ChartRawData) => {
+      const { storageAccountName, series } = item
+      const pingTime = this.latestPingTime.get(storageAccountName) || 0
+      let isRemove = !this.tableData.some((td) => storageAccountName === td.storageAccountName)
+      if (series.length > LatencyComponent.CHART_X_AXIS_LENGTH - 1) {
+        series.shift()
       }
 
       series.push({
-        name: second,
-        value: isRemove ? 0 : t,
-      });
-    });
+        name: currentSecond,
+        value: isRemove ? 0 : pingTime
+      })
+    })
+  }
 
-    const arr = this.lineChartRawData.map((item: LineChartRawData) => {
+  private updateChartData(): void {
+    const arr = this.chartRawData.map((item: ChartRawData) => {
       return {
         name: item.name,
         series: item.series.map((seriesItem: DataItem) => ({
           name: this.formatXAxisTick(Number(seriesItem.name)),
-          value: seriesItem.value,
-        })),
-      };
-    });
-    this.lineChartData = [...arr];
+          value: seriesItem.value
+        }))
+      }
+    })
+    this.chartDataSeries = [...arr]
+  }
 
-    this.xAxisTicks = this.lineChartRawData[0]
-      ? this.lineChartRawData[0].series
+  private updateXAxisTicks(): void {
+    this.xAxisTicks = this.chartRawData[0]
+      ? this.chartRawData[0].series
           .filter((seriesItem: DataItem) => {
-            const timestamp = parseInt(String(seriesItem.name), 10);
-            const s = new Date(timestamp).getSeconds();
-            return s % 5 === 0;
+            const timestamp = parseInt(String(seriesItem.name), 10)
+            const s = new Date(timestamp).getSeconds()
+            return s % 5 === 0
           })
-          .map((seriesItem: DataItem) => this.formatXAxisTick(parseInt(String(seriesItem.name), 10)))
-      : [];
+          .map((seriesItem: DataItem) =>
+            this.formatXAxisTick(parseInt(String(seriesItem.name), 10))
+          )
+      : []
   }
 
-  sendHttpPing() {
-    this.regions.forEach((region) => {
-      const { storageAccountName, geography } = region;
-      const url =
-        geography === 'China'
-          ? `https://${storageAccountName}.blob.core.chinacloudapi.cn/public/latency-test.json`
-          : `https://${storageAccountName}.blob.core.windows.net/public/latency-test.json`;
-      const headers = new HttpHeaders({
-        'Cache-Control': 'no-cache',
-        Accept: '*/*',
-      });
-      const startPingTime = performance.now();
-      this.httpClient.get(url, { headers, responseType: 'text' })
-        .pipe(
-          takeUntil(this.destroy$),
-          catchError((err) => {
-            console.error(`Error pinging region: ${region.displayName}`, err);
-            return of(null);
-          }),
-        )
-        .subscribe(() => {
-          const endPingTime = performance.now();
-          const pingTime = (endPingTime - startPingTime).toFixed(0);
-
-          if (!this.history[storageAccountName]) {
-            this.history[storageAccountName] = [];
-          }
-
-          // Check if it's the first ping for this region
-          if (!this.firstPingMap.get(storageAccountName)) {
-            // If it's the first ping, mark it as done and skip this ping
-            this.firstPingMap.set(storageAccountName, true);
-          } else {
-            // If it's not the first ping, process it normally
-            this.latestPingTime.set(storageAccountName, Number(pingTime));
-            this.history[storageAccountName].push(pingTime);
-          }
-
-          this.formatData();
-        });
-    });
-  }
-
-  formatXAxisTick(timeStamp: number): string {
-    const date = new Date(timeStamp);
-    const second = date.getSeconds();
-    const h = date.getHours();
-    const m = date.getMinutes();
-    const hStr = h > 9 ? h : `0${h}`;
-    const mStr = m > 9 ? m : `0${m}`;
-    return second === 0 ? `${hStr}:${mStr}` : `:${second}`;
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
+  private formatXAxisTick(timestamp: number): string {
+    const date = new Date(timestamp)
+    const minutes = date.getMinutes().toString().padStart(2, '0')
+    const seconds = date.getSeconds().toString().padStart(2, '0')
+    return `${minutes}:${seconds}`
   }
 }

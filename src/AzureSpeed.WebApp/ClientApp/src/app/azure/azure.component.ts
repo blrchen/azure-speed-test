@@ -1,10 +1,9 @@
-import { Component } from "@angular/core";
+import { Component } from '@angular/core'
 
 @Component({
-  selector: "app-azure",
-  templateUrl: "./azure.component.html",
-  styleUrls: ["./azure.component.scss"],
+  selector: 'app-azure',
+  templateUrl: './azure.component.html'
 })
 export class AzureComponent {
-  title = "";
+  title = ''
 }

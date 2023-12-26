@@ -1,2 +1,1 @@
-export * from "./ui.model";
-export * from "./contracts";
+export * from './ui.model'

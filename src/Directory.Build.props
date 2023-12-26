@@ -1,9 +1,0 @@
-<Project>
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <LangVersion>preview</LangVersion>
-    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-    <AnalysisLevel>latest-All</AnalysisLevel>
-    <TreatWarningsAsErrors Condition="'$(BuildingInsideVisualStudio)'!='true'">true</TreatWarningsAsErrors>
-  </PropertyGroup>
-</Project>

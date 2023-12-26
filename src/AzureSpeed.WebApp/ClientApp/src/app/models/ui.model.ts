@@ -1,54 +1,30 @@
-export const DefaultRegionsKey = "azurespeed.userSelectedRegions";
+export const DefaultRegionsKey = 'azurespeed.userSelectedRegions'
 
-export class Region {
-  availabilityZoneCount?: number;
-  displayName: string;
-  geography: string;
-  latitude?: string;
-  longitude?: string;
-  pairedRegion?: string;
-  physicalLocation?: string;
-  regionalDisplayName?: string;
-  regionName: string;
-  restricted: boolean;
-  accessEnabled: boolean;
+export interface Region {
+  displayName: string
+  geography: string
+  latitude?: number
+  longitude?: number
+  pairedRegion?: string
+  physicalLocation?: string
+  regionName: string
+  availabilityZoneCount?: number
+  restricted: boolean
 }
 
-export class RegionModel extends Region {
-  averageLatency?: number;
-  checked?: boolean;
-  storageAccountName: string;
-  url?: string;
-
-  constructor(region: Region) {
-    super();
-    Object.assign(this, region);
-  }
+export interface RegionModel extends Region {
+  averageLatency?: number
+  checked?: boolean
+  storageAccountName?: string
+  url?: string
+  progress?: string
+  speed?: string
 }
 
-export class RegionGroupModel {
-  geography: string;
-  regions: RegionModel[];
-  checked?: boolean;
-}
-
-export class HistoryModel {
-  [key: string]: any[];
-}
-
-export class BlobModel {
-  endpoint: string;
-  accountName: string;
-  containerName: string;
-  blobName: string;
-  sas: string;
-}
-
-export class BlobUploadSpeedModel {
-  fileName: any;
-  fileSize: string;
-  region: string;
-  thread: number;
-  blockSize: number;
-  uploadSpeed: string;
+export interface BlobModel {
+  endpoint: string
+  accountName: string
+  containerName: string
+  blobName: string
+  sas: string
 }

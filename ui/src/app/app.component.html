@@ -1,0 +1,232 @@
+<style>
+  .bd-placeholder-img {
+    font-size: 1.125rem;
+    text-anchor: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+  }
+  @media (min-width: 768px) {
+    .bd-placeholder-img-lg {
+      font-size: 3.5rem;
+    }
+  }
+  .nav-scroller {
+    position: relative;
+    z-index: 2;
+    height: 2.75rem;
+    overflow-y: hidden;
+  }
+  .nav-scroller .nav {
+    display: flex;
+    flex-wrap: nowrap;
+    padding-bottom: 1rem;
+    margin-top: -1px;
+    overflow-x: auto;
+    text-align: center;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+</style>
+<header class="navbar sticky-top bg-dark flex-md-nowrap p-0 shadow" data-bs-theme="dark">
+  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 text-white" href="#">Azure Speed Test</a>
+  <ul class="navbar-nav flex-row ms-auto">
+    <li class="nav-item">
+      <a
+        class="nav-link px-3 text-white"
+        href="https://github.com/blrchen/azure-speed-test"
+        target="_blank"
+      >
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+    <li class="nav-item text-nowrap d-md-none">
+      <button
+        class="nav-link px-3 text-white"
+        type="button"
+        data-bs-toggle="offcanvas"
+        data-bs-target="#sidebarMenu"
+        aria-controls="sidebarMenu"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <i class="fas fa-bars"></i>
+      </button>
+    </li>
+  </ul>
+</header>
+<div class="container-fluid">
+  <div class="row">
+    <div class="sidebar border border-right col-md-3 col-lg-2 p-0 bg-body-tertiary">
+      <div
+        class="offcanvas-md offcanvas-end bg-body-tertiary"
+        tabindex="-1"
+        id="sidebarMenu"
+        aria-labelledby="sidebarMenuLabel"
+      >
+        <div class="offcanvas-header">
+          <div class="offcanvas-title" id="sidebarMenuLabel">Azure Speed Test</div>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="offcanvas"
+            data-bs-target="#sidebarMenu"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="offcanvas-body d-md-flex flex-column p-0 pt-lg-3 overflow-y-auto">
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a
+                class="nav-link d-flex align-items-center gap-2 active"
+                aria-current="page"
+                href="/ChatGPT/CodeAssistant"
+              >
+                <i class="fas fa-code"></i>
+                ChatGPT Coding Assistant
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link d-flex align-items-center gap-2 active"
+                aria-current="page"
+                href="/ChatGPT/WritingAssistant"
+              >
+                <i class="fas fa-pen"></i>
+                ChatGPT Writing Assistant
+              </a>
+            </li>
+            <hr class="my-3" />
+            <li class="nav-item">
+              <a class="nav-link d-flex align-items-center gap-2" href="/Azure/Latency">
+                <i class="fas fa-tachometer-alt"></i>
+                Azure Latency Test
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link d-flex align-items-center gap-2"
+                href="/Azure/RegionToRegionLatency"
+              >
+                <i class="fas fa-exchange-alt"></i>
+                Region to Region Latency
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link d-flex align-items-center gap-2" href="/Azure/PsPing">
+                <i class="fas fa-network-wired"></i>
+                PsPing Network Latency Test
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link d-flex align-items-center gap-2" href="/Azure/Download">
+                <i class="fas fa-download"></i>
+                Download Speed Test
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link d-flex align-items-center gap-2" href="/Azure/Upload">
+                <i class="fas fa-upload"></i>
+                Upload Speed Test
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link d-flex align-items-center gap-2" href="/Azure/UploadLargeFile">
+                <i class="fas fa-file-upload"></i>
+                Large File Upload Speed Test
+              </a>
+            </li>
+            <hr class="my-3" />
+            <li class="nav-item">
+              <a class="nav-link d-flex align-items-center gap-2" href="/Information/AzureRegions">
+                <i class="fas fa-globe-americas"></i>
+                Azure Regions
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link d-flex align-items-center gap-2"
+                href="/Information/AzureAvailabilityZones"
+              >
+                <i class="fas fa-server"></i>
+                Azure Availability Zones
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link d-flex align-items-center gap-2"
+                href="/Information/AzureGeographies"
+              >
+                <i class="fas fa-globe"></i>
+                Azure Geographies
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a
+                class="nav-link d-flex align-items-center gap-2"
+                href="/Information/AzureSovereignClouds"
+              >
+                <i class="fas fa-cloud"></i>
+                Azure Sovereign Clouds
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link d-flex align-items-center gap-2"
+                href="/Information/AzureEnvironments"
+              >
+                <i class="fas fa-cloud"></i>
+                Azure Environments
+              </a>
+            </li>
+            <hr class="my-3" />
+            <li class="nav-item">
+              <a
+                class="nav-link d-flex align-items-center gap-2"
+                href="/Information/AzureIpRanges/AzureCloud"
+              >
+                <i class="fas fa-network-wired"></i>
+                Azure IP Ranges
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link d-flex align-items-center gap-2"
+                href="/Information/AzureIpRangesByRegion"
+              >
+                <i class="fas fa-network-wired"></i>
+                Azure IP Ranges By Region
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link d-flex align-items-center gap-2"
+                href="/Information/AzureIpRangesByService"
+              >
+                <i class="fas fa-network-wired"></i>
+                Azure IP Ranges By Service
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link d-flex align-items-center gap-2" href="/Azure/IPLookup">
+                <i class="fas fa-search-location"></i>
+                Azure IP Lookup
+              </a>
+            </li>
+            <hr class="my-3" />
+            <li class="nav-item">
+              <a class="nav-link d-flex align-items-center gap-2" href="/Azure/About">
+                <i class="fas fa-info-circle"></i>
+                About
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

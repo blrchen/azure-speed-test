@@ -1,0 +1,136 @@
+<h1 class="h2">Azure Storage Download Speed Test</h1>
+<p id="description">
+  Test the download speed from Azure Storage Service across different regions worldwide.
+</p>
+
+<div class="alert alert-info alert-dismissible fade show">
+  <strong>Instructions:</strong>
+  First, select your desired region from the list below. Then, click on the "Download 100MB Test
+  File" link next to the selected region to start the download speed test. If the download does not
+  start automatically, right-click the link and select "Save Link As."
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<app-region-group></app-region-group>
+
+<div class="table-responsive">
+  <table class="table table-bordered table-striped table-hover">
+    <thead>
+      <tr>
+        <th scope="col">Geography</th>
+        <th scope="col">Region</th>
+        <th scope="col">Location</th>
+        <th scope="col">Test File (100MB)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of tableData">
+        <td>{{ item.geographyGroup }}</td>
+        <td>
+          <code>
+            {{ item.displayName }}
+          </code>
+        </td>
+        <td>{{ item.physicalLocation }}</td>
+        <td>
+          <a
+            *ngIf="item.url"
+            class="btn btn-sm btn-outline-secondary"
+            href="{{ item.url }}"
+            download
+          >
+            Download 100MB Test File
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 class="h4">Frequently Asked Questions</h2>
+<div class="accordion" id="faqAccordion">
+  <div class="accordion-item">
+    <h3 class="accordion-header" id="headingOne">
+      <button
+        class="accordion-button collapsed"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#collapseOne"
+        aria-expanded="false"
+        aria-controls="collapseOne"
+      >
+        What is Azure Storage Download Speed?
+      </button>
+    </h3>
+    <div
+      id="collapseOne"
+      class="accordion-collapse collapse"
+      aria-labelledby="headingOne"
+      data-bs-parent="#faqAccordion"
+    >
+      <div class="accordion-body">
+        <p>
+          Azure Storage Download Speed measures the rate at which data is transferred from Azure
+          Storage to your local system. It affects how quickly you can download large files, update
+          applications, or stream data. The speed is typically measured in kilobytes per second
+          (KB/s) or megabytes per second (MB/s).
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <h3 class="accordion-header" id="headingTwo">
+      <button
+        class="accordion-button collapsed"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#collapseTwo"
+        aria-expanded="false"
+        aria-controls="collapseTwo"
+      >
+        What is the purpose of the Azure Storage Download Speed Test?
+      </button>
+    </h3>
+    <div
+      id="collapseTwo"
+      class="accordion-collapse collapse"
+      aria-labelledby="headingTwo"
+      data-bs-parent="#faqAccordion"
+    >
+      <div class="accordion-body">
+        <p>
+          The Azure Storage Download Speed Test measures the download speeds from various Azure
+          regions to help users determine the most suitable region for hosting their services based
+          on geographical proximity and network latency.
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <h3 class="accordion-header" id="headingThree">
+      <button
+        class="accordion-button collapsed"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#collapseThree"
+        aria-expanded="false"
+        aria-controls="collapseThree"
+      >
+        How should I use the results from this test?
+      </button>
+    </h3>
+    <div
+      id="collapseThree"
+      class="accordion-collapse collapse"
+      aria-labelledby="headingThree"
+      data-bs-parent="#faqAccordion"
+    >
+      <div class="accordion-body">
+        <p>
+          Use the results to compare download speeds from different Azure regions. This can guide
+          you in choosing a region that offers the best performance for users in specific locations.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

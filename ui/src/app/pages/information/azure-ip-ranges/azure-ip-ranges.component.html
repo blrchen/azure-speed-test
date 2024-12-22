@@ -1,0 +1,51 @@
+<h1 class="h2">Azure IP Ranges</h1>
+<p>Welcome to the Microsoft Azure Cloud IP Ranges explorer.</p>
+<h2 class="h4">
+  Azure IP Ranges for
+  <code>{{ serviceTagId }}</code>
+</h2>
+<p>
+  This section displays the IP ranges for the Azure service tag
+  <code>{{ serviceTagId }}</code>
+  . These IP ranges are used by Azure to ensure data security and integrity by allocating specific
+  ranges to different services and regions.
+</p>
+<div *ngIf="isLoading" class="text-center">
+  <div class="spinner-border" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>
+<div *ngIf="!isLoading" class="table-responsive">
+  <table class="table table-bordered table-striped table-hover">
+    <thead>
+      <tr>
+        <th scope="col">Service Tag Id</th>
+        <th scope="col">IP Addresses</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="min-width: 100px">{{ tableData?.serviceTagId }}</td>
+        <td class="text-break">
+          <div *ngFor="let ip of tableData?.ipAddressPrefixes">
+            <code>{{ ip }}</code>
+            <br />
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<h2 class="h4">Explore IP Ranges by Category</h2>
+<ul class="list-unstyled">
+  <li>
+    <a href="/Information/AzureIpRangesByService" class="btn btn-link">
+      Explore Azure IP Ranges by Service
+    </a>
+  </li>
+  <li>
+    <a href="/Information/AzureIpRangesByRegion" class="btn btn-link">
+      Explore Azure IP Ranges by Region
+    </a>
+  </li>
+</ul>

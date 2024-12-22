@@ -1,0 +1,146 @@
+<h1 class="h2">Azure Storage Upload Speed Test</h1>
+<p>Test the upload speed to Azure Storage Service across different regions worldwide.</p>
+<h2 class="h4">Upload Speed Test</h2>
+<div class="alert alert-info alert-dismissible fade show">
+  <strong>Instructions:</strong>
+  Select desired Azure data centers and click Start Upload Speed Test to start test. Results will be
+  displayed under "Upload Test Results".
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<app-region-group></app-region-group>
+<div class="mb-3">
+  <label for="uploadSize" class="form-label">Select Upload Data Size:</label>
+  <div class="d-flex">
+    <ng-container *ngFor="let uploadSizeMB of uploadSizeMBOptions; let i = index">
+      <div class="form-check me-3">
+        <input
+          class="form-check-input"
+          type="radio"
+          name="uploadSize"
+          [id]="'size' + uploadSizeMB"
+          [value]="uploadSizeMB"
+          [attr.checked]="i === 0 ? true : null"
+          (click)="selectedUploadSizeBytes = uploadSizeMB * 1024 * 1024"
+        />
+        <label class="form-check-label" [for]="'size' + uploadSizeMB">{{ uploadSizeMB }}</label>
+      </div>
+    </ng-container>
+  </div>
+</div>
+<div class="pt-2">
+  <button type="button" class="btn btn-sm btn-primary" (click)="onSubmit()">
+    Start Upload Speed Test
+  </button>
+</div>
+<ng-container *ngIf="testResults.length > 0">
+  <h2 class="h4">Upload Speed Test Results</h2>
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped table-hover">
+      <thead>
+        <tr>
+          <th scope="col">Region</th>
+          <th scope="col">Location</th>
+          <th scope="col">Upload Progress</th>
+          <th scope="col">Upload Time</th>
+          <th scope="col">Upload Speed</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let result of testResults">
+          <td>
+            <code>
+              {{ result.displayName }}
+            </code>
+          </td>
+          <td>{{ result.physicalLocation }}</td>
+          <td>
+            <div class="progress">
+              <div
+                class="progress-bar progress-bar-striped bg-success"
+                role="progressbar"
+                [style.width]="result.uploadProgressPercentage + '%'"
+                [attr.aria-valuenow]="result.uploadProgressPercentage"
+                aria-valuemin="0"
+                aria-valuemax="100"
+              >
+                {{ result.uploadProgressPercentage }}%
+              </div>
+            </div>
+          </td>
+          <td>
+            {{
+              result.uploadTimeSeconds ? result.uploadTimeSeconds + ' seconds' : 'Calculating...'
+            }}
+          </td>
+          <td>
+            {{
+              result.uploadSpeedMbps
+                ? (result.uploadSpeedMbps | number: '1.2-2') + ' MB/s'
+                : 'Calculating...'
+            }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</ng-container>
+<h2 class="h4">Frequently Asked Questions</h2>
+<div class="accordion" id="faqAccordion">
+  <div class="accordion-item">
+    <h3 class="accordion-header" id="headingOne">
+      <button
+        class="accordion-button collapsed"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#collapseOne"
+        aria-expanded="false"
+        aria-controls="collapseOne"
+      >
+        How does Azure Storage Upload Speed Test tool work?
+      </button>
+    </h3>
+    <div
+      id="collapseOne"
+      class="accordion-collapse collapse"
+      aria-labelledby="headingOne"
+      data-bs-parent="#faqAccordion"
+    >
+      <div class="accordion-body">
+        <p>
+          This tool measures your upload capability by generating a test file of a specified size
+          (100MB, 200MB, or 500MB), uploading the data to an Azure storage container, and
+          calculating your upload speed based on how quickly the data transfers.
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="accordion-item">
+    <h3 class="accordion-header" id="headingTwo">
+      <button
+        class="accordion-button collapsed"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#collapseTwo"
+        aria-expanded="false"
+        aria-controls="collapseTwo"
+      >
+        Need to test a bigger file size than 500MB?
+      </button>
+    </h3>
+    <div
+      id="collapseTwo"
+      class="accordion-collapse collapse"
+      aria-labelledby="headingTwo"
+      data-bs-parent="#faqAccordion"
+    >
+      <div class="accordion-body">
+        <p>
+          If you need to test upload speeds with files larger than 500MB, visit
+          <a href="/Azure/UploadLargeFile">AzureSpeed Large File Upload Test</a>
+          where you can run upload speed tests for any size of file.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

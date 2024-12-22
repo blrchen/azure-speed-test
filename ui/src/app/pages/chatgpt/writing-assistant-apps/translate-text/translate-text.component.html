@@ -1,0 +1,68 @@
+<h1 class="h2">ChatGPT Text Translator</h1>
+<p id="description">
+  Use our ChatGPT-powered text translator to instantly translate text into over 20 languages.
+</p>
+<form [formGroup]="userContentForm" (submit)="submitForm()" class="mb-3">
+  <fieldset class="form-group mb-3">
+    <label for="userContent">
+      Type or paste the text you want to translate in the box below, then click 'Translate'.
+    </label>
+    <textarea
+      class="form-control"
+      id="userContent"
+      placeholder="Type or paste your text here..."
+      formControlName="userContent"
+      required
+      rows="6"
+    ></textarea>
+    <small class="form-text text-muted">
+      {{ userContentForm.get('userContent')?.value.length }}/5000 characters
+    </small>
+    <div
+      *ngIf="userContentForm.controls['userContent'].errors?.['maxlength']"
+      class="alert alert-danger mt-2"
+    >
+      Character limit exceeded. Please limit your text to 5000 characters.
+    </div>
+  </fieldset>
+  <fieldset class="form-group mb-3">
+    <legend class="mb-3">Select Translation Language</legend>
+    <div class="d-flex flex-row flex-wrap">
+      <div *ngFor="let lang of languages" class="form-check form-check-inline mb-2">
+        <input
+          type="radio"
+          id="{{ lang }}"
+          name="responseLanguage"
+          [value]="lang"
+          formControlName="responseLanguage"
+          required
+          class="form-check-input"
+          [checked]="lang === userContentForm.get('responseLanguage')?.value"
+          (change)="onResponseLanguageChange(lang)"
+        />
+        <label for="{{ lang }}" class="form-check-label">{{ lang }}</label>
+      </div>
+    </div>
+  </fieldset>
+  <button
+    type="submit"
+    class="btn btn-primary me-2"
+    [disabled]="userContentForm.invalid || isLoading"
+  >
+    Translate
+  </button>
+  <button type="button" class="btn btn-secondary" (click)="resetForm()">Reset</button>
+</form>
+<div *ngIf="isLoading" class="spinner-border text-primary">
+  <span class="visually-hidden">Loading...</span>
+</div>
+<ng-container *ngIf="result">
+  <h2 class="h4">Translation Result:</h2>
+  <div class="alert alert-info d-flex align-items-center">
+    <p class="pre-line">{{ result }}</p>
+  </div>
+</ng-container>
+<div *ngIf="errorMessage" class="alert alert-danger">
+  {{ errorMessage }}
+</div>
+<app-assistant-footer></app-assistant-footer>

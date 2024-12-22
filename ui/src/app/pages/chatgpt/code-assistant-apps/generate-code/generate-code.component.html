@@ -1,0 +1,70 @@
+<h1 class="h2">ChatGPT Code Generator</h1>
+<p id="description">
+  Welcome to ChatGPT Code Generator. This tool uses AI technology to generate code based on your
+  natural language descriptions.
+</p>
+<form [formGroup]="userContentForm" (submit)="submitForm()" class="mb-3">
+  <fieldset class="form-group mb-3">
+    <label for="userContent">
+      Provide a brief description of the code functionality you need. Then, click the 'Generate'
+      button.
+    </label>
+    <textarea
+      class="form-control"
+      id="userContent"
+      placeholder="Example: 'I need a function to sort a list of numbers.'"
+      formControlName="userContent"
+      required
+      rows="6"
+    ></textarea>
+    <small class="form-text text-muted">
+      {{ userContentForm.get('userContent')?.value.length }}/5000 characters
+    </small>
+    <div
+      *ngIf="userContentForm.controls['userContent'].errors?.['maxlength']"
+      class="alert alert-danger mt-2"
+    >
+      Character limit exceeded. Please limit your text to 5000 characters.
+    </div>
+  </fieldset>
+  <fieldset class="form-group mb-3">
+    <legend>Select Your Preferred Programming Language</legend>
+    <div class="d-flex flex-row flex-wrap">
+      <div *ngFor="let lang of languages" class="form-check form-check-inline mb-2">
+        <input
+          type="radio"
+          id="{{ lang }}"
+          name="programLanguage"
+          [value]="lang"
+          formControlName="programLanguage"
+          required
+          class="form-check-input"
+          [checked]="lang === userContentForm.get('programLanguage')?.value"
+          (change)="onProgramLanguageChange(lang)"
+        />
+        <label for="{{ lang }}" class="form-check-label">{{ lang }}</label>
+      </div>
+    </div>
+  </fieldset>
+  <button
+    type="submit"
+    class="btn btn-primary me-2"
+    [disabled]="userContentForm.invalid || isLoading"
+  >
+    Generate Code
+  </button>
+  <button type="button" class="btn btn-secondary" (click)="resetForm()">Reset</button>
+</form>
+<div *ngIf="isLoading" class="spinner-border text-primary">
+  <span class="visually-hidden">Loading...</span>
+</div>
+<ng-container *ngIf="result">
+  <h2 class="h4">Your Generated Code:</h2>
+  <div class="alert alert-info d-flex align-items-center">
+    <p class="pre-line">{{ result }}</p>
+  </div>
+</ng-container>
+<div *ngIf="errorMessage" class="alert alert-danger">
+  {{ errorMessage }}
+</div>
+<app-assistant-footer></app-assistant-footer>

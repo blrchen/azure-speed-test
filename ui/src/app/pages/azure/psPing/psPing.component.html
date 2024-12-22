@@ -1,0 +1,54 @@
+<h1 class="h2">PsPing Network Latency Test</h1>
+<p>
+  Although the web-based Azure speed test tool is helpful, it cannot measure latency with ICMP ping
+  or TCP ping due to browser limitations. To measure ICMP ping latency to Azure datacenters,
+  consider using PsPing from the PsTools suite. This command-line utility accurately measures
+  network performance and implements Ping functionality, TCP ping, as well as latency and bandwidth
+  measurement.
+</p>
+<p>To use the PsPing tool for a network latency test, follow these steps:</p>
+<ol>
+  <li>
+    <a href="https://learn.microsoft.com/en-us/sysinternals/downloads/pstools" target="_blank">
+      Download PsTools
+    </a>
+  </li>
+  <li>Extract the entire package and open a command prompt.</li>
+  <li>
+    Enter this command:
+    <code>psping target:port</code>
+    (replace "target" with an IP address or DNS name of publicly accessible virtual machines,
+    storage, SQL databases, or other endpoints).
+  </li>
+  <li>
+    Upon completion, you'll see output displaying latency results in milliseconds (as shown below
+    when using a storage endpoint and port 80 as target):
+    <figure>
+      <img class="img-fluid" src="./assets/images/psping.png" alt="PsPing output example" />
+    </figure>
+  </li>
+</ol>
+<h2 class="h4">Learn more</h2>
+<ul>
+  <li>
+    For a detailed understanding of each PsPing parameter, visit the webpage where you downloaded
+    the tool.
+  </li>
+  <li>
+    As Azure blocks external ICMP protocol, the general ping.exe using ICMP won't function. However,
+    PsPing can directly test connectivity to an unblocked specific TCP port.
+  </li>
+  <li>
+    To test latency between virtual machines in the same VNET or different VNETs across various
+    regions, refer to
+    <a href="/Azure/Azure/RegionToRegionLatency" target="_blank">Region to Region Latency</a>
+    and
+    <a
+      href="https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-test-latency"
+      target="_blank"
+    >
+      Test VM network latency
+    </a>
+    .
+  </li>
+</ul>

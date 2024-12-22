@@ -1,0 +1,48 @@
+<h1 class="h2">Azure Geographies</h1>
+<p>
+  Azure geographical locations refer to a set of one or more regions, strategically grouped to meet
+  specific data residency and compliance requirements.
+</p>
+<div class="table-responsive">
+  <table class="table table-bordered table-striped table-hover">
+    <thead>
+      <tr>
+        <th scope="col">Geography</th>
+        <th scope="col">Regions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let g of tableData">
+        <td>{{ g.name }}</td>
+        <td>
+          <ng-container *ngFor="let r of g.regions">
+            <span>{{ r.displayName }} ({{ r.physicalLocation }})</span>
+            <br />
+          </ng-container>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<h2 class="h4">Additional Resources</h2>
+<ul>
+  <li>
+    <a
+      href="https://azure.microsoft.com/en-us/explore/global-infrastructure/geographies"
+      target="_blank"
+    >
+      Azure Global Infrastructure Geographies
+    </a>
+  </li>
+  <li>
+    <a
+      href="https://docs.microsoft.com/en-us/azure/best-practices-availability-paired-regions"
+      target="_blank"
+    >
+      Business continuity and disaster recovery (BCDR): Azure Paired Regions
+    </a>
+  </li>
+  <li>
+    <a href="https://github.com/blrchen/azure-catalog" target="_blank">Azure Catalog</a>
+  </li>
+</ul>

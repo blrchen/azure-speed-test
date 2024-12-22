@@ -10,7 +10,7 @@
 #     ]
 # }
 # Important: these commands only work if you have logged into your Azure account
-# 1. Connect-AzAccount (or Connect-AzAccount -EnvironmentName "AzureChinaCloud")
+# 1. Connect-AzAccount -TenantId "Your tenant id" (or Connect-AzAccount -EnvironmentName "AzureChinaCloud")
 # 2. Select-AzSubscription -SubscriptionName "Your sub name"
 
 function GetAzureStorages {
@@ -47,7 +47,7 @@ function CreateSettingsJsonFile {
     param (
         [Parameter(Mandatory = $true)]
         [System.Collections.Generic.List[System.Object]]$storageJsonObjects,
-        [string]$outFilePath = "..\src\AzureSpeed.WebApp\Data\settings.json"
+        [string]$outFilePath = "..\api\AzureSpeed\Data\settings.json"
     )
 
     if (Test-Path $outFilePath) {

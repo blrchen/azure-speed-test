@@ -13,6 +13,12 @@ Azure Speed Test Tool: Measure network latency, download, and upload speeds to A
 
 ## Local Development Environment Setup Steps
 
+### Docker commands
+
+docker build -t blrchen/azure-speed-test:main .
+
+docker run -p 3000:80 blrchen/azure-speed-test:main
+
 ### Prerequisites
 
 * .NET 6.0
@@ -42,11 +48,14 @@ The frontend connects to the backend API service at <https://localhost:5001> by 
 * [Azure IP Lookup](https://github.com/blrchen/azure-ip-lookup)
 * [Azure SDK for JavaScript](https://github.com/Azure/azure-sdk-for-js)
 * [Bootstrap](https://github.com/twbs/bootstrap)
-* [Cloud Catalog](https://github.com/blrchen/cloud-catalog)
+* [Azure Catalog](https://github.com/blrchen/azure-catalog)
 * [d3-shape](https://github.com/d3/d3-shape)
 * [Font Awesome](https://github.com/FortAwesome/Font-Awesome)
 * [ngx-charts](https://github.com/swimlane/ngx-charts)
-* [RxJS](https://github.com/reactivex/rxjs)
+
+## License
+
+[MIT](/LICENSE)
 
 [license badge]:https://img.shields.io/badge/license-MIT-blue.svg
 [stars badge]:https://img.shields.io/github/stars/blrchen/azure-speed-test.svg

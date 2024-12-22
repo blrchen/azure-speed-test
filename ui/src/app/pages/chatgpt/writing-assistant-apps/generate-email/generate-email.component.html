@@ -1,0 +1,50 @@
+<h1 class="h2">ChatGPT Email Generator</h1>
+<p id="description">
+  Generate medium to long-sized emails quickly with ChatGPT's Email Generator. Simply enter your
+  desired email subject and let our tool do the rest.
+</p>
+<form [formGroup]="userContentForm" (submit)="submitForm()" class="mb-3">
+  <fieldset class="form-group mb-3">
+    <label for="userContent">
+      Enter your desired email subject below and click 'Generate Email'.
+    </label>
+    <textarea
+      class="form-control"
+      id="userContent"
+      placeholder="Enter your desired email subject here..."
+      formControlName="userContent"
+      required
+      rows="6"
+    ></textarea>
+    <small class="form-text text-muted">
+      {{ userContentForm.get('userContent')?.value.length }}/5000 characters
+    </small>
+    <div
+      *ngIf="userContentForm.controls['userContent'].errors?.['maxlength']"
+      class="alert alert-danger mt-2"
+    >
+      Character limit exceeded. Please limit your text to 5000 characters.
+    </div>
+  </fieldset>
+  <button
+    type="submit"
+    class="btn btn-primary me-2"
+    [disabled]="userContentForm.invalid || isLoading"
+  >
+    Generate Email
+  </button>
+  <button type="button" class="btn btn-secondary ml-2" (click)="resetForm()">Reset</button>
+</form>
+<div *ngIf="isLoading" class="spinner-border text-primary">
+  <span class="visually-hidden">Loading...</span>
+</div>
+<ng-container *ngIf="result">
+  <h2 class="h4">Generated Email:</h2>
+  <div class="alert alert-info d-flex align-items-center">
+    <p class="pre-line">{{ result }}</p>
+  </div>
+</ng-container>
+<div *ngIf="errorMessage" class="alert alert-danger">
+  {{ errorMessage }}
+</div>
+<app-assistant-footer></app-assistant-footer>

@@ -37,7 +37,6 @@ For detailed instructions on setting up the frontend, please refer to the [READM
 ## Built With
 
 - [Angular](https://github.com/angular/angular)
-- [Application Insights JavaScript SDK](https://github.com/microsoft/ApplicationInsights-JS)
 - [ASP.NET Core](https://github.com/dotnet/aspnetcore)
 - [Azure IP Lookup](https://github.com/blrchen/azure-ip-lookup)
 - [Azure SDK for JavaScript](https://github.com/Azure/azure-sdk-for-js)

@@ -1,48 +1,21 @@
-<style>
-  .bd-placeholder-img {
-    font-size: 1.125rem;
-    text-anchor: middle;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    user-select: none;
-  }
-  @media (min-width: 768px) {
-    .bd-placeholder-img-lg {
-      font-size: 3.5rem;
-    }
-  }
-  .nav-scroller {
-    position: relative;
-    z-index: 2;
-    height: 2.75rem;
-    overflow-y: hidden;
-  }
-  .nav-scroller .nav {
-    display: flex;
-    flex-wrap: nowrap;
-    padding-bottom: 1rem;
-    margin-top: -1px;
-    overflow-x: auto;
-    text-align: center;
-    white-space: nowrap;
-    -webkit-overflow-scrolling: touch;
-  }
-</style>
-<header class="navbar sticky-top bg-dark flex-md-nowrap p-0 shadow" data-bs-theme="dark">
-  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 text-white" href="#">Azure Speed Test</a>
-  <ul class="navbar-nav flex-row ms-auto">
-    <li class="nav-item">
+<header class="navbar navbar-dark bg-dark fixed-top shadow-sm" data-bs-theme="dark">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-semibold" href="/" aria-label="Azure Speed Test">
+      <i class="fas fa-cloud me-2"></i>
+      Azure Speed Test
+    </a>
+    <div class="navbar-nav flex-row">
       <a
-        class="nav-link px-3 text-white"
+        class="px-3 text-white text-decoration-none d-flex align-items-center"
         href="https://github.com/blrchen/azure-speed-test"
         target="_blank"
+        rel="noopener"
+        aria-label="GitHub Repository"
       >
         <i class="fab fa-github"></i>
       </a>
-    </li>
-    <li class="nav-item text-nowrap d-md-none">
       <button
-        class="nav-link px-3 text-white"
+        class="navbar-toggler d-md-none"
         type="button"
         data-bs-toggle="offcanvas"
         data-bs-target="#sidebarMenu"
@@ -52,20 +25,23 @@
       >
         <i class="fas fa-bars"></i>
       </button>
-    </li>
-  </ul>
+    </div>
+  </div>
 </header>
 <div class="container-fluid">
   <div class="row">
-    <div class="sidebar border border-right col-md-3 col-lg-2 p-0 bg-body-tertiary">
+    <aside
+      class="col-md-3 col-lg-2 p-0 bg-light border-end mt-4 mt-md-5 pt-2 pt-md-3"
+      role="navigation"
+    >
       <div
-        class="offcanvas-md offcanvas-end bg-body-tertiary"
+        class="offcanvas-md offcanvas-end bg-light"
         tabindex="-1"
         id="sidebarMenu"
         aria-labelledby="sidebarMenuLabel"
       >
-        <div class="offcanvas-header">
-          <div class="offcanvas-title" id="sidebarMenuLabel">Azure Speed Test</div>
+        <div class="offcanvas-header border-bottom">
+          <div class="offcanvas-title fw-semibold" id="sidebarMenuLabel">Azure Speed Test</div>
           <button
             type="button"
             class="btn-close"
@@ -74,12 +50,12 @@
             aria-label="Close"
           ></button>
         </div>
-        <div class="offcanvas-body d-md-flex flex-column p-0 pt-lg-3 overflow-y-auto">
-          <ul class="nav flex-column">
+        <nav class="offcanvas-body d-md-flex flex-column p-0">
+          <ul class="nav flex-column py-2">
             <li class="nav-item">
               <a
-                class="nav-link d-flex align-items-center gap-2 active"
-                aria-current="page"
+                class="nav-link d-flex align-items-center gap-2 px-3 py-2"
+                [class.active]="isCurrentPath('/ChatGPT/CodeAssistant')"
                 href="/ChatGPT/CodeAssistant"
               >
                 <i class="fas fa-code"></i>
@@ -88,8 +64,8 @@
             </li>
             <li class="nav-item">
               <a
-                class="nav-link d-flex align-items-center gap-2 active"
-                aria-current="page"
+                class="nav-link d-flex align-items-center gap-2 px-3 py-2"
+                [class.active]="isCurrentPath('/ChatGPT/WritingAssistant')"
                 href="/ChatGPT/WritingAssistant"
               >
                 <i class="fas fa-pen"></i>
@@ -98,14 +74,19 @@
             </li>
             <hr class="my-3" />
             <li class="nav-item">
-              <a class="nav-link d-flex align-items-center gap-2" href="/Azure/Latency">
+              <a
+                class="nav-link d-flex align-items-center gap-2 px-3 py-2"
+                [class.active]="isCurrentPath('/Azure/Latency')"
+                href="/Azure/Latency"
+              >
                 <i class="fas fa-tachometer-alt"></i>
-                Azure Latency Test
+                <span>Azure Latency Test</span>
               </a>
             </li>
             <li class="nav-item">
               <a
-                class="nav-link d-flex align-items-center gap-2"
+                class="nav-link d-flex align-items-center gap-2 px-3 py-2"
+                [class.active]="isCurrentPath('/Azure/RegionToRegionLatency')"
                 href="/Azure/RegionToRegionLatency"
               >
                 <i class="fas fa-exchange-alt"></i>
@@ -113,39 +94,60 @@
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link d-flex align-items-center gap-2" href="/Azure/PsPing">
+              <a
+                class="nav-link d-flex align-items-center gap-2 px-3 py-2"
+                [class.active]="isCurrentPath('/Azure/PsPing')"
+                href="/Azure/PsPing"
+              >
                 <i class="fas fa-network-wired"></i>
                 PsPing Network Latency Test
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link d-flex align-items-center gap-2" href="/Azure/Download">
+              <a
+                class="nav-link d-flex align-items-center gap-2 px-3 py-2"
+                [class.active]="isCurrentPath('/Azure/Download')"
+                href="/Azure/Download"
+              >
                 <i class="fas fa-download"></i>
                 Download Speed Test
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link d-flex align-items-center gap-2" href="/Azure/Upload">
+              <a
+                class="nav-link d-flex align-items-center gap-2 px-3 py-2"
+                [class.active]="isCurrentPath('/Azure/Upload')"
+                href="/Azure/Upload"
+              >
                 <i class="fas fa-upload"></i>
                 Upload Speed Test
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link d-flex align-items-center gap-2" href="/Azure/UploadLargeFile">
+              <a
+                class="nav-link d-flex align-items-center gap-2 px-3 py-2"
+                [class.active]="isCurrentPath('/Azure/UploadLargeFile')"
+                href="/Azure/UploadLargeFile"
+              >
                 <i class="fas fa-file-upload"></i>
                 Large File Upload Speed Test
               </a>
             </li>
             <hr class="my-3" />
             <li class="nav-item">
-              <a class="nav-link d-flex align-items-center gap-2" href="/Information/AzureRegions">
+              <a
+                class="nav-link d-flex align-items-center gap-2 px-3 py-2"
+                [class.active]="isCurrentPath('/Information/AzureRegions')"
+                href="/Information/AzureRegions"
+              >
                 <i class="fas fa-globe-americas"></i>
                 Azure Regions
               </a>
             </li>
             <li class="nav-item">
               <a
-                class="nav-link d-flex align-items-center gap-2"
+                class="nav-link d-flex align-items-center gap-2 px-3 py-2"
+                [class.active]="isCurrentPath('/Information/AzureAvailabilityZones')"
                 href="/Information/AzureAvailabilityZones"
               >
                 <i class="fas fa-server"></i>
@@ -154,7 +156,8 @@
             </li>
             <li class="nav-item">
               <a
-                class="nav-link d-flex align-items-center gap-2"
+                class="nav-link d-flex align-items-center gap-2 px-3 py-2"
+                [class.active]="isCurrentPath('/Information/AzureGeographies')"
                 href="/Information/AzureGeographies"
               >
                 <i class="fas fa-globe"></i>
@@ -164,7 +167,8 @@
 
             <li class="nav-item">
               <a
-                class="nav-link d-flex align-items-center gap-2"
+                class="nav-link d-flex align-items-center gap-2 px-3 py-2"
+                [class.active]="isCurrentPath('/Information/AzureSovereignClouds')"
                 href="/Information/AzureSovereignClouds"
               >
                 <i class="fas fa-cloud"></i>
@@ -173,7 +177,8 @@
             </li>
             <li class="nav-item">
               <a
-                class="nav-link d-flex align-items-center gap-2"
+                class="nav-link d-flex align-items-center gap-2 px-3 py-2"
+                [class.active]="isCurrentPath('/Information/AzureEnvironments')"
                 href="/Information/AzureEnvironments"
               >
                 <i class="fas fa-cloud"></i>
@@ -183,7 +188,8 @@
             <hr class="my-3" />
             <li class="nav-item">
               <a
-                class="nav-link d-flex align-items-center gap-2"
+                class="nav-link d-flex align-items-center gap-2 px-3 py-2"
+                [class.active]="isCurrentPath('/Information/AzureIpRanges/AzureCloud')"
                 href="/Information/AzureIpRanges/AzureCloud"
               >
                 <i class="fas fa-network-wired"></i>
@@ -192,7 +198,8 @@
             </li>
             <li class="nav-item">
               <a
-                class="nav-link d-flex align-items-center gap-2"
+                class="nav-link d-flex align-items-center gap-2 px-3 py-2"
+                [class.active]="isCurrentPath('/Information/AzureIpRangesByRegion')"
                 href="/Information/AzureIpRangesByRegion"
               >
                 <i class="fas fa-network-wired"></i>
@@ -201,7 +208,8 @@
             </li>
             <li class="nav-item">
               <a
-                class="nav-link d-flex align-items-center gap-2"
+                class="nav-link d-flex align-items-center gap-2 px-3 py-2"
+                [class.active]="isCurrentPath('/Information/AzureIpRangesByService')"
                 href="/Information/AzureIpRangesByService"
               >
                 <i class="fas fa-network-wired"></i>
@@ -209,23 +217,31 @@
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link d-flex align-items-center gap-2" href="/Azure/IPLookup">
+              <a
+                class="nav-link d-flex align-items-center gap-2 px-3 py-2"
+                [class.active]="isCurrentPath('/Azure/IPLookup')"
+                href="/Azure/IPLookup"
+              >
                 <i class="fas fa-search-location"></i>
                 Azure IP Lookup
               </a>
             </li>
             <hr class="my-3" />
             <li class="nav-item">
-              <a class="nav-link d-flex align-items-center gap-2" href="/Azure/About">
+              <a
+                class="nav-link d-flex align-items-center gap-2 px-3 py-2"
+                [class.active]="isCurrentPath('/Azure/About')"
+                href="/Azure/About"
+              >
                 <i class="fas fa-info-circle"></i>
                 About
               </a>
             </li>
           </ul>
-        </div>
+        </nav>
       </div>
-    </div>
-    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+    </aside>
+    <main class="col-md-9 col-lg-10 ms-sm-auto px-md-4 mt-4 mt-md-5 pt-2 pt-md-3" role="main">
       <router-outlet></router-outlet>
     </main>
   </div>

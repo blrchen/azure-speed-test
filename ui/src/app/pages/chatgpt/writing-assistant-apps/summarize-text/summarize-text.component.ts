@@ -5,6 +5,7 @@ import { AssistantResponse } from '../../../../models'
 import { SystemPrompts } from '../../system-prompts'
 import { environment } from '../../../../../environments/environment'
 import { SeoService } from '../../../../services'
+import { chatGPTConfig } from '../../chatgpt.config'
 
 @Component({
   selector: 'app-text-summarizer',
@@ -35,9 +36,6 @@ export class SummarizeTextComponent implements OnInit {
     this.seoService.setMetaDescription(
       'Enhance your productivity with our advanced text summarizer, powered by ChatGPT. Convert your extensive articles or text into short, crisp summaries using this innovative tool.'
     )
-    this.seoService.setMetaKeywords(
-      'ChatGPT, Text Summarizer, AI, Productivity, Article Summarization, Text Summarization'
-    )
     this.seoService.setCanonicalUrl('https://www.azurespeed.com/ChatGPT/SummarizeText')
   }
 
@@ -56,7 +54,7 @@ export class SummarizeTextComponent implements OnInit {
     this.errorMessage = null
     const { userContent } = this.userContentForm.value
     const payload = {
-      accessToken: '241201tc-a314-4c51-9437-cc84416b4aa4',
+      accessToken: chatGPTConfig.accessToken,
       systemPromptId: this.systemPromptId,
       userContent
     }

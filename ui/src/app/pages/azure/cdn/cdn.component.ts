@@ -15,9 +15,6 @@ export class CDNComponent {
     this.seoService.setMetaDescription(
       'Due to budget constraints, the CDN Speed Test feature is now disabled. Instead, consider using these alternative resources for testing latency and throughput.'
     )
-    this.seoService.setMetaKeywords(
-      'Azure, CDN, CDN Speed Test, CDN Performance, Latency, Throughput'
-    )
     this.seoService.setCanonicalUrl('https://www.azurespeed.com/Azure/CDN')
   }
 }

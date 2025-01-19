@@ -8,7 +8,7 @@ interface Card {
 }
 
 @Component({
-  selector: 'app-code-list',
+  selector: 'app-code-assistant',
   templateUrl: './code-assistant.component.html'
 })
 export class CodeAssistantComponent {
@@ -38,9 +38,6 @@ export class CodeAssistantComponent {
     this.seoService.setMetaTitle('ChatGPT Coding Assistant')
     this.seoService.setMetaDescription(
       'Welcome to ChatGPT Coding Assistant, your AI tool for transforming coding. Perfect for developers and hobbyists to code with confidence.'
-    )
-    this.seoService.setMetaKeywords(
-      'ChatGPT, Coding Assistant, Code Explainer, Code Generator, Shell Command Generator, AI coding tools'
     )
     this.seoService.setCanonicalUrl('https://www.azurespeed.com/ChatGPT/CodeAssistant')
   }

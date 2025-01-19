@@ -9,7 +9,7 @@ export class SeoService {
   constructor(
     private meta: Meta,
     private titleService: Title,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: object
   ) {}
 
   public setMetaTitle(title: string): void {
@@ -19,13 +19,6 @@ export class SeoService {
   public setMetaDescription(content: string): void {
     this.meta.updateTag({
       name: 'description',
-      content: content
-    })
-  }
-
-  public setMetaKeywords(content: string): void {
-    this.meta.updateTag({
-      name: 'keywords',
       content: content
     })
   }

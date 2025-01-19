@@ -25,7 +25,7 @@ export class UploadLargeFileComponent implements OnInit {
   regions: RegionModel[] = []
   blockSizeKBOptions = [256, 512, 1024, 4096]
   concurrencyOptions = [1, 2, 4, 8, 16]
-  uploadProgressPercentage: number = 0
+  uploadProgressPercentage = 0
 
   selectedFile: File | null = null
   selectedRegion = ''
@@ -47,7 +47,6 @@ export class UploadLargeFileComponent implements OnInit {
     this.seoService.setMetaDescription(
       'Test the upload speed of large files to Azure worldwide data centers.'
     )
-    this.seoService.setMetaKeywords('Azure, Blob Storage, File Upload, Speed Test, Cloud Storage')
     this.seoService.setCanonicalUrl('https://www.azurespeed.com/Azure/UploadLargeFile')
   }
 

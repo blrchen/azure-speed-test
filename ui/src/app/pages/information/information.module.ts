@@ -7,6 +7,7 @@ import {
   AzureIpRangesByRegionComponent,
   AzureIpRangesByServiceComponent,
   AzureIpRangesComponent,
+  AzureRegionDetailsComponent,
   AzureRegionsComponent,
   AzureSovereignCloudsComponent
 } from './index'
@@ -23,6 +24,7 @@ import { InformationComponent } from './information.component'
     AzureIpRangesComponent,
     AzureIpRangesByRegionComponent,
     AzureIpRangesByServiceComponent,
+    AzureRegionDetailsComponent,
     AzureRegionsComponent,
     AzureSovereignCloudsComponent,
     InformationComponent

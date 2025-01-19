@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core'
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core'
+import { isPlatformBrowser } from '@angular/common'
 import { FormBuilder, FormGroup, Validators } from '@angular/forms'
 import axios, { AxiosError } from 'axios'
 import { AssistantResponse } from '../../../../models'
+import { chatGPTConfig } from '../../chatgpt.config'
 import { SystemPrompts } from '../../system-prompts'
 import { environment } from '../../../../../environments/environment'
 import { SeoService } from '../../../../services'
@@ -21,9 +23,14 @@ export class GenerateCodeComponent implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    private seoService: SeoService
+    private seoService: SeoService,
+    @Inject(PLATFORM_ID) private platformId: object
   ) {
     this.initializeSeoProperties()
+  }
+
+  ngOnInit(): void {
+    this.initializeForm()
   }
 
   private initializeSeoProperties(): void {
@@ -31,14 +38,7 @@ export class GenerateCodeComponent implements OnInit {
     this.seoService.setMetaDescription(
       'Welcome to ChatGPT Code Generator. This tool uses AI technology to generate code based on your natural language descriptions.'
     )
-    this.seoService.setMetaKeywords(
-      'ChatGPT, Code Generator, AI, Code, Programming, Python, Java, C#, JavaScript, TypeScript, C++, PHP'
-    )
     this.seoService.setCanonicalUrl('https://www.azurespeed.com/ChatGPT/GenerateCode')
-  }
-
-  ngOnInit(): void {
-    this.initializeForm()
   }
 
   initializeForm(): void {
@@ -57,7 +57,7 @@ export class GenerateCodeComponent implements OnInit {
     this.errorMessage = null
     const { userContent, programLanguage } = this.userContentForm.value
     const payload = {
-      accessToken: '241201tc-a314-4c51-9437-cc84416b4aa4',
+      accessToken: chatGPTConfig.accessToken,
       systemPromptId: this.systemPromptId,
       userContent,
       programLanguage
@@ -91,10 +91,15 @@ export class GenerateCodeComponent implements OnInit {
   }
 
   private saveLanguage(lang: string): void {
-    localStorage.setItem(this.localStorageKey, lang)
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem(this.localStorageKey, lang)
+    }
   }
 
   private getSavedLanguage(): string {
-    return localStorage.getItem(this.localStorageKey) || 'C#'
+    if (isPlatformBrowser(this.platformId)) {
+      return localStorage.getItem(this.localStorageKey) || 'C#'
+    }
+    return 'C#' // Default value when not running in the browser
   }
 }

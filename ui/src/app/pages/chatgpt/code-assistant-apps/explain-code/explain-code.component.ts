@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core'
 import { FormBuilder, FormGroup, Validators } from '@angular/forms'
 import axios, { AxiosError } from 'axios'
 import { AssistantResponse } from '../../../../models'
+import { chatGPTConfig } from '../../chatgpt.config'
 import { SystemPrompts } from '../../system-prompts'
 import { environment } from '../../../../../environments/environment'
 import { SeoService } from '../../../../services'
@@ -33,9 +34,6 @@ export class ExplainCodeComponent implements OnInit {
     this.seoService.setMetaDescription(
       'The ChatGPT Code Explainer is an AI assistant that provides clear and detailed explanations for code snippets in various programming languages, helping users to better understand the code.'
     )
-    this.seoService.setMetaKeywords(
-      'code explainer, AI code assistant, code snippets, programming languages, Python, JavaScript, code understanding'
-    )
     this.seoService.setCanonicalUrl('https://www.azurespeed.com/ChatGPT/ExplainCode')
   }
 
@@ -54,7 +52,7 @@ export class ExplainCodeComponent implements OnInit {
     this.errorMessage = null
     const { userContent } = this.userContentForm.value
     const payload = {
-      accessToken: '241201tc-a314-4c51-9437-cc84416b4aa4',
+      accessToken: chatGPTConfig.accessToken,
       systemPromptId: this.systemPromptId,
       userContent
     }

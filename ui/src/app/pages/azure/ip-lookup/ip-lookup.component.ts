@@ -39,9 +39,6 @@ export class IPLookupComponent {
     this.seoService.setMetaDescription(
       'Search for service tag and region information using an IP address or domain name.'
     )
-    this.seoService.setMetaKeywords(
-      'Azure, IP Lookup, Service Tag, Region Information, IP Address, Domain Name'
-    )
     this.seoService.setCanonicalUrl('https://www.azurespeed.com/Azure/IPLookup')
   }
 

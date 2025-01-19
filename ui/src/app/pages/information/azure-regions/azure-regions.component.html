@@ -1,309 +1,846 @@
-<h1 class="h2">Azure Regions</h1>
-<p>
-  A region in Azure is a set of datacenters deployed within a latency-defined perimeter and
-  connected through a dedicated regional low-latency network. With Azure, you can choose the best
-  region for your needs based on technical and regulatory considerations: service capabilities, data
-  residency, compliance requirements, and latency.
-</p>
-<h2 class="h4">Azure Public Cloud Regions</h2>
-<p>
-  Below is a list of available Azure regions in the public cloud. These regions are globally
-  distributed to support various levels of availability and redundancy. Each region is paired with
-  at least one other region for disaster recovery purposes.
-</p>
-<div class="table-responsive">
-  <table class="table table-bordered table-striped table-hover">
-    <thead>
-      <tr>
-        <th scope="col" (click)="sortData('public', 'geographyGroup')">
-          Geography
-          <span *ngIf="sortColumn === 'geographyGroup'">
-            {{ sortDirection === 'asc' ? '▲' : '▼' }}
-          </span>
-        </th>
-        <th scope="col" (click)="sortData('public', 'displayName')">
-          Display Name
-          <span *ngIf="sortColumn === 'displayName'">
-            {{ sortDirection === 'asc' ? '▲' : '▼' }}
-          </span>
-        </th>
-        <th scope="col" (click)="sortData('public', 'physicalLocation')">
-          Physical Location (City)
-          <span *ngIf="sortColumn === 'physicalLocation'">
-            {{ sortDirection === 'asc' ? '▲' : '▼' }}
-          </span>
-        </th>
-        <th scope="col" (click)="sortData('public', 'availabilityZoneCount')">
-          Availability Zones
-          <span *ngIf="sortColumn === 'availabilityZoneCount'">
-            {{ sortDirection === 'asc' ? '▲' : '▼' }}
-          </span>
-        </th>
-        <th scope="col" (click)="sortData('public', 'pairedRegion')">
-          Paired Region
-          <span *ngIf="sortColumn === 'pairedRegion'">
-            {{ sortDirection === 'asc' ? '▲' : '▼' }}
-          </span>
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let r of azurePublicRegions">
-        <td>{{ r.geographyGroup }}</td>
-        <td>
-          <code>{{ r.displayName }}</code>
-        </td>
-        <td>{{ r.physicalLocation }}</td>
-        <td>{{ r.availabilityZoneCount === 0 ? 'Not supported' : r.availabilityZoneCount }}</td>
-        <td>{{ r.pairedRegion ? r.pairedRegion : 'N/A' }}</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-<h2 class="h4">Access Restricted Regions</h2>
-<p>
-  Certain Azure regions are specifically for particular needs like governmental, privacy, or other
-  compliance requirements and require special permissions for access.
-</p>
-<div class="table-responsive">
-  <table class="table table-bordered table-striped table-hover">
-    <thead>
-      <tr>
-        <th scope="col" (click)="sortData('restricted', 'geographyGroup')">
-          Geography
-          <span *ngIf="sortColumn === 'geographyGroup'">
-            {{ sortDirection === 'asc' ? '▲' : '▼' }}
-          </span>
-        </th>
-        <th scope="col" (click)="sortData('restricted', 'displayName')">
-          Display Name
-          <span *ngIf="sortColumn === 'displayName'">
-            {{ sortDirection === 'asc' ? '▲' : '▼' }}
-          </span>
-        </th>
-        <th scope="col" (click)="sortData('restricted', 'physicalLocation')">
-          Physical Location (City)
-          <span *ngIf="sortColumn === 'physicalLocation'">
-            {{ sortDirection === 'asc' ? '▲' : '▼' }}
-          </span>
-        </th>
-        <th scope="col" (click)="sortData('restricted', 'availabilityZoneCount')">
-          Availability Zones
-          <span *ngIf="sortColumn === 'availabilityZoneCount'">
-            {{ sortDirection === 'asc' ? '▲' : '▼' }}
-          </span>
-        </th>
-        <th scope="col" (click)="sortData('restricted', 'pairedRegion')">
-          Paired Region
-          <span *ngIf="sortColumn === 'pairedRegion'">
-            {{ sortDirection === 'asc' ? '▲' : '▼' }}
-          </span>
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let r of accessRestrictedRegions">
-        <td>{{ r.geographyGroup }}</td>
-        <td>
-          <code>{{ r.displayName }}</code>
-        </td>
-        <td>{{ r.physicalLocation }}</td>
-        <td>{{ r.availabilityZoneCount === 0 ? 'Not supported' : r.availabilityZoneCount }}</td>
-        <td>{{ r.pairedRegion ? r.pairedRegion : 'N/A' }}</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-<h2 class="h4">Azure China Cloud Regions</h2>
-<p>
-  Azure China Cloud regions are designed to ensure compliance with Chinese regulatory requirements
-  and are operated by 21Vianet.
-</p>
-<div class="table-responsive">
-  <table class="table table-bordered table-striped table-hover">
-    <thead>
-      <tr>
-        <th scope="col" (click)="sortData('china', 'geographyGroup')">
-          Geography
-          <span *ngIf="sortColumn === 'geographyGroup'">
-            {{ sortDirection === 'asc' ? '▲' : '▼' }}
-          </span>
-        </th>
-        <th scope="col" (click)="sortData('china', 'displayName')">
-          Display Name
-          <span *ngIf="sortColumn === 'displayName'">
-            {{ sortDirection === 'asc' ? '▲' : '▼' }}
-          </span>
-        </th>
-        <th scope="col" (click)="sortData('china', 'physicalLocation')">
-          Physical Location (City)
-          <span *ngIf="sortColumn === 'physicalLocation'">
-            {{ sortDirection === 'asc' ? '▲' : '▼' }}
-          </span>
-        </th>
-        <th scope="col" (click)="sortData('china', 'availabilityZoneCount')">
-          Availability Zones
-          <span *ngIf="sortColumn === 'availabilityZoneCount'">
-            {{ sortDirection === 'asc' ? '▲' : '▼' }}
-          </span>
-        </th>
-        <th scope="col" (click)="sortData('china', 'pairedRegion')">
-          Paired Region
-          <span *ngIf="sortColumn === 'pairedRegion'">
-            {{ sortDirection === 'asc' ? '▲' : '▼' }}
-          </span>
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let r of azureChinaRegions">
-        <td>{{ r.geographyGroup }}</td>
-        <td>
-          <code>{{ r.displayName }}</code>
-        </td>
-        <td>{{ r.physicalLocation }}</td>
-        <td>{{ r.availabilityZoneCount === 0 ? 'Not supported' : r.availabilityZoneCount }}</td>
-        <td>{{ r.pairedRegion ? r.pairedRegion : 'N/A' }}</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-<h2 class="h4">Frequently Asked Questions</h2>
-<div class="accordion" id="azureFAQ">
-  <div class="accordion-item">
-    <h3 class="accordion-header" id="headingOne">
-      <button
-        class="accordion-button collapsed"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#collapseOne"
-        aria-expanded="false"
-        aria-controls="collapseOne"
-      >
-        Where can I find information about Azure product availability in each region?
-      </button>
-    </h3>
-    <div
-      id="collapseOne"
-      class="accordion-collapse collapse"
-      aria-labelledby="headingOne"
-      data-bs-parent="#azureFAQ"
-    >
-      <div class="accordion-body">
-        <p>
-          You can find latest information about Azure product availability in each region
-          <a
-            href="https://learn.microsoft.com/en-us/azure/reliability/availability-zones-service-support#azure-services-with-availability-zone-support"
-            target="_blank"
+<div class="container-fluid py-3">
+  <!-- Header Section -->
+  <div class="row">
+    <div class="col-12">
+      <h1 class="h2 fw-bold">Azure Regions</h1>
+      <p>
+        A region in Azure is a set of datacenters deployed within a latency-defined perimeter and
+        connected through a dedicated regional low-latency network. With Azure, you can choose the
+        best region for your needs based on technical and regulatory considerations.
+      </p>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="row g-4">
+    <div class="col-md-3">
+      <div class="card h-100 shadow-sm border-0 resource-card">
+        <div class="card-body d-flex align-items-center">
+          <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+            <i class="fas fa-globe text-primary"></i>
+          </div>
+          <div>
+            <h6 class="text-secondary mb-1">Public Regions</h6>
+            <h2 class="mb-0">{{ azurePublicRegions.length }}</h2>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card h-100 shadow-sm border-0 resource-card">
+        <div class="card-body d-flex align-items-center">
+          <div class="rounded-circle bg-warning bg-opacity-10 p-3 me-3">
+            <i class="fas fa-lock text-warning"></i>
+          </div>
+          <div>
+            <h6 class="text-secondary mb-1">Restricted Regions</h6>
+            <h2 class="mb-0">{{ accessRestrictedRegions.length }}</h2>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card h-100 shadow-sm border-0 resource-card">
+        <div class="card-body d-flex align-items-center">
+          <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
+            <i class="fas fa-map-marker-alt text-success"></i>
+          </div>
+          <div>
+            <h6 class="text-secondary mb-1">China Regions</h6>
+            <h2 class="mb-0">{{ azureChinaRegions.length }}</h2>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card h-100 shadow-sm border-0 resource-card">
+        <div class="card-body d-flex align-items-center">
+          <div class="rounded-circle bg-info bg-opacity-10 p-3 me-3">
+            <i class="fas fa-building text-info"></i>
+          </div>
+          <div>
+            <h6 class="text-secondary mb-1">Government Regions</h6>
+            <h2 class="mb-0">{{ azureGovernmentRegions.length }}</h2>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Region Tables -->
+  <div class="row mb-5">
+    <div class="col-12">
+      <div class="card shadow-sm border-0 overflow-hidden">
+        <div class="card-header bg-white py-3 border-bottom-0">
+          <ul class="nav nav-tabs card-header-tabs">
+            <li class="nav-item">
+              <a class="nav-link active fw-medium" data-bs-toggle="tab" href="#public">
+                <i class="fas fa-globe me-2"></i>
+                Public Cloud
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fw-medium" data-bs-toggle="tab" href="#restricted">
+                <i class="fas fa-lock me-2"></i>
+                Restricted Access
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fw-medium" data-bs-toggle="tab" href="#china">
+                <i class="fas fa-map-marker-alt me-2"></i>
+                China Cloud
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fw-medium" data-bs-toggle="tab" href="#government">
+                <i class="fas fa-building me-2"></i>
+                US Government Cloud
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="card-body p-0">
+          <div class="tab-content">
+            <div class="tab-pane fade show active p-4" id="public">
+              <div class="mb-4">
+                <h2 class="h4 mb-3 fw-bold">Azure Public Cloud Regions</h2>
+                <p class="text-muted">
+                  Below is a list of available Azure regions in the public cloud. These regions are
+                  globally distributed to support various levels of availability and redundancy.
+                  Each region is paired with at least one other region for disaster recovery
+                  purposes.
+                </p>
+                <div class="table-responsive">
+                  <table class="table table-hover border">
+                    <thead>
+                      <tr>
+                        <th
+                          scope="col"
+                          (click)="sortData('public', 'geography')"
+                          class="cursor-pointer"
+                        >
+                          Geography
+                          <i
+                            *ngIf="sortColumn === 'geographyGroup'"
+                            class="fas"
+                            [ngClass]="sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"
+                          ></i>
+                          <i
+                            *ngIf="sortColumn !== 'geographyGroup'"
+                            class="fas fa-sort text-muted"
+                          ></i>
+                        </th>
+                        <th
+                          scope="col"
+                          (click)="sortData('public', 'displayName')"
+                          class="cursor-pointer"
+                        >
+                          Region Name
+                          <i
+                            *ngIf="sortColumn === 'displayName'"
+                            class="fas"
+                            [ngClass]="sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"
+                          ></i>
+                          <i
+                            *ngIf="sortColumn !== 'displayName'"
+                            class="fas fa-sort text-muted"
+                          ></i>
+                        </th>
+                        <th
+                          scope="col"
+                          (click)="sortData('public', 'physicalLocation')"
+                          class="cursor-pointer"
+                        >
+                          Location
+                          <i
+                            *ngIf="sortColumn === 'physicalLocation'"
+                            class="fas"
+                            [ngClass]="sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"
+                          ></i>
+                          <i
+                            *ngIf="sortColumn !== 'physicalLocation'"
+                            class="fas fa-sort text-muted"
+                          ></i>
+                        </th>
+                        <th
+                          scope="col"
+                          (click)="sortData('public', 'availabilityZoneCount')"
+                          class="cursor-pointer"
+                        >
+                          Availability Zones
+                          <i
+                            *ngIf="sortColumn === 'availabilityZoneCount'"
+                            class="fas"
+                            [ngClass]="sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"
+                          ></i>
+                          <i
+                            *ngIf="sortColumn !== 'availabilityZoneCount'"
+                            class="fas fa-sort text-muted"
+                          ></i>
+                        </th>
+                        <th
+                          scope="col"
+                          (click)="sortData('public', 'pairedRegion')"
+                          class="cursor-pointer"
+                        >
+                          Paired Region
+                          <i
+                            *ngIf="sortColumn === 'pairedRegion'"
+                            class="fas"
+                            [ngClass]="sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"
+                          ></i>
+                          <i
+                            *ngIf="sortColumn !== 'pairedRegion'"
+                            class="fas fa-sort text-muted"
+                          ></i>
+                        </th>
+                        <th
+                          scope="col"
+                          (click)="sortData('public', 'yearOpen')"
+                          class="cursor-pointer"
+                        >
+                          Year Open
+                          <i
+                            *ngIf="sortColumn === 'yearOpen'"
+                            class="fas"
+                            [ngClass]="sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"
+                          ></i>
+                          <i *ngIf="sortColumn !== 'yearOpen'" class="fas fa-sort text-muted"></i>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr
+                        *ngFor="let r of azurePublicRegions"
+                        class="cursor-pointer"
+                        title="View details for {{ r.displayName }}"
+                      >
+                        <td>
+                          <span class="badge bg-light text-dark">{{ r.geography }}</span>
+                        </td>
+                        <td>
+                          <span class="text-primary d-flex align-items-center">
+                            <a [routerLink]="getRegionUrl(r.displayName)">{{ r.displayName }}</a>
+                            <i class="fas fa-external-link-alt small"></i>
+                          </span>
+                        </td>
+                        <td>{{ r.physicalLocation }}</td>
+                        <td>
+                          <span
+                            [class]="
+                              r.availabilityZoneCount ? 'badge bg-success' : 'badge bg-secondary'
+                            "
+                          >
+                            {{
+                              r.availabilityZoneCount === 0
+                                ? 'Not supported'
+                                : r.availabilityZoneCount + ' zones'
+                            }}
+                          </span>
+                        </td>
+                        <td>{{ r.pairedRegion || 'None' }}</td>
+                        <td>{{ r.yearOpen || '' }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="tab-pane fade p-4" id="restricted">
+              <h2 class="h4 mb-3 fw-bold">Access Restricted Regions</h2>
+              <p class="text-muted">
+                Certain Azure regions are specifically for particular needs like governmental,
+                privacy, or other compliance requirements and require special permissions for
+                access.
+              </p>
+              <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover">
+                  <thead>
+                    <tr>
+                      <th
+                        scope="col"
+                        (click)="sortData('restricted', 'geography')"
+                        class="cursor-pointer"
+                      >
+                        Geography
+                        <i
+                          *ngIf="sortColumn === 'geography'"
+                          class="fas"
+                          [ngClass]="sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"
+                        ></i>
+                        <i *ngIf="sortColumn !== 'geography'" class="fas fa-sort text-muted"></i>
+                      </th>
+                      <th
+                        scope="col"
+                        (click)="sortData('restricted', 'displayName')"
+                        class="cursor-pointer"
+                      >
+                        Region Name
+                        <i
+                          *ngIf="sortColumn === 'displayName'"
+                          class="fas"
+                          [ngClass]="sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"
+                        ></i>
+                        <i *ngIf="sortColumn !== 'displayName'" class="fas fa-sort text-muted"></i>
+                      </th>
+                      <th
+                        scope="col"
+                        (click)="sortData('restricted', 'physicalLocation')"
+                        class="cursor-pointer"
+                      >
+                        Location
+                        <i
+                          *ngIf="sortColumn === 'physicalLocation'"
+                          class="fas"
+                          [ngClass]="sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"
+                        ></i>
+                        <i
+                          *ngIf="sortColumn !== 'physicalLocation'"
+                          class="fas fa-sort text-muted"
+                        ></i>
+                      </th>
+                      <th
+                        scope="col"
+                        (click)="sortData('restricted', 'availabilityZoneCount')"
+                        class="cursor-pointer"
+                      >
+                        Availability Zones
+                        <i
+                          *ngIf="sortColumn === 'availabilityZoneCount'"
+                          class="fas"
+                          [ngClass]="sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"
+                        ></i>
+                        <i
+                          *ngIf="sortColumn !== 'availabilityZoneCount'"
+                          class="fas fa-sort text-muted"
+                        ></i>
+                      </th>
+                      <th
+                        scope="col"
+                        (click)="sortData('restricted', 'pairedRegion')"
+                        class="cursor-pointer"
+                      >
+                        Paired Region
+                        <i
+                          *ngIf="sortColumn === 'pairedRegion'"
+                          class="fas"
+                          [ngClass]="sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"
+                        ></i>
+                        <i *ngIf="sortColumn !== 'pairedRegion'" class="fas fa-sort text-muted"></i>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      *ngFor="let r of accessRestrictedRegions"
+                      class="cursor-pointer"
+                      title="View details for {{ r.displayName }}"
+                    >
+                      <td>{{ r.geography }}</td>
+                      <td>
+                        <span class="text-primary d-flex align-items-center">
+                          <a [routerLink]="getRegionUrl(r.displayName)">{{ r.displayName }}</a>
+                          <i class="fas fa-external-link-alt small"></i>
+                        </span>
+                      </td>
+                      <td>{{ r.physicalLocation }}</td>
+                      <td>
+                        <span
+                          [class]="
+                            r.availabilityZoneCount ? 'badge bg-success' : 'badge bg-secondary'
+                          "
+                        >
+                          {{
+                            r.availabilityZoneCount === 0
+                              ? 'Not supported'
+                              : r.availabilityZoneCount + ' zones'
+                          }}
+                        </span>
+                      </td>
+                      <td>{{ r.pairedRegion || 'None' }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="tab-pane fade p-4" id="china">
+              <h2 class="h4 mb-3 fw-bold">Azure China Cloud Regions</h2>
+              <p class="text-muted">
+                Azure China Cloud regions are designed to ensure compliance with Chinese regulatory
+                requirements and are operated by 21Vianet.
+              </p>
+              <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover">
+                  <thead>
+                    <tr>
+                      <th
+                        scope="col"
+                        (click)="sortData('china', 'geography')"
+                        class="cursor-pointer"
+                      >
+                        Geography
+                        <i
+                          *ngIf="sortColumn === 'geography'"
+                          class="fas"
+                          [ngClass]="sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"
+                        ></i>
+                        <i *ngIf="sortColumn !== 'geography'" class="fas fa-sort text-muted"></i>
+                      </th>
+                      <th
+                        scope="col"
+                        (click)="sortData('china', 'displayName')"
+                        class="cursor-pointer"
+                      >
+                        Region Name
+                        <i
+                          *ngIf="sortColumn === 'displayName'"
+                          class="fas"
+                          [ngClass]="sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"
+                        ></i>
+                        <i *ngIf="sortColumn !== 'displayName'" class="fas fa-sort text-muted"></i>
+                      </th>
+                      <th
+                        scope="col"
+                        (click)="sortData('china', 'physicalLocation')"
+                        class="cursor-pointer"
+                      >
+                        Location
+                        <i
+                          *ngIf="sortColumn === 'physicalLocation'"
+                          class="fas"
+                          [ngClass]="sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"
+                        ></i>
+                        <i
+                          *ngIf="sortColumn !== 'physicalLocation'"
+                          class="fas fa-sort text-muted"
+                        ></i>
+                      </th>
+                      <th
+                        scope="col"
+                        (click)="sortData('china', 'availabilityZoneCount')"
+                        class="cursor-pointer"
+                      >
+                        Availability Zones
+                        <i
+                          *ngIf="sortColumn === 'availabilityZoneCount'"
+                          class="fas"
+                          [ngClass]="sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"
+                        ></i>
+                        <i
+                          *ngIf="sortColumn !== 'availabilityZoneCount'"
+                          class="fas fa-sort text-muted"
+                        ></i>
+                      </th>
+                      <th
+                        scope="col"
+                        (click)="sortData('china', 'pairedRegion')"
+                        class="cursor-pointer"
+                      >
+                        Paired Region
+                        <i
+                          *ngIf="sortColumn === 'pairedRegion'"
+                          class="fas"
+                          [ngClass]="sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"
+                        ></i>
+                        <i *ngIf="sortColumn !== 'pairedRegion'" class="fas fa-sort text-muted"></i>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let r of azureChinaRegions">
+                      <td>{{ r.geography }}</td>
+                      <td>
+                        <a [routerLink]="getRegionUrl(r.displayName)">{{ r.displayName }}</a>
+                      </td>
+                      <td>{{ r.physicalLocation }}</td>
+                      <td>
+                        <span
+                          [class]="
+                            r.availabilityZoneCount ? 'badge bg-success' : 'badge bg-secondary'
+                          "
+                        >
+                          {{
+                            r.availabilityZoneCount === 0
+                              ? 'Not supported'
+                              : r.availabilityZoneCount + ' zones'
+                          }}
+                        </span>
+                      </td>
+                      <td>{{ r.pairedRegion || 'None' }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="tab-pane fade p-4" id="government">
+              <h2 class="h4 mb-3 fw-bold">Azure Government Cloud Regions</h2>
+              <p class="text-muted">
+                These regions are designed for US government entities and their partners, meeting
+                various US government security and compliance requirements.
+              </p>
+              <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover">
+                  <thead>
+                    <tr>
+                      <th
+                        scope="col"
+                        (click)="sortData('government', 'geography')"
+                        class="cursor-pointer"
+                      >
+                        Geography
+                        <i
+                          *ngIf="sortColumn === 'geography'"
+                          class="fas"
+                          [ngClass]="sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"
+                        ></i>
+                        <i *ngIf="sortColumn !== 'geography'" class="fas fa-sort text-muted"></i>
+                      </th>
+                      <th
+                        scope="col"
+                        (click)="sortData('government', 'displayName')"
+                        class="cursor-pointer"
+                      >
+                        Region Name
+                        <i
+                          *ngIf="sortColumn === 'displayName'"
+                          class="fas"
+                          [ngClass]="sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"
+                        ></i>
+                        <i *ngIf="sortColumn !== 'displayName'" class="fas fa-sort text-muted"></i>
+                      </th>
+                      <th
+                        scope="col"
+                        (click)="sortData('government', 'physicalLocation')"
+                        class="cursor-pointer"
+                      >
+                        Location
+                        <i
+                          *ngIf="sortColumn === 'physicalLocation'"
+                          class="fas"
+                          [ngClass]="sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"
+                        ></i>
+                        <i
+                          *ngIf="sortColumn !== 'physicalLocation'"
+                          class="fas fa-sort text-muted"
+                        ></i>
+                      </th>
+                      <th
+                        scope="col"
+                        (click)="sortData('government', 'availabilityZoneCount')"
+                        class="cursor-pointer"
+                      >
+                        Availability Zones
+                        <i
+                          *ngIf="sortColumn === 'availabilityZoneCount'"
+                          class="fas"
+                          [ngClass]="sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"
+                        ></i>
+                        <i
+                          *ngIf="sortColumn !== 'availabilityZoneCount'"
+                          class="fas fa-sort text-muted"
+                        ></i>
+                      </th>
+                      <th
+                        scope="col"
+                        (click)="sortData('government', 'pairedRegion')"
+                        class="cursor-pointer"
+                      >
+                        Paired Region
+                        <i
+                          *ngIf="sortColumn === 'pairedRegion'"
+                          class="fas"
+                          [ngClass]="sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"
+                        ></i>
+                        <i *ngIf="sortColumn !== 'pairedRegion'" class="fas fa-sort text-muted"></i>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      *ngFor="let r of azureGovernmentRegions"
+                      class="cursor-pointer"
+                      title="View details for {{ r.displayName }}"
+                    >
+                      <td>
+                        <span class="badge bg-light text-dark">{{ r.geography }}</span>
+                      </td>
+                      <td>
+                        <span class="text-primary d-flex align-items-center">
+                          <a [routerLink]="getRegionUrl(r.displayName)">{{ r.displayName }}</a>
+                          <i class="fas fa-external-link-alt small"></i>
+                        </span>
+                      </td>
+                      <td>{{ r.physicalLocation }}</td>
+                      <td>
+                        <span
+                          [class]="
+                            r.availabilityZoneCount ? 'badge bg-success' : 'badge bg-secondary'
+                          "
+                        >
+                          {{
+                            r.availabilityZoneCount === 0
+                              ? 'Not supported'
+                              : r.availabilityZoneCount + ' zones'
+                          }}
+                        </span>
+                      </td>
+                      <td>{{ r.pairedRegion || 'None' }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ Section -->
+  <div class="row mb-5">
+    <div class="col-12">
+      <h2 class="h4 fw-bold mb-4">Frequently Asked Questions</h2>
+      <div class="accordion accordion-flush shadow-sm border rounded" id="azureFAQ">
+        <div class="accordion-item">
+          <h3 class="accordion-header" id="headingOne">
+            <button
+              class="accordion-button collapsed"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapseOne"
+              aria-expanded="false"
+              aria-controls="collapseOne"
+            >
+              Where can I find information about Azure product availability in each region?
+            </button>
+          </h3>
+          <div
+            id="collapseOne"
+            class="accordion-collapse collapse"
+            aria-labelledby="headingOne"
+            data-bs-parent="#azureFAQ"
           >
-            here
-          </a>
-          .
-        </p>
-      </div>
-    </div>
-  </div>
-  <div class="accordion-item">
-    <h3 class="accordion-header" id="headingTwo">
-      <button
-        class="accordion-button collapsed"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#collapseTwo"
-        aria-expanded="false"
-        aria-controls="collapseTwo"
-      >
-        How can I access restricted Azure regions?
-      </button>
-    </h3>
-    <div
-      id="collapseTwo"
-      class="accordion-collapse collapse"
-      aria-labelledby="headingTwo"
-      data-bs-parent="#azureFAQ"
-    >
-      <div class="accordion-body">
-        <p>
-          Detailed information on the access request process can be found in the
-          <a
-            href="https://docs.microsoft.com/en-us/troubleshoot/azure/general/region-access-request-process"
-            target="_blank"
+            <div class="accordion-body">
+              <p>
+                You can find latest information about Azure product availability in each region
+                <a
+                  href="https://learn.microsoft.com/en-us/azure/reliability/availability-zones-service-support#azure-services-with-availability-zone-support"
+                  target="_blank"
+                >
+                  here
+                </a>
+                .
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h3 class="accordion-header" id="headingTwo">
+            <button
+              class="accordion-button collapsed"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapseTwo"
+              aria-expanded="false"
+              aria-controls="collapseTwo"
+            >
+              How can I access restricted Azure regions?
+            </button>
+          </h3>
+          <div
+            id="collapseTwo"
+            class="accordion-collapse collapse"
+            aria-labelledby="headingTwo"
+            data-bs-parent="#azureFAQ"
           >
-            Azure region access request process
-          </a>
-          .
-        </p>
+            <div class="accordion-body">
+              <p>
+                Detailed information on the access request process can be found in the
+                <a
+                  href="https://docs.microsoft.com/en-us/troubleshoot/azure/general/region-access-request-process"
+                  target="_blank"
+                >
+                  Azure region access request process
+                </a>
+                .
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h3 class="accordion-header" id="headingThree">
+            <button
+              class="accordion-button collapsed"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapseThree"
+              aria-expanded="false"
+              aria-controls="collapseThree"
+            >
+              How to get Azure regions via API?
+            </button>
+          </h3>
+          <div
+            id="collapseThree"
+            class="accordion-collapse collapse"
+            aria-labelledby="headingThree"
+            data-bs-parent="#azureFAQ"
+          >
+            <div class="accordion-body">
+              <p>
+                To get a list of Azure regions using the Azure CLI, you can use the following
+                command:
+              </p>
+              <code>
+                az account list-locations --query "sort_by([?metadata.regionType=='Physical'],
+                &name)" -o table
+              </code>
+              <p>
+                This command lists all Azure regions, sorts them by their physical type, and outputs
+                the result in a tabular format. Ensure you have the Azure CLI installed and are
+                logged into your Azure account to use this command.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-  <div class="accordion-item">
-    <h3 class="accordion-header" id="headingThree">
-      <button
-        class="accordion-button collapsed"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#collapseThree"
-        aria-expanded="false"
-        aria-controls="collapseThree"
-      >
-        How to get Azure regions via API?
-      </button>
-    </h3>
-    <div
-      id="collapseThree"
-      class="accordion-collapse collapse"
-      aria-labelledby="headingThree"
-      data-bs-parent="#azureFAQ"
-    >
-      <div class="accordion-body">
-        <p>
-          To get a list of Azure regions using the Azure CLI, you can use the following command:
-        </p>
-        <code>
-          az account list-locations --query "sort_by([?metadata.regionType=='Physical'], &name)" -o
-          table
-        </code>
-        <p>
-          This command lists all Azure regions, sorts them by their physical type, and outputs the
-          result in a tabular format. Ensure you have the Azure CLI installed and are logged into
-          your Azure account to use this command.
-        </p>
+
+  <!-- Resources Section -->
+  <div class="row">
+    <div class="col-12">
+      <h2 class="h4 fw-bold mb-4">Additional Resources</h2>
+      <div class="row g-4">
+        <!-- Resource cards with enhanced styling -->
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100 shadow-sm border-0 resource-card">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title h6 fw-bold mb-3">Global Infrastructure</h5>
+              <p class="card-text text-secondary small flex-grow-1">
+                Explore Azure's global infrastructure and learn about different geographies.
+              </p>
+              <a
+                href="https://azure.microsoft.com/en-us/explore/global-infrastructure/geographies"
+                target="_blank"
+                class="btn btn-outline-primary btn-sm mt-3"
+              >
+                Learn More
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100 shadow-sm border-0 resource-card">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title h6">Microsoft Datacenters</h5>
+              <p class="card-text text-secondary small flex-grow-1">
+                Explore Microsoft's datacenters around the globe.
+              </p>
+              <a
+                href="https://datacenters.microsoft.com/globe/explore"
+                target="_blank"
+                class="btn btn-outline-primary btn-sm mt-3"
+              >
+                Learn More
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100 shadow-sm border-0 resource-card">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title h6">Select Azure regions</h5>
+              <p class="card-text text-secondary small flex-grow-1">
+                Learn how to select the best Azure regions for your needs.
+              </p>
+              <a
+                href="https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-setup-guide/regions"
+                target="_blank"
+                class="btn btn-outline-primary btn-sm mt-3"
+              >
+                Learn More
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100 shadow-sm border-0 resource-card">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title h6">BCDR: Azure cross-region replication</h5>
+              <p class="card-text text-secondary small flex-grow-1">
+                Learn about business continuity and disaster recovery with Azure cross-region
+                replication.
+              </p>
+              <a
+                href="https://learn.microsoft.com/en-us/azure/reliability/cross-region-replication-azure"
+                target="_blank"
+                class="btn btn-outline-primary btn-sm mt-3"
+              >
+                Learn More
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100 shadow-sm border-0 resource-card">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title h6">Azure Catalog</h5>
+              <p class="card-text text-secondary small flex-grow-1">
+                Explore the Azure Catalog for a comprehensive list of Azure services and regions.
+              </p>
+              <a
+                href="https://github.com/blrchen/azure-catalog"
+                target="_blank"
+                class="btn btn-outline-primary btn-sm mt-3"
+              >
+                Learn More
+              </a>
+            </div>
+          </div>
+        </div>
+        <!-- ...remaining resource cards with same structure... -->
       </div>
     </div>
   </div>
 </div>
-<h2 class="h4">Additional Resources</h2>
-<ul>
-  <li>
-    <a
-      href="https://azure.microsoft.com/en-us/explore/global-infrastructure/geographies"
-      target="_blank"
-    >
-      Azure Global Infrastructure Geographies
-    </a>
-  </li>
-  <li>
-    <a href="https://datacenters.microsoft.com/globe/explore" target="_blank">
-      Microsoft Datacenters
-    </a>
-  </li>
-  <li>
-    <a
-      href="https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-setup-guide/regions"
-      target="_blank"
-    >
-      Select Azure regions
-    </a>
-  </li>
-  <li>
-    <a
-      href="https://learn.microsoft.com/en-us/azure/reliability/cross-region-replication-azure"
-      target="_blank"
-    >
-      Business continuity and disaster recovery (BCDR): Azure cross-region replication
-    </a>
-  </li>
-  <li>
-    <a href="https://github.com/blrchen/azure-catalog" target="_blank">Azure Catalog</a>
-  </li>
-</ul>
+
+<style>
+  /* Add these styles inline or in your component's CSS */
+  .resource-card {
+    transition: transform 0.2s ease-in-out;
+  }
+  .resource-card:hover {
+    transform: translateY(-5px);
+  }
+  .nav-tabs .nav-link {
+    border: none;
+    color: #6c757d;
+    padding: 1rem 1.5rem;
+  }
+  .nav-tabs .nav-link.active {
+    color: #0d6efd;
+    border-bottom: 2px solid #0d6efd;
+  }
+  .table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+  }
+  .cursor-pointer {
+    transition: background-color 0.15s ease-in-out;
+  }
+  .cursor-pointer:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+  .badge {
+    font-weight: 500;
+  }
+  .accordion-button:not(.collapsed) {
+    background-color: #f8f9fa;
+    color: #0d6efd;
+  }
+  .btn-outline-primary:hover i {
+    transform: translateX(3px);
+    transition: transform 0.2s ease-in-out;
+  }
+</style>

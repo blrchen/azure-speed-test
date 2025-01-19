@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
-import axios from 'axios'
 import { SeoService } from '../../../services'
 
 interface IpAddressPrefix {
@@ -28,27 +27,16 @@ export class AzureIpRangesComponent implements OnInit {
     })
   }
 
-  async ngOnInit() {
+  ngOnInit() {
     this.isLoading = true
-    try {
-      const response = await axios.get(
-        `https://www.azurespeed.com/api/serviceTags/${this.serviceTagId}/ipAddressPrefixes`
-      )
-      this.tableData = response.data
-      this.isLoading = false
-    } catch (error) {
-      console.error('Error fetching data:', error)
-      this.isLoading = false
-    }
+    this.tableData = this.route.snapshot.data['tableData']
+    this.isLoading = false
   }
 
   private initializeSeoProperties(): void {
     this.seoService.setMetaTitle(`Azure IP Ranges - ${this.serviceTagId}`)
     this.seoService.setMetaDescription(
-      'Explore and discover comprehensive lists of IP ranges used by Microsoft Azure services across different regions.'
-    )
-    this.seoService.setMetaKeywords(
-      'Microsoft Azure, Azure IP Ranges, Azure Service Tags, Azure Cloud IPs, Azure Services IP Ranges'
+      `IP ranges for Microsoft Azure Service Tag ${this.serviceTagId}.`
     )
     this.seoService.setCanonicalUrl(
       `https://www.azurespeed.com/Information/AzureIpRanges/${this.serviceTagId}`

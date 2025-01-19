@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core'
+import { Router } from '@angular/router'
+import publicRegionsJson from '../../../../assets/data/regions.json'
+import chinaRegionsJson from '../../../../assets/data/regions-china.json'
+import govRegionsJson from '../../../../assets/data/regions-gov.json'
 import { Region } from '../../../models'
 import { SeoService } from '../../../services'
-import data from '../../../../assets/data/regions.json'
 
 @Component({
   selector: 'app-azure-regions',
@@ -11,10 +14,14 @@ export class AzureRegionsComponent implements OnInit {
   azurePublicRegions: Region[] = []
   azureChinaRegions: Region[] = []
   accessRestrictedRegions: Region[] = []
+  azureGovernmentRegions: Region[] = []
   sortColumn = 'displayName'
   sortDirection: 'asc' | 'desc' = 'asc'
 
-  constructor(private seoService: SeoService) {
+  constructor(
+    private seoService: SeoService,
+    private router: Router
+  ) {
     this.initializeSeoProperties()
   }
 
@@ -23,52 +30,53 @@ export class AzureRegionsComponent implements OnInit {
     this.seoService.setMetaDescription(
       'Explore the available and access restricted Azure regions, including their geography, physical location, availability zones, and paired regions for disaster recovery.'
     )
-    this.seoService.setMetaKeywords(
-      'Azure regions, Azure datacenters, Azure availability zones, Azure region pairs, disaster recovery, Azure cross-region replication, Azure resiliency, Azure BCDR'
-    )
     this.seoService.setCanonicalUrl('https://www.azurespeed.com/Information/AzureRegions')
   }
 
   ngOnInit() {
-    this.azurePublicRegions = data
-      .filter((region) => !region.restricted && region.geographyGroup !== 'China')
+    this.azurePublicRegions = publicRegionsJson
+      .filter((region) => !region.restricted)
       .sort((a, b) => a.displayName.localeCompare(b.displayName))
-    this.azureChinaRegions = data
-      .filter((region) => !region.restricted && region.geographyGroup === 'China')
-      .sort((a, b) => a.displayName.localeCompare(b.displayName))
-    this.accessRestrictedRegions = data
+    this.azureChinaRegions = chinaRegionsJson.sort((a, b) =>
+      a.displayName.localeCompare(b.displayName)
+    )
+    this.accessRestrictedRegions = publicRegionsJson
       .filter((region) => region.restricted)
       .sort((a, b) => a.displayName.localeCompare(b.displayName))
+    this.azureGovernmentRegions = govRegionsJson.sort((a, b) =>
+      a.displayName.localeCompare(b.displayName)
+    )
   }
 
-  sortData(table: 'public' | 'restricted' | 'china', column: keyof Region) {
+  sortData(table: 'public' | 'restricted' | 'china' | 'government', column: keyof Region) {
     if (this.sortColumn === column) {
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc'
     } else {
-      this.sortDirection = 'asc' // reset to ascending for new column
+      this.sortDirection = 'asc'
     }
+    this.sortColumn = column
 
-    this.sortColumn = column // set sort column to provided column
-
-    const direction = this.sortDirection === 'asc' ? 1 : -1
-
-    let dataArray: Region[] = []
-
+    let dataToSort: Region[] = []
     if (table === 'public') {
-      dataArray = this.azurePublicRegions
+      dataToSort = this.azurePublicRegions
     } else if (table === 'restricted') {
-      dataArray = this.accessRestrictedRegions
-    } else if (table === 'china') {
-      dataArray = this.azureChinaRegions
+      dataToSort = this.accessRestrictedRegions
+    } else if (table === 'government') {
+      dataToSort = this.azureGovernmentRegions
+    } else {
+      dataToSort = this.azureChinaRegions
     }
 
-    dataArray.sort((a, b) => {
-      const aValue = a[column] ?? ''
-      const bValue = b[column] ?? ''
-      if (typeof aValue === 'string' && typeof bValue === 'string') {
-        return aValue.localeCompare(bValue) * direction
-      }
-      return (Number(aValue) - Number(bValue)) * direction // Handles numerical values appropriately
+    dataToSort.sort((a, b) => {
+      const valA = (a[column] || '').toString().toLowerCase()
+      const valB = (b[column] || '').toString().toLowerCase()
+      if (valA < valB) return this.sortDirection === 'asc' ? -1 : 1
+      if (valA > valB) return this.sortDirection === 'asc' ? 1 : -1
+      return 0
     })
+  }
+
+  getRegionUrl(displayName: string): string {
+    return '/Information/AzureRegions/' + displayName.replace(/\s+/g, '')
   }
 }

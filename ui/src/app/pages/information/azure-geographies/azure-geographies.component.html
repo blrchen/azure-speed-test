@@ -1,48 +1,83 @@
-<h1 class="h2">Azure Geographies</h1>
-<p>
-  Azure geographical locations refer to a set of one or more regions, strategically grouped to meet
-  specific data residency and compliance requirements.
-</p>
-<div class="table-responsive">
-  <table class="table table-bordered table-striped table-hover">
-    <thead>
-      <tr>
-        <th scope="col">Geography</th>
-        <th scope="col">Regions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let g of tableData">
-        <td>{{ g.name }}</td>
-        <td>
-          <ng-container *ngFor="let r of g.regions">
-            <span>{{ r.displayName }} ({{ r.physicalLocation }})</span>
-            <br />
-          </ng-container>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+<div class="container-fluid py-3">
+  <h1 class="h2 fw-bold mb-3">Azure Geographic Infrastructure</h1>
+  <p>
+    Azure geographical locations refer to a set of one or more regions, strategically grouped to
+    meet specific data residency and compliance requirements.
+  </p>
+
+  <div class="table-responsive mb-4">
+    <table class="table table-hover align-middle border-top">
+      <thead class="table-light">
+        <tr>
+          <th scope="col" class="fw-semibold w-25">Geography</th>
+          <th scope="col" class="fw-semibold">Regions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let g of tableData">
+          <td class="fw-bold">{{ g.name }}</td>
+          <td>
+            <div class="row g-3">
+              <ng-container *ngFor="let r of g.regions">
+                <div class="col-md-6">
+                  <div class="d-flex align-items-center">
+                    <a
+                      [href]="getRegionUrl(r.displayName)"
+                      class="text-decoration-none fw-semibold"
+                    >
+                      {{ r.displayName }}
+                    </a>
+                    <span class="text-secondary small ms-2">({{ r.physicalLocation }})</span>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="h4 mb-4">Technical Documentation & Resources</h2>
+  <div class="row g-4">
+    <div class="col-md-4">
+      <article class="h-100 p-3 bg-light rounded">
+        <h3 class="h6 mb-2">Global Infrastructure</h3>
+        <a
+          href="https://azure.microsoft.com/en-us/explore/global-infrastructure/geographies"
+          target="_blank"
+          class="text-decoration-none"
+        >
+          Azure Geographic Organization
+          <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+      </article>
+    </div>
+    <div class="col-md-4">
+      <article class="h-100 p-3 bg-light rounded">
+        <h3 class="h6 mb-2">Business Continuity</h3>
+        <a
+          href="https://docs.microsoft.com/en-us/azure/best-practices-availability-paired-regions"
+          target="_blank"
+          class="text-decoration-none"
+        >
+          BCDR: Azure Paired Regions
+          <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+      </article>
+    </div>
+    <div class="col-md-4">
+      <article class="h-100 p-3 bg-light rounded">
+        <h3 class="h6 mb-2">Reference</h3>
+        <a
+          href="https://github.com/blrchen/azure-catalog"
+          target="_blank"
+          class="text-decoration-none"
+        >
+          Azure Infrastructure Catalog
+          <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+      </article>
+    </div>
+  </div>
 </div>
-<h2 class="h4">Additional Resources</h2>
-<ul>
-  <li>
-    <a
-      href="https://azure.microsoft.com/en-us/explore/global-infrastructure/geographies"
-      target="_blank"
-    >
-      Azure Global Infrastructure Geographies
-    </a>
-  </li>
-  <li>
-    <a
-      href="https://docs.microsoft.com/en-us/azure/best-practices-availability-paired-regions"
-      target="_blank"
-    >
-      Business continuity and disaster recovery (BCDR): Azure Paired Regions
-    </a>
-  </li>
-  <li>
-    <a href="https://github.com/blrchen/azure-catalog" target="_blank">Azure Catalog</a>
-  </li>
-</ul>

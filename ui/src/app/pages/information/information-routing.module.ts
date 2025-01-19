@@ -9,9 +9,11 @@ import {
   AzureIpRangesByServiceComponent,
   AzureIpRangesComponent,
   AzureRegionsComponent,
+  AzureRegionDetailsComponent,
   AzureSovereignCloudsComponent,
   InformationComponent
 } from './index'
+import { AzureIpRangesResolver } from './azure-ip-ranges/azure-ip-ranges-resolver.service'
 
 const routes: Routes = [
   {
@@ -40,7 +42,8 @@ const routes: Routes = [
           },
           {
             path: ':serviceTagId',
-            component: AzureIpRangesComponent
+            component: AzureIpRangesComponent,
+            resolve: { tableData: AzureIpRangesResolver }
           }
         ]
       },
@@ -54,7 +57,17 @@ const routes: Routes = [
       },
       {
         path: 'AzureRegions',
-        component: AzureRegionsComponent
+        children: [
+          {
+            path: '',
+            component: AzureRegionsComponent,
+            pathMatch: 'full'
+          },
+          {
+            path: ':regionId',
+            component: AzureRegionDetailsComponent
+          }
+        ]
       },
       {
         path: 'AzureSovereignClouds',

@@ -1,48 +1,54 @@
-<h1 class="h2">ChatGPT Text Summarizer</h1>
-<p id="description">
-  Enhance your productivity with our advanced text summarizer, powered by ChatGPT. Convert your
-  extensive articles or text into short, crisp summaries using this innovative tool.
-</p>
-<form [formGroup]="userContentForm" (submit)="submitForm()" class="mb-3">
-  <fieldset class="form-group mb-3">
-    <label for="userContent">Enter Your Article or Text</label>
-    <textarea
-      class="form-control"
-      id="userContent"
-      placeholder="Insert your comprehensive article or text here..."
-      formControlName="userContent"
-      required
-      rows="6"
-    ></textarea>
-    <small class="form-text text-muted">
-      {{ userContentForm.get('userContent')?.value.length }}/5000 characters
-    </small>
-    <div
-      *ngIf="userContentForm.controls['userContent'].errors?.['maxlength']"
-      class="alert alert-danger mt-2"
+<div class="container-fluid py-3">
+  <h1 class="h2 fw-bold">ChatGPT Text Summarizer</h1>
+  <p>
+    Enhance your productivity with our advanced text summarizer, powered by ChatGPT. Convert your
+    extensive articles or text into short, crisp summaries using this innovative tool.
+  </p>
+  <form [formGroup]="userContentForm" (submit)="submitForm()" class="mb-3">
+    <fieldset class="form-group mb-3">
+      <label for="userContent" class="form-label fw-bold">Comprehensive Article or Text</label>
+      <textarea
+        class="form-control"
+        id="userContent"
+        placeholder="Insert your comprehensive article or text here..."
+        formControlName="userContent"
+        required
+        rows="6"
+      ></textarea>
+      <small class="form-text text-muted">
+        Characters: {{ userContentForm.get('userContent')?.value.length }}/5000
+      </small>
+      <div
+        *ngIf="userContentForm.controls['userContent'].errors?.['maxlength']"
+        class="alert alert-danger mt-2"
+      >
+        Character limit exceeded. Please limit your text to 5000 characters.
+      </div>
+    </fieldset>
+    <button
+      type="submit"
+      class="btn btn-primary me-2"
+      [disabled]="userContentForm.invalid || isLoading"
     >
-      Character limit exceeded. Please limit your text to 5000 characters.
-    </div>
-  </fieldset>
-  <button
-    type="submit"
-    class="btn btn-primary me-2"
-    [disabled]="userContentForm.invalid || isLoading"
-  >
-    Submit
-  </button>
-  <button type="button" class="btn btn-secondary" (click)="resetForm()">Reset</button>
-</form>
-<div *ngIf="isLoading" class="spinner-border text-primary">
-  <span class="visually-hidden">Loading...</span>
-</div>
-<ng-container *ngIf="result">
-  <h2 class="h4">Summary:</h2>
-  <div class="alert alert-info d-flex align-items-center">
-    <p class="pre-line">{{ result }}</p>
+      Submit
+    </button>
+    <button type="button" class="btn btn-secondary" (click)="resetForm()">Reset</button>
+  </form>
+  <div *ngIf="isLoading" class="spinner-border text-primary">
+    <span class="visually-hidden">Loading...</span>
   </div>
-</ng-container>
-<div *ngIf="errorMessage" class="alert alert-danger">
-  {{ errorMessage }}
+  <div *ngIf="result" class="card mb-4">
+    <div class="card-header">
+      <h2 class="h5 mb-0">Summary</h2>
+    </div>
+    <div class="card-body">
+      <div class="bg-light p-3 rounded">
+        <p style="white-space: pre-wrap" class="mb-0">{{ result }}</p>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+  <app-assistant-footer></app-assistant-footer>
 </div>
-<app-assistant-footer></app-assistant-footer>

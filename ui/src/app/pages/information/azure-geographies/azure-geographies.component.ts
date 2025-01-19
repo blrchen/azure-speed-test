@@ -23,13 +23,14 @@ export class AzureGeographiesComponent implements OnInit {
     this.tableData = data
   }
 
+  getRegionUrl(displayName: string): string {
+    return '/Information/AzureRegions/' + displayName.replace(/\s+/g, '')
+  }
+
   private initializeSeoProperties(): void {
     this.seoService.setMetaTitle('Azure Geographies | Data Residency and Compliance')
     this.seoService.setMetaDescription(
       'Learn about Azure Geographies, which are distinct markets designed to maintain data residency and compliance boundaries.'
-    )
-    this.seoService.setMetaKeywords(
-      'Azure, Geographies, Data Residency, Compliance, Azure Regions, Business Continuity, Disaster Recovery'
     )
     this.seoService.setCanonicalUrl('https://www.azurespeed.com/Information/AzureGeographies')
   }

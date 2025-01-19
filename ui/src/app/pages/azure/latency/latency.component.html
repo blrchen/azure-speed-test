@@ -1,309 +1,328 @@
-<h1 class="h2">Azure Latency Test</h1>
-<p id="description">
-  Test network latency from your IP location to Azure datacenters worldwide. It's recommended that
-  you choose the datacenter that is closest to you and your clients. A closer datacenter generally
-  provides less latency and faster throughput.
-</p>
+<div class="container-fluid py-3">
+  <h1 class="h2 fw-bold">Azure Latency Test</h1>
+  <p>
+    Test network latency from your IP location to Azure datacenters worldwide. It's recommended that
+    you choose the datacenter that is closest to you and your clients. A closer datacenter generally
+    provides less latency and faster throughput.
+  </p>
 
-<h2 class="h4">Measure Latency to Azure Regions</h2>
-<div class="alert alert-info alert-dismissible fade show">
-  <strong>Instructions:</strong>
-  Select Azure data centers to start the latency test, and allow approximately 30-60 seconds for the
-  results to stabilize. The closest Azure Regions to your location will be highlighted in the
-  "Closest Azure Datacenters" section below, you can also scroll down to view the full results in
-  the "Azure Latency Test Results" section.
+  <div class="card shadow-sm mb-3">
+    <div class="card-body">
+      <h2 class="h4 mb-3">Select Regions to Test</h2>
+      <div class="alert alert-info alert-dismissible fade show">
+        <strong>Testing Instructions</strong>
+        <ol class="mb-0">
+          <li>Select the regions you want to test</li>
+          <li>Wait 30-60 seconds for results to stabilize</li>
+          <li>Review your closest datacenters in the results below</li>
+        </ol>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      <app-region-group></app-region-group>
+    </div>
+  </div>
 
-  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
+  <h2 class="h4 fw-bold">Recommended Azure Regions</h2>
+  <p *ngIf="tableDataTop3.length > 0">
+    Based on your current location, here are the Azure regions with the lowest latency:
+  </p>
+  <p *ngIf="!tableDataTop3.length" class="text-danger fw-bold">
+    Please select regions above to view your closest Azure datacenters.
+  </p>
+  <div class="table-responsive mb-3" *ngIf="tableDataTop3.length > 0">
+    <table class="table table-hover align-middle border shadow-sm rounded-3">
+      <thead class="bg-light">
+        <tr>
+          <th scope="col" style="width: 60%">Region & Location</th>
+          <th scope="col" style="width: 40%">Average Latency (ms)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of tableDataTop3">
+          <td>
+            <div class="d-flex flex-column">
+              <span class="fw-medium">{{ item.displayName }}</span>
+              <small class="text-muted">{{ item.physicalLocation }}</small>
+            </div>
+          </td>
+          <td>
+            <div class="d-flex align-items-center">
+              <code>{{ item.averageLatency }} ms</code>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="latency-chart-container" *ngIf="chartDataSeries && chartDataSeries.length > 0">
+    <ngx-charts-line-chart
+      [results]="chartDataSeries"
+      [scheme]="colorScheme"
+      [animations]="false"
+      [rangeFillOpacity]="1"
+      [xAxis]="true"
+      [yAxis]="true"
+      [roundDomains]="true"
+      [showXAxisLabel]="true"
+      [showYAxisLabel]="true"
+      [curve]="curve"
+      [xAxisTicks]="xAxisTicks"
+      [yScaleMin]="0"
+      [legend]="true"
+      [legendPosition]="legendPosition"
+      [legendTitle]="''"
+    ></ngx-charts-line-chart>
+  </div>
 
-<app-region-group></app-region-group>
-
-<h2 class="h4">Closest Azure Datacenters</h2>
-
-<div class="table-responsive">
-  <table class="table table-bordered table-striped table-hover">
-    <thead>
-      <tr>
-        <th scope="col">Region</th>
-        <th scope="col">Average Latency (ms)</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let item of tableDataTop3">
-        <td>{{ item.displayName }} ({{ item.physicalLocation }})</td>
-        <td>
-          <code>{{ item.averageLatency }} ms</code>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-<div class="latency-chart-container">
-  <ngx-charts-line-chart
-    [results]="chartDataSeries"
-    [scheme]="colorScheme"
-    [animations]="false"
-    [rangeFillOpacity]="1"
-    [xAxis]="true"
-    [yAxis]="true"
-    [roundDomains]="true"
-    [showXAxisLabel]="true"
-    [showYAxisLabel]="true"
-    [curve]="curve"
-    [xAxisTicks]="xAxisTicks"
-    [yScaleMin]="0"
-  ></ngx-charts-line-chart>
-</div>
-<div class="alert alert-info alert-dismissible fade show">
-  <strong>Tip:</strong>
-  This site enables easy Azure network connectivity testing in your browser. It compares latency
-  across regions but does not measure the absolute lowest latency. Results are indicative. For more
-  accurate measurements, visit
-  <a href="https://www.azurespeed.com/Azure/PsPing" target="_blank">PsPing Network Latency Test</a>
-  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-<h2 class="h4">Azure Latency Test Results</h2>
-<div class="table-responsive">
-  <table class="table table-bordered table-striped table-hover">
-    <thead>
-      <tr>
-        <th scope="col">Geography</th>
-        <th scope="col">Region</th>
-        <th scope="col">Location</th>
-        <th scope="col">Average Latency (ms)</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr
-        *ngFor="let item of tableData"
-        [ngClass]="{
-          'table-success':
-            item?.averageLatency !== undefined &&
-            item.averageLatency! < 100 &&
-            item.averageLatency! !== 0
-        }"
+  <div class="alert alert-info alert-dismissible fade show">
+    <strong>Important Note:</strong>
+    This site enables easy Azure network connectivity testing in your browser. It compares latency
+    across regions but does not measure the absolute lowest latency. Results are indicative. For
+    more accurate measurements, visit
+    <a href="https://www.azurespeed.com/Azure/PsPing" target="_blank">
+      PsPing Network Latency Test
+    </a>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  <ng-container *ngIf="tableData.length > 0">
+    <h2 class="h4 mb-4 fw-bold">Azure Latency Test Results</h2>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle border shadow-sm rounded-3">
+        <thead class="bg-light">
+          <tr>
+            <th class="text-uppercase small fw-bold text-secondary">Geography</th>
+            <th class="text-uppercase small fw-bold text-secondary">Region</th>
+            <th class="text-uppercase small fw-bold text-secondary">Location</th>
+            <th class="text-uppercase small fw-bold text-secondary text-center">Performance</th>
+            <th class="text-uppercase small fw-bold text-secondary text-center">Latency (ms)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of tableData">
+            <td>{{ item.geography }}</td>
+            <td>{{ item.displayName }}</td>
+            <td>{{ item.physicalLocation }}</td>
+            <td class="text-center">
+              <span
+                class="badge rounded-pill px-3 py-2"
+                *ngIf="item.averageLatency && item.averageLatency > 0"
+                [ngClass]="{
+                  'bg-success': item.averageLatency < 100,
+                  'bg-warning text-dark': item.averageLatency >= 100 && item.averageLatency < 200,
+                  'bg-danger': item.averageLatency >= 200
+                }"
+              >
+                {{
+                  item.averageLatency < 100
+                    ? 'FAST'
+                    : item.averageLatency < 200
+                      ? 'ACCEPTABLE'
+                      : 'SLOW'
+                }}
+              </span>
+            </td>
+            <td class="text-center fw-bold">
+              <span
+                *ngIf="item.averageLatency && item.averageLatency > 0"
+                [ngClass]="{
+                  'text-success': item.averageLatency < 100,
+                  'text-warning': item.averageLatency >= 100 && item.averageLatency < 200,
+                  'text-danger': item.averageLatency >= 200
+                }"
+              >
+                {{ item.averageLatency }} ms
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+  <h2 class="h4 mb-4 fw-bold text-dark">Frequently Asked Questions</h2>
+  <div class="accordion shadow-sm rounded-3 mb-5" id="faqAccordion">
+    <div class="accordion-item">
+      <h3 class="accordion-header" id="headingOne">
+        <button
+          class="accordion-button collapsed"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#collapseOne"
+          aria-expanded="false"
+          aria-controls="collapseOne"
+        >
+          What is latency and what constitutes good latency?
+        </button>
+      </h3>
+      <div
+        id="collapseOne"
+        class="accordion-collapse collapse"
+        aria-labelledby="headingOne"
+        data-bs-parent="#faqAccordion"
       >
-        <td>{{ item.geographyGroup }}</td>
-        <td>
-          <code>{{ item.displayName }}</code>
-        </td>
-        <td>{{ item.physicalLocation }}</td>
-        <td>
-          <code>{{ item.averageLatency }} ms</code>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-<h2 class="h4">Frequently Asked Questions</h2>
-<div class="accordion" id="faqAccordion">
-  <div class="accordion-item">
-    <h3 class="accordion-header" id="headingOne">
-      <button
-        class="accordion-button collapsed"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#collapseOne"
-        aria-expanded="false"
-        aria-controls="collapseOne"
-      >
-        What is latency and what constitutes good latency?
-      </button>
-    </h3>
-    <div
-      id="collapseOne"
-      class="accordion-collapse collapse"
-      aria-labelledby="headingOne"
-      data-bs-parent="#faqAccordion"
-    >
-      <div class="accordion-body">
-        <p>
-          <strong>Latency</strong>
-          , often referred to as ping, is the duration for data to travel from the source to the
-          destination and back. The results of this test represent the median round trip time (RTT)
-          latency to Azure storage endpoint, with lower RTT indicating superior performance.
-        </p>
-        <p>
-          <strong>What Constitutes Good Latency?</strong>
-          Good latency varies by application type:
-        </p>
-        <ul>
-          <li>
-            <strong>Real-time applications (e.g., gaming, video conferencing):</strong>
-            Latency below 50 ms is ideal.
-          </li>
-          <li>
-            <strong>Interactive applications (e.g., web browsing, online trading):</strong>
-            Latency between 50 ms and 100 ms is usually acceptable.
-          </li>
-          <li>
-            <strong>Non-interactive applications (e.g., file transfers, backups):</strong>
-            Latency above 100 ms may be acceptable.
-          </li>
-        </ul>
-        <p>These guidelines can vary based on specific application needs and user expectations.</p>
+        <div class="accordion-body">
+          <p>
+            <strong>Latency</strong>
+            , often referred to as ping, is the duration for data to travel from the source to the
+            destination and back. The results of this test represent the median round trip time
+            (RTT) latency to Azure storage endpoint, with lower RTT indicating superior performance.
+          </p>
+          <p>
+            <strong>What Constitutes Good Latency?</strong>
+            Good latency varies by application type:
+          </p>
+          <ul>
+            <li>
+              <strong>Real-time applications (e.g., gaming, video conferencing):</strong>
+              Latency below 50 ms is ideal.
+            </li>
+            <li>
+              <strong>Interactive applications (e.g., web browsing, online trading):</strong>
+              Latency between 50 ms and 100 ms is usually acceptable.
+            </li>
+            <li>
+              <strong>Non-interactive applications (e.g., file transfers, backups):</strong>
+              Latency above 100 ms may be acceptable.
+            </li>
+          </ul>
+          <p>
+            These guidelines can vary based on specific application needs and user expectations.
+          </p>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="accordion-item">
-    <h3 class="accordion-header" id="headingTwo">
-      <button
-        class="accordion-button collapsed"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#collapseTwo"
-        aria-expanded="false"
-        aria-controls="collapseTwo"
+    <div class="accordion-item">
+      <h3 class="accordion-header" id="headingTwo">
+        <button
+          class="accordion-button collapsed"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#collapseTwo"
+          aria-expanded="false"
+          aria-controls="collapseTwo"
+        >
+          How does Azure Latency Test work?
+        </button>
+      </h3>
+      <div
+        id="collapseTwo"
+        class="accordion-collapse collapse"
+        aria-labelledby="headingTwo"
+        data-bs-parent="#faqAccordion"
       >
-        How does Azure Latency Test work?
-      </button>
-    </h3>
-    <div
-      id="collapseTwo"
-      class="accordion-collapse collapse"
-      aria-labelledby="headingTwo"
-      data-bs-parent="#faqAccordion"
-    >
-      <div class="accordion-body">
-        <p>
-          Your browser sends HTTPS requests to Azure blob files in each region. The median latency
-          is calculated by measuring the time between the request and the response.
-        </p>
+        <div class="accordion-body">
+          <p>
+            Your browser sends HTTPS requests to Azure blob files in each region. The median latency
+            is calculated by measuring the time between the request and the response.
+          </p>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="accordion-item">
-    <h3 class="accordion-header" id="headingThree">
-      <button
-        class="accordion-button collapsed"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#collapseThree"
-        aria-expanded="false"
-        aria-controls="collapseThree"
+    <div class="accordion-item">
+      <h3 class="accordion-header" id="headingThree">
+        <button
+          class="accordion-button collapsed"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#collapseThree"
+          aria-expanded="false"
+          aria-controls="collapseThree"
+        >
+          Why might my Azure Latency Test result differ from my PSPing result?
+        </button>
+      </h3>
+      <div
+        id="collapseThree"
+        class="accordion-collapse collapse"
+        aria-labelledby="headingThree"
+        data-bs-parent="#faqAccordion"
       >
-        Why might my Azure Latency Test result differ from my PSPing result?
-      </button>
-    </h3>
-    <div
-      id="collapseThree"
-      class="accordion-collapse collapse"
-      aria-labelledby="headingThree"
-      data-bs-parent="#faqAccordion"
-    >
-      <div class="accordion-body">
-        <p>
-          The Azure Latency Test measures latency using HTTPS requests to Azure blob storage,
-          whereas PSPing measures TCP or ICMP echo requests. The two methods may yield different
-          results due to varying protocols, network paths, and the nature of the tests. HTTPS
-          requests involve more overhead compared to simple echo requests, which can lead to higher
-          latencies in the Azure Latency Test.
-        </p>
+        <div class="accordion-body">
+          <p>
+            The Azure Latency Test measures latency using HTTPS requests to Azure blob storage,
+            whereas PSPing measures TCP or ICMP echo requests. The two methods may yield different
+            results due to varying protocols, network paths, and the nature of the tests. HTTPS
+            requests involve more overhead compared to simple echo requests, which can lead to
+            higher latencies in the Azure Latency Test.
+          </p>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="accordion-item">
-    <h3 class="accordion-header" id="headingFour">
-      <button
-        class="accordion-button collapsed"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#collapseFour"
-        aria-expanded="false"
-        aria-controls="collapseFour"
+    <div class="accordion-item">
+      <h3 class="accordion-header" id="headingFour">
+        <button
+          class="accordion-button collapsed"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#collapseFour"
+          aria-expanded="false"
+          aria-controls="collapseFour"
+        >
+          Why are some Azure regions not listed?
+        </button>
+      </h3>
+      <div
+        id="collapseFour"
+        class="accordion-collapse collapse"
+        aria-labelledby="headingFour"
+        data-bs-parent="#faqAccordion"
       >
-        Why are some Azure regions not listed?
-      </button>
-    </h3>
-    <div
-      id="collapseFour"
-      class="accordion-collapse collapse"
-      aria-labelledby="headingFour"
-      data-bs-parent="#faqAccordion"
-    >
-      <div class="accordion-body">
-        <p>
-          Some regions may not appear due to special access requirements or restrictions for certain
-          users or organizations. For example, US government regions require approval from the US
-          government, and the Australia Central region is limited to Australian and New Zealand
-          government organizations and their partners. A list of access restricted regions can be
-          found at
-          <a href="https://www.azurespeed.com/Information/AzureRegions" target="_blank">
-            Azure Regions
-          </a>
-          . There is no plan to support these access restricted regions.
-        </p>
-        <p>
-          Additionally, some regions might be too new and not yet included in the test. If you
-          notice a missing recently announced region, please open an issue on
-          <a href="https://github.com/blrchen/azure-speed-test/issues/new" target="_blank">
-            GitHub
-          </a>
-          .
-        </p>
+        <div class="accordion-body">
+          <p>
+            Some regions may not appear due to special access requirements or restrictions for
+            certain users or organizations. For example, US government regions require approval from
+            the US government, and the Australia Central region is limited to Australian and New
+            Zealand government organizations and their partners. A list of access restricted regions
+            can be found at
+            <a href="https://www.azurespeed.com/Information/AzureRegions" target="_blank">
+              Azure Regions
+            </a>
+            . There is no plan to support these access restricted regions.
+          </p>
+          <p>
+            Additionally, some regions might be too new and not yet included in the test. If you
+            notice a missing recently announced region, please open an issue on
+            <a href="https://github.com/blrchen/azure-speed-test/issues/new" target="_blank">
+              GitHub
+            </a>
+            .
+          </p>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="accordion-item">
-    <h3 class="accordion-header" id="headingFive">
-      <button
-        class="accordion-button collapsed"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#collapseFive"
-        aria-expanded="false"
-        aria-controls="collapseFive"
+    <div class="accordion-item">
+      <h3 class="accordion-header" id="headingFive">
+        <button
+          class="accordion-button collapsed"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#collapseFive"
+          aria-expanded="false"
+          aria-controls="collapseFive"
+        >
+          Do you support upload, download tests, packet loss, and jitter?
+        </button>
+      </h3>
+      <div
+        id="collapseFive"
+        class="accordion-collapse collapse"
+        aria-labelledby="headingFive"
+        data-bs-parent="#faqAccordion"
       >
-        Do you support upload, download tests, packet loss, and jitter?
-      </button>
-    </h3>
-    <div
-      id="collapseFive"
-      class="accordion-collapse collapse"
-      aria-labelledby="headingFive"
-      data-bs-parent="#faqAccordion"
-    >
-      <div class="accordion-body">
-        <p>
-          Upload tests are available
-          <a href="https://localhost:44424/Azure/Download" target="_blank">here</a>
-          . Download tests are available
-          <a href="https://www.azurespeed.com/Azure/Download" target="_blank">here</a>
-          . Currently, measuring packet loss or jitter is not supported.
-        </p>
-      </div>
-    </div>
-  </div>
-  <div class="accordion-item">
-    <h3 class="accordion-header" id="headingSix">
-      <button
-        class="accordion-button collapsed"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#collapseSix"
-        aria-expanded="false"
-        aria-controls="collapseSix"
-      >
-        Why do I get weird results in Safari?
-      </button>
-    </h3>
-    <div
-      id="collapseSix"
-      class="accordion-collapse collapse"
-      aria-labelledby="headingSix"
-      data-bs-parent="#faqAccordion"
-    >
-      <div class="accordion-body">
-        <p>
-          Users on Apple devices running Safari may notice unusually very low latency numbers which
-          is less than 10ms. The displayed latency numbers may not accurately reflect the true
-          network performance. This issue is tracked on
-          <a href="https://github.com/blrchen/azure-speed-test/issues/102" target="_blank">
-            GitHub
-          </a>
-          .
-        </p>
+        <div class="accordion-body">
+          <p>
+            Upload tests are available
+            <a href="https://localhost:44424/Azure/Download" target="_blank">here</a>
+            . Download tests are available
+            <a href="https://www.azurespeed.com/Azure/Download" target="_blank">here</a>
+            . Currently, measuring packet loss or jitter is not supported.
+          </p>
+        </div>
       </div>
     </div>
   </div>
 </div>
+<style>
+  .latency-chart-container {
+    margin: 2rem 0 3rem;
+  }
+</style>

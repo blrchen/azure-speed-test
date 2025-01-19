@@ -15,9 +15,6 @@ export class AzureIpRangesByServiceComponent {
     this.seoService.setMetaDescription(
       'Discover Azure IP ranges for various services globally. This comprehensive list includes IP ranges for Azure services across different regions and countries.'
     )
-    this.seoService.setMetaKeywords(
-      'Azure IP Ranges, Azure Services Tags, Cloud Infrastructure, Global Azure Regions, Azure Data Centers'
-    )
     this.seoService.setCanonicalUrl('https://www.azurespeed.com/Information/AzureIpRangesByService')
   }
 }

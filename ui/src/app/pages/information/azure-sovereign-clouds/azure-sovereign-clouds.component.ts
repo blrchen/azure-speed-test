@@ -15,9 +15,6 @@ export class AzureSovereignCloudsComponent {
     this.seoService.setMetaDescription(
       'Azure Sovereign Clouds function on dedicated, physically and logically isolated networks within a country. Learn more about different Azure sovereign clouds including AzureCloud, AzureChinaCloud, and AzureUSGovernment.'
     )
-    this.seoService.setMetaKeywords(
-      'Azure Sovereign Clouds, AzureCloud, AzureChinaCloud, AzureUSGovernment, Azure German Cloud, 21Vianet, dedicated instance, isolated networks'
-    )
     this.seoService.setCanonicalUrl('https://www.azurespeed.com/Information/AzureSovereignClouds')
   }
 }

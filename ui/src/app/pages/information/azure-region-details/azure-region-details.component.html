@@ -1,0 +1,138 @@
+<div class="container-fluid py-4">
+  <nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a href="/">Home</a>
+      </li>
+      <li class="breadcrumb-item">
+        <a href="/Information/AzureRegions">Azure Regions</a>
+      </li>
+      <li class="breadcrumb-item">
+        <a href="/Information/AzureRegions/{{ regionId }}">{{ regionData?.displayName }}</a>
+      </li>
+    </ol>
+  </nav>
+
+  <!-- Region Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="h2 mb-1">{{ regionData?.displayName }}</h1>
+      <p class="text-muted mb-0">
+        <span class="badge" [ngClass]="regionData?.restricted ? 'bg-warning' : 'bg-success'">
+          {{ regionData?.restricted ? 'Restricted Access' : 'Generally Available' }}
+        </span>
+        <span class="ms-2 text-secondary">{{ regionData?.name }}</span>
+      </p>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Map and Key Details -->
+    <div class="col-12 mb-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <div id="region-map" class="region-map mb-4 border rounded" style="height: 350px"></div>
+          <h2 class="h4 mb-3 d-flex align-items-center">Region Details</h2>
+          <div class="row g-4">
+            <div class="col-md-6">
+              <dl class="row mb-0">
+                <dt class="col-sm-5 text-secondary">Location</dt>
+                <dd class="col-sm-7">{{ regionData?.physicalLocation }}</dd>
+                <dt class="col-sm-5 text-secondary">Coordinates</dt>
+                <dd class="col-sm-7">
+                  <a
+                    [href]="
+                      'https://www.google.com/maps/search/' +
+                      regionData?.latitude +
+                      ',' +
+                      regionData?.longitude
+                    "
+                    target="_blank"
+                    class="text-decoration-none"
+                  >
+                    {{ regionData?.latitude }}, {{ regionData?.longitude }}
+                  </a>
+                </dd>
+                <dt class="col-sm-5 text-secondary">Geography</dt>
+                <dd class="col-sm-7">
+                  {{ regionData?.geography }}
+                  <span class="text-muted small">({{ regionData?.geographyGroup }})</span>
+                </dd>
+                <dt class="col-sm-5 text-secondary">IP Ranges</dt>
+                <dd class="col-sm-7">
+                  <a
+                    href="/Information/AzureIpRanges/AzureCloud.{{ regionId.toLowerCase() }}"
+                    class="text-decoration-none"
+                  >
+                    View IP ranges
+                  </a>
+                </dd>
+              </dl>
+            </div>
+            <div class="col-md-6">
+              <dl class="row mb-0">
+                <dt class="col-sm-5 text-secondary">Status</dt>
+                <dd class="col-sm-7">
+                  <div class="d-flex align-items-center">
+                    <div
+                      class="status-indicator"
+                      [ngClass]="regionData?.restricted ? 'status-restricted' : 'status-available'"
+                    ></div>
+                    <span class="ms-2">
+                      {{ regionData?.restricted ? 'Limited Access' : 'Fully Available' }}
+                    </span>
+                  </div>
+                </dd>
+                <dt class="col-sm-5 text-secondary">Availability Zones</dt>
+                <dd class="col-sm-7">
+                  <span class="badge bg-light text-dark">
+                    {{ regionData?.availabilityZoneCount || 'Not supported' }}
+                  </span>
+                </dd>
+                <dt class="col-sm-5 text-secondary">Paired Region</dt>
+                <dd class="col-sm-7">{{ regionData?.pairedRegion || 'None' }}</dd>
+                <dt class="col-sm-5 text-secondary">Established</dt>
+                <dd class="col-sm-7">
+                  <span *ngIf="regionData?.yearOpen" class="badge bg-light text-dark">
+                    {{ regionData?.yearOpen }}
+                  </span>
+                  <span *ngIf="!regionData?.yearOpen">N/A</span>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+  .status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    position: relative;
+  }
+
+  .status-available {
+    background-color: #28a745;
+    box-shadow: 0 0 0 4px rgba(40, 167, 69, 0.2);
+  }
+
+  .status-restricted {
+    background-color: #ffc107;
+    box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.2);
+  }
+
+  .region-map {
+    background-color: #f8f9fa;
+  }
+
+  dt {
+    font-weight: 500;
+  }
+
+  .badge {
+    font-weight: 500;
+  }
+</style>

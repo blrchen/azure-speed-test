@@ -9,7 +9,7 @@ import { environment } from '../../../../environments/environment'
 
 interface UploadSpeedTestResult {
   displayName: string
-  physicalLocation: string | undefined
+  physicalLocation: string
   uploadProgressPercentage: number
   uploadTimeSeconds: number
   uploadSpeedMbps: number
@@ -28,8 +28,6 @@ export class UploadComponent implements OnInit, OnDestroy {
   selectedUploadSizeBytes: number = 100 * 1024 * 1024 // Default to 100MB
 
   testResults: UploadSpeedTestResult[] = []
-  sortedBy = ''
-
   constructor(
     private regionService: RegionService,
     private utilsService: UtilsService,
@@ -42,9 +40,6 @@ export class UploadComponent implements OnInit, OnDestroy {
     this.seoService.setMetaTitle('Azure Storage Upload Speed Test')
     this.seoService.setMetaDescription(
       'Test the upload speed to Azure Storage Service across different regions worldwide.'
-    )
-    this.seoService.setMetaKeywords(
-      'Azure, Storage, Blob, Upload, Speed Test, Cloud Storage, Regions'
     )
     this.seoService.setCanonicalUrl('https://www.azurespeed.com/Azure/Upload')
   }

@@ -13,9 +13,6 @@ export class AzureEnvironmentsComponent {
   private initializeSeoProperties(): void {
     this.seoService.setMetaTitle('Azure Environments')
     this.seoService.setMetaDescription('Difference between Azure cloud and sovereign clouds')
-    this.seoService.setMetaKeywords(
-      'Azure, Azure Cloud, Azure US Government, Azure China Cloud, Active Directory, Azure Services'
-    )
     this.seoService.setCanonicalUrl('https://www.azurespeed.com/Information/AzureEnvironments')
   }
 }

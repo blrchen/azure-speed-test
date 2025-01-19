@@ -1,0 +1,80 @@
+[
+  {
+    "displayName": "China East",
+    "geography": "China",
+    "geographyGroup": "China",
+    "latitude": 31.3209,
+    "longitude": 121.5891,
+    "pairedRegion": "China North",
+    "physicalLocation": "Shanghai",
+    "regionalDisplayName": "(Asia Pacific) China East",
+    "name": "chinaeast",
+    "availabilityZoneCount": 0,
+    "restricted": false
+  },
+  {
+    "displayName": "China East 2",
+    "geography": "China",
+    "geographyGroup": "China",
+    "latitude": 31.3209,
+    "longitude": 121.5891,
+    "pairedRegion": "China North 2",
+    "physicalLocation": "Shanghai",
+    "regionalDisplayName": "",
+    "name": "chinaeast2",
+    "availabilityZoneCount": 0,
+    "restricted": false
+  },
+  {
+    "displayName": "China East 3",
+    "geography": "China",
+    "geographyGroup": "China",
+    "latitude": 31.9802,
+    "longitude": 120.8943,
+    "pairedRegion": "China North 3",
+    "physicalLocation": "Nantong",
+    "regionalDisplayName": "",
+    "name": "chinaeast3",
+    "availabilityZoneCount": 0,
+    "restricted": false
+  },
+  {
+    "displayName": "China North",
+    "geography": "China",
+    "geographyGroup": "China",
+    "latitude": 39.9788,
+    "longitude": 116.4959,
+    "pairedRegion": "China East",
+    "physicalLocation": "Beijing",
+    "regionalDisplayName": "",
+    "name": "chinanorth",
+    "availabilityZoneCount": 0,
+    "restricted": false
+  },
+  {
+    "displayName": "China North 2",
+    "geography": "China",
+    "geographyGroup": "China",
+    "latitude": 39.9788,
+    "longitude": 116.4959,
+    "pairedRegion": "China East 2",
+    "physicalLocation": "Beijing",
+    "regionalDisplayName": "",
+    "name": "chinanorth2",
+    "availabilityZoneCount": 0,
+    "restricted": false
+  },
+  {
+    "displayName": "China North 3",
+    "geography": "China",
+    "geographyGroup": "China",
+    "latitude": 40.7675,
+    "longitude": 114.8863,
+    "pairedRegion": "China East 3",
+    "physicalLocation": "Zhangjiakou",
+    "regionalDisplayName": "",
+    "name": "chinanorth3",
+    "availabilityZoneCount": 3,
+    "restricted": false
+  }
+]

@@ -8,7 +8,7 @@ interface Card {
 }
 
 @Component({
-  selector: 'app-code-list',
+  selector: 'app-writing-assistant',
   templateUrl: './writing-assistant.component.html'
 })
 export class WritingAssistantComponent {
@@ -43,9 +43,6 @@ export class WritingAssistantComponent {
     this.seoService.setMetaTitle('ChatGPT Writing Assistant')
     this.seoService.setMetaDescription(
       'Welcome to ChatGPT Writing Assistant, your companion for mastering the art of written communication. This AI-driven assistant is ideal for writers, students, professionals, and anyone passionate about crafting compelling narratives with ease and precision.'
-    )
-    this.seoService.setMetaKeywords(
-      'ChatGPT, Writing Assistant, Text Translator, Text Polisher, Text Summarizer, Email Generator, AI writing tools'
     )
     this.seoService.setCanonicalUrl('https://www.azurespeed.com/ChatGPT/WritingAssistant')
   }

@@ -1,153 +1,300 @@
-<h1 class="h2">Large File Upload Speed Test</h1>
-<p id="description">Test the upload speed of large files to Azure worldwide data centers.</p>
-<h2 class="h4">File Upload Speed Test</h2>
-<div class="alert alert-info alert-dismissible fade show">
-  <strong>Instructions:</strong>
-  Select a region and file, adjust the block size and concurrency if needed, then click "Start
-  Upload Test". Results will be displayed under "Upload Test Results".
-  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-<form>
-  <div class="mb-3">
-    <label for="regionSelect" class="form-label">Region</label>
-    <select class="form-select" id="regionSelect" name="regionSelect" [(ngModel)]="selectedRegion">
-      <option value="">--Please select a region--</option>
-      <option *ngFor="let region of regions" [value]="region.name">
-        {{ region.displayName }}
-      </option>
-    </select>
-  </div>
-  <div class="mb-3">
-    <label for="fileInput" class="form-label">File</label>
-    <input
-      type="file"
-      class="form-control"
-      id="fileInput"
-      (change)="onFileChange($event)"
-      required
-    />
-  </div>
-  <div class="mb-3">
-    <label class="form-label" for="blockSize">Block Size (KB) - Optional</label>
-    <p class="form-text">
-      Specifies the maximum block size for each data transfer request during upload.
-    </p>
-    <div class="d-flex flex-row">
-      <div *ngFor="let b of blockSizeKBOptions" class="form-check form-check-inline">
-        <input
-          class="form-check-input"
-          type="radio"
-          id="blockSize{{ b }}"
-          name="blockSize"
-          [value]="b"
-          [(ngModel)]="selectedBlockSizeKB"
-        />
-        <label class="form-check-label" for="blockSize{{ b }}">{{ b }}</label>
-      </div>
-    </div>
-  </div>
-  <div class="mb-3">
-    <label class="form-label" for="concurrency">Concurrency - Optional</label>
-    <p class="form-text">Controls the number of parallel requests during the data transfer.</p>
-    <div class="d-flex flex-row">
-      <div *ngFor="let c of concurrencyOptions" class="form-check form-check-inline">
-        <input
-          class="form-check-input"
-          type="radio"
-          id="concurrency{{ c }}"
-          name="concurrency"
-          [value]="c"
-          [(ngModel)]="selectedConcurrency"
-        />
-        <label class="form-check-label" for="concurrency{{ c }}">{{ c }}</label>
-      </div>
-    </div>
-  </div>
-  <div *ngIf="!selectedFile || !selectedRegion" class="alert alert-danger mt-3">
-    <strong>Both region and file must be selected to start the test.</strong>
-  </div>
-  <button
-    class="btn btn-primary"
-    (click)="onSubmit()"
-    [disabled]="!selectedFile || !selectedRegion"
-  >
-    Start Upload Test
-  </button>
-</form>
-<ng-container *ngIf="uploadProgressPercentage">
-  <div class="progress my-4">
-    <div
-      class="progress-bar progress-bar-striped bg-success"
-      role="progressbar"
-      [style.width]="uploadProgressPercentage + '%'"
-      [attr.aria-valuenow]="uploadProgressPercentage"
-      aria-valuemin="0"
-      aria-valuemax="100"
-    >
-      {{ uploadProgressPercentage }}%
-    </div>
-  </div>
-</ng-container>
-<ng-container *ngIf="testResults.length > 0">
-  <h2 class="h4">Upload Speed Test Results</h2>
-  <div class="table-responsive">
-    <table class="table table-bordered table-striped table-hover">
-      <thead>
-        <tr>
-          <th scope="col">File Name</th>
-          <th scope="col">Region</th>
-          <th scope="col">Block Size (KB)</th>
-          <th scope="col">Concurrency</th>
-          <th scope="col">File Size</th>
-          <th scope="col">Upload Time</th>
-          <th scope="col">Upload Speed</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let result of testResults">
-          <td>{{ result.fileName }}</td>
-          <td>{{ result.region }}</td>
-          <td>{{ result.blockSizeKB }}</td>
-          <td>{{ result.concurrency }}</td>
-          <td>{{ result.fileSize | number: '1.2-2' }} MB</td>
-          <td>
-            <code>{{ result.uploadTimeSeconds }} seconds</code>
-          </td>
-          <td>
-            <code>{{ result.uploadSpeedMbps | number: '1.2-2' }} MB/s</code>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</ng-container>
-<h2 class="h4">Frequently Asked Questions</h2>
-<div class="accordion" id="faqAccordion">
-  <div class="accordion-item">
-    <h3 class="accordion-header" id="headingOne">
-      <button
-        class="accordion-button collapsed"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#collapseOne"
-        aria-expanded="false"
-        aria-controls="collapseOne"
-      >
-        How does Large File Upload Speed Test tool work?
-      </button>
-    </h3>
-    <div
-      id="collapseOne"
-      class="accordion-collapse collapse"
-      aria-labelledby="headingOne"
-      data-bs-parent="#faqAccordion"
-    >
-      <div class="accordion-body">
-        <p>
-          This tool measures the upload speed by sending test file provided by you to Azure storage
-          service in your chosen Azure datacenter, calculating the upload speed, and displaying the
-          results.
+<div class="container-fluid py-3">
+  <h1 class="h2 fw-bold">Large File Upload Speed Test</h1>
+  <p>
+    Evaluate blob storage upload performance across Azure's global infrastructure by testing file
+    transfer speeds to different regions.
+  </p>
+
+  <div class="alert alert-info alert-dismissible fade show shadow-sm">
+    <div class="d-flex">
+      <div>
+        <strong class="d-block mb-2">Getting Started:</strong>
+        <ol class="mb-0">
+          <li>Select your target Azure region from the dropdown</li>
+          <li>Choose a test file and configure block size/concurrency settings as needed</li>
+          <li>Click "Start Test" to begin the evaluation</li>
+        </ol>
+        <hr />
+        <p class="mb-0">
+          Note: Test results may vary between runs due to network congestion, routing changes, local
+          connectivity quality, and system resource usage.
         </p>
+      </div>
+    </div>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+
+  <div class="card mb-4 shadow-sm">
+    <div class="card-header">
+      <h2 class="h4 mb-0">Test Configuration</h2>
+    </div>
+    <div class="card-body">
+      <form>
+        <div class="row g-4">
+          <div class="col-md-6">
+            <label for="regionSelect" class="form-label fw-bold">Target Region</label>
+            <select
+              class="form-select"
+              id="regionSelect"
+              name="regionSelect"
+              [(ngModel)]="selectedRegion"
+            >
+              <option value="">Select an Azure region</option>
+              <option *ngFor="let region of regions" [value]="region.name">
+                {{ region.displayName }}
+              </option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label for="fileInput" class="form-label fw-bold">Test File</label>
+            <input
+              type="file"
+              class="form-control"
+              id="fileInput"
+              (change)="onFileChange($event)"
+              required
+            />
+            <div class="form-text text-success">
+              Recommended: Use files larger than 100MB for accurate results
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-4 mt-2">
+          <div class="col-md-6">
+            <label for="blockSizeGroup" class="form-label fw-bold">Block Size</label>
+            <div class="form-text mb-2 text-muted">Recommended: 4MB for files >100MB</div>
+            <div id="blockSizeGroup" class="d-flex flex-row gap-3">
+              <div *ngFor="let b of blockSizeKBOptions" class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  id="blockSize{{ b }}"
+                  name="blockSize"
+                  [value]="b"
+                  [(ngModel)]="selectedBlockSizeKB"
+                />
+                <label class="form-check-label" for="blockSize{{ b }}">{{ b }}KB</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label for="concurrencyGroup" class="form-label fw-bold">Concurrency</label>
+            <div class="form-text mb-2 text-muted">Recommended: 4-8 for optimal performance</div>
+            <div id="concurrencyGroup" class="d-flex flex-row gap-3">
+              <div *ngFor="let c of concurrencyOptions" class="form-check form-check-inline">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  id="concurrency{{ c }}"
+                  name="concurrency"
+                  [value]="c"
+                  [(ngModel)]="selectedConcurrency"
+                />
+                <label class="form-check-label" for="concurrency{{ c }}">{{ c }}</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <button
+            class="btn btn-primary btn-lg"
+            (click)="onSubmit()"
+            [disabled]="!selectedFile || !selectedRegion"
+          >
+            Start Test
+          </button>
+          <div *ngIf="!selectedFile || !selectedRegion" class="alert alert-warning mt-3">
+            Please select both a target region and test file to proceed.
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Progress bar with enhanced styling -->
+  <ng-container *ngIf="uploadProgressPercentage">
+    <div class="card mb-4 shadow-sm">
+      <div class="card-body">
+        <h3 class="h5 mb-3">Upload Progress</h3>
+        <div class="progress" style="height: 25px">
+          <div
+            class="progress-bar progress-bar-striped progress-bar-animated bg-success"
+            role="progressbar"
+            [style.width]="uploadProgressPercentage + '%'"
+            [attr.aria-valuenow]="uploadProgressPercentage"
+            aria-valuemin="0"
+            aria-valuemax="100"
+          >
+            <strong>{{ uploadProgressPercentage }}%</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- Enhanced test results -->
+  <ng-container *ngIf="testResults.length > 0">
+    <div class="card shadow-sm">
+      <div class="card-header bg-light">
+        <h2 class="h4 mb-0">Performance Test Results</h2>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover">
+            <thead class="table-light">
+              <tr>
+                <th scope="col">File Name</th>
+                <th scope="col">Region</th>
+                <th scope="col">Block Size</th>
+                <th scope="col">Concurrency</th>
+                <th scope="col">File Size</th>
+                <th scope="col">Duration</th>
+                <th scope="col">Throughput</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let result of testResults">
+                <td>
+                  <code>{{ result.fileName }}</code>
+                </td>
+                <td>{{ result.region }}</td>
+                <td class="text-center">{{ result.blockSizeKB }}KB</td>
+                <td class="text-center">{{ result.concurrency }}</td>
+                <td>{{ result.fileSize | number: '1.2-2' }} MB</td>
+                <td>
+                  <span class="badge bg-secondary fs-6 fw-bold px-3">
+                    {{ result.uploadTimeSeconds }}s
+                  </span>
+                </td>
+                <td>
+                  <span class="badge bg-success fs-6 fw-bold px-3">
+                    {{ result.uploadSpeedMbps | number: '1.2-2' }} MB/s
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- Enhanced FAQ section -->
+  <div class="mt-5 mb-4">
+    <h2 class="h4 mb-3">Frequently Asked Questions</h2>
+    <div class="accordion accordion-flush" id="faqAccordion">
+      <div class="accordion-item">
+        <h3 class="accordion-header" id="headingOne">
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseOne"
+            aria-expanded="false"
+            aria-controls="collapseOne"
+          >
+            How does Large File Upload Speed Test tool work?
+          </button>
+        </h3>
+        <div
+          id="collapseOne"
+          class="accordion-collapse collapse"
+          aria-labelledby="headingOne"
+          data-bs-parent="#faqAccordion"
+        >
+          <div class="accordion-body">
+            <p>The performance test tool:</p>
+            <ul>
+              <li>
+                Uploads your test file to temporary Azure Blob storage in your selected region
+              </li>
+              <li>Measures actual transfer speeds accounting for network conditions</li>
+              <li>Calculates and displays detailed performance metrics</li>
+              <li>Automatically removes the test file after completion</li>
+            </ul>
+            <p class="mb-0">
+              Results can vary based on network conditions, file size, and selected parameters.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h3 class="accordion-header" id="headingTwo">
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseTwo"
+            aria-expanded="false"
+            aria-controls="collapseTwo"
+          >
+            How should I choose block size and concurrency?
+          </button>
+        </h3>
+        <div
+          id="collapseTwo"
+          class="accordion-collapse collapse"
+          aria-labelledby="headingTwo"
+          data-bs-parent="#faqAccordion"
+        >
+          <div class="accordion-body">
+            <p>
+              <strong>Block Size:</strong>
+              Larger blocks (4MB+) typically work better for files over 100MB but require more
+              memory.
+            </p>
+            <p>
+              <strong>Concurrency:</strong>
+              Higher values can improve speed but may be limited by:
+            </p>
+            <ul>
+              <li>Available bandwidth</li>
+              <li>System resources</li>
+              <li>Azure Storage account limits</li>
+            </ul>
+            <p class="mb-0">Start with default values and adjust based on your results.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h3 class="accordion-header" id="headingThree">
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseThree"
+            aria-expanded="false"
+            aria-controls="collapseThree"
+          >
+            Why do test results vary between runs?
+          </button>
+        </h3>
+        <div
+          id="collapseThree"
+          class="accordion-collapse collapse"
+          aria-labelledby="headingThree"
+          data-bs-parent="#faqAccordion"
+        >
+          <div class="accordion-body">
+            <p>Performance variations are normal and can be attributed to multiple factors:</p>
+            <ul>
+              <li>Network path changes and internet traffic conditions</li>
+              <li>Regional network congestion</li>
+              <li>Local network quality and bandwidth availability</li>
+              <li>Distance to the selected Azure region</li>
+              <li>System resource availability</li>
+            </ul>
+            <p class="mb-0">
+              For the most accurate assessment, we recommend running multiple tests at different
+              times and comparing the results.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   </div>

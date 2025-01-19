@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core'
+import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core'
+import { isPlatformBrowser } from '@angular/common'
 import { FormBuilder, FormGroup, Validators } from '@angular/forms'
 import axios, { AxiosError } from 'axios'
 import { AssistantResponse } from '../../../../models'
+import { chatGPTConfig } from '../../chatgpt.config'
 import { SystemPrompts } from '../../system-prompts'
 import { environment } from '../../../../../environments/environment'
 import { SeoService } from '../../../../services'
@@ -42,7 +44,8 @@ export class TranslateTextComponent implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    private seoService: SeoService
+    private seoService: SeoService,
+    @Inject(PLATFORM_ID) private platformId: object
   ) {
     this.initializeSeoProperties()
   }
@@ -55,9 +58,6 @@ export class TranslateTextComponent implements OnInit {
     this.seoService.setMetaTitle('ChatGPT Text Translator - Translate Text Instantly')
     this.seoService.setMetaDescription(
       'Use our ChatGPT-powered text translator to instantly translate text into over 20 languages.'
-    )
-    this.seoService.setMetaKeywords(
-      'ChatGPT, text translator, translate text, multiple languages, instant translation'
     )
     this.seoService.setCanonicalUrl('https://www.azurespeed.com/ChatGPT/TranslateText')
   }
@@ -78,7 +78,7 @@ export class TranslateTextComponent implements OnInit {
     this.errorMessage = null
     const { userContent, responseLanguage } = this.userContentForm.value
     const payload = {
-      accessToken: '241201tc-a314-4c51-9437-cc84416b4aa4',
+      accessToken: chatGPTConfig.accessToken,
       systemPromptId: this.systemPromptId,
       userContent,
       responseLanguage
@@ -112,10 +112,15 @@ export class TranslateTextComponent implements OnInit {
   }
 
   private saveLanguage(lang: string): void {
-    localStorage.setItem(this.localStorageKey, lang)
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.setItem(this.localStorageKey, lang)
+    }
   }
 
   private getSavedLanguage(): string {
-    return localStorage.getItem(this.localStorageKey) || 'English'
+    if (isPlatformBrowser(this.platformId)) {
+      return localStorage.getItem(this.localStorageKey) || 'English'
+    }
+    return 'English' // Default value when not running in the browser
   }
 }

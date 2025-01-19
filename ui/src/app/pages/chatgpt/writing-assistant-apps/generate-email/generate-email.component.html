@@ -1,50 +1,55 @@
-<h1 class="h2">ChatGPT Email Generator</h1>
-<p id="description">
-  Generate medium to long-sized emails quickly with ChatGPT's Email Generator. Simply enter your
-  desired email subject and let our tool do the rest.
-</p>
-<form [formGroup]="userContentForm" (submit)="submitForm()" class="mb-3">
-  <fieldset class="form-group mb-3">
-    <label for="userContent">
-      Enter your desired email subject below and click 'Generate Email'.
-    </label>
-    <textarea
-      class="form-control"
-      id="userContent"
-      placeholder="Enter your desired email subject here..."
-      formControlName="userContent"
-      required
-      rows="6"
-    ></textarea>
-    <small class="form-text text-muted">
-      {{ userContentForm.get('userContent')?.value.length }}/5000 characters
-    </small>
-    <div
-      *ngIf="userContentForm.controls['userContent'].errors?.['maxlength']"
-      class="alert alert-danger mt-2"
+<div class="container-fluid py-3">
+  <h1 class="h2 fw-bold">ChatGPT Email Generator</h1>
+  <p>
+    Generate medium to long-sized emails quickly with ChatGPT's Email Generator. Simply enter your
+    desired email subject and let our tool do the rest.
+  </p>
+  <form [formGroup]="userContentForm" (submit)="submitForm()" class="mb-3">
+    <fieldset class="form-group mb-3">
+      <label for="userContent" class="form-label fw-bold">Email Subject or Key Points</label>
+      <textarea
+        class="form-control"
+        id="userContent"
+        placeholder="Describe your email requirements here..."
+        formControlName="userContent"
+        required
+        rows="6"
+      ></textarea>
+      <small class="form-text text-muted">
+        Characters: {{ userContentForm.get('userContent')?.value.length }}/5000
+      </small>
+      <div
+        *ngIf="userContentForm.controls['userContent'].errors?.['maxlength']"
+        class="alert alert-danger mt-2"
+      >
+        Character limit exceeded. Please limit your text to 5000 characters.
+      </div>
+    </fieldset>
+    <button
+      type="submit"
+      class="btn btn-primary me-2"
+      [disabled]="userContentForm.invalid || isLoading"
     >
-      Character limit exceeded. Please limit your text to 5000 characters.
-    </div>
-  </fieldset>
-  <button
-    type="submit"
-    class="btn btn-primary me-2"
-    [disabled]="userContentForm.invalid || isLoading"
-  >
-    Generate Email
-  </button>
-  <button type="button" class="btn btn-secondary ml-2" (click)="resetForm()">Reset</button>
-</form>
-<div *ngIf="isLoading" class="spinner-border text-primary">
-  <span class="visually-hidden">Loading...</span>
-</div>
-<ng-container *ngIf="result">
-  <h2 class="h4">Generated Email:</h2>
-  <div class="alert alert-info d-flex align-items-center">
-    <p class="pre-line">{{ result }}</p>
+      Generate Email
+    </button>
+    <button type="button" class="btn btn-outline-secondary" (click)="resetForm()">Reset</button>
+  </form>
+  <div *ngIf="isLoading" class="spinner-border text-primary">
+    <span class="visually-hidden">Generating email...</span>
   </div>
-</ng-container>
-<div *ngIf="errorMessage" class="alert alert-danger">
-  {{ errorMessage }}
+  <div *ngIf="result" class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h2 class="h5 mb-0">Generated Email</h2>
+      <button class="btn btn-sm btn-outline-primary" (click)="copyToClipboard(result)">Copy</button>
+    </div>
+    <div class="card-body">
+      <div class="bg-light p-3 rounded border">
+        <p style="white-space: pre-wrap" class="mb-0">{{ result }}</p>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+  <app-assistant-footer></app-assistant-footer>
 </div>
-<app-assistant-footer></app-assistant-footer>

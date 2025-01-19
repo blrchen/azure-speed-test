@@ -1,51 +1,56 @@
-<h1 class="h2">ChatGPT Shell Command Generator</h1>
-<p id="description">
-  Use the ChatGPT Shell Command Generator to translate natural language descriptions into executable
-  shell commands.
-</p>
-<form [formGroup]="userContentForm" (submit)="submitForm()" class="mb-3">
-  <fieldset class="form-group mb-3">
-    <label for="userContent">
-      Input the details of the action you want to execute in the terminal below. Click 'Generate' to
-      produce the corresponding shell command.
-    </label>
-    <textarea
-      class="form-control"
-      id="userContent"
-      placeholder="Describe operations like file manipulation, directory navigation, or other terminal tasks."
-      formControlName="userContent"
-      required
-      rows="6"
-    ></textarea>
-    <small class="form-text text-muted">
-      {{ userContentForm.get('userContent')?.value?.length || 0 }}/5000 characters
-    </small>
-    <div
-      *ngIf="userContentForm.controls['userContent'].errors?.['maxlength']"
-      class="alert alert-danger mt-2"
+<div class="container-fluid py-3">
+  <h1 class="h2 fw-bold">ChatGPT Shell Command Generator</h1>
+  <p>
+    Use the ChatGPT Shell Command Generator to translate natural language descriptions into
+    executable shell commands.
+  </p>
+  <form [formGroup]="userContentForm" (submit)="submitForm()" class="mb-3">
+    <fieldset class="form-group mb-3">
+      <label for="userContent" class="form-label fw-bold">
+        Details of the action you want to execute in the terminal
+      </label>
+      <textarea
+        class="form-control"
+        id="userContent"
+        placeholder="Describe operations like file manipulation, directory navigation, or other terminal tasks."
+        formControlName="userContent"
+        required
+        rows="6"
+      ></textarea>
+      <small class="form-text text-muted">
+        {{ userContentForm.get('userContent')?.value?.length || 0 }}/5000 characters
+      </small>
+      <div
+        *ngIf="userContentForm.controls['userContent'].errors?.['maxlength']"
+        class="alert alert-danger mt-2"
+      >
+        Character limit exceeded. Please limit your text to 5000 characters.
+      </div>
+    </fieldset>
+    <button
+      type="submit"
+      class="btn btn-primary me-2"
+      [disabled]="userContentForm.invalid || isLoading"
     >
-      Character limit exceeded. Please limit your text to 5000 characters.
-    </div>
-  </fieldset>
-  <button
-    type="submit"
-    class="btn btn-primary me-2"
-    [disabled]="userContentForm.invalid || isLoading"
-  >
-    Generate
-  </button>
-  <button type="button" class="btn btn-secondary" (click)="resetForm()">Reset</button>
-</form>
-<div *ngIf="isLoading" class="spinner-border text-primary">
-  <span class="visually-hidden">Loading...</span>
-</div>
-<ng-container *ngIf="result">
-  <h2 class="h4">Generated Command:</h2>
-  <div class="alert alert-info d-flex align-items-center">
-    <p class="pre-line">{{ result }}</p>
+      Generate
+    </button>
+    <button type="button" class="btn btn-secondary" (click)="resetForm()">Reset</button>
+  </form>
+  <div *ngIf="isLoading" class="spinner-border text-primary">
+    <span class="visually-hidden">Loading...</span>
   </div>
-</ng-container>
-<div *ngIf="errorMessage" class="alert alert-danger">
-  {{ errorMessage }}
+  <div *ngIf="result" class="card mb-4">
+    <div class="card-header">
+      <h2 class="h5 mb-0">Generated Command</h2>
+    </div>
+    <div class="card-body">
+      <div class="bg-light p-3 rounded">
+        <p style="white-space: pre-wrap" class="mb-0">{{ result }}</p>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+  <app-assistant-footer></app-assistant-footer>
 </div>
-<app-assistant-footer></app-assistant-footer>

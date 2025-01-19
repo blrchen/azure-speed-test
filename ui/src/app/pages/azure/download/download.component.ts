@@ -1,4 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core'
+import { Component, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core'
+import { isPlatformBrowser } from '@angular/common'
 import { Subject } from 'rxjs'
 import { takeUntil } from 'rxjs/operators'
 import axios from 'axios'
@@ -21,19 +22,41 @@ export class DownloadComponent implements OnInit, OnDestroy {
 
   constructor(
     private regionService: RegionService,
-    private seoService: SeoService
+    private seoService: SeoService,
+    @Inject(PLATFORM_ID) private platformId: object
   ) {
-    this.initializeSeoProperties()
+    try {
+      console.log('DownloadComponent constructor - platformId:', this.platformId)
+      this.initializeSeoProperties()
+    } catch (error) {
+      console.error('Error in DownloadComponent constructor:', error)
+    }
   }
 
   ngOnInit() {
-    this.regionService.selectedRegions$.pipe(takeUntil(this.destroy$)).subscribe((res) => {
-      this.regions = res || []
-      this.tableData = res || []
-      this.regions.forEach((item, index) => {
-        this.getDownloadUrl(item, index)
-      })
-    })
+    try {
+      console.log('DownloadComponent ngOnInit')
+      if (isPlatformBrowser(this.platformId)) {
+        console.log('Setting up regions subscription')
+        this.regionService.selectedRegions$.pipe(takeUntil(this.destroy$)).subscribe(
+          (res) => {
+            console.log('Received regions update:', res?.length)
+            this.regions = res || []
+            this.tableData = res || []
+            if (this.regions.length) {
+              this.regions.forEach((item, index) => {
+                this.getDownloadUrl(item, index)
+              })
+            }
+          },
+          (error) => {
+            console.error('Error in regions subscription:', error)
+          }
+        )
+      }
+    } catch (error) {
+      console.error('Error in DownloadComponent ngOnInit:', error)
+    }
   }
 
   async getDownloadUrl(region: RegionModel, index: number) {
@@ -76,7 +99,6 @@ export class DownloadComponent implements OnInit, OnDestroy {
     this.seoService.setMetaDescription(
       'Test the download speed from Azure Storage Service across different regions worldwide.'
     )
-    this.seoService.setMetaKeywords('Azure, Storage, Blob, Download, Speed Test')
     this.seoService.setCanonicalUrl('https://www.azurespeed.com/Azure/Download')
   }
 }

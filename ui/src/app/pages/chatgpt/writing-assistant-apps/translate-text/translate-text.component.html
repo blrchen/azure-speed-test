@@ -1,68 +1,70 @@
-<h1 class="h2">ChatGPT Text Translator</h1>
-<p id="description">
-  Use our ChatGPT-powered text translator to instantly translate text into over 20 languages.
-</p>
-<form [formGroup]="userContentForm" (submit)="submitForm()" class="mb-3">
-  <fieldset class="form-group mb-3">
-    <label for="userContent">
-      Type or paste the text you want to translate in the box below, then click 'Translate'.
-    </label>
-    <textarea
-      class="form-control"
-      id="userContent"
-      placeholder="Type or paste your text here..."
-      formControlName="userContent"
-      required
-      rows="6"
-    ></textarea>
-    <small class="form-text text-muted">
-      {{ userContentForm.get('userContent')?.value.length }}/5000 characters
-    </small>
-    <div
-      *ngIf="userContentForm.controls['userContent'].errors?.['maxlength']"
-      class="alert alert-danger mt-2"
+<div class="container-fluid py-3">
+  <h1 class="h2 fw-bold">ChatGPT Text Translator</h1>
+  <p>Use our ChatGPT-powered text translator to instantly translate text into over 20 languages.</p>
+  <form [formGroup]="userContentForm" (submit)="submitForm()" class="mb-3">
+    <fieldset class="form-group mb-3">
+      <label for="userContent" class="form-label fw-bold">Text to Translate</label>
+      <textarea
+        class="form-control"
+        id="userContent"
+        placeholder="Type or paste your text here..."
+        formControlName="userContent"
+        required
+        rows="6"
+      ></textarea>
+      <small class="form-text text-muted">
+        Characters: {{ userContentForm.get('userContent')?.value.length }}/5000
+      </small>
+      <div
+        *ngIf="userContentForm.controls['userContent'].errors?.['maxlength']"
+        class="alert alert-danger mt-2"
+      >
+        Character limit exceeded. Please limit your text to 5000 characters.
+      </div>
+    </fieldset>
+    <fieldset class="form-group mb-3">
+      <legend class="mb-3">Select Translation Language</legend>
+      <div class="d-flex flex-row flex-wrap">
+        <div *ngFor="let lang of languages" class="form-check form-check-inline mb-2">
+          <input
+            type="radio"
+            id="{{ lang }}"
+            name="responseLanguage"
+            [value]="lang"
+            formControlName="responseLanguage"
+            required
+            class="form-check-input"
+            [checked]="lang === userContentForm.get('responseLanguage')?.value"
+            (change)="onResponseLanguageChange(lang)"
+          />
+          <label for="{{ lang }}" class="form-check-label">{{ lang }}</label>
+        </div>
+      </div>
+    </fieldset>
+    <button
+      type="submit"
+      class="btn btn-primary me-2"
+      [disabled]="userContentForm.invalid || isLoading"
     >
-      Character limit exceeded. Please limit your text to 5000 characters.
+      Translate
+    </button>
+    <button type="button" class="btn btn-secondary" (click)="resetForm()">Reset</button>
+  </form>
+  <div *ngIf="isLoading" class="spinner-border text-primary">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+  <div *ngIf="result" class="card mb-4">
+    <div class="card-header">
+      <h2 class="h5 mb-0">Translation Result</h2>
     </div>
-  </fieldset>
-  <fieldset class="form-group mb-3">
-    <legend class="mb-3">Select Translation Language</legend>
-    <div class="d-flex flex-row flex-wrap">
-      <div *ngFor="let lang of languages" class="form-check form-check-inline mb-2">
-        <input
-          type="radio"
-          id="{{ lang }}"
-          name="responseLanguage"
-          [value]="lang"
-          formControlName="responseLanguage"
-          required
-          class="form-check-input"
-          [checked]="lang === userContentForm.get('responseLanguage')?.value"
-          (change)="onResponseLanguageChange(lang)"
-        />
-        <label for="{{ lang }}" class="form-check-label">{{ lang }}</label>
+    <div class="card-body">
+      <div class="bg-light p-3 rounded">
+        <p style="white-space: pre-wrap" class="mb-0">{{ result }}</p>
       </div>
     </div>
-  </fieldset>
-  <button
-    type="submit"
-    class="btn btn-primary me-2"
-    [disabled]="userContentForm.invalid || isLoading"
-  >
-    Translate
-  </button>
-  <button type="button" class="btn btn-secondary" (click)="resetForm()">Reset</button>
-</form>
-<div *ngIf="isLoading" class="spinner-border text-primary">
-  <span class="visually-hidden">Loading...</span>
-</div>
-<ng-container *ngIf="result">
-  <h2 class="h4">Translation Result:</h2>
-  <div class="alert alert-info d-flex align-items-center">
-    <p class="pre-line">{{ result }}</p>
   </div>
-</ng-container>
-<div *ngIf="errorMessage" class="alert alert-danger">
-  {{ errorMessage }}
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+  <app-assistant-footer></app-assistant-footer>
 </div>
-<app-assistant-footer></app-assistant-footer>

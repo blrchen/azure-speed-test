@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core'
 import { FormBuilder, FormGroup, Validators } from '@angular/forms'
 import axios, { AxiosError } from 'axios'
 import { AssistantResponse } from '../../../../models'
+import { chatGPTConfig } from '../../chatgpt.config'
 import { SystemPrompts } from '../../system-prompts'
 import { environment } from '../../../../../environments/environment'
 import { SeoService } from '../../../../services'
@@ -33,7 +34,6 @@ export class GenerateEmailComponent implements OnInit {
     this.seoService.setMetaDescription(
       "Generate medium to long-sized emails quickly with ChatGPT's Email Generator. Simply enter your desired email subject and let our tool do the rest."
     )
-    this.seoService.setMetaKeywords('ChatGPT, Email Generator, Generate Emails, AI Email Writing')
     this.seoService.setCanonicalUrl('https://www.azurespeed.com/ChatGPT/GenerateEmail')
   }
 
@@ -52,7 +52,7 @@ export class GenerateEmailComponent implements OnInit {
     this.errorMessage = null
     const { userContent } = this.userContentForm.value
     const payload = {
-      accessToken: '241201tc-a314-4c51-9437-cc84416b4aa4',
+      accessToken: chatGPTConfig.accessToken,
       systemPromptId: this.systemPromptId,
       userContent
     }
@@ -73,6 +73,16 @@ export class GenerateEmailComponent implements OnInit {
       this.errorMessage = message
     } finally {
       this.isLoading = false
+    }
+  }
+
+  async copyToClipboard(text: string): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(text)
+      // You could add a toast notification here if you have a notification service
+      console.log('Email copied to clipboard')
+    } catch (err) {
+      console.error('Failed to copy text: ', err)
     }
   }
 

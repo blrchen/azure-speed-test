@@ -1,12 +1,18 @@
-import { Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core'
+import { CommonModule, NgOptimizedImage } from '@angular/common'
 import { SeoService } from '../../../services'
 
 @Component({
   selector: 'app-region-to-region-latency',
-  templateUrl: './region-to-region-latency.component.html'
+  standalone: true,
+  imports: [CommonModule, NgOptimizedImage],
+  templateUrl: './region-to-region-latency.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class RegionToRegionLatencyComponent {
-  constructor(private seoService: SeoService) {
+export class RegionToRegionLatencyComponent implements OnInit {
+  private seoService = inject(SeoService)
+
+  ngOnInit(): void {
     this.initializeSeoProperties()
   }
 

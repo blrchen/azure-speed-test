@@ -1,12 +1,19 @@
-import { Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core'
+import { CommonModule } from '@angular/common'
 import { SeoService } from '../../../services'
+import { HeroIconComponent } from '../../../shared/icons/hero-icons.imports'
 
 @Component({
   selector: 'app-about',
-  templateUrl: './about.component.html'
+  standalone: true,
+  imports: [CommonModule, HeroIconComponent],
+  templateUrl: './about.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AboutComponent {
-  constructor(private seoService: SeoService) {
+export class AboutComponent implements OnInit {
+  private seoService = inject(SeoService)
+
+  ngOnInit(): void {
     this.initializeSeoProperties()
   }
 

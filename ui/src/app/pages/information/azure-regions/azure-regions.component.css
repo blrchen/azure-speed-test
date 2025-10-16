@@ -1,0 +1,57 @@
+:host {
+  display: block;
+}
+
+.region-table {
+  position: relative;
+}
+
+.region-table__scroll {
+  overflow-x: auto;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+.region-table__table {
+  width: 100%;
+  table-layout: auto;
+}
+
+.region-table__cell {
+  white-space: normal;
+  vertical-align: top;
+}
+
+.region-table__cell--region {
+  min-width: 0;
+}
+
+.region-table__region-code {
+  display: inline-block;
+  margin-top: 0.15rem;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.region-table__cell--location,
+.region-table__cell--paired,
+.region-table__cell--available {
+  overflow-wrap: anywhere;
+}
+
+.region-table__cell--zones span {
+  white-space: nowrap;
+}
+
+.region-table__region-link {
+  color: rgba(15, 23, 42, 0.95);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+
+.region-table__region-link:hover,
+.region-table__region-link:focus-visible {
+  color: rgba(37, 99, 235, 1);
+  outline: none;
+}

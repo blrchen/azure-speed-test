@@ -1,73 +1,129 @@
-<div class="container-fluid py-3">
-  <h1 class="h2 fw-bold">Azure Storage Download Speed Test</h1>
-  <p>Test the download speed from Azure Storage Service across different regions worldwide.</p>
+<div class="download page-container py-3">
+  <header class="page-intro">
+    <h1 class="page-title page-intro__title">Azure Storage Download Speed Test</h1>
+    <p class="page-intro__description">
+      Measure download performance from Azure Storage across regions to find the datacenter that
+      best serves your users.
+    </p>
+  </header>
 
-  <div class="alert alert-info alert-dismissible fade show">
-    <strong>Instructions:</strong>
-    First, select your desired region from the list below. Then, click on the "Download 100MB Test
-    File" link next to the selected region to start the download speed test. If the download does
-    not start automatically, right-click the link and select "Save Link As."
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  <div class="download__card mb-3 shadow-sm">
+    <div class="download__card-body">
+      <div class="app-alert download-instructions mb-3">
+        <div class="download-instructions__content">
+          <span class="download-instructions__label">Testing steps</span>
+          <div class="download-instructions__steps">
+            <span class="download-instructions__step">
+              <span class="download-instructions__badge">1</span>
+              Choose your Azure regions below.
+            </span>
+            <span class="download-instructions__step">
+              <span class="download-instructions__badge">2</span>
+              Grab a 100&nbsp;MB test file from each region.
+            </span>
+            <span class="download-instructions__step">
+              <span class="download-instructions__badge">3</span>
+              Compare speeds to pick the fastest storage endpoint.
+            </span>
+          </div>
+          <div class="download-instructions__note">
+            If the download does not start automatically, right-click the link and choose
+            <strong>Save link as…</strong>
+          </div>
+        </div>
+      </div>
+      <app-region-group></app-region-group>
+    </div>
   </div>
 
-  <app-region-group></app-region-group>
-
-  <div class="table-responsive">
-    <table class="table table-bordered table-striped table-hover">
-      <thead>
-        <tr>
-          <th scope="col">Geography</th>
-          <th scope="col">Region</th>
-          <th scope="col">Location</th>
-          <th scope="col">Test File (100MB)</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let item of tableData">
-          <td>{{ item.geography }}</td>
-          <td>
-            <code>
-              {{ item.displayName }}
-            </code>
-          </td>
-          <td>{{ item.physicalLocation }}</td>
-          <td>
-            <a
-              *ngIf="item.url"
-              class="btn btn-sm btn-outline-secondary"
-              href="{{ item.url }}"
-              download
-            >
-              Download 100MB Test File
-            </a>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <h2 class="h4">Frequently Asked Questions</h2>
-  <div class="accordion" id="faqAccordion">
-    <div class="accordion-item">
-      <h3 class="accordion-header" id="headingOne">
-        <button
-          class="accordion-button collapsed"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#collapseOne"
-          aria-expanded="false"
-          aria-controls="collapseOne"
-        >
-          What is Azure Storage Download Speed?
-        </button>
-      </h3>
+  @if (!tableData().length) {
+    <div class="app-card mb-4 shadow-sm" style="min-height: 260px">
       <div
-        id="collapseOne"
-        class="accordion-collapse collapse"
-        aria-labelledby="headingOne"
-        data-bs-parent="#faqAccordion"
+        class="app-card__body flex flex-col items-center justify-center gap-4 text-center text-slate-500"
       >
-        <div class="accordion-body">
+        <div
+          class="flex h-14 w-14 items-center justify-center rounded-full bg-slate-200/60 text-slate-500"
+          aria-hidden="true"
+        >
+          <svg width="48" height="48" fill="currentColor" viewBox="0 0 16 16">
+            <path
+              d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm0 14.5A6.5 6.5 0 1 1 8 1.5a6.5 6.5 0 0 1 0 13zm-.25-4.25h.5a.75.75 0 0 1 .75.75v.5a.75.75 0 0 1-.75.75h-.5a.75.75 0 0 1-.75-.75v-.5a.75.75 0 0 1 .75-.75zm.25-8a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 8 2.25z"
+            />
+          </svg>
+        </div>
+        <div class="space-y-2">
+          <div class="text-base font-semibold text-slate-900">No regions selected</div>
+          <div class="space-y-1 text-sm text-slate-600">
+            <span class="block">Pick one or more regions above.</span>
+            <span class="block">
+              We will generate download test links here once they are ready.
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <section class="download-table app-table__container mb-4">
+      <table class="app-table app-table--hover align-middle shadow-sm">
+        <thead>
+          <tr>
+            <th>Geography</th>
+            <th>Region</th>
+            <th>Datacenter</th>
+            <th class="text-center">Download test</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of tableData(); track item.regionId) {
+            <tr>
+              <td>{{ item.geography }}</td>
+              <td>
+                <div class="download-table__region">
+                  <span class="download-table__region-name">{{ item.displayName }}</span>
+                  <span class="download-table__region-code">{{ item.regionId }}</span>
+                </div>
+              </td>
+              <td>{{ item.datacenterLocation }}</td>
+              <td class="text-center">
+                @if (item.url) {
+                  <a class="download-table__link" href="{{ item.url }}" download>
+                    Download 100 MB
+                    <app-hero-icon name="heroArrowDown" class="ml-1 h-4 w-4" aria-hidden="true" />
+                  </a>
+                } @else {
+                  <span class="download-table__placeholder text-slate-500">Preparing link…</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </section>
+  }
+
+  <section class="regions__section mt-12">
+    <header class="regions__section-header">
+      <h2>Frequently asked questions</h2>
+    </header>
+    <div class="mt-6 space-y-4">
+      <details
+        class="group rounded-2xl border border-slate-200 bg-white/95 shadow-sm transition-colors duration-200 ease-out open:border-brand/40 open:shadow-brand-sm"
+      >
+        <summary
+          class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left text-base font-semibold text-slate-900 outline-none transition-colors hover:text-brand/90 focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white [&::-webkit-details-marker]:hidden"
+        >
+          <span class="flex-1 text-base font-semibold text-slate-900">
+            What is Azure Storage Download Speed?
+          </span>
+          <app-hero-icon
+            name="heroChevronDown"
+            class="h-4 w-4 text-slate-400 transition-transform duration-200 ease-in-out group-open:rotate-180 group-open:text-brand"
+            aria-hidden="true"
+          />
+        </summary>
+        <div
+          class="space-y-3 border-t border-slate-100 px-6 py-5 text-sm leading-relaxed text-slate-600 [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:text-slate-800 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
+        >
           <p>
             Azure Storage Download Speed measures the rate at which data is transferred from Azure
             Storage to your local system. It affects how quickly you can download large files,
@@ -75,63 +131,57 @@
             second (KB/s) or megabytes per second (MB/s).
           </p>
         </div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <h3 class="accordion-header" id="headingTwo">
-        <button
-          class="accordion-button collapsed"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#collapseTwo"
-          aria-expanded="false"
-          aria-controls="collapseTwo"
-        >
-          What is the purpose of the Azure Storage Download Speed Test?
-        </button>
-      </h3>
-      <div
-        id="collapseTwo"
-        class="accordion-collapse collapse"
-        aria-labelledby="headingTwo"
-        data-bs-parent="#faqAccordion"
+      </details>
+      <details
+        class="group rounded-2xl border border-slate-200 bg-white/95 shadow-sm transition-colors duration-200 ease-out open:border-brand/40 open:shadow-brand-sm"
       >
-        <div class="accordion-body">
+        <summary
+          class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left text-base font-semibold text-slate-900 outline-none transition-colors hover:text-brand/90 focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white [&::-webkit-details-marker]:hidden"
+        >
+          <span class="flex-1 text-base font-semibold text-slate-900">
+            What is the purpose of the Azure Storage Download Speed Test?
+          </span>
+          <app-hero-icon
+            name="heroChevronDown"
+            class="h-4 w-4 text-slate-400 transition-transform duration-200 ease-in-out group-open:rotate-180 group-open:text-brand"
+            aria-hidden="true"
+          />
+        </summary>
+        <div
+          class="space-y-3 border-t border-slate-100 px-6 py-5 text-sm leading-relaxed text-slate-600 [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:text-slate-800 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
+        >
           <p>
             The Azure Storage Download Speed Test measures the download speeds from various Azure
             regions to help users determine the most suitable region for hosting their services
             based on geographical proximity and network latency.
           </p>
         </div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <h3 class="accordion-header" id="headingThree">
-        <button
-          class="accordion-button collapsed"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#collapseThree"
-          aria-expanded="false"
-          aria-controls="collapseThree"
-        >
-          How should I use the results from this test?
-        </button>
-      </h3>
-      <div
-        id="collapseThree"
-        class="accordion-collapse collapse"
-        aria-labelledby="headingThree"
-        data-bs-parent="#faqAccordion"
+      </details>
+      <details
+        class="group rounded-2xl border border-slate-200 bg-white/95 shadow-sm transition-colors duration-200 ease-out open:border-brand/40 open:shadow-brand-sm"
       >
-        <div class="accordion-body">
+        <summary
+          class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left text-base font-semibold text-slate-900 outline-none transition-colors hover:text-brand/90 focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white [&::-webkit-details-marker]:hidden"
+        >
+          <span class="flex-1 text-base font-semibold text-slate-900">
+            How should I use the results from this test?
+          </span>
+          <app-hero-icon
+            name="heroChevronDown"
+            class="h-4 w-4 text-slate-400 transition-transform duration-200 ease-in-out group-open:rotate-180 group-open:text-brand"
+            aria-hidden="true"
+          />
+        </summary>
+        <div
+          class="space-y-3 border-t border-slate-100 px-6 py-5 text-sm leading-relaxed text-slate-600 [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:text-slate-800 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
+        >
           <p>
             Use the results to compare download speeds from different Azure regions. This can guide
             you in choosing a region that offers the best performance for users in specific
             locations.
           </p>
         </div>
-      </div>
+      </details>
     </div>
-  </div>
+  </section>
 </div>

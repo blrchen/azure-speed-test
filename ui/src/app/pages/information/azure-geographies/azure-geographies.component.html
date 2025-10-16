@@ -1,83 +1,83 @@
-<div class="container-fluid py-3">
-  <h1 class="h2 fw-bold mb-3">Azure Geographic Infrastructure</h1>
-  <p>
-    Azure geographical locations refer to a set of one or more regions, strategically grouped to
-    meet specific data residency and compliance requirements.
-  </p>
+<div class="page-container py-3">
+  <header class="page-intro">
+    <h1 class="page-title page-intro__title">Azure Geographies</h1>
+    <p class="page-intro__description">
+      Azure geographical locations refer to a set of one or more regions, strategically grouped to
+      meet specific data residency and compliance requirements.
+    </p>
+  </header>
 
-  <div class="table-responsive mb-4">
-    <table class="table table-hover align-middle border-top">
-      <thead class="table-light">
+  <h2 class="mb-3 text-xl font-semibold text-slate-900">Global Geographic Distribution</h2>
+  <div class="app-table__container mb-5">
+    <table class="app-table app-table--hover border-t align-middle">
+      <thead class="app-table--light">
         <tr>
-          <th scope="col" class="fw-semibold w-25">Geography</th>
-          <th scope="col" class="fw-semibold">Regions</th>
+          <th class="w-1/4 font-semibold">Geography</th>
+          <th class="font-semibold">Regions</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let g of tableData">
-          <td class="fw-bold">{{ g.name }}</td>
-          <td>
-            <div class="row g-3">
-              <ng-container *ngFor="let r of g.regions">
-                <div class="col-md-6">
-                  <div class="d-flex align-items-center">
-                    <a
-                      [href]="getRegionUrl(r.displayName)"
-                      class="text-decoration-none fw-semibold"
-                    >
-                      {{ r.displayName }}
-                    </a>
-                    <span class="text-secondary small ms-2">({{ r.physicalLocation }})</span>
+        @for (g of tableData(); track g.name) {
+          <tr>
+            <td class="font-semibold text-slate-800">{{ g.name }}</td>
+            <td>
+              <div class="grid gap-3 sm:grid-cols-2">
+                @for (r of g.regions; track $index) {
+                  <div class="flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                      <a
+                        [href]="'/Information/AzureRegions/' + r.displayName.split(' ').join('')"
+                        class="font-semibold text-brand no-underline hover:underline"
+                        target="_blank"
+                      >
+                        {{ r.displayName }}
+                      </a>
+                      <span class="text-xs text-slate-500">({{ r.datacenterLocation }})</span>
+                    </div>
                   </div>
-                </div>
-              </ng-container>
-            </div>
-          </td>
-        </tr>
+                }
+              </div>
+            </td>
+          </tr>
+        }
       </tbody>
     </table>
   </div>
 
-  <h2 class="h4 mb-4">Technical Documentation & Resources</h2>
-  <div class="row g-4">
-    <div class="col-md-4">
-      <article class="h-100 p-3 bg-light rounded">
-        <h3 class="h6 mb-2">Global Infrastructure</h3>
+  <section class="regions__section">
+    <header class="regions__section-header">
+      <h2>Additional resources</h2>
+      <p>Helpful context for understanding Azure geography boundaries and planning.</p>
+    </header>
+    <div class="regions-resources__grid">
+      <article class="resource-card">
+        <h3 class="resource-card__title">Global Infrastructure</h3>
+        <p class="resource-card__body">
+          Learn about Azure's geographic organization and data residency boundaries.
+        </p>
         <a
           href="https://azure.microsoft.com/en-us/explore/global-infrastructure/geographies"
           target="_blank"
-          class="text-decoration-none"
+          rel="noopener noreferrer"
+          class="resource-card__link"
         >
-          Azure Geographic Organization
-          <i class="bi bi-arrow-right ms-1"></i>
+          Learn more
         </a>
       </article>
-    </div>
-    <div class="col-md-4">
-      <article class="h-100 p-3 bg-light rounded">
-        <h3 class="h6 mb-2">Business Continuity</h3>
+      <article class="resource-card">
+        <h3 class="resource-card__title">Business continuity</h3>
+        <p class="resource-card__body">
+          Guidance on business continuity and disaster recovery with Azure paired regions.
+        </p>
         <a
           href="https://docs.microsoft.com/en-us/azure/best-practices-availability-paired-regions"
           target="_blank"
-          class="text-decoration-none"
+          rel="noopener noreferrer"
+          class="resource-card__link"
         >
-          BCDR: Azure Paired Regions
-          <i class="bi bi-arrow-right ms-1"></i>
+          Learn more
         </a>
       </article>
     </div>
-    <div class="col-md-4">
-      <article class="h-100 p-3 bg-light rounded">
-        <h3 class="h6 mb-2">Reference</h3>
-        <a
-          href="https://github.com/blrchen/azure-catalog"
-          target="_blank"
-          class="text-decoration-none"
-        >
-          Azure Infrastructure Catalog
-          <i class="bi bi-arrow-right ms-1"></i>
-        </a>
-      </article>
-    </div>
-  </div>
+  </section>
 </div>

@@ -1,21 +1,29 @@
-import { Component, OnInit } from '@angular/core'
-import publicRegionsJson from '../../../../assets/data/regions.json'
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
+import { CommonModule } from '@angular/common'
+import { RouterModule } from '@angular/router'
+import azureGlobalCloudRegionsJson from '../../../../assets/data/regions.json'
 import { Region } from '../../../models'
 import { SeoService } from '../../../services'
+import { HeroIconComponent } from '../../../shared/icons/hero-icons.imports'
 
 @Component({
   selector: 'app-azure-availability-zones',
-  templateUrl: './azure-availability-zones.component.html'
+  standalone: true,
+  imports: [CommonModule, RouterModule, HeroIconComponent],
+  templateUrl: './azure-availability-zones.component.html',
+  styleUrls: ['./azure-availability-zones.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AzureAvailabilityZonesComponent implements OnInit {
-  tableData: Region[] = []
+  readonly tableData = signal<Region[]>([])
 
-  constructor(private seoService: SeoService) {
-    this.initializeSeoProperties()
-  }
+  private seoService = inject(SeoService)
 
   ngOnInit() {
-    this.tableData = publicRegionsJson.filter((region) => region.availabilityZoneCount > 0)
+    this.initializeSeoProperties()
+    this.tableData.set(
+      azureGlobalCloudRegionsJson.filter((region) => region.availabilityZoneCount > 0)
+    )
   }
 
   private initializeSeoProperties(): void {

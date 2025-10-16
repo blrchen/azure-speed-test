@@ -1,12 +1,18 @@
-import { Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core'
+import { CommonModule } from '@angular/common'
 import { SeoService } from '../../../services'
 
 @Component({
   selector: 'app-azure-environments',
-  templateUrl: './azure-environments.component.html'
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './azure-environments.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AzureEnvironmentsComponent {
-  constructor(private seoService: SeoService) {
+export class AzureEnvironmentsComponent implements OnInit {
+  private seoService = inject(SeoService)
+
+  ngOnInit(): void {
     this.initializeSeoProperties()
   }
 

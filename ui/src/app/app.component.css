@@ -1,32 +1,24 @@
-@media (min-width: 768px) {
-  .offcanvas-md {
-    position: sticky;
-    top: 56px;
-  }
+:host {
+  display: block;
 }
 
-.nav-link {
-  color: var(--bs-gray-700);
-  transition: all 0.2s ease-in-out;
+.skip-nav-link {
+  position: fixed;
+  top: -2.5rem;
+  left: 1rem;
+  z-index: 999;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.625rem;
+  background-color: rgb(13 110 253);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: top 0.2s ease-in-out;
 }
 
-.nav-link:hover {
-  background-color: var(--bs-gray-100);
-  color: var(--bs-primary);
-}
-
-.nav-link.active {
-  background-color: var(--bs-primary-bg-subtle);
-  color: var(--bs-primary);
-  font-weight: 500;
-}
-
-.nav-link i {
-  width: 1.25rem;
-  text-align: center;
-  color: var(--bs-gray-600);
-}
-
-.nav-link.active i {
-  color: var(--bs-primary);
+.skip-nav-link:focus-visible {
+  top: 1rem;
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.35);
 }

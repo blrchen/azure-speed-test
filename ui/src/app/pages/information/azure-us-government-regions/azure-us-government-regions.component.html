@@ -1,0 +1,212 @@
+<div class="page-container py-3">
+  <header class="page-intro mb-4">
+    <h1 class="page-title page-intro__title">Azure US Government Cloud Regions</h1>
+    <p class="page-intro__description">
+      These regions are designed for US government entities and their partners, meeting various US
+      government security and compliance requirements.
+    </p>
+  </header>
+
+  <div class="mb-4">
+    <h2 class="mb-3 text-xl font-semibold text-slate-900">Available Regions</h2>
+    <div class="app-table__container">
+      <table class="app-table app-table--hover border">
+        <thead>
+          <tr>
+            <th>Region</th>
+            <th>Geography</th>
+            <th>Location</th>
+            <th>Availability Zones</th>
+            <th>Paired Region</th>
+            <th>Available To</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of azureGovernmentRegions(); track r.displayName) {
+            <tr>
+              <td>
+                <span class="flex items-center gap-1 text-brand">
+                  <a
+                    [href]="'/Information/AzureRegions/' + r.displayName.split(' ').join('')"
+                    target="_blank"
+                  >
+                    {{ r.displayName }}
+                  </a>
+                  <app-hero-icon
+                    name="heroArrowTopRightOnSquare"
+                    class="h-3.5 w-3.5 text-brand"
+                    aria-hidden="true"
+                  />
+                </span>
+              </td>
+              <td>
+                <span class="app-badge">{{ r.geography }}</span>
+              </td>
+              <td>{{ r.datacenterLocation }}</td>
+              <td>
+                <span
+                  class="app-badge"
+                  [attr.data-variant]="r.availabilityZoneCount ? 'success' : 'secondary'"
+                >
+                  {{
+                    r.availabilityZoneCount === 0
+                      ? 'Not supported'
+                      : r.availabilityZoneCount + ' Zones'
+                  }}
+                </span>
+              </td>
+              <td>{{ r.pairedRegion }}</td>
+              <td>US Government organizations</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- FAQ Section -->
+  <section class="regions__section mt-12">
+    <header class="regions__section-header">
+      <h2>Frequently asked questions</h2>
+    </header>
+    <div class="mt-6 space-y-4">
+      <details
+        class="group rounded-2xl border border-slate-200 bg-white/95 shadow-sm transition-colors duration-200 ease-out open:border-brand/40 open:shadow-brand-sm"
+      >
+        <summary
+          class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left text-base font-semibold text-slate-900 outline-none transition-colors hover:text-brand/90 focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white [&::-webkit-details-marker]:hidden"
+        >
+          <span class="flex-1 text-base font-semibold text-slate-900">
+            Who can use Azure US Government regions?
+          </span>
+          <app-hero-icon
+            name="heroChevronDown"
+            class="h-4 w-4 text-slate-400 transition-transform duration-200 ease-in-out group-open:rotate-180 group-open:text-brand"
+            aria-hidden="true"
+          />
+        </summary>
+        <div
+          class="space-y-3 border-t border-slate-100 px-6 py-5 text-sm leading-relaxed text-slate-600 [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:text-slate-800 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
+        >
+          <p>Azure US Government is available to:</p>
+          <ul>
+            <li>US federal, state, local, and tribal government agencies</li>
+            <li>Solution providers building solutions for government</li>
+            <li>Companies holding specific government data subject to regulations</li>
+            <li>Qualifying private enterprises with data subject to government regulations</li>
+          </ul>
+        </div>
+      </details>
+      <details
+        class="group rounded-2xl border border-slate-200 bg-white/95 shadow-sm transition-colors duration-200 ease-out open:border-brand/40 open:shadow-brand-sm"
+      >
+        <summary
+          class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left text-base font-semibold text-slate-900 outline-none transition-colors hover:text-brand/90 focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white [&::-webkit-details-marker]:hidden"
+        >
+          <span class="flex-1 text-base font-semibold text-slate-900">
+            What compliance standards does Azure US Government meet?
+          </span>
+          <app-hero-icon
+            name="heroChevronDown"
+            class="h-4 w-4 text-slate-400 transition-transform duration-200 ease-in-out group-open:rotate-180 group-open:text-brand"
+            aria-hidden="true"
+          />
+        </summary>
+        <div
+          class="space-y-3 border-t border-slate-100 px-6 py-5 text-sm leading-relaxed text-slate-600 [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:text-slate-800 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
+        >
+          <p>Azure US Government meets various compliance standards including:</p>
+          <ul>
+            <li>FedRAMP High</li>
+            <li>DOD Impact Level 5 (IL5)</li>
+            <li>CJIS</li>
+            <li>ITAR</li>
+            <li>IRS 1075</li>
+          </ul>
+          <p>
+            For the latest compliance information, visit the
+            <a
+              href="https://learn.microsoft.com/en-us/azure/azure-government/compliance"
+              target="_blank"
+            >
+              Azure Government compliance documentation
+            </a>
+            .
+          </p>
+        </div>
+      </details>
+      <details
+        class="group rounded-2xl border border-slate-200 bg-white/95 shadow-sm transition-colors duration-200 ease-out open:border-brand/40 open:shadow-brand-sm"
+      >
+        <summary
+          class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left text-base font-semibold text-slate-900 outline-none transition-colors hover:text-brand/90 focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white [&::-webkit-details-marker]:hidden"
+        >
+          <span class="flex-1 text-base font-semibold text-slate-900">
+            How do I request access?
+          </span>
+          <app-hero-icon
+            name="heroChevronDown"
+            class="h-4 w-4 text-slate-400 transition-transform duration-200 ease-in-out group-open:rotate-180 group-open:text-brand"
+            aria-hidden="true"
+          />
+        </summary>
+        <div
+          class="space-y-3 border-t border-slate-100 px-6 py-5 text-sm leading-relaxed text-slate-600 [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:text-slate-800 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
+        >
+          <p>
+            Start the onboarding process by submitting the Azure Government request form and
+            completing the required validation steps with Microsoft.
+          </p>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <section class="regions__section mt-5">
+    <header class="regions__section-header">
+      <h2>Additional resources</h2>
+      <p>Key references for deploying solutions in Azure Government environments.</p>
+    </header>
+    <div class="regions-resources__grid">
+      <article class="resource-card">
+        <h3 class="resource-card__title">Azure Government documentation</h3>
+        <p class="resource-card__body">
+          Learn about Azure Government cloud services, architecture, and security.
+        </p>
+        <a
+          href="https://learn.microsoft.com/en-us/azure/azure-government/"
+          target="_blank"
+          class="resource-card__link"
+        >
+          Learn more
+        </a>
+      </article>
+      <article class="resource-card">
+        <h3 class="resource-card__title">Compliance programs</h3>
+        <p class="resource-card__body">
+          Explore Azure Government compliance offerings and certifications.
+        </p>
+        <a
+          href="https://learn.microsoft.com/en-us/azure/azure-government/compliance"
+          target="_blank"
+          class="resource-card__link"
+        >
+          Learn more
+        </a>
+      </article>
+      <article class="resource-card">
+        <h3 class="resource-card__title">Service availability</h3>
+        <p class="resource-card__body">
+          View the latest service availability for Azure US Government regions.
+        </p>
+        <a
+          href="https://azure.microsoft.com/en-us/explore/global-infrastructure/government/products/"
+          target="_blank"
+          class="resource-card__link"
+        >
+          Learn more
+        </a>
+      </article>
+    </div>
+  </section>
+</div>

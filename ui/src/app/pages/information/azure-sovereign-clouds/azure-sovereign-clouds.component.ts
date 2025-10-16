@@ -1,12 +1,18 @@
-import { Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core'
+import { CommonModule } from '@angular/common'
 import { SeoService } from '../../../services'
 
 @Component({
   selector: 'app-azure-sovereign-clouds',
-  templateUrl: './azure-sovereign-clouds.component.html'
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './azure-sovereign-clouds.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AzureSovereignCloudsComponent {
-  constructor(private seoService: SeoService) {
+export class AzureSovereignCloudsComponent implements OnInit {
+  private seoService = inject(SeoService)
+
+  ngOnInit(): void {
     this.initializeSeoProperties()
   }
 

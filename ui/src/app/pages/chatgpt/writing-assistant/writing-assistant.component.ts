@@ -1,4 +1,4 @@
-import { Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
 import { SeoService } from '../../../services'
 
 interface Card {
@@ -9,10 +9,15 @@ interface Card {
 
 @Component({
   selector: 'app-writing-assistant',
-  templateUrl: './writing-assistant.component.html'
+  standalone: true,
+  imports: [],
+  templateUrl: './writing-assistant.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class WritingAssistantComponent {
-  textCards: Card[] = [
+export class WritingAssistantComponent implements OnInit {
+  private readonly seoService = inject(SeoService)
+
+  readonly textCards = signal<Card[]>([
     {
       title: 'Text Translator',
       text: 'ChatGPT-powered Text Translator that instantly translates text into 20+ languages.',
@@ -33,9 +38,9 @@ export class WritingAssistantComponent {
       text: "ChatGPT's Email Generator saves time by generating medium to long-sized emails for you.",
       link: '/ChatGPT/GenerateEmail'
     }
-  ]
+  ])
 
-  constructor(private seoService: SeoService) {
+  ngOnInit(): void {
     this.initializeSeoProperties()
   }
 

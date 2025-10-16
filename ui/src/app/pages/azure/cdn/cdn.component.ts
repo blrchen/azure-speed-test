@@ -1,12 +1,18 @@
-import { Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core'
+import { CommonModule } from '@angular/common'
 import { SeoService } from '../../../services'
 
 @Component({
   selector: 'app-cdn',
-  templateUrl: './cdn.component.html'
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './cdn.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CDNComponent {
-  constructor(private seoService: SeoService) {
+export class CDNComponent implements OnInit {
+  private seoService = inject(SeoService)
+
+  ngOnInit(): void {
     this.initializeSeoProperties()
   }
 

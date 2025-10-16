@@ -1,4 +1,4 @@
-import { Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
 import { SeoService } from '../../../services'
 
 interface Card {
@@ -9,10 +9,15 @@ interface Card {
 
 @Component({
   selector: 'app-code-assistant',
-  templateUrl: './code-assistant.component.html'
+  standalone: true,
+  imports: [],
+  templateUrl: './code-assistant.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CodeAssistantComponent {
-  codeCards: Card[] = [
+export class CodeAssistantComponent implements OnInit {
+  private readonly seoService = inject(SeoService)
+
+  readonly codeCards = signal<Card[]>([
     {
       title: 'Code Explainer',
       text: 'ChatGPT Code Explainer is an AI assistant designed to help users understand programming code.',
@@ -28,9 +33,9 @@ export class CodeAssistantComponent {
       text: 'ChatGPT Shell Command generator converts natural language descriptions into shell command that can be executed.',
       link: '/ChatGPT/ConvertToBash'
     }
-  ]
+  ])
 
-  constructor(private seoService: SeoService) {
+  ngOnInit(): void {
     this.initializeSeoProperties()
   }
 

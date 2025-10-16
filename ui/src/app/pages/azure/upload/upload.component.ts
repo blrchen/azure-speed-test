@@ -1,15 +1,26 @@
-import { Component, OnDestroy, OnInit } from '@angular/core'
-import { Subject } from 'rxjs'
-import { takeUntil } from 'rxjs/operators'
-import axios from 'axios'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  EffectRef,
+  inject,
+  OnDestroy,
+  OnInit,
+  signal
+} from '@angular/core'
+import { CommonModule } from '@angular/common'
+import { HttpClient } from '@angular/common/http'
+import { firstValueFrom } from 'rxjs'
 import { BlockBlobClient, BlockBlobParallelUploadOptions } from '@azure/storage-blob'
 import { RegionService, SeoService, UtilsService } from '../../../services'
 import { RegionModel } from '../../../models'
-import { environment } from '../../../../environments/environment'
+import { API_ENDPOINT } from '../../../shared/constants'
+import { RegionGroupComponent } from '../../shared'
+import { HeroIconComponent } from '../../../shared/icons/hero-icons.imports'
 
 interface UploadSpeedTestResult {
   displayName: string
-  physicalLocation: string
+  datacenterLocation: string
   uploadProgressPercentage: number
   uploadTimeSeconds: number
   uploadSpeedMbps: number
@@ -17,22 +28,27 @@ interface UploadSpeedTestResult {
 
 @Component({
   selector: 'app-upload',
-  templateUrl: './upload.component.html'
+  standalone: true,
+  imports: [CommonModule, RegionGroupComponent, HeroIconComponent],
+  templateUrl: './upload.component.html',
+  styleUrls: ['./upload.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UploadComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<void>()
+  readonly uploadSizeMBOptions = [100, 200, 500] as const
+  readonly regions = signal<RegionModel[]>([])
+  readonly selectedUploadSizeBytes = signal<number>(100 * 1024 * 1024) // Default to 100MB
+  readonly testResults = signal<UploadSpeedTestResult[]>([])
 
-  regions: RegionModel[] = []
-  uploadSizeMBOptions = [100, 200, 500]
+  private regionService = inject(RegionService)
+  private utilsService = inject(UtilsService)
+  private seoService = inject(SeoService)
+  private http = inject(HttpClient)
+  private readonly selectedRegionsEffect: EffectRef = effect(() => {
+    this.regions.set(this.regionService.selectedRegions())
+  })
 
-  selectedUploadSizeBytes: number = 100 * 1024 * 1024 // Default to 100MB
-
-  testResults: UploadSpeedTestResult[] = []
-  constructor(
-    private regionService: RegionService,
-    private utilsService: UtilsService,
-    private seoService: SeoService
-  ) {
+  ngOnInit() {
     this.initializeSeoProperties()
   }
 
@@ -44,35 +60,34 @@ export class UploadComponent implements OnInit, OnDestroy {
     this.seoService.setCanonicalUrl('https://www.azurespeed.com/Azure/Upload')
   }
 
-  ngOnInit() {
-    this.regionService.selectedRegions$.pipe(takeUntil(this.destroy$)).subscribe((res) => {
-      this.regions = res || []
-    })
-  }
-
   async onSubmit() {
-    this.testResults = []
-    for (const region of this.regions) {
-      const regionName = region.name
+    this.testResults.set([])
+    for (const region of this.regions()) {
+      const regionName = region.regionId
       await this.uploadToAzure(region, regionName)
     }
   }
 
+  selectUploadSize(uploadSizeMB: number): void {
+    this.selectedUploadSizeBytes.set(uploadSizeMB * 1024 * 1024)
+  }
+
   async uploadToAzure(region: RegionModel, regionName: string) {
-    const { displayName, physicalLocation } = region
+    const { displayName, datacenterLocation } = region
 
     const newTestResult: UploadSpeedTestResult = {
       displayName,
-      physicalLocation,
+      datacenterLocation,
       uploadProgressPercentage: 0,
       uploadTimeSeconds: 0,
       uploadSpeedMbps: 0
     }
-    this.testResults.push(newTestResult)
+    this.testResults.update((results) => [...results, newTestResult])
 
     const sasUrl = await this.getSasUrl(regionName, this.utilsService.getRandomBlobName())
     const blockBlobClient = new BlockBlobClient(sasUrl)
     const uploadStartTime = Date.now()
+    const totalBytes = this.selectedUploadSizeBytes()
     const options: BlockBlobParallelUploadOptions = {
       blockSize: 4 * 1024 * 1024, // 4MB
       concurrency: 4,
@@ -80,22 +95,29 @@ export class UploadComponent implements OnInit, OnDestroy {
       onProgress: ({ loadedBytes }) => {
         const elapsedSeconds = (Date.now() - uploadStartTime) / 1000
         const bytesUploaded = loadedBytes / 1024 / 1024
-        const uploadSpeedMbps = bytesUploaded / elapsedSeconds
-        const uploadProgressPercentage = Math.round(
-          (loadedBytes / this.selectedUploadSizeBytes) * 100
-        )
-        const index = this.testResults.findIndex((item) => item.displayName === displayName)
-        if (index !== -1) {
-          this.testResults[index].uploadProgressPercentage = uploadProgressPercentage
-          this.testResults[index].uploadTimeSeconds = elapsedSeconds
-          this.testResults[index].uploadSpeedMbps = uploadSpeedMbps
-        }
+        const uploadSpeedMbps = elapsedSeconds > 0 ? bytesUploaded / elapsedSeconds : 0
+        const uploadProgressPercentage = Math.min(Math.round((loadedBytes / totalBytes) * 100), 100)
+        this.updateTestResult(displayName, {
+          uploadProgressPercentage,
+          uploadTimeSeconds: elapsedSeconds,
+          uploadSpeedMbps
+        })
       }
     }
 
     try {
-      await blockBlobClient.uploadData(this.createTestData(this.selectedUploadSizeBytes), options)
-      this.testResults.sort((a, b) => b.uploadSpeedMbps - a.uploadSpeedMbps)
+      await blockBlobClient.uploadData(this.createTestData(totalBytes), options)
+      const elapsedSeconds = (Date.now() - uploadStartTime) / 1000
+      const uploadSpeedMbps = elapsedSeconds > 0 ? totalBytes / 1024 / 1024 / elapsedSeconds : 0
+      this.updateTestResult(
+        displayName,
+        {
+          uploadProgressPercentage: 100,
+          uploadTimeSeconds: elapsedSeconds,
+          uploadSpeedMbps
+        },
+        { sort: true }
+      )
     } catch (error) {
       console.error('Failed to upload data:', error)
       throw error
@@ -108,11 +130,11 @@ export class UploadComponent implements OnInit, OnDestroy {
   }
 
   async getSasUrl(regionName: string, blobName: string, operation = 'upload') {
-    const url = `${environment.apiEndpoint}/api/sas`
+    const url = `${API_ENDPOINT}/api/sas`
     const params = { regionName, blobName, operation }
     try {
-      const response = await axios.get(url, { params })
-      return response.data.url
+      const response = await firstValueFrom(this.http.get<{ url: string }>(url, { params }))
+      return response.url
     } catch (error) {
       console.error('Failed to get SAS URL:', error)
       throw error
@@ -120,7 +142,19 @@ export class UploadComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.destroy$.next()
-    this.destroy$.complete()
+    this.selectedRegionsEffect.destroy()
+  }
+
+  private updateTestResult(
+    displayName: string,
+    partial: Partial<UploadSpeedTestResult>,
+    options: { sort?: boolean } = {}
+  ): void {
+    this.testResults.update((results) => {
+      const next = results.map((result) =>
+        result.displayName === displayName ? { ...result, ...partial } : result
+      )
+      return options.sort ? next.sort((a, b) => b.uploadSpeedMbps - a.uploadSpeedMbps) : next
+    })
   }
 }

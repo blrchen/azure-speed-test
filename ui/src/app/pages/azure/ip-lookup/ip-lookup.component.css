@@ -104,11 +104,6 @@
   flex: 1 1 auto;
 }
 
-.iplookup-share__help {
-  font-size: 0.78rem;
-  color: rgba(73, 80, 87, 0.65);
-}
-
 .iplookup-share__feedback {
   font-size: 0.78rem;
 }
@@ -132,17 +127,26 @@
   background-color: rgba(13, 110, 253, 0.05);
 }
 
+.iplookup-results .app-card__header code {
+  text-transform: none;
+  letter-spacing: normal;
+}
+
 .iplookup-results .app-table {
-  table-layout: fixed;
   width: 100%;
+  table-layout: auto;
 }
 
 .iplookup-results .app-table th {
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .iplookup-results .app-table td {
   white-space: normal;
+  word-break: normal;
+}
+
+.iplookup-results .app-table td a {
   word-break: break-word;
 }
 

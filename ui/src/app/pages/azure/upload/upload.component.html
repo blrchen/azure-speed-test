@@ -66,7 +66,7 @@
   @if (testResults().length > 0) {
     <section class="upload-results mt-4">
       <header class="upload-results__header">
-        <h2 class="text-xl font-semibold text-slate-900">Upload Speed Test Results</h2>
+        <h2 class="content-heading">Upload Speed Test Results</h2>
         <div class="upload-results__legend">
           <span>
             <span class="font-semibold text-slate-800">Upload time</span>
@@ -97,16 +97,24 @@
                 </td>
                 <td>{{ result.datacenterLocation }}</td>
                 <td>
-                  <div class="h-3 w-full overflow-hidden rounded-full bg-slate-200">
+                  <div
+                    class="relative flex h-3 w-full items-center overflow-hidden rounded-full bg-slate-200"
+                    role="progressbar"
+                    [attr.aria-valuenow]="result.uploadProgressPercentage"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                  >
                     <div
-                      class="h-full rounded-full bg-emerald-500 transition-[width] duration-300 ease-out"
+                      class="absolute inset-y-0 left-0 rounded-full bg-emerald-500 transition-[width] duration-300 ease-out"
                       [style.width]="result.uploadProgressPercentage + '%'"
-                      [attr.aria-valuenow]="result.uploadProgressPercentage"
-                      aria-valuemin="0"
-                      aria-valuemax="100"
+                    ></div>
+                    <span
+                      class="relative z-10 w-full text-center text-xs font-semibold transition-colors"
+                      [class.text-white]="result.uploadProgressPercentage >= 60"
+                      [class.text-slate-900]="result.uploadProgressPercentage < 60"
                     >
                       {{ result.uploadProgressPercentage }}%
-                    </div>
+                    </span>
                   </div>
                 </td>
                 <td>
@@ -133,7 +141,7 @@
 
   <section class="regions__section mt-12">
     <header class="regions__section-header">
-      <h2>Frequently asked questions</h2>
+      <h2 class="content-heading">Frequently asked questions</h2>
     </header>
     <div class="mt-6 space-y-4">
       <details

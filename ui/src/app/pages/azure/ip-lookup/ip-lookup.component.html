@@ -48,7 +48,7 @@
     @if (isLoading()) {
       <div class="iplookup__loading">
         <div class="app-spinner text-brand">
-          <span class="visually-hidden">Loading...</span>
+          <span class="sr-only">Loading...</span>
         </div>
       </div>
     }
@@ -82,9 +82,6 @@
               <span>&#10006; Copy Failed</span>
             }
           </button>
-        </div>
-        <div id="shareLinkHelp" class="iplookup-share__help">
-          Send this URL to reload the same results.
         </div>
       </div>
     }
@@ -145,7 +142,7 @@
 
   <section class="regions__section mt-12">
     <header class="regions__section-header">
-      <h2>Frequently asked questions</h2>
+      <h2 class="content-heading">Frequently asked questions</h2>
     </header>
     <div class="mt-6 space-y-4">
       <details
@@ -321,7 +318,7 @@
 
   <section class="regions__section mt-5">
     <header class="regions__section-header">
-      <h2>Additional resources</h2>
+      <h2 class="content-heading">Additional resources</h2>
       <p>Dig deeper into service tags and automation options for Azure network security.</p>
     </header>
     <div class="regions-resources__grid">

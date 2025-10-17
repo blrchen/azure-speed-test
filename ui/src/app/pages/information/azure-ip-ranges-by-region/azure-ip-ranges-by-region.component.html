@@ -47,7 +47,7 @@
         class="ip-region-empty__icon h-7 w-7"
         aria-hidden="true"
       />
-      <h2>No regions match your search</h2>
+      <h2 class="content-heading">No regions match your search</h2>
       <p>Try a different keyword or reset the filter to explore the full directory.</p>
       <button
         type="button"
@@ -61,7 +61,7 @@
     @for (group of groupedRegions(); track trackByGroup($index, group)) {
       <section class="ip-region-group">
         <header class="ip-region-group__header">
-          <h2 class="ip-region-group__title">{{ group.label }}</h2>
+          <h2 class="content-heading">{{ group.label }}</h2>
           <span class="ip-region-group__count">{{ group.regions.length }}</span>
         </header>
         <div class="ip-region-group__grid">

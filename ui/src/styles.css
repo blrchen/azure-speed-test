@@ -11,60 +11,14 @@ body {
   min-height: 100vh;
 }
 
+/* Component: page-container */
 @layer components {
   .page-container {
     @apply mx-auto w-full max-w-none px-3 py-6 sm:max-w-7xl sm:px-6 lg:px-8;
   }
-
-  .section-card {
-    @apply rounded-2xl border border-slate-200 bg-white/80 shadow-lg backdrop-blur-sm;
-  }
-
-  .section-card__body {
-    @apply p-6 sm:p-8;
-  }
-
-  .app-tag {
-    @apply inline-flex items-center rounded-full border border-transparent px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em];
-  }
-
-  .app-tag--primary {
-    @apply border-brand/10 bg-brand/10 text-brand;
-  }
-
-  .app-table {
-    @apply min-w-full divide-y divide-slate-200 text-sm;
-  }
-
-  .app-table thead {
-    @apply bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500;
-  }
-
-  .app-table thead th {
-    @apply whitespace-nowrap px-4 py-3;
-  }
-
-  .app-table tbody tr {
-    @apply border-b border-slate-100 transition hover:bg-slate-50/70;
-  }
-
-  .app-table tbody td {
-    @apply px-4 py-3 align-middle;
-  }
-
-  .app-badge-pill {
-    @apply inline-flex items-center justify-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide;
-  }
-
-  .app-badge-pill--success {
-    @apply bg-emerald-500/15 text-emerald-700;
-  }
-
-  .app-badge-pill--warning {
-    @apply bg-amber-400/20 text-amber-700;
-  }
 }
 
+/* Component: page-intro */
 @layer components {
   .page-title {
     @apply text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl;
@@ -102,7 +56,18 @@ body {
     color: #1d4ed8;
     outline: none;
   }
+}
 
+/* Component: content-heading */
+@layer components {
+  .content-heading {
+    @apply text-xl font-semibold text-slate-900;
+    margin: 0;
+  }
+}
+
+/* Component: regions-section */
+@layer components {
   .regions__section {
     margin-bottom: 3rem;
   }
@@ -124,13 +89,19 @@ body {
     margin: 0 0 1rem;
     color: rgba(73, 80, 87, 0.75);
   }
+}
 
+/* Component: regions-resources-grid */
+@layer components {
   .regions-resources__grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 1rem;
   }
+}
 
+/* Component: resource-card */
+@layer components {
   .resource-card {
     padding: 1.1rem 1.2rem;
     border-radius: 1rem;
@@ -173,69 +144,18 @@ body {
   }
 }
 
-@layer utilities {
-  .align-items-center {
-    @apply items-center;
+/* Component: section-card */
+@layer components {
+  .section-card {
+    @apply rounded-2xl border border-slate-200 bg-white/80 shadow-lg backdrop-blur-sm;
   }
 
-  .align-middle {
-    vertical-align: middle;
-  }
-
-  .justify-content-center {
-    @apply justify-center;
-  }
-
-  .text-primary {
-    color: #0d6efd;
-  }
-
-  .text-brand-light {
-    color: #e7f1ff;
-  }
-
-  .text-end {
-    text-align: right;
-  }
-
-  .text-break {
-    overflow-wrap: anywhere;
-  }
-
-  .bg-primary {
-    background-color: #0d6efd;
-    color: #fff;
-  }
-
-  .ms-0 {
-    margin-left: 0;
-  }
-
-  .ms-1 {
-    margin-left: 0.25rem;
-  }
-
-  .ms-2 {
-    margin-left: 0.5rem;
-  }
-
-  .border-top {
-    border-top: 1px solid rgba(148, 163, 184, 0.25);
-  }
-
-  .w-100 {
-    width: 100%;
-  }
-
-  .w-25 {
-    width: 25%;
-  }
-
-  .visually-hidden {
-    @apply sr-only;
+  .section-card__body {
+    @apply p-6 sm:p-8;
   }
 }
 
+/* Component: app-card */
 @layer components {
   .app-card {
     @apply rounded-2xl border border-slate-200 bg-white/80 shadow-lg backdrop-blur-sm;
@@ -257,6 +177,128 @@ body {
     @apply text-sm text-slate-600;
   }
 }
+
+/* Component: app-tag */
+@layer components {
+  .app-tag {
+    @apply inline-flex items-center rounded-full border border-transparent px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em];
+  }
+
+  .app-tag--primary {
+    @apply border-brand/10 bg-brand/10 text-brand;
+  }
+}
+
+/* Component: app-badge-pill */
+@layer components {
+  .app-badge-pill {
+    @apply inline-flex items-center justify-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide;
+  }
+
+  .app-badge-pill--success {
+    @apply bg-emerald-500/15 text-emerald-700;
+  }
+
+  .app-badge-pill--warning {
+    @apply bg-amber-400/20 text-amber-700;
+  }
+}
+
+/* Component: app-badge */
+@layer components {
+  .app-badge {
+    @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide bg-slate-300/20 text-slate-600;
+  }
+
+  .app-badge[data-variant='success'] {
+    @apply bg-emerald-600 text-white;
+  }
+
+  .app-badge[data-variant='secondary'] {
+    @apply bg-slate-300/20 text-slate-600;
+  }
+}
+
+/* Component: app-table */
+@layer components {
+  .app-table {
+    @apply min-w-full divide-y divide-slate-200 text-sm;
+  }
+
+  .app-table thead {
+    @apply bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500;
+  }
+
+  .app-table thead th {
+    @apply whitespace-nowrap px-4 py-3;
+  }
+
+  .app-table tbody tr {
+    @apply border-b border-slate-100 transition hover:bg-slate-50/70;
+  }
+
+  .app-table tbody td {
+    @apply px-4 py-3 align-middle;
+  }
+
+  .app-table--striped tbody tr:nth-child(even) {
+    @apply bg-slate-100/60;
+  }
+
+  .app-table--hover tbody tr:hover {
+    @apply bg-blue-100/30;
+  }
+
+  .app-table--bordered {
+    @apply border border-slate-300/60;
+  }
+
+  .app-table--light {
+    @apply bg-slate-50/80;
+  }
+
+  .app-table__container {
+    @apply w-full overflow-x-auto;
+  }
+}
+
+/* Component: app-breadcrumb */
+@layer components {
+  .app-breadcrumb {
+    @apply mb-6;
+  }
+
+  .app-breadcrumb__list {
+    @apply flex flex-wrap items-center gap-2 list-none p-0 text-sm text-slate-500;
+    margin: 0;
+  }
+
+  .app-breadcrumb__item {
+    @apply inline-flex items-center text-slate-500;
+  }
+
+  .app-breadcrumb__item a {
+    @apply font-semibold text-brand no-underline transition-colors duration-150;
+  }
+
+  .app-breadcrumb__item a:hover,
+  .app-breadcrumb__item a:focus-visible {
+    @apply text-brand-dark underline outline-none;
+  }
+
+  .app-breadcrumb__item + .app-breadcrumb__item::before {
+    content: '>';
+    margin: 0 0.35rem 0 0.15rem;
+    color: rgb(148 163 184);
+  }
+
+  .app-breadcrumb__item--active,
+  .app-breadcrumb__item[aria-current='page'] {
+    @apply cursor-default font-semibold text-slate-900;
+  }
+}
+
+/* Component: app-button */
 @layer components {
   .app-button {
     @apply inline-flex items-center justify-center gap-2 rounded-lg border border-transparent px-4 py-2 text-sm font-semibold leading-5 text-slate-800 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40;
@@ -301,105 +343,23 @@ body {
   }
 }
 
+/* Component: app-alert */
 @layer components {
   .app-alert {
     @apply relative flex flex-col gap-2 rounded-xl border px-4 py-3 text-sm shadow-sm;
   }
 
   .app-alert--info {
-    border-color: rgba(13, 110, 253, 0.25);
-    background: rgba(13, 110, 253, 0.08);
-    color: rgb(24 31 45);
+    @apply border-brand/30 bg-brand/10 text-slate-900;
   }
 }
 
+/* Component: app-form */
 @layer components {
-  .app-badge {
-    @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide;
-    background-color: rgba(148, 163, 184, 0.18);
-    color: rgb(71 85 105);
+  .app-form {
+    @apply mb-4;
   }
 
-  .app-badge[data-variant='success'] {
-    background-color: #198754;
-    color: #fff;
-  }
-
-  .app-badge[data-variant='secondary'] {
-    background-color: rgba(148, 163, 184, 0.18);
-    color: rgb(71 85 105);
-  }
-}
-
-@layer components {
-  .breadcrumb {
-    @apply flex flex-wrap gap-2 text-sm text-slate-500;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .breadcrumb-item {
-    @apply inline-flex items-center gap-2;
-  }
-
-  .breadcrumb-item + .breadcrumb-item::before {
-    content: '/';
-    color: rgba(148, 163, 184, 0.8);
-  }
-
-  .breadcrumb-item a {
-    @apply text-brand hover:underline;
-  }
-}
-
-@layer components {
-  .app-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.95rem;
-  }
-
-  .app-table thead tr {
-    background-color: rgb(248 250 252);
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 0.06em;
-    color: rgb(100 116 139);
-  }
-
-  .app-table th,
-  .app-table td {
-    padding: 0.8rem 1rem;
-    border-bottom: 1px solid rgba(148, 163, 184, 0.2);
-  }
-
-  .app-table tbody tr:hover {
-    background-color: rgba(241, 245, 249, 0.6);
-  }
-
-  .app-table--striped tbody tr:nth-child(even) {
-    background-color: rgba(241, 245, 249, 0.45);
-  }
-
-  .app-table--hover tbody tr:hover {
-    background-color: rgba(191, 219, 254, 0.25);
-  }
-
-  .app-table--bordered {
-    border: 1px solid rgba(148, 163, 184, 0.3);
-  }
-
-  .app-table--light {
-    background-color: rgba(248, 250, 252, 0.8);
-  }
-
-  .app-table__container {
-    @apply w-full overflow-x-auto;
-  }
-}
-
-@layer components {
   .app-form__label {
     @apply mb-2 block text-sm font-semibold text-slate-600;
   }
@@ -414,10 +374,6 @@ body {
 
   .app-form__note {
     @apply mt-1 text-xs text-slate-500;
-  }
-
-  .app-form {
-    @apply mb-4;
   }
 
   .app-form__checkbox {
@@ -438,6 +394,7 @@ body {
   }
 }
 
+/* Component: app-spinner */
 @layer components {
   .app-spinner {
     @apply inline-block h-5 w-5 animate-spin rounded-full border-2 border-brand border-r-transparent;

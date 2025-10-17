@@ -12,7 +12,7 @@
     @for (card of textCards(); track card.title) {
       <article class="app-card h-full shadow-sm">
         <div class="app-card__body flex h-full flex-col">
-          <h2 class="app-card__title text-lg font-semibold">{{ card.title }}</h2>
+          <h2 class="content-heading">{{ card.title }}</h2>
           <p class="app-card__text mb-4 flex-1 text-slate-600">{{ card.text }}</p>
           <a [href]="card.link" class="app-button app-button--primary mt-auto self-start">
             Get Started

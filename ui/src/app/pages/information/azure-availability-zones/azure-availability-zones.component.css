@@ -44,59 +44,47 @@
 
 .azones__summary {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.2rem;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.25rem;
   margin-bottom: 2.5rem;
 }
 
 .azones-tile {
   display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem 1.2rem;
-  border-radius: 1rem;
-  border: 1px solid rgba(13, 110, 253, 0.08);
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 0.45rem 1.4rem rgba(33, 37, 41, 0.06);
-}
-
-.azones-tile__icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 16px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-}
-
-.azones-tile__icon--primary {
-  background: rgba(13, 110, 253, 0.12);
-  color: rgba(13, 110, 253, 0.85);
-}
-
-.azones-tile__icon--success {
-  background: rgba(25, 135, 84, 0.14);
-  color: rgba(25, 135, 84, 0.92);
-}
-
-.azones-tile__icon--warning {
-  background: rgba(255, 193, 7, 0.18);
-  color: rgba(204, 142, 0, 0.95);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 1.1rem 1.35rem;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  background: #ffffff;
+  box-shadow: 0 12px 24px -16px rgba(37, 99, 235, 0.6);
 }
 
 .azones-tile__label {
   font-size: 0.78rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: rgba(73, 80, 87, 0.65);
+  color: rgba(100, 116, 139, 0.85);
   font-weight: 600;
 }
 
 .azones-tile__value {
-  font-size: clamp(1.6rem, 2.6vw, 2rem);
+  font-size: clamp(1.8rem, 2.2vw, 2.2rem);
   font-weight: 700;
-  color: rgba(24, 26, 31, 0.95);
+  color: #1d4ed8;
+}
+
+@media (min-width: 640px) {
+  .azones__summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 768px) {
+  .azones__summary {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 .azones__section {

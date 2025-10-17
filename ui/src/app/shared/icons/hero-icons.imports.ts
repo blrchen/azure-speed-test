@@ -29,7 +29,7 @@ export type HeroIconName = keyof typeof HERO_ICON_DATA
             [attr.cx]="element.cx"
             [attr.cy]="element.cy"
             [attr.r]="element.r"
-            [attr.stroke-width]="element.strokeWidth ?? strokeWidth()"
+            [attr.stroke-width]="element.strokeWidth ?? defaultStrokeWidth"
           />
         } @else {
           <path
@@ -38,7 +38,7 @@ export type HeroIconName = keyof typeof HERO_ICON_DATA
             [attr.clip-rule]="element.clipRule"
             [attr.stroke-linecap]="element.strokeLinecap ?? 'round'"
             [attr.stroke-linejoin]="element.strokeLinejoin ?? 'round'"
-            [attr.stroke-width]="element.strokeWidth ?? strokeWidth()"
+            [attr.stroke-width]="element.strokeWidth ?? defaultStrokeWidth"
           />
         }
       }
@@ -52,7 +52,7 @@ export type HeroIconName = keyof typeof HERO_ICON_DATA
 })
 export class HeroIconComponent {
   readonly name = input.required<HeroIconName>()
-  readonly strokeWidth = input('1.5')
+  readonly defaultStrokeWidth = '1.5' as const
 
   readonly definition = computed<HeroIconDefinition>(() => {
     const icon = HERO_ICON_DATA[this.name()]
@@ -66,3 +66,4 @@ export class HeroIconComponent {
     return (element as HeroIconCircle).type === 'circle'
   }
 }
+

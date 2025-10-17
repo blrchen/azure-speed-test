@@ -12,64 +12,39 @@
       <span class="text-xs font-semibold uppercase tracking-wide text-slate-600">
         Other Azure clouds
       </span>
-      <a href="/Information/AzureChinaRegions" class="app-tag app-tag--primary">
+      <a [routerLink]="['/Information/AzureChinaRegions']" class="app-tag app-tag--primary">
         China operated by 21Vianet
       </a>
-      <a href="/Information/AzureUSGovernmentRegions" class="app-tag app-tag--primary">
+      <a [routerLink]="['/Information/AzureUSGovernmentRegions']" class="app-tag app-tag--primary">
         US Government regions
       </a>
     </aside>
   </header>
 
   <section class="mb-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-    <article
-      class="flex items-center gap-4 rounded-2xl border border-brand/20 bg-white p-4 shadow-sm"
-    >
-      <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-brand/10 text-brand">
-        <app-hero-icon name="heroGlobeAlt" class="h-6 w-6" aria-hidden="true" />
-      </div>
-      <div>
-        <span class="block text-xs font-semibold uppercase tracking-wide text-slate-600">
-          Global cloud regions
-        </span>
-        <span class="text-2xl font-semibold text-slate-900">
-          {{ filteredAzureGlobalCloudRegions().length }}
-        </span>
-      </div>
+    <article class="regions__card regions__card--brand regions__stat-card">
+      <span class="block text-xs font-semibold uppercase tracking-wide text-slate-600">
+        Global cloud regions
+      </span>
+      <span class="text-2xl font-semibold text-slate-900">
+        {{ filteredAzureGlobalCloudRegions().length }}
+      </span>
     </article>
-    <article
-      class="flex items-center gap-4 rounded-2xl border border-amber-200 bg-white p-4 shadow-sm"
-    >
-      <div
-        class="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100 text-amber-600"
-      >
-        <app-hero-icon name="heroLockClosed" class="h-6 w-6" aria-hidden="true" />
-      </div>
-      <div>
-        <span class="block text-xs font-semibold uppercase tracking-wide text-slate-600">
-          Restricted regions
-        </span>
-        <span class="text-2xl font-semibold text-slate-900">
-          {{ filteredAccessRestrictedRegions().length }}
-        </span>
-      </div>
+    <article class="regions__card regions__card--warning regions__stat-card">
+      <span class="block text-xs font-semibold uppercase tracking-wide text-slate-600">
+        Restricted regions
+      </span>
+      <span class="text-2xl font-semibold text-slate-900">
+        {{ filteredAccessRestrictedRegions().length }}
+      </span>
     </article>
-    <article
-      class="flex items-center gap-4 rounded-2xl border border-emerald-200 bg-white p-4 shadow-sm"
-    >
-      <div
-        class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600"
-      >
-        <app-hero-icon name="heroBuildingOffice" class="h-6 w-6" aria-hidden="true" />
-      </div>
-      <div>
-        <span class="block text-xs font-semibold uppercase tracking-wide text-slate-600">
-          Upcoming regions
-        </span>
-        <span class="text-2xl font-semibold text-slate-900">
-          {{ upcomingRegions.length }}
-        </span>
-      </div>
+    <article class="regions__card regions__card--success regions__stat-card">
+      <span class="block text-xs font-semibold uppercase tracking-wide text-slate-600">
+        Upcoming regions
+      </span>
+      <span class="text-2xl font-semibold text-slate-900">
+        {{ upcomingRegions.length }}
+      </span>
     </article>
   </section>
 
@@ -119,11 +94,11 @@
 
   <section class="regions__section">
     <header class="regions__section-header">
-      <h2>Azure Global Cloud Regions</h2>
-      <p>General availability regions with full Azure service coverage.</p>
+      <h2 class="content-heading">Azure Global Cloud Regions</h2>
+      <p>Browse live production regions with geography, paired region, launch year, and availability zone details.</p>
     </header>
     <div
-      class="region-table overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+      class="region-table region-table--card"
     >
       <div class="region-table__scroll">
         <table class="region-table__table w-full border-collapse text-sm">
@@ -133,7 +108,7 @@
             <tr>
               <th class="px-3 py-3">Region</th>
               <th class="px-3 py-3">Geography</th>
-              <th class="px-3 py-3">Location</th>
+              <th class="px-3 py-3">Datacenter Location</th>
               <th class="px-3 py-3">Availability zones</th>
               <th class="px-3 py-3">Paired region</th>
               <th class="w-20 px-3 py-3 text-right">Launched</th>
@@ -142,7 +117,7 @@
           <tbody>
             @for (region of filteredAzureGlobalCloudRegions(); track region.regionId) {
               <tr
-                class="border-t border-slate-200 bg-white transition odd:bg-slate-50/40 hover:bg-brand/5"
+                class="region-table__row"
               >
                 <td class="region-table__cell region-table__cell--region px-3 py-3 align-top">
                   <div class="flex flex-col gap-1">
@@ -150,13 +125,13 @@
                       class="region-table__region-link"
                       [routerLink]="['/Information/AzureRegions', region.regionId]"
                     >
-                      {{ region.displayName }}
+                      <span class="region-table__region-link-label">{{ region.displayName }}</span>
+                      <app-hero-icon
+                        name="heroArrowTopRightOnSquare"
+                        class="region-table__region-link-icon"
+                        aria-hidden="true"
+                      />
                     </a>
-                    <span
-                      class="region-table__region-code text-xs uppercase tracking-wide text-slate-500"
-                    >
-                      {{ region.regionId }}
-                    </span>
                   </div>
                 </td>
                 <td class="region-table__cell px-3 py-3 align-top text-slate-600">
@@ -201,11 +176,11 @@
 
   <section class="regions__section">
     <header class="regions__section-header">
-      <h2>Access Restricted Regions</h2>
+      <h2 class="content-heading">Access Restricted Regions</h2>
       <p>Azure regions with limited availability, typically requiring special onboarding.</p>
     </header>
     <div
-      class="region-table overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+      class="region-table region-table--card"
     >
       <div class="region-table__scroll">
         <table class="region-table__table w-full border-collapse text-sm">
@@ -215,14 +190,14 @@
             <tr>
               <th class="px-3 py-3">Region</th>
               <th class="px-3 py-3">Geography</th>
-              <th class="px-3 py-3">Location</th>
+              <th class="px-3 py-3">Datacenter Location</th>
               <th class="px-3 py-3">Available to</th>
             </tr>
           </thead>
           <tbody>
             @for (region of filteredAccessRestrictedRegions(); track region.regionId) {
               <tr
-                class="border-t border-slate-200 bg-white transition odd:bg-slate-50/40 hover:bg-brand/5"
+                class="region-table__row"
               >
                 <td class="region-table__cell region-table__cell--region px-3 py-3 align-top">
                   <div class="flex flex-col gap-1">
@@ -230,13 +205,13 @@
                       class="region-table__region-link"
                       [routerLink]="['/Information/AzureRegions', region.regionId]"
                     >
-                      {{ region.displayName }}
+                      <span class="region-table__region-link-label">{{ region.displayName }}</span>
+                      <app-hero-icon
+                        name="heroArrowTopRightOnSquare"
+                        class="region-table__region-link-icon"
+                        aria-hidden="true"
+                      />
                     </a>
-                    <span
-                      class="region-table__region-code text-xs uppercase tracking-wide text-slate-500"
-                    >
-                      {{ region.regionId }}
-                    </span>
                   </div>
                 </td>
                 <td class="region-table__cell px-3 py-3 align-top text-slate-600">
@@ -267,12 +242,12 @@
 
   <section class="regions__section">
     <header class="regions__section-header">
-      <h2>Upcoming Azure Regions</h2>
+      <h2 class="content-heading">Upcoming Azure Regions</h2>
       <p>Microsoft-announced regions that are under development.</p>
     </header>
     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
       @for (region of upcomingRegions; track region.name) {
-        <article class="rounded-2xl border border-brand/20 bg-white p-4 shadow-sm">
+        <article class="regions__card regions__card--brand">
           <span class="text-xs font-semibold uppercase tracking-wide text-slate-600">
             {{ region.country }}
           </span>
@@ -281,7 +256,7 @@
             class="inline-flex items-center gap-1.5 text-sm font-semibold text-brand transition hover:text-brand/80"
             [href]="region.link"
             target="_blank"
-            rel="noopener"
+            rel="noopener noreferrer"
           >
             Learn more
             <app-hero-icon
@@ -297,74 +272,56 @@
 
   <section class="mt-12">
     <header class="regions__section-header">
-      <h2>Frequently asked questions</h2>
+      <h2 class="content-heading">Frequently asked questions</h2>
       <p>Helpful context when planning region-specific deployments.</p>
     </header>
     <div class="mt-6 space-y-4">
-      <details
-        class="group rounded-2xl border border-slate-200 bg-white/95 shadow-sm transition-colors duration-200 ease-out open:border-brand/40 open:shadow-brand-sm"
-      >
-        <summary
-          class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left text-base font-semibold text-slate-900 outline-none transition-colors hover:text-brand/90 focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white [&::-webkit-details-marker]:hidden"
-        >
-          <span class="flex-1 text-base font-semibold text-slate-900">
+      <details class="faq-item">
+        <summary class="faq-item__summary">
+          <span class="faq-item__summary-text">
             What defines an Azure region?
           </span>
           <app-hero-icon
             name="heroChevronDown"
-            class="h-4 w-4 text-slate-400 transition-transform duration-200 ease-in-out group-open:rotate-180 group-open:text-brand"
+            class="faq-item__icon"
             aria-hidden="true"
           />
         </summary>
-        <div
-          class="space-y-3 border-t border-slate-100 px-6 py-5 text-sm leading-relaxed text-slate-600 [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:text-slate-800 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
-        >
+        <div class="faq-item__body">
           Azure regions are sets of datacenters connected through a dedicated low-latency network.
           They are grouped into geographies for data residency and compliance. Some services require
           availability zones, which are multiple independent datacenters within a region.
         </div>
       </details>
-      <details
-        class="group rounded-2xl border border-slate-200 bg-white/95 shadow-sm transition-colors duration-200 ease-out open:border-brand/40 open:shadow-brand-sm"
-      >
-        <summary
-          class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left text-base font-semibold text-slate-900 outline-none transition-colors hover:text-brand/90 focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white [&::-webkit-details-marker]:hidden"
-        >
-          <span class="flex-1 text-base font-semibold text-slate-900">
+      <details class="faq-item">
+        <summary class="faq-item__summary">
+          <span class="faq-item__summary-text">
             How do paired regions work?
           </span>
           <app-hero-icon
             name="heroChevronDown"
-            class="h-4 w-4 text-slate-400 transition-transform duration-200 ease-in-out group-open:rotate-180 group-open:text-brand"
+            class="faq-item__icon"
             aria-hidden="true"
           />
         </summary>
-        <div
-          class="space-y-3 border-t border-slate-100 px-6 py-5 text-sm leading-relaxed text-slate-600 [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:text-slate-800 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
-        >
+        <div class="faq-item__body">
           Every Azure region is paired with another region within the same geography for disaster
           recovery. Paired regions are designed to be at least 300 miles apart and prioritized for
           sequential updates to reduce downtime during platform maintenance.
         </div>
       </details>
-      <details
-        class="group rounded-2xl border border-slate-200 bg-white/95 shadow-sm transition-colors duration-200 ease-out open:border-brand/40 open:shadow-brand-sm"
-      >
-        <summary
-          class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left text-base font-semibold text-slate-900 outline-none transition-colors hover:text-brand/90 focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white [&::-webkit-details-marker]:hidden"
-        >
-          <span class="flex-1 text-base font-semibold text-slate-900">
+      <details class="faq-item">
+        <summary class="faq-item__summary">
+          <span class="faq-item__summary-text">
             Why are some regions restricted?
           </span>
           <app-hero-icon
             name="heroChevronDown"
-            class="h-4 w-4 text-slate-400 transition-transform duration-200 ease-in-out group-open:rotate-180 group-open:text-brand"
+            class="faq-item__icon"
             aria-hidden="true"
           />
         </summary>
-        <div
-          class="space-y-3 border-t border-slate-100 px-6 py-5 text-sm leading-relaxed text-slate-600 [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:text-slate-800 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
-        >
+        <div class="faq-item__body">
           Regions like Azure Government or Azure China require additional onboarding due to
           compliance or sovereignty requirements. Customers must meet specific eligibility criteria
           before gaining access to these datacenters.
@@ -375,7 +332,7 @@
 
   <section class="regions__resources mt-5">
     <header class="regions__section-header">
-      <h2>Additional resources</h2>
+      <h2 class="content-heading">Additional resources</h2>
       <p>Deeper guidance for planning deployments across Azure regions.</p>
     </header>
     <div class="regions-resources__grid">
@@ -385,6 +342,7 @@
         <a
           href="https://datacenters.microsoft.com/globe/explore"
           target="_blank"
+          rel="noopener noreferrer"
           class="resource-card__link"
         >
           Learn more
@@ -396,6 +354,7 @@
         <a
           href="https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-setup-guide/regions"
           target="_blank"
+          rel="noopener noreferrer"
           class="resource-card__link"
         >
           Learn more
@@ -409,6 +368,7 @@
         <a
           href="https://learn.microsoft.com/en-us/azure/reliability/cross-region-replication-azure"
           target="_blank"
+          rel="noopener noreferrer"
           class="resource-card__link"
         >
           Learn more
@@ -417,3 +377,5 @@
     </div>
   </section>
 </div>
+
+

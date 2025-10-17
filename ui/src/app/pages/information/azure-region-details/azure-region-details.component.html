@@ -1,9 +1,11 @@
 <div class="region-page">
-  <nav class="region-breadcrumb" aria-label="Breadcrumb">
-    <ol class="region-breadcrumb__list">
-      <li class="region-breadcrumb__item"><a href="/">Home</a></li>
-      <li class="region-breadcrumb__item"><a href="/Information/AzureRegions">Azure Regions</a></li>
-      <li class="region-breadcrumb__item region-breadcrumb__item--active">{{ regionData?.displayName }}</li>
+  <nav class="app-breadcrumb" aria-label="Breadcrumb">
+    <ol class="app-breadcrumb__list">
+      <li class="app-breadcrumb__item"><a href="/">Home</a></li>
+      <li class="app-breadcrumb__item"><a href="/Information/AzureRegions">Azure Regions</a></li>
+      <li class="app-breadcrumb__item app-breadcrumb__item--active">
+        {{ regionData?.displayName }}
+      </li>
     </ol>
   </nav>
 
@@ -31,7 +33,7 @@
   </section>
 
   <section class="region-details-card">
-    <h2 class="region-details-card__title">Region Details</h2>
+    <h2 class="content-heading">Region Details</h2>
     <div class="region-details-table-wrapper">
       <table class="region-details-table">
         <tbody>
@@ -107,7 +109,10 @@
           <tr>
             <th scope="row">IP Ranges</th>
             <td>
-              <a class="region-link" href="/Information/AzureIpRanges/AzureCloud.{{ regionId.toLowerCase() }}">
+              <a
+                class="region-link"
+                href="/Information/AzureIpRanges/AzureCloud.{{ regionId.toLowerCase() }}"
+              >
                 View IP ranges
               </a>
             </td>
@@ -128,42 +133,6 @@
     margin: 0 auto;
     padding: 2.5rem 1.5rem 4rem;
     color: #0f172a;
-  }
-
-  .region-breadcrumb {
-    margin-bottom: 1.75rem;
-  }
-
-  .region-breadcrumb__list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    font-size: 0.85rem;
-    color: #64748b;
-  }
-
-  .region-breadcrumb__item a {
-    color: #2563eb;
-    font-weight: 600;
-    text-decoration: none;
-  }
-
-  .region-breadcrumb__item a:hover {
-    text-decoration: underline;
-  }
-
-  .region-breadcrumb__item + .region-breadcrumb__item::before {
-    content: '›';
-    color: #94a3b8;
-    margin-right: 0.5rem;
-  }
-
-  .region-breadcrumb__item--active {
-    color: #0f172a;
-    font-weight: 600;
   }
 
   .region-header__title-group {
@@ -239,7 +208,7 @@
     padding: 1.85rem 2rem 2.1rem;
   }
 
-  .region-details-card__title {
+  .region-details-card .content-heading {
     margin: 0 0 1.4rem;
     font-size: 1.35rem;
     font-weight: 600;

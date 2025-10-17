@@ -117,7 +117,7 @@
   gap: 0.75rem;
 }
 
-.ip-region-group__title {
+.ip-region-group__header .content-heading {
   margin: 0;
   font-size: 1.15rem;
   font-weight: 700;

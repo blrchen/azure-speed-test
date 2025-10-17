@@ -7,6 +7,7 @@ import { SeoService } from '../../../services'
   standalone: true,
   imports: [CommonModule],
   templateUrl: './azure-sovereign-clouds.component.html',
+  styleUrls: ['./azure-sovereign-clouds.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AzureSovereignCloudsComponent implements OnInit {

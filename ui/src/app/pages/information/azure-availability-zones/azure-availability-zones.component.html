@@ -16,37 +16,22 @@
 
   <section class="azones__summary">
     <article class="azones-tile">
-      <div class="azones-tile__icon azones-tile__icon--primary">
-        <app-hero-icon name="heroGlobeAlt" class="h-6 w-6" aria-hidden="true" />
-      </div>
-      <div class="azones-tile__body">
-        <span class="azones-tile__label">Regions with zones</span>
-        <span class="azones-tile__value">{{ tableData().length }}</span>
-      </div>
+      <span class="azones-tile__label">Regions with zones</span>
+      <span class="azones-tile__value">{{ tableData().length }}</span>
     </article>
     <article class="azones-tile">
-      <div class="azones-tile__icon azones-tile__icon--success">
-        <app-hero-icon name="heroShieldCheck" class="h-6 w-6" aria-hidden="true" />
-      </div>
-      <div class="azones-tile__body">
-        <span class="azones-tile__label">VM SLA across zones</span>
-        <span class="azones-tile__value">99.99%</span>
-      </div>
+      <span class="azones-tile__label">VM SLA across zones</span>
+      <span class="azones-tile__value">99.99%</span>
     </article>
     <article class="azones-tile">
-      <div class="azones-tile__icon azones-tile__icon--warning">
-        <app-hero-icon name="heroSignal" class="h-6 w-6" aria-hidden="true" />
-      </div>
-      <div class="azones-tile__body">
-        <span class="azones-tile__label">Typical zone latency</span>
-        <span class="azones-tile__value">&lt; 2&nbsp;ms</span>
-      </div>
+      <span class="azones-tile__label">Typical zone latency</span>
+      <span class="azones-tile__value">&lt; 2&nbsp;ms</span>
     </article>
   </section>
 
   <section class="azones__section">
     <header class="regions__section-header">
-      <h2>Azure regions with Availability Zone support</h2>
+      <h2 class="content-heading">Azure regions with Availability Zone support</h2>
       <p>
         Deploy your resources across zones within a region to achieve higher resiliency without
         significantly increasing latency.
@@ -60,7 +45,7 @@
             <th>Geography</th>
             <th>Datacenter location</th>
             <th>Availability zones</th>
-            <th class="text-end">Details</th>
+            <th class="text-right">Details</th>
           </tr>
         </thead>
         <tbody>
@@ -104,7 +89,7 @@
 
   <section class="regions__section mt-5">
     <header class="regions__section-header">
-      <h2>Additional resources</h2>
+      <h2 class="content-heading">Additional resources</h2>
       <p>Use these references to plan resilient architectures with Availability Zones.</p>
     </header>
     <div class="regions-resources__grid">
@@ -151,7 +136,7 @@
 
   <section class="regions__section mt-12">
     <header class="regions__section-header">
-      <h2>Frequently asked questions</h2>
+      <h2 class="content-heading">Frequently asked questions</h2>
     </header>
     <div class="mt-6 space-y-4">
       <details

@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core'
   selector: 'app-assistant-footer',
   standalone: true,
   template: `
-    <h2 class="text-xl font-semibold text-slate-900">Disclaimers</h2>
+    <h2 class="content-heading">Disclaimers</h2>
     <ul>
       <li>
         Your data is secure with us. We do not store or share your data. All data processing is
@@ -21,7 +21,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core'
         may occasionally be inaccurate.
       </li>
     </ul>
-    <h2 class="text-xl font-semibold text-slate-900">Additional Information</h2>
+    <h2 class="content-heading">Additional Information</h2>
     <ul>
       <li>
         If you're interested in learning how to build a chatbot application with ChatGPT, please

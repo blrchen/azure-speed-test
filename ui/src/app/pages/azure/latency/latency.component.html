@@ -1,242 +1,520 @@
-<div class="container-fluid py-3">
-  <h1 class="h2 fw-bold">Azure Latency Test</h1>
-  <p>
-    Test network latency from your IP location to Azure datacenters worldwide. It's recommended that
-    you choose the datacenter that is closest to you and your clients. A closer datacenter generally
-    provides less latency and faster throughput.
-  </p>
+<div class="page-container py-3">
+  <header class="page-intro">
+    <h1 class="page-title page-intro__title">Azure Latency Test</h1>
+    <p class="page-intro__description">
+      Test network latency from your IP location to Azure datacenters worldwide. Choose the
+      datacenter closest to you. To compare with AWS regions, visit
+      <a href="https://awsspeedtest.com/latency" target="_blank" rel="noopener noreferrer">
+        AWS Latency Test
+      </a>
+      .
+    </p>
+  </header>
 
-  <div class="card shadow-sm mb-3">
-    <div class="card-body">
-      <h2 class="h4 mb-3">Select Regions to Test</h2>
-      <div class="alert alert-info alert-dismissible fade show">
-        <strong>Testing Instructions</strong>
-        <ol class="mb-0">
-          <li>Select the regions you want to test</li>
-          <li>Wait 30-60 seconds for results to stabilize</li>
-          <li>Review your closest datacenters in the results below</li>
-        </ol>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  <div class="app-card mb-3 shadow-sm">
+    <div class="app-card__body">
+      <div
+        class="app-alert app-alert--info mb-3 flex flex-col gap-3 px-3 py-2 text-left sm:flex-row sm:items-center sm:justify-between"
+      >
+        <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+          <span class="text-xs font-semibold uppercase tracking-[0.12em] text-brand-dark">
+            Testing steps
+          </span>
+          <div class="flex flex-wrap items-center gap-2 text-sm text-slate-700">
+            <span class="flex items-center gap-2 whitespace-nowrap">
+              <span
+                class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-brand text-xs font-semibold uppercase tracking-tight text-white"
+              >
+                1
+              </span>
+              Select your Azure regions.
+            </span>
+            <span class="flex items-center gap-2 whitespace-nowrap">
+              <span
+                class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-brand text-xs font-semibold uppercase tracking-tight text-white"
+              >
+                2
+              </span>
+              Let the latency check run.
+            </span>
+            <span class="flex items-center gap-2 whitespace-nowrap">
+              <span
+                class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-brand text-xs font-semibold uppercase tracking-tight text-white"
+              >
+                3
+              </span>
+              Review the recommended regions.
+            </span>
+          </div>
+        </div>
       </div>
       <app-region-group></app-region-group>
+      @if (shareUrl()) {
+        <div class="mt-3 border-t border-slate-200 pt-3">
+          <label class="mb-2 block text-sm font-semibold text-slate-900" for="latency-share-input">
+            Share this test
+          </label>
+          <div class="flex items-center gap-2">
+            <input
+              id="latency-share-input"
+              type="text"
+              class="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+              [value]="shareUrl()"
+              readonly
+              (focus)="selectShareInput($event)"
+            />
+            <button
+              type="button"
+              class="app-button app-button--sm"
+              [class.app-button--outline-primary]="isCopyIdle()"
+              [attr.data-variant]="isCopySuccess() ? 'success' : isCopyError() ? 'danger' : null"
+              (click)="copyShareUrl()"
+            >
+              @if (isCopyIdle()) {
+                <span>Copy link</span>
+              }
+              @if (isCopySuccess()) {
+                <span>&#10003; Copied!</span>
+              }
+              @if (isCopyError()) {
+                <span>&#10006; Copy Failed</span>
+              }
+            </button>
+          </div>
+        </div>
+      }
     </div>
   </div>
 
-  <h2 class="h4 fw-bold">Recommended Azure Regions</h2>
-  <p *ngIf="tableDataTop3.length > 0">
-    Based on your current location, here are the Azure regions with the lowest latency:
-  </p>
-  <p *ngIf="!tableDataTop3.length" class="text-danger fw-bold">
-    Please select regions above to view your closest Azure datacenters.
-  </p>
-  <div class="table-responsive mb-3" *ngIf="tableDataTop3.length > 0">
-    <table class="table table-hover align-middle border shadow-sm rounded-3">
-      <thead class="bg-light">
-        <tr>
-          <th scope="col" style="width: 60%">Region & Location</th>
-          <th scope="col" style="width: 40%">Average Latency (ms)</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let item of tableDataTop3">
-          <td>
-            <div class="d-flex flex-column">
-              <span class="fw-medium">{{ item.displayName }}</span>
-              <small class="text-muted">{{ item.physicalLocation }}</small>
-            </div>
-          </td>
-          <td>
-            <div class="d-flex align-items-center">
-              <code>{{ item.averageLatency }} ms</code>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="mb-2 flex items-center">
+    <h2 class="content-heading">Recommended Azure Regions</h2>
   </div>
-  <div class="latency-chart-container" *ngIf="chartDataSeries && chartDataSeries.length > 0">
-    <ngx-charts-line-chart
-      [results]="chartDataSeries"
-      [scheme]="colorScheme"
-      [animations]="false"
-      [rangeFillOpacity]="1"
-      [xAxis]="true"
-      [yAxis]="true"
-      [roundDomains]="true"
-      [showXAxisLabel]="true"
-      [showYAxisLabel]="true"
-      [curve]="curve"
-      [xAxisTicks]="xAxisTicks"
-      [yScaleMin]="0"
-      [legend]="true"
-      [legendPosition]="legendPosition"
-      [legendTitle]="''"
-    ></ngx-charts-line-chart>
-  </div>
-
-  <div class="alert alert-info alert-dismissible fade show">
-    <strong>Important Note:</strong>
-    This site enables easy Azure network connectivity testing in your browser. It compares latency
-    across regions but does not measure the absolute lowest latency. Results are indicative. For
-    more accurate measurements, visit
-    <a href="https://www.azurespeed.com/Azure/PsPing" target="_blank">
-      PsPing Network Latency Test
-    </a>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-  <ng-container *ngIf="tableData.length > 0">
-    <h2 class="h4 mb-4 fw-bold">Azure Latency Test Results</h2>
-    <div class="table-responsive">
-      <table class="table table-hover align-middle border shadow-sm rounded-3">
-        <thead class="bg-light">
-          <tr>
-            <th class="text-uppercase small fw-bold text-secondary">Geography</th>
-            <th class="text-uppercase small fw-bold text-secondary">Region</th>
-            <th class="text-uppercase small fw-bold text-secondary">Location</th>
-            <th class="text-uppercase small fw-bold text-secondary text-center">Performance</th>
-            <th class="text-uppercase small fw-bold text-secondary text-center">Latency (ms)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of tableData">
-            <td>{{ item.geography }}</td>
-            <td>{{ item.displayName }}</td>
-            <td>{{ item.physicalLocation }}</td>
-            <td class="text-center">
-              <span
-                class="badge rounded-pill px-3 py-2"
-                *ngIf="item.averageLatency && item.averageLatency > 0"
-                [ngClass]="{
-                  'bg-success': item.averageLatency < 100,
-                  'bg-warning text-dark': item.averageLatency >= 100 && item.averageLatency < 200,
-                  'bg-danger': item.averageLatency >= 200
-                }"
-              >
-                {{
-                  item.averageLatency < 100
-                    ? 'FAST'
-                    : item.averageLatency < 200
-                      ? 'ACCEPTABLE'
-                      : 'SLOW'
-                }}
-              </span>
-            </td>
-            <td class="text-center fw-bold">
-              <span
-                *ngIf="item.averageLatency && item.averageLatency > 0"
-                [ngClass]="{
-                  'text-success': item.averageLatency < 100,
-                  'text-warning': item.averageLatency >= 100 && item.averageLatency < 200,
-                  'text-danger': item.averageLatency >= 200
-                }"
-              >
-                {{ item.averageLatency }} ms
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </ng-container>
-  <h2 class="h4 mb-4 fw-bold text-dark">Frequently Asked Questions</h2>
-  <div class="accordion shadow-sm rounded-3 mb-5" id="faqAccordion">
-    <div class="accordion-item">
-      <h3 class="accordion-header" id="headingOne">
-        <button
-          class="accordion-button collapsed"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#collapseOne"
-          aria-expanded="false"
-          aria-controls="collapseOne"
-        >
-          What is latency and what constitutes good latency?
-        </button>
-      </h3>
+  @if (!tableDataTop3().length) {
+    <div class="app-card mb-3 shadow-sm" style="min-height: 140px">
       <div
-        id="collapseOne"
-        class="accordion-collapse collapse"
-        aria-labelledby="headingOne"
-        data-bs-parent="#faqAccordion"
+        class="app-card__body flex flex-col items-center justify-center gap-4 text-center text-slate-500"
       >
-        <div class="accordion-body">
+        <div
+          class="flex h-14 w-14 items-center justify-center rounded-full bg-slate-200/60 text-slate-500"
+          aria-hidden="true"
+        >
+          <svg width="48" height="48" fill="currentColor" viewBox="0 0 16 16">
+            <path
+              d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm0 14.5A6.5 6.5 0 1 1 8 1.5a6.5 6.5 0 0 1 0 13zm-.25-4.25h.5a.75.75 0 0 1 .75.75v.5a.75.75 0 0 1-.75.75h-.5a.75.75 0 0 1-.75-.75v-.5a.75.75 0 0 1 .75-.75zm.25-8a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 8 2.25z"
+            />
+          </svg>
+        </div>
+        <div class="space-y-2">
+          <div class="text-base font-semibold text-slate-900">No recommendations yet</div>
+          <div class="space-y-1 text-sm text-slate-600">
+            <span class="block">Pick at least one region above.</span>
+            <span class="block">
+              We surface the top matches once the first latency samples arrive.
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+  @if (bestRegion()) {
+    <section
+      class="mb-4 rounded-2xl border border-slate-200 bg-white/95 p-6 shadow-sm shadow-slate-900/5"
+    >
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <span
+          class="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-emerald-700"
+        >
+          Best right now
+        </span>
+        <a
+          class="inline-flex items-center gap-2 text-sm font-semibold text-brand-dark transition-colors hover:text-brand-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+          [routerLink]="['/Information/AzureRegions', bestRegion()?.regionId ?? '']"
+        >
+          View region details
+          <app-hero-icon name="heroArrowTopRightOnSquare" class="h-4 w-4" aria-hidden="true" />
+        </a>
+      </div>
+      <div class="mt-6 grid gap-6 md:grid-cols-[minmax(0,1fr)_auto]">
+        <div class="flex flex-col gap-4">
+          <p class="text-2xl font-semibold text-slate-900">{{ bestRegion()?.displayName }}</p>
+          <div class="flex items-center gap-2 text-sm text-slate-600">
+            <app-hero-icon name="heroMapPin" class="h-4 w-4" aria-hidden="true" />
+            <span>{{ bestRegion()?.datacenterLocation }}</span>
+          </div>
+        </div>
+        <div class="flex flex-wrap items-center gap-5 md:justify-end">
+          <div class="flex flex-col gap-2">
+            <span class="text-xs font-semibold uppercase tracking-wide text-slate-500">
+              Median (ms)
+            </span>
+            <span
+              class="latency-badge latency-badge--xl"
+              [attr.data-latency]="getLatencyBadgeState(bestRegion()?.medianLatency)"
+            >
+              {{ bestRegion()?.medianLatency ?? '-' }}
+            </span>
+          </div>
+          <div class="flex flex-col gap-2">
+            <span class="text-xs font-semibold uppercase tracking-wide text-slate-500">
+              Latest ping (ms)
+            </span>
+            <span class="text-base font-semibold text-slate-800">
+              {{ bestRegion()?.currentLatency ?? '-' }}
+            </span>
+          </div>
+        </div>
+      </div>
+      @if (runnerUpRegions().length) {
+        <div class="mt-6 space-y-2">
+          <span class="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+            Next best options
+          </span>
+          <div class="flex flex-wrap gap-2">
+            @for (region of runnerUpRegions(); track trackByRegionData($index, region)) {
+              <a
+                class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-brand/40 hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+                [routerLink]="['/Information/AzureRegions', region.regionId]"
+              >
+                <span>{{ region.displayName }}</span>
+                <span
+                  class="latency-text"
+                  [attr.data-latency]="getLatencyBadgeState(region.medianLatency)"
+                >
+                  {{ region.medianLatency }} ms
+                </span>
+              </a>
+            }
+          </div>
+        </div>
+      }
+    </section>
+  }
+
+  <div>
+    <h2 class="content-heading">Azure Latency Test Results</h2>
+    @if (!tableData().length) {
+      <div class="app-card mb-4 shadow-sm" style="min-height: 260px">
+        <div
+          class="app-card__body flex flex-col items-center justify-center gap-4 text-center text-slate-500"
+        >
+          <div
+            class="flex h-14 w-14 items-center justify-center rounded-full bg-slate-200/60 text-slate-500"
+            aria-hidden="true"
+          >
+            <svg width="48" height="48" fill="currentColor" viewBox="0 0 16 16">
+              <path
+                d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm0 14.5A6.5 6.5 0 1 1 8 1.5a6.5 6.5 0 0 1 0 13zm-.25-4.25h.5a.75.75 0 0 1 .75.75v.5a.75.75 0 0 1-.75.75h-.5a.75.75 0 0 1-.75-.75v-.5a.75.75 0 0 1 .75-.75zm.25-8a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 8 2.25z"
+              />
+            </svg>
+          </div>
+          <div class="space-y-2">
+            <div class="text-base font-semibold text-slate-900">No latency results yet</div>
+            <div class="space-y-1 text-sm text-slate-600">
+              <span class="block">Choose one or more regions above.</span>
+              <span class="block">
+                We start the test automatically and stream results here once data is collected.
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+    @if (tableData().length > 0) {
+      <div class="mb-4">
+        <ngx-charts-line-chart
+          [results]="chartDataSeries()"
+          [scheme]="colorScheme"
+          [animations]="false"
+          [rangeFillOpacity]="1"
+          [xAxis]="true"
+          [yAxis]="true"
+          [roundDomains]="true"
+          [showXAxisLabel]="true"
+          [showYAxisLabel]="true"
+          [curve]="curve"
+          [xAxisTicks]="xAxisTicks()"
+          [yScaleMin]="0"
+          [legend]="true"
+          [legendPosition]="legendPosition"
+          [legendTitle]="''"
+        ></ngx-charts-line-chart>
+      </div>
+      <div class="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm">
+        <div class="app-table__container hidden sm:block">
+          <table class="app-table app-table--hover mb-0 align-middle">
+            <thead>
+              <tr>
+                <th>Geography</th>
+                <th>Region</th>
+                <th>Datacenter</th>
+                <th class="text-center">Median (ms)</th>
+                <th class="text-center">Latest Ping (ms)</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of tableData(); track trackByRegionData($index, item)) {
+                <tr>
+                  <td>
+                    <span class="block text-sm font-semibold text-slate-900">
+                      {{ item.geography }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="flex flex-col gap-1 text-left">
+                      <span class="text-sm font-semibold text-slate-900">
+                        {{ item.displayName }}
+                      </span>
+                      <a
+                        class="inline-flex items-center gap-1 text-xs font-semibold text-brand-dark transition-colors hover:text-brand-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+                        [routerLink]="['/Information/AzureRegions', item.regionId]"
+                      >
+                        View details
+                        <app-hero-icon
+                          name="heroArrowTopRightOnSquare"
+                          class="h-3.5 w-3.5"
+                          aria-hidden="true"
+                        />
+                      </a>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="flex items-center gap-2 text-sm text-slate-600">
+                      <app-hero-icon name="heroMapPin" class="h-4 w-4" aria-hidden="true" />
+                      <span>{{ item.datacenterLocation }}</span>
+                    </div>
+                  </td>
+                  <td class="text-center">
+                    @if (item.medianLatency && item.medianLatency > 0) {
+                      <span
+                        class="latency-badge"
+                        [attr.data-latency]="getLatencyBadgeState(item.medianLatency)"
+                      >
+                        {{ item.medianLatency }}
+                      </span>
+                    } @else {
+                      <span class="text-slate-400">-</span>
+                    }
+                  </td>
+                  <td class="text-center">
+                    <span class="text-sm font-semibold text-slate-800">
+                      {{ item.currentLatency || '-' }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <div class="space-y-3 sm:hidden">
+          @for (item of tableData(); track trackByRegionData($index, item)) {
+            <article class="space-y-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+              <div
+                class="grid grid-cols-1 gap-3 text-xs font-semibold uppercase tracking-wide text-slate-500"
+              >
+                <div class="flex flex-col gap-1">
+                  <span>Geography</span>
+                  <span class="text-sm font-medium text-slate-900">{{ item.geography }}</span>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <span>Datacenter</span>
+                  <span class="text-sm font-medium text-slate-900">
+                    <app-hero-icon name="heroMapPin" class="mr-1 h-4 w-4" aria-hidden="true" />
+                    {{ item.datacenterLocation }}
+                  </span>
+                </div>
+              </div>
+              <a
+                class="flex flex-col gap-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-900 transition hover:border-brand/40 hover:text-brand-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+                [routerLink]="['/Information/AzureRegions', item.regionId]"
+              >
+                <span class="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  Region
+                </span>
+                <span>{{ item.displayName }}</span>
+                <span class="inline-flex items-center gap-1 text-xs font-semibold">
+                  View details
+                  <app-hero-icon
+                    name="heroArrowTopRightOnSquare"
+                    class="h-3.5 w-3.5"
+                    aria-hidden="true"
+                  />
+                </span>
+              </a>
+              <div class="flex items-center justify-between gap-4">
+                <div class="flex flex-col gap-1">
+                  <span class="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    Median (ms)
+                  </span>
+                  <span
+                    class="latency-badge"
+                    [attr.data-latency]="getLatencyBadgeState(item.medianLatency)"
+                  >
+                    {{ item.medianLatency || '-' }}
+                  </span>
+                </div>
+                <div class="flex flex-col gap-1 text-right">
+                  <span class="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    Latest ping (ms)
+                  </span>
+                  <span class="text-sm font-semibold text-slate-800">
+                    {{ item.currentLatency || '-' }}
+                  </span>
+                </div>
+              </div>
+            </article>
+          }
+        </div>
+        <div
+          class="mt-3 flex flex-wrap items-center gap-3 rounded-xl bg-slate-50/90 px-3 py-2 text-xs text-slate-600"
+        >
+          <div class="flex items-center gap-2">
+            <span
+              class="inline-flex h-3 w-3 rounded-full bg-gradient-to-br from-emerald-600 to-emerald-500"
+            ></span>
+            <span>Median latency &lt; 100 ms (fast)</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span
+              class="inline-flex h-3 w-3 rounded-full bg-gradient-to-br from-amber-400 to-amber-200"
+            ></span>
+            <span>Median latency 100 - 200 ms (steady)</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span
+              class="inline-flex h-3 w-3 rounded-full bg-gradient-to-br from-rose-500 to-rose-400"
+            ></span>
+            <span>Median latency &ge; 200 ms (slow)</span>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+  <section
+    class="mt-8 rounded-2xl border border-brand/20 bg-gradient-to-br from-brand/10 via-sky-100/40 to-white p-6 shadow-sm"
+    aria-label="Important note about latency testing"
+  >
+    <div class="flex items-start gap-4">
+      <div
+        class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand/15 text-brand-dark"
+        aria-hidden="true"
+      >
+        <app-hero-icon name="heroInformationCircle" class="h-5 w-5" aria-hidden="true" />
+      </div>
+      <div class="space-y-2">
+        <p class="text-sm leading-relaxed text-slate-700">
+          <strong>Important Note:</strong>
+          This site enables easy Azure network connectivity testing in your browser. It compares
+          latency across regions but does not measure the absolute lowest latency. Results are
+          indicative. For more accurate measurements, visit
+          <a
+            href="https://www.azurespeed.com/Azure/PsPing"
+            target="_blank"
+            rel="noopener"
+            class="font-semibold text-brand-dark underline underline-offset-4 transition-colors hover:text-brand-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+          >
+            PsPing Network Latency Test
+          </a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="regions__section mt-12">
+    <header class="regions__section-header">
+      <h2 class="content-heading">Frequently asked questions</h2>
+    </header>
+    <div class="mt-6 space-y-4">
+      <details
+        class="group rounded-2xl border border-slate-200 bg-white/95 shadow-sm transition-colors duration-200 ease-out open:border-brand/40 open:shadow-brand-sm"
+      >
+        <summary
+          class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left text-base font-semibold text-slate-900 outline-none transition-colors hover:text-brand-dark focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white [&::-webkit-details-marker]:hidden"
+        >
+          <span class="flex-1 text-base font-semibold text-slate-900">
+            What is latency and what constitutes good latency?
+          </span>
+          <app-hero-icon
+            name="heroChevronDown"
+            class="h-4 w-4 text-slate-400 transition-transform duration-200 ease-in-out group-open:rotate-180 group-open:text-brand-dark"
+            aria-hidden="true"
+          />
+        </summary>
+        <div
+          class="space-y-3 border-t border-slate-100 px-6 py-5 text-sm leading-relaxed text-slate-600 [&_a]:text-brand-dark [&_a]:underline [&_a]:underline-offset-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:text-slate-800 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
+        >
           <p>
             <strong>Latency</strong>
             , often referred to as ping, is the duration for data to travel from the source to the
             destination and back. The results of this test represent the median round trip time
-            (RTT) latency to Azure storage endpoint, with lower RTT indicating superior performance.
+            (RTT) latency to Azure storage endpoints, with lower RTT indicating superior
+            performance.
           </p>
           <p>
-            <strong>What Constitutes Good Latency?</strong>
+            <strong>What constitutes good latency?</strong>
             Good latency varies by application type:
           </p>
           <ul>
             <li>
-              <strong>Real-time applications (e.g., gaming, video conferencing):</strong>
-              Latency below 50 ms is ideal.
+              <strong>Real-time applications</strong>
+              (e.g., gaming, video conferencing): latency below 50 ms is ideal.
             </li>
             <li>
-              <strong>Interactive applications (e.g., web browsing, online trading):</strong>
-              Latency between 50 ms and 100 ms is usually acceptable.
+              <strong>Interactive applications</strong>
+              (e.g., web browsing, online trading): latency between 50 ms and 100 ms is usually
+              acceptable.
             </li>
             <li>
-              <strong>Non-interactive applications (e.g., file transfers, backups):</strong>
-              Latency above 100 ms may be acceptable.
+              <strong>Non-interactive applications</strong>
+              (e.g., file transfers, backups): latency above 100 ms may be acceptable.
             </li>
           </ul>
           <p>
-            These guidelines can vary based on specific application needs and user expectations.
+            These guidelines may vary depending on specific application needs and user expectations.
           </p>
         </div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <h3 class="accordion-header" id="headingTwo">
-        <button
-          class="accordion-button collapsed"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#collapseTwo"
-          aria-expanded="false"
-          aria-controls="collapseTwo"
-        >
-          How does Azure Latency Test work?
-        </button>
-      </h3>
-      <div
-        id="collapseTwo"
-        class="accordion-collapse collapse"
-        aria-labelledby="headingTwo"
-        data-bs-parent="#faqAccordion"
+      </details>
+      <details
+        class="group rounded-2xl border border-slate-200 bg-white/95 shadow-sm transition-colors duration-200 ease-out open:border-brand/40 open:shadow-brand-sm"
       >
-        <div class="accordion-body">
+        <summary
+          class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left text-base font-semibold text-slate-900 outline-none transition-colors hover:text-brand-dark focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white [&::-webkit-details-marker]:hidden"
+        >
+          <span class="flex-1 text-base font-semibold text-slate-900">
+            How does Azure Latency Test work?
+          </span>
+          <app-hero-icon
+            name="heroChevronDown"
+            class="h-4 w-4 text-slate-400 transition-transform duration-200 ease-in-out group-open:rotate-180 group-open:text-brand-dark"
+            aria-hidden="true"
+          />
+        </summary>
+        <div
+          class="space-y-3 border-t border-slate-100 px-6 py-5 text-sm leading-relaxed text-slate-600 [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:text-slate-800 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
+        >
           <p>
-            Your browser sends HTTPS requests to Azure blob files in each region. The median latency
-            is calculated by measuring the time between the request and the response.
+            Your browser sends HTTPS requests to Azure storage files in each region. The median
+            latency is calculated by measuring the time between the request and the response.
           </p>
         </div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <h3 class="accordion-header" id="headingThree">
-        <button
-          class="accordion-button collapsed"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#collapseThree"
-          aria-expanded="false"
-          aria-controls="collapseThree"
-        >
-          Why might my Azure Latency Test result differ from my PSPing result?
-        </button>
-      </h3>
-      <div
-        id="collapseThree"
-        class="accordion-collapse collapse"
-        aria-labelledby="headingThree"
-        data-bs-parent="#faqAccordion"
+      </details>
+      <details
+        class="group rounded-2xl border border-slate-200 bg-white/95 shadow-sm transition-colors duration-200 ease-out open:border-brand/40 open:shadow-brand-sm"
       >
-        <div class="accordion-body">
+        <summary
+          class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left text-base font-semibold text-slate-900 outline-none transition-colors hover:text-brand/90 focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white [&::-webkit-details-marker]:hidden"
+        >
+          <span class="flex-1 text-base font-semibold text-slate-900">
+            Why might my Azure Latency Test result differ from my PSPing result?
+          </span>
+          <app-hero-icon
+            name="heroChevronDown"
+            class="h-4 w-4 text-slate-400 transition-transform duration-200 ease-in-out group-open:rotate-180 group-open:text-brand"
+            aria-hidden="true"
+          />
+        </summary>
+        <div
+          class="space-y-3 border-t border-slate-100 px-6 py-5 text-sm leading-relaxed text-slate-600 [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:text-slate-800 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
+        >
           <p>
             The Azure Latency Test measures latency using HTTPS requests to Azure blob storage,
             whereas PSPing measures TCP or ICMP echo requests. The two methods may yield different
@@ -245,84 +523,66 @@
             higher latencies in the Azure Latency Test.
           </p>
         </div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <h3 class="accordion-header" id="headingFour">
-        <button
-          class="accordion-button collapsed"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#collapseFour"
-          aria-expanded="false"
-          aria-controls="collapseFour"
-        >
-          Why are some Azure regions not listed?
-        </button>
-      </h3>
-      <div
-        id="collapseFour"
-        class="accordion-collapse collapse"
-        aria-labelledby="headingFour"
-        data-bs-parent="#faqAccordion"
+      </details>
+      <details
+        class="group rounded-2xl border border-slate-200 bg-white/95 shadow-sm transition-colors duration-200 ease-out open:border-brand/40 open:shadow-brand-sm"
       >
-        <div class="accordion-body">
+        <summary
+          class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left text-base font-semibold text-slate-900 outline-none transition-colors hover:text-brand/90 focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white [&::-webkit-details-marker]:hidden"
+        >
+          <span class="flex-1 text-base font-semibold text-slate-900">
+            Why are some Azure regions not listed?
+          </span>
+          <app-hero-icon
+            name="heroChevronDown"
+            class="h-4 w-4 text-slate-400 transition-transform duration-200 ease-in-out group-open:rotate-180 group-open:text-brand"
+            aria-hidden="true"
+          />
+        </summary>
+        <div
+          class="space-y-3 border-t border-slate-100 px-6 py-5 text-sm leading-relaxed text-slate-600 [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:text-slate-800 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
+        >
           <p>
             Some regions may not appear due to special access requirements or restrictions for
             certain users or organizations. For example, US government regions require approval from
             the US government, and the Australia Central region is limited to Australian and New
-            Zealand government organizations and their partners. A list of access restricted regions
-            can be found at
-            <a href="https://www.azurespeed.com/Information/AzureRegions" target="_blank">
-              Azure Regions
-            </a>
-            . There is no plan to support these access restricted regions.
-          </p>
-          <p>
-            Additionally, some regions might be too new and not yet included in the test. If you
-            notice a missing recently announced region, please open an issue on
+            Zealand government organizations and their partners. Additionally, some regions might be
+            too new and not yet included in the test. If you notice a missing recently announced
+            region, please open an issue on
             <a href="https://github.com/blrchen/azure-speed-test/issues/new" target="_blank">
               GitHub
             </a>
             .
           </p>
         </div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <h3 class="accordion-header" id="headingFive">
-        <button
-          class="accordion-button collapsed"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#collapseFive"
-          aria-expanded="false"
-          aria-controls="collapseFive"
-        >
-          Do you support upload, download tests, packet loss, and jitter?
-        </button>
-      </h3>
-      <div
-        id="collapseFive"
-        class="accordion-collapse collapse"
-        aria-labelledby="headingFive"
-        data-bs-parent="#faqAccordion"
+      </details>
+      <details
+        class="group rounded-2xl border border-slate-200 bg-white/95 shadow-sm transition-colors duration-200 ease-out open:border-brand/40 open:shadow-brand-sm"
       >
-        <div class="accordion-body">
+        <summary
+          class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left text-base font-semibold text-slate-900 outline-none transition-colors hover:text-brand/90 focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white [&::-webkit-details-marker]:hidden"
+        >
+          <span class="flex-1 text-base font-semibold text-slate-900">
+            Do you support upload, download tests, packet loss, and jitter?
+          </span>
+          <app-hero-icon
+            name="heroChevronDown"
+            class="h-4 w-4 text-slate-400 transition-transform duration-200 ease-in-out group-open:rotate-180 group-open:text-brand"
+            aria-hidden="true"
+          />
+        </summary>
+        <div
+          class="space-y-3 border-t border-slate-100 px-6 py-5 text-sm leading-relaxed text-slate-600 [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:text-slate-800 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
+        >
           <p>
             Upload tests are available
-            <a href="https://localhost:44424/Azure/Download" target="_blank">here</a>
+            <a href="https://www.azurespeed.com/Azure/Upload" target="_blank">here</a>
             . Download tests are available
             <a href="https://www.azurespeed.com/Azure/Download" target="_blank">here</a>
             . Currently, measuring packet loss or jitter is not supported.
           </p>
         </div>
-      </div>
+      </details>
     </div>
-  </div>
+  </section>
 </div>
-<style>
-  .latency-chart-container {
-    margin: 2rem 0 3rem;
-  }
-</style>

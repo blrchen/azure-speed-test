@@ -1,12 +1,20 @@
-import { Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core'
+import { CommonModule } from '@angular/common'
+import { RouterModule } from '@angular/router'
 import { SeoService } from '../../../services'
 
 @Component({
   selector: 'app-azure-ip-ranges-by-service',
-  templateUrl: './azure-ip-ranges-by-service.component.html'
+  standalone: true,
+  imports: [CommonModule, RouterModule],
+  templateUrl: './azure-ip-ranges-by-service.component.html',
+  styleUrl: './azure-ip-ranges-by-service.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AzureIpRangesByServiceComponent {
-  constructor(private seoService: SeoService) {
+export class AzureIpRangesByServiceComponent implements OnInit {
+  private seoService = inject(SeoService)
+
+  ngOnInit(): void {
     this.initializeSeoProperties()
   }
 

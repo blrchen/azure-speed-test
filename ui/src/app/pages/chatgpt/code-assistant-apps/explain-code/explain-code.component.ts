@@ -1,32 +1,53 @@
-import { Component, OnInit } from '@angular/core'
-import { FormBuilder, FormGroup, Validators } from '@angular/forms'
-import axios, { AxiosError } from 'axios'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal
+} from '@angular/core'
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms'
+import { HttpClient, HttpErrorResponse } from '@angular/common/http'
+import { firstValueFrom } from 'rxjs'
 import { AssistantResponse } from '../../../../models'
 import { chatGPTConfig } from '../../chatgpt.config'
 import { SystemPrompts } from '../../system-prompts'
-import { environment } from '../../../../../environments/environment'
+import { API_ENDPOINT } from '../../../../shared/constants'
 import { SeoService } from '../../../../services'
+import { AssistantFooterComponent } from '../../assistant-footer/assistant-footer.component'
 
 @Component({
   selector: 'app-explain-code',
-  templateUrl: './explain-code.component.html'
+  standalone: true,
+  imports: [ReactiveFormsModule, AssistantFooterComponent],
+  templateUrl: './explain-code.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ExplainCodeComponent implements OnInit {
-  systemPromptId = SystemPrompts.EXPLAIN_CODE
-  userContentForm!: FormGroup
-  isLoading = false
-  result: string | null = null
-  errorMessage: string | null = null
+  private readonly formBuilder = inject(FormBuilder)
+  private readonly seoService = inject(SeoService)
+  private readonly http = inject(HttpClient)
+  private readonly destroyRef = inject(DestroyRef)
 
-  constructor(
-    private formBuilder: FormBuilder,
-    private seoService: SeoService
-  ) {
-    this.initializeSeoProperties()
-  }
+  readonly systemPromptId = SystemPrompts.EXPLAIN_CODE
+  readonly userContentForm = this.formBuilder.nonNullable.group({
+    userContent: ['', [Validators.required, Validators.maxLength(5000)]]
+  })
+  readonly isLoading = signal(false)
+  readonly result = signal<string | null>(null)
+  readonly errorMessage = signal<string | null>(null)
+  readonly copyStatus = signal<'idle' | 'copied' | 'failed'>('idle')
+  readonly hasResult = computed(() => this.result() !== null)
+  readonly isCopyIdle = computed(() => this.copyStatus() === 'idle')
+  readonly isCopySuccess = computed(() => this.copyStatus() === 'copied')
+  readonly isCopyError = computed(() => this.copyStatus() === 'failed')
+
+  private copyResetTimeoutId: number | null = null
 
   ngOnInit(): void {
-    this.initializeForm()
+    this.initializeSeoProperties()
+    this.destroyRef.onDestroy(() => this.clearCopyStatusTimer())
   }
 
   private initializeSeoProperties(): void {
@@ -37,20 +58,18 @@ export class ExplainCodeComponent implements OnInit {
     this.seoService.setCanonicalUrl('https://www.azurespeed.com/ChatGPT/ExplainCode')
   }
 
-  initializeForm(): void {
-    this.userContentForm = this.formBuilder.group({
-      userContent: ['', [Validators.required, Validators.maxLength(5000)]]
-    })
-  }
-
   async submitForm(): Promise<void> {
     if (this.userContentForm.invalid) {
       return
     }
-    this.isLoading = true
-    this.result = null
-    this.errorMessage = null
-    const { userContent } = this.userContentForm.value
+
+    this.isLoading.set(true)
+    this.result.set(null)
+    this.errorMessage.set(null)
+    this.copyStatus.set('idle')
+    this.clearCopyStatusTimer()
+
+    const { userContent } = this.userContentForm.getRawValue()
     const payload = {
       accessToken: chatGPTConfig.accessToken,
       systemPromptId: this.systemPromptId,
@@ -58,25 +77,65 @@ export class ExplainCodeComponent implements OnInit {
     }
 
     try {
-      const response = await axios.post<AssistantResponse>(
-        `${environment.apiEndpoint}/api/free-for-10-calls-per-ip-each-day`,
-        payload
+      const response = await firstValueFrom(
+        this.http.post<AssistantResponse>(
+          `${API_ENDPOINT}/api/10-free-calls-per-ip-each-day`,
+          payload
+        )
       )
-      this.result = response.data?.choices[0]?.message?.content ?? null
+      this.result.set(response?.choices[0]?.message?.content ?? null)
     } catch (error) {
       let message = 'An unexpected error occurred'
-      if (error instanceof AxiosError) {
-        message = error.response?.data?.message
+      if (error instanceof HttpErrorResponse) {
+        const errorPayload = error.error as { message?: string } | undefined
+        message =
+          errorPayload?.message ?? (typeof error.error === 'string' ? error.error : error.message)
       } else if (error instanceof Error) {
         message = error.message
       }
-      this.errorMessage = message
+      this.errorMessage.set(message)
     } finally {
-      this.isLoading = false
+      this.isLoading.set(false)
     }
   }
 
+  async copyToClipboard(text: string): Promise<void> {
+    if (!text) {
+      return
+    }
+
+    try {
+      await navigator.clipboard.writeText(text)
+      this.copyStatus.set('copied')
+    } catch (err) {
+      console.error('Failed to copy text: ', err)
+      this.copyStatus.set('failed')
+    }
+
+    this.scheduleCopyStatusReset()
+  }
+
   resetForm(): void {
-    location.reload()
+    this.userContentForm.reset({ userContent: '' })
+    this.result.set(null)
+    this.errorMessage.set(null)
+    this.copyStatus.set('idle')
+    this.clearCopyStatusTimer()
+    this.isLoading.set(false)
+  }
+
+  private scheduleCopyStatusReset(): void {
+    this.clearCopyStatusTimer()
+    this.copyResetTimeoutId = window.setTimeout(() => {
+      this.copyResetTimeoutId = null
+      this.copyStatus.set('idle')
+    }, 3000)
+  }
+
+  private clearCopyStatusTimer(): void {
+    if (this.copyResetTimeoutId !== null) {
+      window.clearTimeout(this.copyResetTimeoutId)
+      this.copyResetTimeoutId = null
+    }
   }
 }

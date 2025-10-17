@@ -1,42 +1,62 @@
-<div>
-  <div *ngIf="isInitialized && selectedRegionCount === 0" class="alert alert-danger">
-    <strong>Please select at least one region to start test.</strong>
-  </div>
-  <div class="row g-2">
-    <div class="col-12 col-md-4" *ngFor="let group of regionGroups">
-      <div class="border rounded shadow-sm h-100">
-        <div class="d-flex justify-content-between align-items-center bg-light border-bottom p-3">
-          <strong>{{ group.geographyGroup }}</strong>
-          <div class="form-check form-switch">
-            <input
-              class="form-check-input"
-              type="checkbox"
-              [id]="group.geographyGroup"
-              [checked]="group.checked"
-              (change)="onChange(null, group)"
-            />
-            <label class="form-check-label" [for]="group.geographyGroup">Select all</label>
-          </div>
-        </div>
-        <div class="p-2">
-          <label
-            *ngFor="let region of group?.regions"
-            [for]="region.name"
-            class="form-check-label mb-2"
-            [ngClass]="{ 'text-primary fw-medium': region.checked }"
-            style="margin-right: 10px"
-          >
-            <input
-              type="checkbox"
-              [id]="region.name"
-              [checked]="region.checked"
-              (change)="onChange(region, group)"
-              class="form-check-input me-2"
-            />
-            {{ region.displayName }}
-          </label>
-        </div>
-      </div>
+<section class="region-groups">
+  <h2 class="content-heading sr-only">Azure region groups</h2>
+  <div class="region-groups__summary">
+    <div class="region-groups__summary-primary">
+      <span class="region-groups__summary-count">
+        {{ selectedRegionCount() }} / {{ totalRegionCount }} regions selected
+      </span>
+      <span
+        class="region-groups__summary-message"
+        [attr.data-status]="selectedRegionCount() === 0 ? 'alert' : null"
+      >
+        @if (selectedRegionCount() === 0) {
+          Select at least one region to start your test.
+        } @else {
+          Ready to run your test.
+        }
+      </span>
     </div>
+    <button
+      type="button"
+      class="app-button app-button--link app-button--sm region-groups__summary-clear"
+      (click)="clearSelection()"
+      [disabled]="selectedRegionCount() === 0"
+    >
+      Clear all
+    </button>
   </div>
-</div>
+
+  <div class="region-groups__list">
+    @for (group of regionGroups; track trackByGroup($index, group)) {
+      <article
+        class="region-group-row"
+        [attr.data-state]="isGroupChecked(group) || isGroupIndeterminate(group) ? 'active' : null"
+      >
+        <header class="region-group-row__header">
+          <h3 class="region-group-row__title">{{ group.regionGroup }}</h3>
+          <button type="button" class="region-group-row__action" (click)="onChange(null, group)">
+            {{ isGroupChecked(group) ? 'Deselect all' : 'Select all' }}
+          </button>
+        </header>
+
+        <div class="region-chip-collection" role="group" [attr.aria-label]="group.regionGroup">
+          @for (region of group?.regions; track trackByRegion($index, region)) {
+            <label
+              class="region-chip"
+              [attr.data-active]="isRegionChecked(region.regionId) ? 'true' : null"
+            >
+              <input
+                type="checkbox"
+                [id]="region.regionId"
+                [checked]="isRegionChecked(region.regionId)"
+                (change)="onChange(region, group)"
+                [attr.aria-label]="region.displayName"
+              />
+              <span class="region-chip__label">{{ region.displayName }}</span>
+            </label>
+          }
+        </div>
+      </article>
+    }
+  </div>
+</section>

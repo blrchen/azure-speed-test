@@ -1,12 +1,19 @@
-import { Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core'
+import { CommonModule, NgOptimizedImage } from '@angular/common'
 import { SeoService } from '../../../services'
 
 @Component({
   selector: 'app-psping',
-  templateUrl: './psPing.component.html'
+  standalone: true,
+  imports: [CommonModule, NgOptimizedImage],
+  templateUrl: './psPing.component.html',
+  styleUrls: ['./psPing.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PSPingComponent {
-  constructor(private seoService: SeoService) {
+export class PSPingComponent implements OnInit {
+  private seoService = inject(SeoService)
+
+  ngOnInit(): void {
     this.initializeSeoProperties()
   }
 

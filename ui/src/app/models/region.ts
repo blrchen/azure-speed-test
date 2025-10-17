@@ -1,19 +1,24 @@
+// Base interface matching the structure of regions.json
 export interface Region {
+  regionId: string
   displayName: string
+  longName: string
   geography: string
-  geographyGroup: string
+  geographicGroup: string
+  regionGroup: string
   latitude: number
   longitude: number
-  pairedRegion: string | null
-  physicalLocation: string
-  name: string
+  datacenterLocation: string
+  pairedRegion: string
   availabilityZoneCount?: number
   restricted: boolean
-  yearOpen?: number
+  availableTo: string
+  dataResidency?: string
+  launchYear?: number
 }
 
+// Extended interface with additional fields for application use
 export interface RegionModel extends Region {
-  checked?: boolean
   storageAccountName: string
   url?: string
 }

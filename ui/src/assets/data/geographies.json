@@ -3,32 +3,38 @@
     "name": "Asia Pacific",
     "regions": [
       {
+        "regionId": "eastasia",
         "displayName": "East Asia",
+        "longName": "(Asia Pacific) East Asia",
         "geography": "Asia Pacific",
-        "geographyGroup": "Asia Pacific",
+        "geographicGroup": "Asia Pacific",
+        "regionGroup": "Asia Pacific",
         "latitude": 22.267,
         "longitude": 114.188,
+        "datacenterLocation": "Hong Kong",
         "pairedRegion": "Southeast Asia",
-        "physicalLocation": "Hong Kong",
-        "regionalDisplayName": "(Asia Pacific) East Asia",
-        "name": "eastasia",
         "availabilityZoneCount": 3,
         "restricted": false,
-        "yearOpen": 2010
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in the Asia Pacific region",
+        "launchYear": 2010
       },
       {
+        "regionId": "southeastasia",
         "displayName": "Southeast Asia",
+        "longName": "(Asia Pacific) Southeast Asia",
         "geography": "Asia Pacific",
-        "geographyGroup": "Asia Pacific",
+        "geographicGroup": "Asia Pacific",
+        "regionGroup": "Asia Pacific",
         "latitude": 1.283,
         "longitude": 103.833,
+        "datacenterLocation": "Singapore",
         "pairedRegion": "East Asia",
-        "physicalLocation": "Singapore",
-        "regionalDisplayName": "(Asia Pacific) Southeast Asia",
-        "name": "southeastasia",
         "availabilityZoneCount": 3,
         "restricted": false,
-        "yearOpen": 2010
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in the Asia Pacific region",
+        "launchYear": 2010
       }
     ]
   },
@@ -36,59 +42,92 @@
     "name": "Australia",
     "regions": [
       {
+        "regionId": "australiacentral",
         "displayName": "Australia Central",
+        "longName": "(Asia Pacific) Australia Central",
         "geography": "Australia",
-        "geographyGroup": "Asia Pacific",
+        "geographicGroup": "Asia Pacific",
+        "regionGroup": "Australia and New Zealand",
         "latitude": -35.3075,
         "longitude": 149.1244,
+        "datacenterLocation": "Canberra",
         "pairedRegion": "Australia Central 2",
-        "physicalLocation": "Canberra",
-        "regionalDisplayName": "(Asia Pacific) Australia Central",
-        "name": "australiacentral",
         "availabilityZoneCount": 0,
         "restricted": false,
-        "yearOpen": 2018
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in Australia",
+        "launchYear": 2018
       },
       {
+        "regionId": "australiacentral2",
         "displayName": "Australia Central 2",
+        "longName": "(Asia Pacific) Australia Central 2",
         "geography": "Australia",
-        "geographyGroup": "Asia Pacific",
+        "geographicGroup": "Asia Pacific",
+        "regionGroup": "Australia and New Zealand",
         "latitude": -35.3075,
         "longitude": 149.1244,
+        "datacenterLocation": "Canberra",
         "pairedRegion": "Australia Central",
-        "physicalLocation": "Canberra",
-        "regionalDisplayName": "(Asia Pacific) Australia Central 2",
-        "name": "australiacentral2",
         "availabilityZoneCount": 0,
-        "restricted": true
+        "restricted": true,
+        "availableTo": "Reserved for Australia Central customers requiring in-country disaster recovery"
       },
       {
+        "regionId": "australiaeast",
         "displayName": "Australia East",
+        "longName": "(Asia Pacific) Australia East",
         "geography": "Australia",
-        "geographyGroup": "Asia Pacific",
+        "geographicGroup": "Asia Pacific",
+        "regionGroup": "Australia and New Zealand",
         "latitude": -33.86,
         "longitude": 151.2094,
+        "datacenterLocation": "New South Wales",
         "pairedRegion": "Australia Southeast",
-        "physicalLocation": "New South Wales",
-        "regionalDisplayName": "(Asia Pacific) Australia East",
-        "name": "australiaeast",
         "availabilityZoneCount": 3,
         "restricted": false,
-        "yearOpen": 2014
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in Australia",
+        "launchYear": 2014
       },
       {
+        "regionId": "australiasoutheast",
         "displayName": "Australia Southeast",
+        "longName": "(Asia Pacific) Australia Southeast",
         "geography": "Australia",
-        "geographyGroup": "Asia Pacific",
+        "geographicGroup": "Asia Pacific",
+        "regionGroup": "Australia and New Zealand",
         "latitude": -37.8136,
         "longitude": 144.9631,
+        "datacenterLocation": "Victoria",
         "pairedRegion": "Australia East",
-        "physicalLocation": "Victoria",
-        "regionalDisplayName": "(Asia Pacific) Australia Southeast",
-        "name": "australiasoutheast",
         "availabilityZoneCount": 0,
         "restricted": false,
-        "yearOpen": 2014
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in Australia",
+        "launchYear": 2014
+      }
+    ]
+  },
+  {
+    "name": "Austria",
+    "regions": [
+      {
+        "regionId": "austriaeast",
+        "displayName": "Austria East",
+        "longName": "(Europe) Austria East",
+        "geography": "Austria",
+        "geographicGroup": "Europe",
+        "regionGroup": "Europe",
+        "latitude": 48.2201153,
+        "longitude": 16.214834,
+        "datacenterLocation": "Vienna",
+        "pairedRegion": "",
+        "availabilityZoneCount": 3,
+        "restricted": false,
+        "availableTo": "All customers and partners",
+        "dataResidency": "Stored at rest in Austria",
+        "launchYear": 2025
       }
     ]
   },
@@ -96,31 +135,36 @@
     "name": "Brazil",
     "regions": [
       {
+        "regionId": "brazilsouth",
         "displayName": "Brazil South",
+        "longName": "(South America) Brazil South",
         "geography": "Brazil",
-        "geographyGroup": "South America",
+        "geographicGroup": "South America",
+        "regionGroup": "Americas",
         "latitude": -23.55,
         "longitude": -46.633,
+        "datacenterLocation": "Sao Paulo State",
         "pairedRegion": "South Central US",
-        "physicalLocation": "Sao Paulo State",
-        "regionalDisplayName": "(South America) Brazil South",
-        "name": "brazilsouth",
         "availabilityZoneCount": 3,
         "restricted": false,
-        "yearOpen": 2014
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Replicated to the US",
+        "launchYear": 2014
       },
       {
+        "regionId": "brazilsoutheast",
         "displayName": "Brazil Southeast",
+        "longName": "(South America) Brazil Southeast",
         "geography": "Brazil",
-        "geographyGroup": "South America",
+        "geographicGroup": "South America",
+        "regionGroup": "Americas",
         "latitude": -22.90278,
         "longitude": -43.2075,
+        "datacenterLocation": "Rio",
         "pairedRegion": "Brazil South",
-        "physicalLocation": "Rio",
-        "regionalDisplayName": "(South America) Brazil Southeast",
-        "name": "brazilsoutheast",
         "availabilityZoneCount": 0,
-        "restricted": true
+        "restricted": true,
+        "availableTo": "Reserved for Brazil South customers requiring scenario based in-country disaster recovery"
       }
     ]
   },
@@ -128,32 +172,60 @@
     "name": "Canada",
     "regions": [
       {
+        "regionId": "canadacentral",
         "displayName": "Canada Central",
+        "longName": "(Canada) Canada Central",
         "geography": "Canada",
-        "geographyGroup": "Canada",
+        "geographicGroup": "Canada",
+        "regionGroup": "Americas",
         "latitude": 43.653,
         "longitude": -79.383,
+        "datacenterLocation": "Toronto",
         "pairedRegion": "Canada East",
-        "physicalLocation": "Toronto",
-        "regionalDisplayName": "(Canada) Canada Central",
-        "name": "canadacentral",
         "availabilityZoneCount": 3,
         "restricted": false,
-        "yearOpen": 2016
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in Canada",
+        "launchYear": 2016
       },
       {
+        "regionId": "canadaeast",
         "displayName": "Canada East",
+        "longName": "(Canada) Canada East",
         "geography": "Canada",
-        "geographyGroup": "Canada",
+        "geographicGroup": "Canada",
+        "regionGroup": "Americas",
         "latitude": 46.817,
         "longitude": -71.217,
+        "datacenterLocation": "Quebec",
         "pairedRegion": "Canada Central",
-        "physicalLocation": "Quebec",
-        "regionalDisplayName": "(Canada) Canada East",
-        "name": "canadaeast",
         "availabilityZoneCount": 0,
         "restricted": false,
-        "yearOpen": 2016
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in Canada",
+        "launchYear": 2016
+      }
+    ]
+  },
+  {
+    "name": "Chile",
+    "regions": [
+      {
+        "regionId": "chilecentral",
+        "displayName": "Chile Central",
+        "longName": "(South America) Chile Central",
+        "geography": "Chile",
+        "geographicGroup": "South America",
+        "regionGroup": "Americas",
+        "latitude": -33.447487,
+        "longitude": -70.673676,
+        "datacenterLocation": "Santiago",
+        "pairedRegion": "",
+        "availabilityZoneCount": 3,
+        "restricted": false,
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in Chile",
+        "launchYear": 2025
       }
     ]
   },
@@ -161,32 +233,38 @@
     "name": "Europe",
     "regions": [
       {
+        "regionId": "northeurope",
         "displayName": "North Europe",
+        "longName": "(Europe) North Europe",
         "geography": "Europe",
-        "geographyGroup": "Europe",
+        "geographicGroup": "Europe",
+        "regionGroup": "Europe",
         "latitude": 53.3478,
         "longitude": -6.2597,
+        "datacenterLocation": "Ireland",
         "pairedRegion": "West Europe",
-        "physicalLocation": "Ireland",
-        "regionalDisplayName": "(Europe) North Europe",
-        "name": "northeurope",
         "availabilityZoneCount": 3,
         "restricted": false,
-        "yearOpen": 2009
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in Europe",
+        "launchYear": 2009
       },
       {
+        "regionId": "westeurope",
         "displayName": "West Europe",
+        "longName": "(Europe) West Europe",
         "geography": "Europe",
-        "geographyGroup": "Europe",
+        "geographicGroup": "Europe",
+        "regionGroup": "Europe",
         "latitude": 52.3667,
         "longitude": 4.9,
+        "datacenterLocation": "Netherlands",
         "pairedRegion": "North Europe",
-        "physicalLocation": "Netherlands",
-        "regionalDisplayName": "(Europe) West Europe",
-        "name": "westeurope",
         "availabilityZoneCount": 3,
         "restricted": false,
-        "yearOpen": 2010
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in Europe",
+        "launchYear": 2010
       }
     ]
   },
@@ -194,31 +272,36 @@
     "name": "France",
     "regions": [
       {
+        "regionId": "francecentral",
         "displayName": "France Central",
+        "longName": "(Europe) France Central",
         "geography": "France",
-        "geographyGroup": "Europe",
+        "geographicGroup": "Europe",
+        "regionGroup": "Europe",
         "latitude": 46.3772,
         "longitude": 2.373,
+        "datacenterLocation": "Paris",
         "pairedRegion": "France South",
-        "physicalLocation": "Paris",
-        "regionalDisplayName": "(Europe) France Central",
-        "name": "francecentral",
         "availabilityZoneCount": 3,
         "restricted": false,
-        "yearOpen": 2018
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in France",
+        "launchYear": 2018
       },
       {
+        "regionId": "francesouth",
         "displayName": "France South",
+        "longName": "(Europe) France South",
         "geography": "France",
-        "geographyGroup": "Europe",
+        "geographicGroup": "Europe",
+        "regionGroup": "Europe",
         "latitude": 43.8345,
         "longitude": 2.1972,
+        "datacenterLocation": "Marseille",
         "pairedRegion": "France Central",
-        "physicalLocation": "Marseille",
-        "regionalDisplayName": "(Europe) France South",
-        "name": "francesouth",
         "availabilityZoneCount": 0,
-        "restricted": true
+        "restricted": true,
+        "availableTo": "Reserved for France Central customers requiring in-country disaster recovery"
       }
     ]
   },
@@ -226,31 +309,36 @@
     "name": "Germany",
     "regions": [
       {
+        "regionId": "germanynorth",
         "displayName": "Germany North",
+        "longName": "(Europe) Germany North",
         "geography": "Germany",
-        "geographyGroup": "Europe",
+        "geographicGroup": "Europe",
+        "regionGroup": "Europe",
         "latitude": 53.073635,
         "longitude": 8.806422,
+        "datacenterLocation": "Berlin",
         "pairedRegion": "Germany West Central",
-        "physicalLocation": "Berlin",
-        "regionalDisplayName": "(Europe) Germany North",
-        "name": "germanynorth",
         "availabilityZoneCount": 0,
-        "restricted": true
+        "restricted": true,
+        "availableTo": "Reserved for Germany West Central customers requiring in-country disaster recovery"
       },
       {
+        "regionId": "germanywestcentral",
         "displayName": "Germany West Central",
+        "longName": "(Europe) Germany West Central",
         "geography": "Germany",
-        "geographyGroup": "Europe",
+        "geographicGroup": "Europe",
+        "regionGroup": "Europe",
         "latitude": 50.110924,
         "longitude": 8.682127,
+        "datacenterLocation": "Frankfurt",
         "pairedRegion": "Germany North",
-        "physicalLocation": "Frankfurt",
-        "regionalDisplayName": "(Europe) Germany West Central",
-        "name": "germanywestcentral",
         "availabilityZoneCount": 3,
         "restricted": false,
-        "yearOpen": 2019
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in Germany",
+        "launchYear": 2019
       }
     ]
   },
@@ -258,71 +346,105 @@
     "name": "India",
     "regions": [
       {
+        "regionId": "centralindia",
         "displayName": "Central India",
+        "longName": "(Asia Pacific) Central India",
         "geography": "India",
-        "geographyGroup": "Asia Pacific",
+        "geographicGroup": "Asia Pacific",
+        "regionGroup": "Asia Pacific",
         "latitude": 18.5822,
         "longitude": 73.9197,
+        "datacenterLocation": "Pune",
         "pairedRegion": "South India",
-        "physicalLocation": "Pune",
-        "regionalDisplayName": "(Asia Pacific) Central India",
-        "name": "centralindia",
         "availabilityZoneCount": 3,
         "restricted": false,
-        "yearOpen": 2015
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in India",
+        "launchYear": 2015
       },
       {
+        "regionId": "jioindiacentral",
         "displayName": "Jio India Central",
+        "longName": "(Asia Pacific) Jio India Central",
         "geography": "India",
-        "geographyGroup": "Asia Pacific",
+        "geographicGroup": "Asia Pacific",
+        "regionGroup": "Asia Pacific",
         "latitude": 21.146633,
         "longitude": 79.08886,
+        "datacenterLocation": "Nagpur",
         "pairedRegion": "Jio India West",
-        "physicalLocation": "Nagpur",
-        "regionalDisplayName": "(Asia Pacific) Jio India Central",
-        "name": "jioindiacentral",
         "availabilityZoneCount": 0,
-        "restricted": true
+        "restricted": true,
+        "availableTo": ""
       },
       {
+        "regionId": "jioindiawest",
         "displayName": "Jio India West",
+        "longName": "(Asia Pacific) Jio India West",
         "geography": "India",
-        "geographyGroup": "Asia Pacific",
+        "geographicGroup": "Asia Pacific",
+        "regionGroup": "Asia Pacific",
         "latitude": 22.470701,
         "longitude": 70.05773,
+        "datacenterLocation": "Jamnagar",
         "pairedRegion": "Jio India Central",
-        "physicalLocation": "Jamnagar",
-        "regionalDisplayName": "(Asia Pacific) Jio India West",
-        "name": "jioindiawest",
         "availabilityZoneCount": 0,
-        "restricted": true
+        "restricted": true,
+        "availableTo": ""
       },
       {
+        "regionId": "southindia",
         "displayName": "South India",
+        "longName": "(Asia Pacific) South India",
         "geography": "India",
-        "geographyGroup": "Asia Pacific",
+        "geographicGroup": "Asia Pacific",
+        "regionGroup": "Asia Pacific",
         "latitude": 12.9822,
         "longitude": 80.1636,
+        "datacenterLocation": "Chennai",
         "pairedRegion": "Central India",
-        "physicalLocation": "Chennai",
-        "regionalDisplayName": "(Asia Pacific) South India",
-        "name": "southindia",
         "availabilityZoneCount": 0,
         "restricted": false,
-        "yearOpen": 2015
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in India",
+        "launchYear": 2015
       },
       {
+        "regionId": "westindia",
         "displayName": "West India",
+        "longName": "(Asia Pacific) West India",
         "geography": "India",
-        "geographyGroup": "Asia Pacific",
+        "geographicGroup": "Asia Pacific",
+        "regionGroup": "Asia Pacific",
         "latitude": 19.088,
         "longitude": 72.868,
+        "datacenterLocation": "Mumbai",
         "pairedRegion": "South India",
-        "physicalLocation": "Mumbai",
-        "regionalDisplayName": "(Asia Pacific) West India",
-        "name": "westindia",
         "availabilityZoneCount": 0,
-        "restricted": false
+        "restricted": false,
+        "availableTo": "Available to all customers and partners"
+      }
+    ]
+  },
+  {
+    "name": "Indonesia",
+    "regions": [
+      {
+        "regionId": "indonesiacentral",
+        "displayName": "Indonesia Central",
+        "longName": "(Asia Pacific) Indonesia Central",
+        "geography": "Indonesia",
+        "geographicGroup": "Asia Pacific",
+        "regionGroup": "Asia Pacific",
+        "latitude": -6.2,
+        "longitude": 106.816666,
+        "datacenterLocation": "Jakarta",
+        "pairedRegion": "",
+        "availabilityZoneCount": 3,
+        "restricted": false,
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in Indonesia",
+        "launchYear": 2025
       }
     ]
   },
@@ -330,18 +452,21 @@
     "name": "Israel",
     "regions": [
       {
+        "regionId": "israelcentral",
         "displayName": "Israel Central",
+        "longName": "(Middle East) Israel Central",
         "geography": "Israel",
-        "geographyGroup": "Middle East",
+        "geographicGroup": "Middle East",
+        "regionGroup": "Middle East and Africa",
         "latitude": 31.2655698,
         "longitude": 33.4506633,
-        "pairedRegion": null,
-        "physicalLocation": "Israel",
-        "regionalDisplayName": "(Middle East) Israel Central",
-        "name": "israelcentral",
+        "datacenterLocation": "Israel",
+        "pairedRegion": "",
         "availabilityZoneCount": 3,
         "restricted": false,
-        "yearOpen": 2023
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in Israel",
+        "launchYear": 2023
       }
     ]
   },
@@ -349,18 +474,21 @@
     "name": "Italy",
     "regions": [
       {
+        "regionId": "italynorth",
         "displayName": "Italy North",
+        "longName": "(Europe) Italy North",
         "geography": "Italy",
-        "geographyGroup": "Europe",
+        "geographicGroup": "Europe",
+        "regionGroup": "Europe",
         "latitude": 45.46888,
         "longitude": 9.18109,
-        "pairedRegion": null,
-        "physicalLocation": "Milan",
-        "regionalDisplayName": "(Europe) Italy North",
-        "name": "italynorth",
+        "datacenterLocation": "Milan",
+        "pairedRegion": "",
         "availabilityZoneCount": 3,
         "restricted": false,
-        "yearOpen": 2023
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in Italy",
+        "launchYear": 2023
       }
     ]
   },
@@ -368,32 +496,38 @@
     "name": "Japan",
     "regions": [
       {
+        "regionId": "japaneast",
         "displayName": "Japan East",
+        "longName": "(Asia Pacific) Japan East",
         "geography": "Japan",
-        "geographyGroup": "Asia Pacific",
+        "geographicGroup": "Asia Pacific",
+        "regionGroup": "Asia Pacific",
         "latitude": 35.68,
         "longitude": 139.77,
+        "datacenterLocation": "Tokyo, Saitama",
         "pairedRegion": "Japan West",
-        "physicalLocation": "Tokyo, Saitama",
-        "regionalDisplayName": "(Asia Pacific) Japan East",
-        "name": "japaneast",
         "availabilityZoneCount": 3,
         "restricted": false,
-        "yearOpen": 2014
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in Japan",
+        "launchYear": 2014
       },
       {
+        "regionId": "japanwest",
         "displayName": "Japan West",
+        "longName": "(Asia Pacific) Japan West",
         "geography": "Japan",
-        "geographyGroup": "Asia Pacific",
+        "geographicGroup": "Asia Pacific",
+        "regionGroup": "Asia Pacific",
         "latitude": 34.6939,
         "longitude": 135.5022,
+        "datacenterLocation": "Osaka",
         "pairedRegion": "Japan East",
-        "physicalLocation": "Osaka",
-        "regionalDisplayName": "(Asia Pacific) Japan West",
-        "name": "japanwest",
         "availabilityZoneCount": 3,
         "restricted": false,
-        "yearOpen": 2014
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in Japan",
+        "launchYear": 2014
       }
     ]
   },
@@ -401,31 +535,58 @@
     "name": "Korea",
     "regions": [
       {
+        "regionId": "koreacentral",
         "displayName": "Korea Central",
+        "longName": "(Asia Pacific) Korea Central",
         "geography": "Korea",
-        "geographyGroup": "Asia Pacific",
+        "geographicGroup": "Asia Pacific",
+        "regionGroup": "Asia Pacific",
         "latitude": 37.5665,
         "longitude": 126.978,
+        "datacenterLocation": "Seoul",
         "pairedRegion": "Korea South",
-        "physicalLocation": "Seoul",
-        "regionalDisplayName": "(Asia Pacific) Korea Central",
-        "name": "koreacentral",
         "availabilityZoneCount": 3,
         "restricted": false,
-        "yearOpen": 2017
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in Korea",
+        "launchYear": 2017
       },
       {
+        "regionId": "koreasouth",
         "displayName": "Korea South",
+        "longName": "(Asia Pacific) Korea South",
         "geography": "Korea",
-        "geographyGroup": "Asia Pacific",
+        "geographicGroup": "Asia Pacific",
+        "regionGroup": "Asia Pacific",
         "latitude": 35.1796,
         "longitude": 129.0756,
+        "datacenterLocation": "Busan",
         "pairedRegion": "Korea Central",
-        "physicalLocation": "Busan",
-        "regionalDisplayName": "(Asia Pacific) Korea South",
-        "name": "koreasouth",
         "availabilityZoneCount": 0,
-        "restricted": false
+        "restricted": false,
+        "availableTo": "Reserved for Korea Central customers requiring in-country disaster recovery"
+      }
+    ]
+  },
+  {
+    "name": "Malaysia",
+    "regions": [
+      {
+        "regionId": "malaysiawest",
+        "displayName": "Malaysia West",
+        "longName": "(Asia Pacific) Malaysia West",
+        "geography": "Malaysia",
+        "geographicGroup": "Asia Pacific",
+        "regionGroup": "Asia Pacific",
+        "latitude": 3.140853,
+        "longitude": 101.693207,
+        "datacenterLocation": "Kuala Lumpur",
+        "pairedRegion": "",
+        "availabilityZoneCount": 3,
+        "restricted": false,
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in Malaysia",
+        "launchYear": 2025
       }
     ]
   },
@@ -433,18 +594,21 @@
     "name": "Mexico",
     "regions": [
       {
+        "regionId": "mexicocentral",
         "displayName": "Mexico Central",
+        "longName": "(Mexico) Mexico Central",
         "geography": "Mexico",
-        "geographyGroup": "Mexico",
+        "geographicGroup": "Mexico",
+        "regionGroup": "Americas",
         "latitude": 20.588818,
         "longitude": -100.389888,
-        "pairedRegion": null,
-        "physicalLocation": "Quer\u00e9taro State",
-        "regionalDisplayName": "(Mexico) Mexico Central",
-        "name": "mexicocentral",
+        "datacenterLocation": "Quer\u00e9taro State",
+        "pairedRegion": "",
         "availabilityZoneCount": 3,
         "restricted": false,
-        "yearOpen": 2024
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in Mexico",
+        "launchYear": 2024
       }
     ]
   },
@@ -452,18 +616,21 @@
     "name": "New Zealand",
     "regions": [
       {
+        "regionId": "newzealandnorth",
         "displayName": "New Zealand North",
+        "longName": "(Asia Pacific) New Zealand North",
         "geography": "New Zealand",
-        "geographyGroup": "Asia Pacific",
+        "geographicGroup": "Asia Pacific",
+        "regionGroup": "Australia and New Zealand",
         "latitude": -36.84853,
         "longitude": 174.76349,
-        "pairedRegion": null,
-        "physicalLocation": "Auckland",
-        "regionalDisplayName": "(Asia Pacific) New Zealand North",
-        "name": "newzealandnorth",
+        "datacenterLocation": "Auckland",
+        "pairedRegion": "",
         "availabilityZoneCount": 3,
         "restricted": false,
-        "yearOpen": 2024
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in New Zealand",
+        "launchYear": 2024
       }
     ]
   },
@@ -471,31 +638,36 @@
     "name": "Norway",
     "regions": [
       {
+        "regionId": "norwayeast",
         "displayName": "Norway East",
+        "longName": "(Europe) Norway East",
         "geography": "Norway",
-        "geographyGroup": "Europe",
+        "geographicGroup": "Europe",
+        "regionGroup": "Europe",
         "latitude": 59.913868,
         "longitude": 10.752245,
+        "datacenterLocation": "Norway",
         "pairedRegion": "Norway West",
-        "physicalLocation": "Norway",
-        "regionalDisplayName": "(Europe) Norway East",
-        "name": "norwayeast",
         "availabilityZoneCount": 3,
         "restricted": false,
-        "yearOpen": 2019
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in Norway",
+        "launchYear": 2019
       },
       {
+        "regionId": "norwaywest",
         "displayName": "Norway West",
+        "longName": "(Europe) Norway West",
         "geography": "Norway",
-        "geographyGroup": "Europe",
+        "geographicGroup": "Europe",
+        "regionGroup": "Europe",
         "latitude": 58.969975,
         "longitude": 5.733107,
+        "datacenterLocation": "Norway",
         "pairedRegion": "Norway East",
-        "physicalLocation": "Norway",
-        "regionalDisplayName": "(Europe) Norway West",
-        "name": "norwaywest",
         "availabilityZoneCount": 0,
-        "restricted": true
+        "restricted": true,
+        "availableTo": "Reserved for Norway East customers requiring in-country disaster recovery"
       }
     ]
   },
@@ -503,18 +675,21 @@
     "name": "Poland",
     "regions": [
       {
+        "regionId": "polandcentral",
         "displayName": "Poland Central",
+        "longName": "(Europe) Poland Central",
         "geography": "Poland",
-        "geographyGroup": "Europe",
+        "geographicGroup": "Europe",
+        "regionGroup": "Europe",
         "latitude": 52.23334,
         "longitude": 21.01666,
-        "pairedRegion": null,
-        "physicalLocation": "Warsaw",
-        "regionalDisplayName": "(Europe) Poland Central",
-        "name": "polandcentral",
+        "datacenterLocation": "Warsaw",
+        "pairedRegion": "",
         "availabilityZoneCount": 3,
         "restricted": false,
-        "yearOpen": 2023
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in Poland",
+        "launchYear": 2023
       }
     ]
   },
@@ -522,18 +697,21 @@
     "name": "Qatar",
     "regions": [
       {
+        "regionId": "qatarcentral",
         "displayName": "Qatar Central",
+        "longName": "(Middle East) Qatar Central",
         "geography": "Qatar",
-        "geographyGroup": "Middle East",
+        "geographicGroup": "Middle East",
+        "regionGroup": "Middle East and Africa",
         "latitude": 25.551462,
         "longitude": 51.439327,
-        "pairedRegion": null,
-        "physicalLocation": "Doha",
-        "regionalDisplayName": "(Middle East) Qatar Central",
-        "name": "qatarcentral",
+        "datacenterLocation": "Doha",
+        "pairedRegion": "",
         "availabilityZoneCount": 3,
         "restricted": false,
-        "yearOpen": 2022
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in Qatar",
+        "launchYear": 2022
       }
     ]
   },
@@ -541,31 +719,36 @@
     "name": "South Africa",
     "regions": [
       {
+        "regionId": "southafricanorth",
         "displayName": "South Africa North",
+        "longName": "(Africa) South Africa North",
         "geography": "South Africa",
-        "geographyGroup": "Africa",
+        "geographicGroup": "Africa",
+        "regionGroup": "Middle East and Africa",
         "latitude": -25.73134,
         "longitude": 28.21837,
+        "datacenterLocation": "Johannesburg",
         "pairedRegion": "South Africa West",
-        "physicalLocation": "Johannesburg",
-        "regionalDisplayName": "(Africa) South Africa North",
-        "name": "southafricanorth",
         "availabilityZoneCount": 3,
         "restricted": false,
-        "yearOpen": 2019
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in South Africa",
+        "launchYear": 2019
       },
       {
+        "regionId": "southafricawest",
         "displayName": "South Africa West",
+        "longName": "(Africa) South Africa West",
         "geography": "South Africa",
-        "geographyGroup": "Africa",
+        "geographicGroup": "Africa",
+        "regionGroup": "Middle East and Africa",
         "latitude": -34.075691,
         "longitude": 18.843266,
+        "datacenterLocation": "Cape Town",
         "pairedRegion": "South Africa North",
-        "physicalLocation": "Cape Town",
-        "regionalDisplayName": "(Africa) South Africa West",
-        "name": "southafricawest",
         "availabilityZoneCount": 0,
-        "restricted": true
+        "restricted": true,
+        "availableTo": "Reserved for South Africa North customers requiring in-country disaster recovery"
       }
     ]
   },
@@ -573,18 +756,21 @@
     "name": "Spain",
     "regions": [
       {
+        "regionId": "spaincentral",
         "displayName": "Spain Central",
+        "longName": "(Europe) Spain Central",
         "geography": "Spain",
-        "geographyGroup": "Europe",
+        "geographicGroup": "Europe",
+        "regionGroup": "Europe",
         "latitude": 40.4259,
         "longitude": 3.4209,
-        "pairedRegion": null,
-        "physicalLocation": "Madrid",
-        "regionalDisplayName": "(Europe) Spain Central",
-        "name": "spaincentral",
+        "datacenterLocation": "Madrid",
+        "pairedRegion": "",
         "availabilityZoneCount": 3,
         "restricted": false,
-        "yearOpen": 2024
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in Spain",
+        "launchYear": 2024
       }
     ]
   },
@@ -592,18 +778,21 @@
     "name": "Sweden",
     "regions": [
       {
+        "regionId": "swedencentral",
         "displayName": "Sweden Central",
+        "longName": "(Europe) Sweden Central",
         "geography": "Sweden",
-        "geographyGroup": "Europe",
+        "geographicGroup": "Europe",
+        "regionGroup": "Europe",
         "latitude": 60.67488,
         "longitude": 17.14127,
+        "datacenterLocation": "G\u00e4vle",
         "pairedRegion": "Sweden South",
-        "physicalLocation": "G\u00e4vle",
-        "regionalDisplayName": "(Europe) Sweden Central",
-        "name": "swedencentral",
         "availabilityZoneCount": 3,
         "restricted": false,
-        "yearOpen": 2021
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in Sweden",
+        "launchYear": 2021
       }
     ]
   },
@@ -611,31 +800,36 @@
     "name": "Switzerland",
     "regions": [
       {
+        "regionId": "switzerlandnorth",
         "displayName": "Switzerland North",
+        "longName": "(Europe) Switzerland North",
         "geography": "Switzerland",
-        "geographyGroup": "Europe",
+        "geographicGroup": "Europe",
+        "regionGroup": "Europe",
         "latitude": 47.451542,
         "longitude": 8.564572,
+        "datacenterLocation": "Zurich",
         "pairedRegion": "Switzerland West",
-        "physicalLocation": "Zurich",
-        "regionalDisplayName": "(Europe) Switzerland North",
-        "name": "switzerlandnorth",
         "availabilityZoneCount": 3,
         "restricted": false,
-        "yearOpen": 2019
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in Switzerland",
+        "launchYear": 2019
       },
       {
+        "regionId": "switzerlandwest",
         "displayName": "Switzerland West",
+        "longName": "(Europe) Switzerland West",
         "geography": "Switzerland",
-        "geographyGroup": "Europe",
+        "geographicGroup": "Europe",
+        "regionGroup": "Europe",
         "latitude": 46.204391,
         "longitude": 6.143158,
+        "datacenterLocation": "Geneva",
         "pairedRegion": "Switzerland North",
-        "physicalLocation": "Geneva",
-        "regionalDisplayName": "(Europe) Switzerland West",
-        "name": "switzerlandwest",
         "availabilityZoneCount": 0,
-        "restricted": true
+        "restricted": true,
+        "availableTo": "Reserved for Switzerland North customers requiring in country disaster recovery"
       }
     ]
   },
@@ -643,31 +837,36 @@
     "name": "UAE",
     "regions": [
       {
+        "regionId": "uaecentral",
         "displayName": "UAE Central",
+        "longName": "(Middle East) UAE Central",
         "geography": "UAE",
-        "geographyGroup": "Middle East",
+        "geographicGroup": "Middle East",
+        "regionGroup": "Middle East and Africa",
         "latitude": 24.466667,
         "longitude": 54.366669,
+        "datacenterLocation": "Abu Dhabi",
         "pairedRegion": "UAE North",
-        "physicalLocation": "Abu Dhabi",
-        "regionalDisplayName": "(Middle East) UAE Central",
-        "name": "uaecentral",
         "availabilityZoneCount": 0,
-        "restricted": true
+        "restricted": true,
+        "availableTo": "Reserved for UAE North customers requiring in-country disaster recovery"
       },
       {
+        "regionId": "uaenorth",
         "displayName": "UAE North",
+        "longName": "(Middle East) UAE North",
         "geography": "UAE",
-        "geographyGroup": "Middle East",
+        "geographicGroup": "Middle East",
+        "regionGroup": "Middle East and Africa",
         "latitude": 25.266666,
         "longitude": 55.316666,
+        "datacenterLocation": "Dubai",
         "pairedRegion": "UAE Central",
-        "physicalLocation": "Dubai",
-        "regionalDisplayName": "(Middle East) UAE North",
-        "name": "uaenorth",
         "availabilityZoneCount": 3,
         "restricted": false,
-        "yearOpen": 2019
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in the United Arab Emirates",
+        "launchYear": 2019
       }
     ]
   },
@@ -675,32 +874,38 @@
     "name": "United Kingdom",
     "regions": [
       {
+        "regionId": "uksouth",
         "displayName": "UK South",
+        "longName": "(Europe) UK South",
         "geography": "United Kingdom",
-        "geographyGroup": "Europe",
+        "geographicGroup": "Europe",
+        "regionGroup": "Europe",
         "latitude": 50.941,
         "longitude": -0.799,
+        "datacenterLocation": "London",
         "pairedRegion": "UK West",
-        "physicalLocation": "London",
-        "regionalDisplayName": "(Europe) UK South",
-        "name": "uksouth",
         "availabilityZoneCount": 3,
         "restricted": false,
-        "yearOpen": 2016
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in the United Kingdom",
+        "launchYear": 2016
       },
       {
+        "regionId": "ukwest",
         "displayName": "UK West",
+        "longName": "(Europe) UK West",
         "geography": "United Kingdom",
-        "geographyGroup": "Europe",
+        "geographicGroup": "Europe",
+        "regionGroup": "Europe",
         "latitude": 53.427,
         "longitude": -3.084,
+        "datacenterLocation": "Cardiff",
         "pairedRegion": "UK South",
-        "physicalLocation": "Cardiff",
-        "regionalDisplayName": "(Europe) UK West",
-        "name": "ukwest",
         "availabilityZoneCount": 0,
         "restricted": false,
-        "yearOpen": 2016
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in the United Kingdom",
+        "launchYear": 2016
       }
     ]
   },
@@ -708,130 +913,157 @@
     "name": "United States",
     "regions": [
       {
+        "regionId": "centralus",
         "displayName": "Central US",
+        "longName": "(US) Central US",
         "geography": "United States",
-        "geographyGroup": "US",
+        "geographicGroup": "US",
+        "regionGroup": "Americas",
         "latitude": 41.5908,
         "longitude": -93.6208,
+        "datacenterLocation": "Iowa",
         "pairedRegion": "East US 2",
-        "physicalLocation": "Iowa",
-        "regionalDisplayName": "(US) Central US",
-        "name": "centralus",
         "availabilityZoneCount": 3,
         "restricted": false,
-        "yearOpen": 2014
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in the United States",
+        "launchYear": 2014
       },
       {
+        "regionId": "eastus",
         "displayName": "East US",
+        "longName": "(US) East US",
         "geography": "United States",
-        "geographyGroup": "US",
+        "geographicGroup": "US",
+        "regionGroup": "Americas",
         "latitude": 37.3719,
         "longitude": -79.8164,
+        "datacenterLocation": "Virginia",
         "pairedRegion": "West US",
-        "physicalLocation": "Virginia",
-        "regionalDisplayName": "(US) East US",
-        "name": "eastus",
         "availabilityZoneCount": 3,
         "restricted": false,
-        "yearOpen": 2014
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in the United States",
+        "launchYear": 2014
       },
       {
+        "regionId": "eastus2",
         "displayName": "East US 2",
+        "longName": "(US) East US 2",
         "geography": "United States",
-        "geographyGroup": "US",
+        "geographicGroup": "US",
+        "regionGroup": "Americas",
         "latitude": 36.6681,
         "longitude": -78.3889,
+        "datacenterLocation": "Virginia",
         "pairedRegion": "Central US",
-        "physicalLocation": "Virginia",
-        "regionalDisplayName": "(US) East US 2",
-        "name": "eastus2",
         "availabilityZoneCount": 3,
         "restricted": false,
-        "yearOpen": 2012
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in the United States",
+        "launchYear": 2012
       },
       {
+        "regionId": "northcentralus",
         "displayName": "North Central US",
+        "longName": "(US) North Central US",
         "geography": "United States",
-        "geographyGroup": "US",
+        "geographicGroup": "US",
+        "regionGroup": "Americas",
         "latitude": 41.8819,
         "longitude": -87.6278,
+        "datacenterLocation": "Illinois",
         "pairedRegion": "South Central US",
-        "physicalLocation": "Illinois",
-        "regionalDisplayName": "(US) North Central US",
-        "name": "northcentralus",
-        "availabilityZoneCount": 3,
-        "restricted": false,
-        "yearOpen": 2009
-      },
-      {
-        "displayName": "South Central US",
-        "geography": "United States",
-        "geographyGroup": "US",
-        "latitude": 29.4167,
-        "longitude": -98.5,
-        "pairedRegion": "North Central US",
-        "physicalLocation": "Texas",
-        "regionalDisplayName": "(US) South Central US",
-        "name": "southcentralus",
-        "availabilityZoneCount": 3,
-        "restricted": false,
-        "yearOpen": 2008
-      },
-      {
-        "displayName": "West Central US",
-        "geography": "United States",
-        "geographyGroup": "US",
-        "latitude": 40.89,
-        "longitude": -110.234,
-        "pairedRegion": "West US 2",
-        "physicalLocation": "Wyoming",
-        "regionalDisplayName": "(US) West Central US",
-        "name": "westcentralus",
         "availabilityZoneCount": 0,
         "restricted": false,
-        "yearOpen": 2016
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in the United States",
+        "launchYear": 2009
       },
       {
-        "displayName": "West US",
+        "regionId": "southcentralus",
+        "displayName": "South Central US",
+        "longName": "(US) South Central US",
         "geography": "United States",
-        "geographyGroup": "US",
+        "geographicGroup": "US",
+        "regionGroup": "Americas",
+        "latitude": 29.4167,
+        "longitude": -98.5,
+        "datacenterLocation": "Texas",
+        "pairedRegion": "North Central US",
+        "availabilityZoneCount": 0,
+        "restricted": false,
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in the United States",
+        "launchYear": 2008
+      },
+      {
+        "regionId": "westcentralus",
+        "displayName": "West Central US",
+        "longName": "(US) West Central US",
+        "geography": "United States",
+        "geographicGroup": "US",
+        "regionGroup": "Americas",
+        "latitude": 40.89,
+        "longitude": -110.234,
+        "datacenterLocation": "Wyoming",
+        "pairedRegion": "West US 2",
+        "availabilityZoneCount": 0,
+        "restricted": false,
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in the United States",
+        "launchYear": 2016
+      },
+      {
+        "regionId": "westus",
+        "displayName": "West US",
+        "longName": "(US) West US",
+        "geography": "United States",
+        "geographicGroup": "US",
+        "regionGroup": "Americas",
         "latitude": 37.783,
         "longitude": -122.417,
+        "datacenterLocation": "California",
         "pairedRegion": "East US",
-        "physicalLocation": "California",
-        "regionalDisplayName": "(US) West US",
-        "name": "westus",
-        "availabilityZoneCount": 3,
+        "availabilityZoneCount": 0,
         "restricted": false,
-        "yearOpen": 2012
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in the United States",
+        "launchYear": 2012
       },
       {
+        "regionId": "westus2",
         "displayName": "West US 2",
+        "longName": "(US) West US 2",
         "geography": "United States",
-        "geographyGroup": "US",
+        "geographicGroup": "US",
+        "regionGroup": "Americas",
         "latitude": 47.233,
         "longitude": -119.852,
+        "datacenterLocation": "Washington",
         "pairedRegion": "West Central US",
-        "physicalLocation": "Washington",
-        "regionalDisplayName": "(US) West US 2",
-        "name": "westus2",
         "availabilityZoneCount": 3,
         "restricted": false,
-        "yearOpen": 2007
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in the United States",
+        "launchYear": 2007
       },
       {
+        "regionId": "westus3",
         "displayName": "West US 3",
+        "longName": "(US) West US 3",
         "geography": "United States",
-        "geographyGroup": "US",
+        "geographicGroup": "US",
+        "regionGroup": "Americas",
         "latitude": 33.448376,
         "longitude": -112.074036,
+        "datacenterLocation": "Phoenix",
         "pairedRegion": "East US",
-        "physicalLocation": "Phoenix",
-        "regionalDisplayName": "(US) West US 3",
-        "name": "westus3",
-        "availabilityZoneCount": 3,
+        "availabilityZoneCount": 0,
         "restricted": false,
-        "yearOpen": 2021
+        "availableTo": "Available to all customers and partners",
+        "dataResidency": "Stored at rest in the United States",
+        "launchYear": 2021
       }
     ]
   }

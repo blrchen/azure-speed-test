@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
+import { CommonModule } from '@angular/common'
+import { RouterModule } from '@angular/router'
 import { Region } from '../../../models'
 import { SeoService } from '../../../services'
 import data from '../../../../assets/data/geographies.json'
@@ -10,21 +12,19 @@ export interface Geography {
 
 @Component({
   selector: 'app-azure-geographies',
-  templateUrl: './azure-geographies.component.html'
+  standalone: true,
+  imports: [CommonModule, RouterModule],
+  templateUrl: './azure-geographies.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AzureGeographiesComponent implements OnInit {
-  tableData: Geography[] = []
+  readonly tableData = signal<Geography[]>([])
 
-  constructor(private seoService: SeoService) {
-    this.initializeSeoProperties()
-  }
+  private seoService = inject(SeoService)
 
   ngOnInit() {
-    this.tableData = data
-  }
-
-  getRegionUrl(displayName: string): string {
-    return '/Information/AzureRegions/' + displayName.replace(/\s+/g, '')
+    this.initializeSeoProperties()
+    this.tableData.set(data as Geography[])
   }
 
   private initializeSeoProperties(): void {

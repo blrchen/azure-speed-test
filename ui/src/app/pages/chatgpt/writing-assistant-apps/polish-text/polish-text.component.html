@@ -1,51 +1,80 @@
-<div class="container-fluid py-3">
-  <h1 class="h2 fw-bold">ChatGPT Text Polisher</h1>
-  <p>Improve the quality and readability of your text with the help of ChatGPT's Text Polisher.</p>
+<div class="page-container py-3">
+  <header class="page-intro">
+    <h1 class="page-title page-intro__title">ChatGPT Text Polisher</h1>
+    <p class="page-intro__description">
+      Enhance the quality and readability of your writing instantly with ChatGPT's Text Polisher.
+    </p>
+  </header>
   <form [formGroup]="userContentForm" (submit)="submitForm()" class="mb-3">
-    <fieldset class="form-group mb-3">
-      <label for="userContent" class="form-label fw-bold">Text to Polish</label>
+    <fieldset class="app-form mb-3">
+      <label for="userContent" class="app-form__label font-semibold">Text to Polish</label>
       <textarea
-        class="form-control"
+        class="app-form__control"
         id="userContent"
-        placeholder="Type or paste your text here..."
         formControlName="userContent"
+        placeholder="Paste or write your content here for instant enhancement..."
         required
-        rows="6"
+        rows="7"
       ></textarea>
-      <small class="form-text text-muted">
-        Characters: {{ userContentForm.get('userContent')?.value.length }}/5000
+      <small class="app-form__note text-slate-500">
+        {{ userContentForm.get('userContent')?.value?.length || 0 }}/5000 characters
       </small>
-      <div
-        *ngIf="userContentForm.controls['userContent'].errors?.['maxlength']"
-        class="alert alert-danger mt-2"
-      >
-        Character limit exceeded. Please limit your text to 5000 characters.
-      </div>
+      @if (userContentForm.controls['userContent'].errors?.['maxlength']) {
+        <div class="app-alert">
+          Character limit exceeded. Please limit your text to 5000 characters.
+        </div>
+      }
     </fieldset>
     <button
       type="submit"
-      class="btn btn-primary me-2"
-      [disabled]="userContentForm.invalid || isLoading"
+      class="app-button app-button--primary mr-2"
+      [disabled]="userContentForm.invalid || isLoading()"
     >
       Submit
     </button>
-    <button type="button" class="btn btn-secondary" (click)="resetForm()">Reset</button>
+    <button type="button" class="app-button app-button--outline-secondary" (click)="resetForm()">
+      Reset
+    </button>
   </form>
-  <div *ngIf="isLoading" class="spinner-border text-primary">
-    <span class="visually-hidden">Loading...</span>
-  </div>
-  <div *ngIf="result" class="card mb-4">
-    <div class="card-header">
-      <h2 class="h5 mb-0">Your Enhanced Text:</h2>
+  @if (isLoading()) {
+    <div class="my-4 flex items-center justify-center">
+      <div class="app-spinner mr-2 text-brand" role="status"></div>
+      <span class="font-semibold">Processing...</span>
     </div>
-    <div class="card-body">
-      <div class="bg-light p-3 rounded">
-        <p style="white-space: pre-wrap" class="mb-0">{{ result }}</p>
+  }
+  @if (hasResult()) {
+    <div class="app-card mb-4">
+      <div class="app-card__header flex items-center justify-between">
+        <h2 class="content-heading">Your Enhanced Text:</h2>
+        <button
+          type="button"
+          class="app-button app-button--sm"
+          [class.app-button--outline-primary]="isCopyIdle()"
+          [attr.data-variant]="isCopySuccess() ? 'success' : isCopyError() ? 'danger' : null"
+          (click)="copyToClipboard(result() ?? '')"
+        >
+          @if (isCopyIdle()) {
+            <span>Copy</span>
+          }
+          @if (isCopySuccess()) {
+            <span>&#10003; Copied!</span>
+          }
+          @if (isCopyError()) {
+            <span>&#10006; Copy Failed</span>
+          }
+        </button>
+      </div>
+      <div class="app-card__body">
+        <div class="rounded border bg-slate-100 p-3">
+          <p style="white-space: pre-wrap" class="mb-0">{{ result() }}</p>
+        </div>
       </div>
     </div>
-  </div>
-  <div *ngIf="errorMessage" class="alert alert-danger">
-    {{ errorMessage }}
-  </div>
+  }
+  @if (errorMessage()) {
+    <div class="app-alert">
+      {{ errorMessage() }}
+    </div>
+  }
   <app-assistant-footer></app-assistant-footer>
 </div>

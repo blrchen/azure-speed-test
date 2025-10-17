@@ -1,159 +1,197 @@
-<div class="container-fluid py-3">
-  <h1 class="h2 fw-bold">Azure Storage Upload Speed Test</h1>
-  <p>Test the upload speed to Azure Storage Service across different regions worldwide.</p>
-  <h2 class="h4">Upload Speed Test</h2>
-  <div class="alert alert-info alert-dismissible fade show">
-    <strong>Instructions:</strong>
-    Select desired Azure data centers and click Start Upload Test to start test. Results will be
-    displayed under "Upload Test Results".
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+<div class="upload page-container py-3">
+  <header class="page-intro">
+    <h1 class="page-title page-intro__title">Azure Storage Upload Speed Test</h1>
+    <p class="page-intro__description">
+      Benchmark multi-region upload performance to pick the fastest Azure Storage endpoint.
+    </p>
+  </header>
+
+  <div class="upload__card mb-3 shadow-sm">
+    <div class="upload__card-body">
+      <div class="app-alert upload-instructions mb-3">
+        <div class="upload-instructions__content">
+          <span class="upload-instructions__label">Testing steps</span>
+          <div class="upload-instructions__steps">
+            <span class="upload-instructions__step">
+              <span class="upload-instructions__badge">1</span>
+              Select your target Azure regions.
+            </span>
+            <span class="upload-instructions__step">
+              <span class="upload-instructions__badge">2</span>
+              Pick a test file size and start the upload run.
+            </span>
+            <span class="upload-instructions__step">
+              <span class="upload-instructions__badge">3</span>
+              Compare upload time and throughput to decide.
+            </span>
+          </div>
+          <div class="upload-instructions__note">
+            Upload tests create temporary 0-filled data and clean themselves up automatically.
+          </div>
+        </div>
+      </div>
+
+      <app-region-group></app-region-group>
+
+      <div class="upload-size mt-3">
+        <span class="upload-size__label">Select upload data size</span>
+        <div class="upload-size__options">
+          @for (uploadSizeMB of uploadSizeMBOptions; track $index) {
+            <label class="upload-size__option">
+              <input
+                type="radio"
+                name="uploadSize"
+                [value]="uploadSizeMB"
+                [attr.checked]="$index === 0 ? true : null"
+                (click)="selectUploadSize(uploadSizeMB)"
+              />
+              <span>{{ uploadSizeMB }} MB</span>
+            </label>
+          }
+        </div>
+      </div>
+
+      <div class="mt-3">
+        <button
+          type="button"
+          class="app-button app-button--primary app-button--lg"
+          (click)="onSubmit()"
+        >
+          Start Upload Test
+        </button>
+      </div>
+    </div>
   </div>
-  <app-region-group></app-region-group>
-  <div>
-    <label for="uploadSize" class="form-label">Select Upload Data Size:</label>
-    <div class="d-flex">
-      <ng-container *ngFor="let uploadSizeMB of uploadSizeMBOptions; let i = index">
-        <div class="form-check me-3">
-          <input
-            class="form-check-input"
-            type="radio"
-            name="uploadSize"
-            [id]="'size' + uploadSizeMB"
-            [value]="uploadSizeMB"
-            [attr.checked]="i === 0 ? true : null"
-            (click)="selectedUploadSizeBytes = uploadSizeMB * 1024 * 1024"
+
+  @if (testResults().length > 0) {
+    <section class="upload-results mt-4">
+      <header class="upload-results__header">
+        <h2 class="content-heading">Upload Speed Test Results</h2>
+        <div class="upload-results__legend">
+          <span>
+            <span class="font-semibold text-slate-800">Upload time</span>
+            · total duration per region
+          </span>
+          <span>
+            <span class="font-semibold text-slate-800">Upload speed</span>
+            · average throughput (MB/s)
+          </span>
+        </div>
+      </header>
+      <div class="app-table__container">
+        <table class="app-table app-table--hover upload-results__table align-middle shadow-sm">
+          <thead>
+            <tr>
+              <th>Region</th>
+              <th>Datacenter</th>
+              <th>Progress</th>
+              <th>Upload time</th>
+              <th>Upload speed</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (result of testResults(); track $index) {
+              <tr>
+                <td class="upload-results__region">
+                  <span class="upload-results__region-name">{{ result.displayName }}</span>
+                </td>
+                <td>{{ result.datacenterLocation }}</td>
+                <td>
+                  <div
+                    class="relative flex h-3 w-full items-center overflow-hidden rounded-full bg-slate-200"
+                    role="progressbar"
+                    [attr.aria-valuenow]="result.uploadProgressPercentage"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                  >
+                    <div
+                      class="absolute inset-y-0 left-0 rounded-full bg-emerald-500 transition-[width] duration-300 ease-out"
+                      [style.width]="result.uploadProgressPercentage + '%'"
+                    ></div>
+                    <span
+                      class="relative z-10 w-full text-center text-xs font-semibold transition-colors"
+                      [class.text-white]="result.uploadProgressPercentage >= 60"
+                      [class.text-slate-900]="result.uploadProgressPercentage < 60"
+                    >
+                      {{ result.uploadProgressPercentage }}%
+                    </span>
+                  </div>
+                </td>
+                <td>
+                  {{
+                    result.uploadTimeSeconds
+                      ? (result.uploadTimeSeconds | number: '1.1-1') + ' s'
+                      : 'Calculating…'
+                  }}
+                </td>
+                <td>
+                  {{
+                    result.uploadSpeedMbps
+                      ? (result.uploadSpeedMbps | number: '1.2-2') + ' MB/s'
+                      : 'Calculating…'
+                  }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  }
+
+  <section class="regions__section mt-12">
+    <header class="regions__section-header">
+      <h2 class="content-heading">Frequently asked questions</h2>
+    </header>
+    <div class="mt-6 space-y-4">
+      <details
+        class="group rounded-2xl border border-slate-200 bg-white/95 shadow-sm transition-colors duration-200 ease-out open:border-brand/40 open:shadow-brand-sm"
+      >
+        <summary
+          class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left text-base font-semibold text-slate-900 outline-none transition-colors hover:text-brand/90 focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white [&::-webkit-details-marker]:hidden"
+        >
+          <span class="flex-1 text-base font-semibold text-slate-900">
+            What file size is used for the upload test?
+          </span>
+          <app-hero-icon
+            name="heroChevronDown"
+            class="h-4 w-4 text-slate-400 transition-transform duration-200 ease-in-out group-open:rotate-180 group-open:text-brand"
+            aria-hidden="true"
           />
-          <label class="form-check-label" [for]="'size' + uploadSizeMB">{{ uploadSizeMB }}MB</label>
-        </div>
-      </ng-container>
-    </div>
-  </div>
-  <div class="mt-2 mb-2">
-    <button type="button" class="btn btn-lg btn-primary" (click)="onSubmit()">
-      Start Upload Test
-    </button>
-  </div>
-  <ng-container *ngIf="testResults.length > 0">
-    <h2 class="h4">Upload Speed Test Results</h2>
-
-    <ul class="list-unstyled">
-      <li>
-        <strong>Upload Time:</strong>
-        Total duration to upload the file to the selected Azure region.
-      </li>
-      <li>
-        <strong>Upload Speed:</strong>
-        Average data transfer rate during the upload, in MB/s.
-      </li>
-    </ul>
-
-    <div class="table-responsive">
-      <table class="table table-bordered table-striped table-hover">
-        <thead>
-          <tr>
-            <th scope="col">Region</th>
-            <th scope="col">Location</th>
-            <th scope="col">Upload Progress</th>
-            <th scope="col">Upload Time</th>
-            <th scope="col">Upload Speed</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let result of testResults">
-            <td>
-              <code>
-                {{ result.displayName }}
-              </code>
-            </td>
-            <td>{{ result.physicalLocation }}</td>
-            <td>
-              <div class="progress">
-                <div
-                  class="progress-bar progress-bar-striped bg-success"
-                  role="progressbar"
-                  [style.width]="result.uploadProgressPercentage + '%'"
-                  [attr.aria-valuenow]="result.uploadProgressPercentage"
-                  aria-valuemin="0"
-                  aria-valuemax="100"
-                >
-                  {{ result.uploadProgressPercentage }}%
-                </div>
-              </div>
-            </td>
-            <td>
-              {{
-                result.uploadTimeSeconds ? result.uploadTimeSeconds + ' seconds' : 'Calculating...'
-              }}
-            </td>
-            <td>
-              {{
-                result.uploadSpeedMbps
-                  ? (result.uploadSpeedMbps | number: '1.2-2') + ' MB/s'
-                  : 'Calculating...'
-              }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </ng-container>
-  <h2 class="h4">Frequently Asked Questions</h2>
-  <div class="accordion" id="faqAccordion">
-    <div class="accordion-item">
-      <h3 class="accordion-header" id="headingOne">
-        <button
-          class="accordion-button collapsed"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#collapseOne"
-          aria-expanded="false"
-          aria-controls="collapseOne"
+        </summary>
+        <div
+          class="space-y-3 border-t border-slate-100 px-6 py-5 text-sm leading-relaxed text-slate-600 [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:text-slate-800 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
         >
-          How does Azure Storage Upload Speed Test tool work?
-        </button>
-      </h3>
-      <div
-        id="collapseOne"
-        class="accordion-collapse collapse"
-        aria-labelledby="headingOne"
-        data-bs-parent="#faqAccordion"
-      >
-        <div class="accordion-body">
           <p>
-            This tool measures your upload capability by generating a test file of a specified size
-            (100MB, 200MB, or 500MB), uploading the data to an Azure storage container, and
-            calculating your upload speed based on how quickly the data transfers.
+            The test uploads a 100 MB file to Azure Storage. You can increase the size to test
+            different scenarios.
           </p>
         </div>
-      </div>
-    </div>
-    <div class="accordion-item">
-      <h3 class="accordion-header" id="headingTwo">
-        <button
-          class="accordion-button collapsed"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#collapseTwo"
-          aria-expanded="false"
-          aria-controls="collapseTwo"
-        >
-          Need to test a bigger file size than 500MB?
-        </button>
-      </h3>
-      <div
-        id="collapseTwo"
-        class="accordion-collapse collapse"
-        aria-labelledby="headingTwo"
-        data-bs-parent="#faqAccordion"
+      </details>
+      <details
+        class="group rounded-2xl border border-slate-200 bg-white/95 shadow-sm transition-colors duration-200 ease-out open:border-brand/40 open:shadow-brand-sm"
       >
-        <div class="accordion-body">
+        <summary
+          class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left text-base font-semibold text-slate-900 outline-none transition-colors hover:text-brand/90 focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white [&::-webkit-details-marker]:hidden"
+        >
+          <span class="flex-1 text-base font-semibold text-slate-900">
+            Can I upload multiple files at once?
+          </span>
+          <app-hero-icon
+            name="heroChevronDown"
+            class="h-4 w-4 text-slate-400 transition-transform duration-200 ease-in-out group-open:rotate-180 group-open:text-brand"
+            aria-hidden="true"
+          />
+        </summary>
+        <div
+          class="space-y-3 border-t border-slate-100 px-6 py-5 text-sm leading-relaxed text-slate-600 [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:text-slate-800 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
+        >
           <p>
-            If you need to test upload speeds with files larger than 500MB, visit
-            <a href="/Azure/UploadLargeFile">AzureSpeed Large File Upload Test</a>
-            where you can run upload speed tests for any size of file.
+            No. You can only upload one test file at a time. This ensures the upload speed reflects
+            a single connection.
           </p>
         </div>
-      </div>
+      </details>
     </div>
-  </div>
+  </section>
 </div>

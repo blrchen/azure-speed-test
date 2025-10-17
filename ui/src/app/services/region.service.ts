@@ -1,32 +1,38 @@
-import { BehaviorSubject } from 'rxjs'
-import { Injectable } from '@angular/core'
-import publicRegionsJson from '../../assets/data/regions.json'
+import { Injectable, Signal, signal } from '@angular/core'
+import azureGlobalCloudRegionsJson from '../../assets/data/regions.json'
 import { RegionModel } from '../models'
 
 @Injectable({
   providedIn: 'root'
 })
 export class RegionService {
-  private selectedRegionsSubject = new BehaviorSubject<RegionModel[]>([])
-  selectedRegions$ = this.selectedRegionsSubject.asObservable()
+  private readonly selectedRegionsSignal = signal<RegionModel[]>([])
+  readonly selectedRegions: Signal<RegionModel[]> = this.selectedRegionsSignal.asReadonly()
+
+  private cachedRegions: RegionModel[] | null = null
+  private readonly storagePrefixes = ['s3', 's8', 's9']
 
   updateSelectedRegions(regions: RegionModel[]) {
-    this.selectedRegionsSubject.next(regions)
+    this.selectedRegionsSignal.set(regions)
   }
 
   getAllRegions(): RegionModel[] {
-    return publicRegionsJson
+    if (this.cachedRegions) {
+      return this.cachedRegions
+    }
+
+    let prefixIndex = 0
+    this.cachedRegions = azureGlobalCloudRegionsJson
       .filter((region) => !region.restricted)
       .map((regionData) => {
-        const prefix = ['h3', 's8', 's9'][Math.floor(Math.random() * 3)]
+        const prefix = this.storagePrefixes[prefixIndex % this.storagePrefixes.length]
+        prefixIndex += 1
         return {
           ...regionData,
-          storageAccountName: `${prefix}${regionData.name}`
+          storageAccountName: `${prefix}${regionData.regionId}`
         }
       })
-  }
 
-  clearRegions() {
-    this.selectedRegionsSubject.next([])
+    return this.cachedRegions
   }
 }

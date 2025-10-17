@@ -1,0 +1,30 @@
+@for (group of groups(); track navGroupTrackBy($index, group); let last = $last) {
+  <div class="nav-section">
+    @if (group.heading) {
+      <div class="nav-section__heading">{{ group.heading }}</div>
+    }
+    <ul class="nav-list">
+      @for (item of group.items; track navItemTrackBy($index, item)) {
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            [routerLink]="item.routerLink"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            #rla="routerLinkActive"
+            [attr.aria-current]="rla.isActive ? 'page' : null"
+            (click)="handleNavLinkClick()"
+          >
+            <span class="nav-link__icon">
+              <app-hero-icon [name]="item.icon" class="h-5 w-5" aria-hidden="true" />
+            </span>
+            <span class="nav-link__label">{{ item.label }}</span>
+          </a>
+        </li>
+      }
+    </ul>
+  </div>
+  @if (!last) {
+    <div class="nav-divider"></div>
+  }
+}

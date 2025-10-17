@@ -1,0 +1,154 @@
+:host {
+  display: block;
+}
+
+.download__card {
+  border-radius: 1.1rem;
+  border: 1px solid rgba(13, 110, 253, 0.08);
+  overflow: hidden;
+}
+
+.download__card-body {
+  padding: 1.25rem 1.35rem;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.download-instructions {
+  border-color: rgba(13, 110, 253, 0.28);
+  background: linear-gradient(90deg, rgba(13, 110, 253, 0.12), rgba(13, 110, 253, 0.05));
+}
+
+.download-instructions__content {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.download-instructions__label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(13, 110, 253, 0.95);
+}
+
+.download-instructions__steps {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.download-instructions__step {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.84rem;
+  color: rgba(33, 37, 41, 0.85);
+  white-space: nowrap;
+}
+
+.download-instructions__note {
+  font-size: 0.78rem;
+  color: rgba(73, 80, 87, 0.75);
+  margin-top: 0.25rem;
+}
+
+.download-instructions__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 50%;
+  background-color: rgba(13, 110, 253, 0.85);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.download-table table {
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.download-table thead {
+  background: linear-gradient(90deg, rgba(13, 110, 253, 0.12), rgba(13, 110, 253, 0.05));
+}
+
+.download-table thead th {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(73, 80, 87, 0.7);
+  border-bottom: none;
+}
+
+.download-table tbody tr {
+  transition: background-color 0.18s ease;
+}
+
+.download-table tbody tr:hover {
+  background-color: rgba(13, 110, 253, 0.05);
+}
+
+.download-table__region {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.download-table__region-name {
+  font-weight: 600;
+  color: rgba(24, 26, 31, 0.95);
+}
+
+.download-table__region-code {
+  font-size: 0.72rem;
+  color: rgba(73, 80, 87, 0.6);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.download-table__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid rgba(13, 110, 253, 0.25);
+  color: rgba(13, 110, 253, 0.9);
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
+}
+
+.download-table__link:hover,
+.download-table__link:focus-visible {
+  border-color: rgba(13, 110, 253, 0.45);
+  box-shadow: 0 0.45rem 1.1rem rgba(13, 110, 253, 0.18);
+  transform: translateY(-1px);
+}
+
+.download-table__placeholder {
+  font-size: 0.82rem;
+}
+
+@media (max-width: 767.98px) {
+  .download-instructions {
+    align-items: flex-start;
+  }
+
+  .download-instructions__step {
+    white-space: normal;
+  }
+
+  .download-table__link {
+    width: 100%;
+    justify-content: center;
+  }
+}

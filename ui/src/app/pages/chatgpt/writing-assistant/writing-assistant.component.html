@@ -1,20 +1,24 @@
-<div class="container-fluid py-3">
-  <h1 class="h2 fw-bold">ChatGPT Writing Assistant</h1>
-  <p>
-    Transform your writing with our advanced AI-powered writing assistant. Whether you're crafting
-    business documents, academic papers, or creative content, our intelligent platform helps you
-    write with clarity, precision, and confidence.
-  </p>
+<div class="page-container py-3">
+  <header class="page-intro">
+    <h1 class="page-title page-intro__title">ChatGPT Writing Assistant</h1>
+    <p class="page-intro__description">
+      Transform your writing with our advanced AI-powered writing assistant. Whether you're crafting
+      business documents, academic papers, or creative content, our intelligent platform helps you
+      write with clarity, precision, and confidence.
+    </p>
+  </header>
 
-  <div class="row g-4">
-    <div class="col-lg-6 col-md-6 col-sm-12" *ngFor="let card of textCards">
-      <article class="card h-100 shadow-sm">
-        <div class="card-body d-flex flex-column">
-          <h2 class="card-title h5 fw-bold mb-3">{{ card.title }}</h2>
-          <p class="card-text flex-grow-1">{{ card.text }}</p>
-          <a [href]="card.link" class="btn btn-primary mt-auto">Get Started</a>
+  <div class="grid gap-6 md:grid-cols-2">
+    @for (card of textCards(); track card.title) {
+      <article class="app-card h-full shadow-sm">
+        <div class="app-card__body flex h-full flex-col">
+          <h2 class="content-heading">{{ card.title }}</h2>
+          <p class="app-card__text mb-4 flex-1 text-slate-600">{{ card.text }}</p>
+          <a [href]="card.link" class="app-button app-button--primary mt-auto self-start">
+            Get Started
+          </a>
         </div>
       </article>
-    </div>
+    }
   </div>
 </div>

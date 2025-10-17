@@ -1,0 +1,193 @@
+<div class="page-container py-3">
+  <header class="page-intro mb-4">
+    <h1 class="page-title page-intro__title">Azure China Cloud Regions</h1>
+    <p class="page-intro__description">
+      Azure China Cloud regions are designed to ensure compliance with Chinese regulatory
+      requirements and are operated by 21Vianet.
+    </p>
+  </header>
+
+  <div class="mb-4">
+    <h2 class="content-heading">Available Regions</h2>
+    <div class="app-table__container">
+      <table class="app-table app-table--hover border">
+        <thead>
+          <tr>
+            <th>Region</th>
+            <th>Location</th>
+            <th>Availability Zones</th>
+            <th>Paired Region</th>
+            <th>Available To</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of azureChinaRegions(); track r.displayName) {
+            <tr class="cursor-pointer" title="View details for {{ r.displayName }}">
+              <td>
+                <span class="flex items-center gap-1 text-brand">
+                  <a
+                    [href]="'/Information/AzureRegions/' + r.displayName.split(' ').join('')"
+                    target="_blank"
+                  >
+                    {{ r.displayName }}
+                  </a>
+                  <app-hero-icon
+                    name="heroArrowTopRightOnSquare"
+                    class="h-3.5 w-3.5 text-brand"
+                    aria-hidden="true"
+                  />
+                </span>
+              </td>
+              <td>{{ r.datacenterLocation }}</td>
+              <td>
+                <span
+                  class="app-badge"
+                  [attr.data-variant]="r.availabilityZoneCount ? 'success' : 'secondary'"
+                >
+                  {{
+                    r.availabilityZoneCount === 0
+                      ? 'Not supported'
+                      : r.availabilityZoneCount + ' Zones'
+                  }}
+                </span>
+              </td>
+              <td>{{ r.pairedRegion || '' }}</td>
+              <td>Organizations operating in China</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- FAQ Section -->
+  <section class="regions__section mt-12">
+    <header class="regions__section-header">
+      <h2 class="content-heading">Frequently asked questions</h2>
+    </header>
+    <div class="mt-6 space-y-4">
+      <details
+        class="group rounded-2xl border border-slate-200 bg-white/95 shadow-sm transition-colors duration-200 ease-out open:border-brand/40 open:shadow-brand-sm"
+      >
+        <summary
+          class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left text-base font-semibold text-slate-900 outline-none transition-colors hover:text-brand/90 focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white [&::-webkit-details-marker]:hidden"
+        >
+          <span class="flex-1 text-base font-semibold text-slate-900">
+            What is Azure China and who operates it?
+          </span>
+          <app-hero-icon
+            name="heroChevronDown"
+            class="h-4 w-4 text-slate-400 transition-transform duration-200 ease-in-out group-open:rotate-180 group-open:text-brand"
+            aria-hidden="true"
+          />
+        </summary>
+        <div
+          class="space-y-3 border-t border-slate-100 px-6 py-5 text-sm leading-relaxed text-slate-600 [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:text-slate-800 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
+        >
+          <p>
+            Azure China is operated by 21Vianet (Shanghai Blue Cloud Technology Co., Ltd), a wholly
+            owned subsidiary of VNET Group. It's a physically separated instance of Azure services
+            operated within China to ensure compliance with Chinese regulations.
+          </p>
+        </div>
+      </details>
+      <details
+        class="group rounded-2xl border border-slate-200 bg-white/95 shadow-sm transition-colors duration-200 ease-out open:border-brand/40 open:shadow-brand-sm"
+      >
+        <summary
+          class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left text-base font-semibold text-slate-900 outline-none transition-colors hover:text-brand/90 focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white [&::-webkit-details-marker]:hidden"
+        >
+          <span class="flex-1 text-base font-semibold text-slate-900">
+            How do I get access to Azure China?
+          </span>
+          <app-hero-icon
+            name="heroChevronDown"
+            class="h-4 w-4 text-slate-400 transition-transform duration-200 ease-in-out group-open:rotate-180 group-open:text-brand"
+            aria-hidden="true"
+          />
+        </summary>
+        <div
+          class="space-y-3 border-t border-slate-100 px-6 py-5 text-sm leading-relaxed text-slate-600 [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:text-slate-800 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
+        >
+          <p>To use Azure China, you need to:</p>
+          <ol>
+            <li>
+              Create an account through
+              <a href="https://www.azure.cn" target="_blank">azure.cn</a>
+            </li>
+            <li>Provide required business documentation</li>
+            <li>Complete real-name verification process</li>
+            <li>Sign agreements with 21Vianet</li>
+          </ol>
+        </div>
+      </details>
+      <details
+        class="group rounded-2xl border border-slate-200 bg-white/95 shadow-sm transition-colors duration-200 ease-out open:border-brand/40 open:shadow-brand-sm"
+      >
+        <summary
+          class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left text-base font-semibold text-slate-900 outline-none transition-colors hover:text-brand/90 focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white [&::-webkit-details-marker]:hidden"
+        >
+          <span class="flex-1 text-base font-semibold text-slate-900">
+            What services differ between Azure global and Azure China?
+          </span>
+          <app-hero-icon
+            name="heroChevronDown"
+            class="h-4 w-4 text-slate-400 transition-transform duration-200 ease-in-out group-open:rotate-180 group-open:text-brand"
+            aria-hidden="true"
+          />
+        </summary>
+        <div
+          class="space-y-3 border-t border-slate-100 px-6 py-5 text-sm leading-relaxed text-slate-600 [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:text-slate-800 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
+        >
+          <p>
+            Azure China offers many core Azure services, but availability may differ from global
+            regions. Always consult the latest service availability matrix and documentation before
+            planning deployments.
+          </p>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <section class="regions__section mt-5">
+    <header class="regions__section-header">
+      <h2 class="content-heading">Additional resources</h2>
+      <p>Essential references for working with Azure China cloud.</p>
+    </header>
+    <div class="regions-resources__grid">
+      <article class="resource-card">
+        <h3 class="resource-card__title">Azure China documentation</h3>
+        <p class="resource-card__body">
+          Learn about Azure China cloud services, architecture, and compliance.
+        </p>
+        <a
+          href="https://learn.microsoft.com/en-us/azure/china/"
+          target="_blank"
+          class="resource-card__link"
+        >
+          Learn more
+        </a>
+      </article>
+      <article class="resource-card">
+        <h3 class="resource-card__title">Azure China portal</h3>
+        <p class="resource-card__body">Access the Azure China portal operated by 21Vianet.</p>
+        <a href="https://portal.azure.cn" target="_blank" class="resource-card__link">
+          Visit portal
+        </a>
+      </article>
+      <article class="resource-card">
+        <h3 class="resource-card__title">Service availability</h3>
+        <p class="resource-card__body">
+          View the latest service availability for Azure China regions.
+        </p>
+        <a
+          href="https://azure.microsoft.com/en-us/explore/global-infrastructure/products-by-region/?regions=china-non-regional,china-east,china-east-2,china-east-3,china-north,china-north-2,china-north-3"
+          target="_blank"
+          class="resource-card__link"
+        >
+          Learn more
+        </a>
+      </article>
+    </div>
+  </section>
+</div>

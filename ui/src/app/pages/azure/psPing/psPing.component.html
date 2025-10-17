@@ -1,56 +1,95 @@
-<div class="container-fluid py-3">
-  <h1 class="h2 fw-bold">PsPing Network Latency Test</h1>
-  <p>
-    Although the web-based Azure speed test tool is helpful, it cannot measure latency with ICMP
-    ping or TCP ping due to browser limitations. To measure ICMP ping latency to Azure datacenters,
-    consider using PsPing from the PsTools suite. This command-line utility accurately measures
-    network performance and implements Ping functionality, TCP ping, as well as latency and
-    bandwidth measurement.
-  </p>
-  <p>To use the PsPing tool for a network latency test, follow these steps:</p>
-  <ol>
-    <li>
-      <a href="https://learn.microsoft.com/en-us/sysinternals/downloads/pstools" target="_blank">
-        Download PsTools
-      </a>
-    </li>
-    <li>Extract the entire package and open a command prompt.</li>
-    <li>
-      Enter this command:
-      <code>psping target:port</code>
-      (replace "target" with an IP address or DNS name of publicly accessible virtual machines,
-      storage, SQL databases, or other endpoints).
-    </li>
-    <li>
-      Upon completion, you'll see output displaying latency results in milliseconds (as shown below
-      when using a storage endpoint and port 80 as target):
-      <figure>
-        <img class="img-fluid" src="./assets/images/psping.png" alt="PsPing output example" />
-      </figure>
-    </li>
-  </ol>
-  <h2 class="h4">Learn more</h2>
-  <ul>
-    <li>
-      For a detailed understanding of each PsPing parameter, visit the webpage where you downloaded
-      the tool.
-    </li>
-    <li>
-      As Azure blocks external ICMP protocol, the general ping.exe using ICMP won't function.
-      However, PsPing can directly test connectivity to an unblocked specific TCP port.
-    </li>
-    <li>
-      To test latency between virtual machines in the same VNET or different VNETs across various
-      regions, refer to
-      <a href="/Azure/Azure/RegionToRegionLatency" target="_blank">Region to Region Latency</a>
-      and
-      <a
-        href="https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-test-latency"
-        target="_blank"
-      >
-        Test VM network latency
-      </a>
-      .
-    </li>
-  </ul>
+<div class="psping page-container py-3">
+  <header class="page-intro psping__intro">
+    <h1 class="page-title page-intro__title">PsPing Network Latency Test</h1>
+    <p class="page-intro__description">
+      Although the web-based Azure speed test tool is helpful, it cannot measure latency with ICMP
+      ping or TCP ping due to browser limitations. To measure ICMP ping latency to Azure
+      datacenters, consider using PsPing from the PsTools suite. This command-line utility
+      accurately measures network performance and implements Ping functionality, TCP ping, as well
+      as latency and bandwidth measurement.
+    </p>
+  </header>
+  <h2 class="content-heading">Run PsPing latency test</h2>
+  <section class="app-card mb-4 shadow-sm">
+    <div class="app-card__body">
+      <p class="app-card__text">
+        To use the PsPing tool for a network latency test, follow these steps:
+      </p>
+      <ol class="psping-steps">
+        <li class="psping-step">
+          <span class="psping-step__badge">1</span>
+          <div class="psping-step__content">
+            <a
+              href="https://learn.microsoft.com/en-us/sysinternals/downloads/pstools"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Download PsTools
+            </a>
+          </div>
+        </li>
+        <li class="psping-step">
+          <span class="psping-step__badge">2</span>
+          <div class="psping-step__content">
+            Extract the entire package and open a command prompt.
+          </div>
+        </li>
+        <li class="psping-step">
+          <span class="psping-step__badge">3</span>
+          <div class="psping-step__content">
+            Enter this command:
+            <code>psping target:port</code>
+            (replace "target" with an IP address or DNS name of publicly accessible virtual
+            machines, storage, SQL databases, or other endpoints).
+          </div>
+        </li>
+        <li class="psping-step">
+          <span class="psping-step__badge">4</span>
+          <div class="psping-step__content">
+            Upon completion, you'll see output displaying latency results in milliseconds (as shown
+            below when using a storage endpoint and port 80 as target):
+            <figure class="psping-step__figure">
+              <img
+                class="psping-step__image"
+                ngSrc="assets/images/psping.png"
+                alt="PsPing output example"
+                width="677"
+                height="442"
+              />
+            </figure>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="app-card shadow-sm">
+    <div class="app-card__body">
+      <h2 class="content-heading">Learn more</h2>
+      <ul class="psping-resources">
+        <li class="psping-resources__item">
+          For a detailed understanding of each PsPing parameter, visit the webpage where you
+          downloaded the tool.
+        </li>
+        <li class="psping-resources__item">
+          As Azure blocks external ICMP protocol, the general ping.exe using ICMP won't function.
+          However, PsPing can directly test connectivity to an unblocked specific TCP port.
+        </li>
+        <li class="psping-resources__item">
+          To test latency between virtual machines in the same VNET or different VNETs across
+          various regions, refer to
+          <a href="/Azure/RegionToRegionLatency" target="_blank">Region to Region Latency</a>
+          and
+          <a
+            href="https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-test-latency"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Test VM network latency
+          </a>
+          .
+        </li>
+      </ul>
+    </div>
+  </section>
 </div>

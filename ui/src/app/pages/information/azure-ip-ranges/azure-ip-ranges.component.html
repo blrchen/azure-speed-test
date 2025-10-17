@@ -1,53 +1,126 @@
-<div class="container-fluid py-3">
-  <h1 class="h2 fw-bold">Azure IP Ranges</h1>
-  <p>Welcome to the Microsoft Azure Cloud IP Ranges explorer.</p>
-  <h2 class="h4">
-    Azure IP Ranges for
-    <code>{{ serviceTagId }}</code>
-  </h2>
-  <p>
-    This section displays the IP ranges for the Azure service tag
-    <code>{{ serviceTagId }}</code>
-    . These IP ranges are used by Azure to ensure data security and integrity by allocating specific
-    ranges to different services and regions.
-  </p>
-  <div *ngIf="isLoading" class="text-center">
-    <div class="spinner-border" role="status">
-      <span class="sr-only">Loading...</span>
+<div class="ipranges page-container py-3">
+  <header class="ipranges__hero">
+    <div class="page-intro ipranges__hero-copy">
+      <h1 class="page-title page-intro__title ipranges__title">Azure IP Ranges</h1>
+      <p class="page-intro__description ipranges__subtitle">
+        Explore Microsoft Azure service tag IP ranges to help with firewall rules, network planning,
+        and connectivity validation.
+      </p>
     </div>
-  </div>
-  <div *ngIf="!isLoading" class="table-responsive">
-    <table class="table table-bordered table-striped table-hover">
-      <thead>
-        <tr>
-          <th scope="col">Service Tag Id</th>
-          <th scope="col">IP Addresses</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="min-width: 100px">{{ tableData?.serviceTagId }}</td>
-          <td class="text-break">
-            <div *ngFor="let ip of tableData?.ipAddressPrefixes">
-              <code>{{ ip }}</code>
-              <br />
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  <h2 class="h4">Explore IP Ranges by Category</h2>
-  <ul class="list-unstyled">
-    <li>
-      <a href="/Information/AzureIpRangesByService" class="btn btn-link">
-        Explore Azure IP Ranges by Service
+    <aside class="ipranges__hero-share">
+      Current service tag:
+      <span class="ipranges__chip">{{ serviceTagId() }}</span>
+    </aside>
+  </header>
+
+  @if (isLoading()) {
+    <section class="ipranges__loading">
+      <div class="app-spinner text-brand" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+    </section>
+  } @else {
+    <section class="ipranges__results app-card mb-4 shadow-sm">
+      <header class="app-card__header font-semibold">
+        Azure IP prefixes for
+        <code>{{ tableData()?.serviceTagId }}</code>
+      </header>
+      <div class="app-card__body">
+        <div class="app-table__container">
+          <table class="app-table--hover app-table mb-0 align-middle">
+            <thead>
+              <tr>
+                <th>Service tag ID</th>
+                <th>IP address prefixes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="ipranges__service-tag font-semibold">
+                  {{ tableData()?.serviceTagId }}
+                </td>
+                <td class="ipranges__prefixes">
+                  @if (tableData()?.ipAddressPrefixes?.length) {
+                    @for (prefix of tableData()?.ipAddressPrefixes; track prefix) {
+                      <code>
+                        {{ prefix }}
+                      </code>
+                    }
+                  } @else {
+                    <span class="text-slate-500">No prefixes returned for this service tag.</span>
+                  }
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  }
+
+  <section class="ipranges__links">
+    <h2 class="content-heading">Explore more IP data</h2>
+    <div class="ipranges-links__buttons">
+      <a
+        class="app-button app-button--outline-primary app-button--sm"
+        href="/Information/AzureIpRangesByService"
+      >
+        IP ranges by service
       </a>
-    </li>
-    <li>
-      <a href="/Information/AzureIpRangesByRegion" class="btn btn-link">
-        Explore Azure IP Ranges by Region
+      <a
+        class="app-button app-button--outline-primary app-button--sm"
+        href="/Information/AzureIpRangesByRegion"
+      >
+        IP ranges by region
       </a>
-    </li>
-  </ul>
+    </div>
+  </section>
+
+  <section class="regions__section mt-4">
+    <header class="regions__section-header">
+      <h2 class="content-heading">Additional resources</h2>
+      <p>Stay current with Azure service tag updates and automation tooling.</p>
+    </header>
+    <div class="regions-resources__grid">
+      <article class="resource-card">
+        <h3 class="resource-card__title">Azure IP ranges downloads</h3>
+        <p class="resource-card__body">
+          Access weekly updates for all Azure clouds to keep network rules current.
+        </p>
+        <a
+          href="https://www.microsoft.com/en-us/download/details.aspx?id=56519"
+          target="_blank"
+          class="resource-card__link"
+        >
+          Public cloud download
+        </a>
+      </article>
+      <article class="resource-card">
+        <h3 class="resource-card__title">Service tags overview</h3>
+        <p class="resource-card__body">
+          Learn how service tags simplify network security management in Azure.
+        </p>
+        <a
+          href="https://learn.microsoft.com/azure/virtual-network/service-tags-overview"
+          target="_blank"
+          class="resource-card__link"
+        >
+          Read documentation
+        </a>
+      </article>
+      <article class="resource-card">
+        <h3 class="resource-card__title">Programmatic access</h3>
+        <p class="resource-card__body">
+          Use the Service Tag Discovery API to automate service tag updates in your tooling.
+        </p>
+        <a
+          href="https://learn.microsoft.com/rest/api/virtualnetwork/servicetags/list"
+          target="_blank"
+          class="resource-card__link"
+        >
+          Service Tag API
+        </a>
+      </article>
+    </div>
+  </section>
 </div>

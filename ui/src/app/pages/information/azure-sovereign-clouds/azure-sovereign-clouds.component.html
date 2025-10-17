@@ -1,32 +1,62 @@
-<div class="container-fluid py-3">
-  <h1 class="h2 fw-bold">Azure Sovereign Clouds</h1>
-  <p>
-    These clouds function on dedicated, physically and logically isolated networks within a country.
-    Be aware that Azure German Cloud was permanently shut down in October 2021.
-  </p>
-  <div class="table-responsive">
-    <table class="table table-bordered table-striped table-hover">
+<div class="page-container py-3">
+  <header class="page-intro">
+    <h1 class="page-title page-intro__title">Azure Sovereign Clouds</h1>
+    <p class="page-intro__description">
+      Explore dedicated, isolated cloud environments designed for compliance, data residency, and
+      regulatory requirements.
+    </p>
+  </header>
+  <div class="app-table__container">
+    <table class="app-table--bordered app-table--striped app-table--hover app-table">
       <thead>
         <tr>
           <th>Name</th>
           <th>Official Site</th>
-          <th></th>
+          <th>Description</th>
+          <th>View Regions</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td>AzureCloud</td>
           <td>
-            <a href="https://azure.microsoft.com" target="_blank">https://azure.microsoft.com</a>
+            <a
+              href="https://azure.microsoft.com"
+              target="_blank"
+              rel="noopener"
+              class="sovereign-table__link sovereign-table__link--url"
+            >
+              azure.microsoft.com
+            </a>
           </td>
-          <td></td>
+          <td>The global public AzureCloud offers extensive services worldwide.</td>
+          <td>
+            <a href="/Information/AzureRegions" class="sovereign-table__link sovereign-table__action">
+              View Regions
+            </a>
+          </td>
         </tr>
         <tr>
           <td>AzureChinaCloud</td>
           <td>
-            <a href="https://www.azure.cn" target="_blank">https://www.azure.cn</a>
+            <a
+              href="https://www.azure.cn"
+              target="_blank"
+              rel="noopener"
+              class="sovereign-table__link sovereign-table__link--url"
+            >
+              www.azure.cn
+            </a>
           </td>
-          <td>Runs on dedicated instance in China, operated by 21Vianet</td>
+          <td>Runs on a dedicated instance in China, operated by 21Vianet.</td>
+          <td>
+            <a
+              href="/Information/AzureChinaRegions"
+              class="sovereign-table__link sovereign-table__action"
+            >
+              View Regions
+            </a>
+          </td>
         </tr>
         <tr>
           <td>AzureUSGovernment</td>
@@ -34,13 +64,57 @@
             <a
               href="https://azure.microsoft.com/en-us/global-infrastructure/government/"
               target="_blank"
+              rel="noopener"
+              class="sovereign-table__link sovereign-table__link--url"
             >
-              https://azure.microsoft.com/en-us/global-infrastructure/government/
+              azure.microsoft.com/en-us/global-infrastructure/government/
             </a>
           </td>
-          <td></td>
+          <td>Designed for U.S. government entities with strict compliance requirements.</td>
+          <td>
+            <a
+              href="/Information/AzureUSGovernmentRegions"
+              class="sovereign-table__link sovereign-table__action"
+            >
+              View Regions
+            </a>
+          </td>
         </tr>
       </tbody>
     </table>
   </div>
+  <section class="regions__section mt-5">
+    <header class="regions__section-header">
+      <h2 class="content-heading">Additional resources</h2>
+      <p>Further reading for sovereign cloud planning and deployment.</p>
+    </header>
+    <div class="regions-resources__grid">
+      <article class="resource-card">
+        <h3 class="resource-card__title">Azure Government</h3>
+        <p class="resource-card__body">
+          Comprehensive guide for developers working with Azure Government cloud.
+        </p>
+        <a
+          href="https://docs.microsoft.com/en-us/azure/azure-government/documentation-government-developer-guide"
+          target="_blank"
+          class="resource-card__link"
+        >
+          Learn more
+        </a>
+      </article>
+      <article class="resource-card">
+        <h3 class="resource-card__title">Azure China</h3>
+        <p class="resource-card__body">
+          Development guidelines and best practices for Azure China cloud.
+        </p>
+        <a
+          href="https://learn.microsoft.com/en-us/azure/china/resources-developer-guide"
+          target="_blank"
+          class="resource-card__link"
+        >
+          Learn more
+        </a>
+      </article>
+    </div>
+  </section>
 </div>

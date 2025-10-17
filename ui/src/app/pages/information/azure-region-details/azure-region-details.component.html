@@ -1,138 +1,290 @@
-<div class="container-fluid py-4">
-  <nav aria-label="breadcrumb" class="mb-4">
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item">
-        <a href="/">Home</a>
-      </li>
-      <li class="breadcrumb-item">
-        <a href="/Information/AzureRegions">Azure Regions</a>
-      </li>
-      <li class="breadcrumb-item">
-        <a href="/Information/AzureRegions/{{ regionId }}">{{ regionData?.displayName }}</a>
+<div class="region-page">
+  <nav class="app-breadcrumb" aria-label="Breadcrumb">
+    <ol class="app-breadcrumb__list">
+      <li class="app-breadcrumb__item"><a href="/">Home</a></li>
+      <li class="app-breadcrumb__item"><a href="/Information/AzureRegions">Azure Regions</a></li>
+      <li class="app-breadcrumb__item app-breadcrumb__item--active">
+        {{ regionData?.displayName }}
       </li>
     </ol>
   </nav>
 
-  <!-- Region Header -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-      <h1 class="h2 mb-1">{{ regionData?.displayName }}</h1>
-      <p class="text-muted mb-0">
-        <span class="badge" [ngClass]="regionData?.restricted ? 'bg-warning' : 'bg-success'">
+  <header class="region-header">
+    <div class="region-header__title-group">
+      <h1 class="region-header__title">{{ regionData?.displayName }}</h1>
+      <div class="region-header__meta">
+        <span
+          class="status-chip"
+          [class.status-chip--restricted]="regionData?.restricted"
+          [class.status-chip--available]="!regionData?.restricted"
+        >
           {{ regionData?.restricted ? 'Restricted Access' : 'Generally Available' }}
         </span>
-        <span class="ms-2 text-secondary">{{ regionData?.name }}</span>
+        <span class="region-header__code">{{ regionData?.regionId?.toLowerCase() }}</span>
+      </div>
+      <p class="region-header__description">
+        {{ regionDescription }}
       </p>
     </div>
-  </div>
+  </header>
 
-  <div class="row">
-    <!-- Map and Key Details -->
-    <div class="col-12 mb-4">
-      <div class="card shadow-sm h-100">
-        <div class="card-body">
-          <div id="region-map" class="region-map mb-4 border rounded" style="height: 350px"></div>
-          <h2 class="h4 mb-3 d-flex align-items-center">Region Details</h2>
-          <div class="row g-4">
-            <div class="col-md-6">
-              <dl class="row mb-0">
-                <dt class="col-sm-5 text-secondary">Location</dt>
-                <dd class="col-sm-7">{{ regionData?.physicalLocation }}</dd>
-                <dt class="col-sm-5 text-secondary">Coordinates</dt>
-                <dd class="col-sm-7">
-                  <a
-                    [href]="
-                      'https://www.google.com/maps/search/' +
-                      regionData?.latitude +
-                      ',' +
-                      regionData?.longitude
-                    "
-                    target="_blank"
-                    class="text-decoration-none"
-                  >
-                    {{ regionData?.latitude }}, {{ regionData?.longitude }}
-                  </a>
-                </dd>
-                <dt class="col-sm-5 text-secondary">Geography</dt>
-                <dd class="col-sm-7">
-                  {{ regionData?.geography }}
-                  <span class="text-muted small">({{ regionData?.geographyGroup }})</span>
-                </dd>
-                <dt class="col-sm-5 text-secondary">IP Ranges</dt>
-                <dd class="col-sm-7">
-                  <a
-                    href="/Information/AzureIpRanges/AzureCloud.{{ regionId.toLowerCase() }}"
-                    class="text-decoration-none"
-                  >
-                    View IP ranges
-                  </a>
-                </dd>
-              </dl>
-            </div>
-            <div class="col-md-6">
-              <dl class="row mb-0">
-                <dt class="col-sm-5 text-secondary">Status</dt>
-                <dd class="col-sm-7">
-                  <div class="d-flex align-items-center">
-                    <div
-                      class="status-indicator"
-                      [ngClass]="regionData?.restricted ? 'status-restricted' : 'status-available'"
-                    ></div>
-                    <span class="ms-2">
-                      {{ regionData?.restricted ? 'Limited Access' : 'Fully Available' }}
-                    </span>
-                  </div>
-                </dd>
-                <dt class="col-sm-5 text-secondary">Availability Zones</dt>
-                <dd class="col-sm-7">
-                  <span class="badge bg-light text-dark">
-                    {{ regionData?.availabilityZoneCount || 'Not supported' }}
-                  </span>
-                </dd>
-                <dt class="col-sm-5 text-secondary">Paired Region</dt>
-                <dd class="col-sm-7">{{ regionData?.pairedRegion || 'None' }}</dd>
-                <dt class="col-sm-5 text-secondary">Established</dt>
-                <dd class="col-sm-7">
-                  <span *ngIf="regionData?.yearOpen" class="badge bg-light text-dark">
-                    {{ regionData?.yearOpen }}
-                  </span>
-                  <span *ngIf="!regionData?.yearOpen">N/A</span>
-                </dd>
-              </dl>
-            </div>
-          </div>
-        </div>
-      </div>
+  <section class="region-map-card">
+    <div id="region-map" class="region-map"></div>
+  </section>
+
+  <section class="region-details-card">
+    <h2 class="content-heading">Region Details</h2>
+    <div class="region-details-table-wrapper">
+      <table class="region-details-table">
+        <tbody>
+          <tr>
+            <th scope="row">Long Name</th>
+            <td>{{ regionData?.longName || 'Not specified' }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Region Identifier</th>
+            <td>{{ regionData?.regionId || regionId }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Geography</th>
+            <td>
+              {{ regionData?.geography || 'Not specified' }}
+              @if (regionData?.geographicGroup) {
+                <span class="region-muted">({{ regionData?.geographicGroup }})</span>
+              }
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">Datacenter Location</th>
+            <td>{{ regionData?.datacenterLocation || 'Not available' }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Availability Zones</th>
+            <td>{{ availabilityZoneStatus }}</td>
+          </tr>
+          @if (regionData?.pairedRegion) {
+            <tr>
+              <th scope="row">Paired Region</th>
+              <td>{{ regionData?.pairedRegion }}</td>
+            </tr>
+          }
+          <tr>
+            <th scope="row">Launch Year</th>
+            <td>{{ regionData?.launchYear ?? 'Not available' }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Coordinates</th>
+            <td>
+              @if (regionData?.latitude && regionData?.longitude) {
+                <a
+                  class="region-link"
+                  [href]="
+                    'https://www.google.com/maps/search/' +
+                    (regionData?.latitude ?? '') +
+                    ',' +
+                    (regionData?.longitude ?? '')
+                  "
+                  target="_blank"
+                  rel="noopener"
+                >
+                  {{ regionData?.latitude }}, {{ regionData?.longitude }}
+                </a>
+              } @else {
+                <span class="region-muted">Not available</span>
+              }
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">Access Status</th>
+            <td>{{ regionData?.restricted ? 'Restricted access' : 'Generally available' }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Available To</th>
+            <td>{{ regionData?.availableTo || 'Available to all customers and partners' }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Data Residency</th>
+            <td>{{ regionData?.dataResidency || 'Not specified' }}</td>
+          </tr>
+          <tr>
+            <th scope="row">IP Ranges</th>
+            <td>
+              <a
+                class="region-link"
+                href="/Information/AzureIpRanges/AzureCloud.{{ regionId.toLowerCase() }}"
+              >
+                View IP ranges
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  </div>
+  </section>
 </div>
+
 <style>
-  .status-indicator {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    position: relative;
+  :host {
+    display: block;
   }
 
-  .status-available {
-    background-color: #28a745;
-    box-shadow: 0 0 0 4px rgba(40, 167, 69, 0.2);
+  .region-page {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+    color: #0f172a;
   }
 
-  .status-restricted {
-    background-color: #ffc107;
-    box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.2);
+  .region-header__title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .region-header__title {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 600;
+  }
+
+  .region-header__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    font-size: 0.95rem;
+  }
+
+  .region-header__code {
+    color: #2563eb;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: lowercase;
+  }
+
+  .region-header__description {
+    margin: 1rem 0 0;
+    font-size: 1rem;
+    line-height: 1.65;
+    color: #334155;
+  }
+
+  .status-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    background: rgba(34, 197, 94, 0.16);
+    color: #15803d;
+  }
+
+  .status-chip--restricted {
+    background: rgba(250, 204, 21, 0.16);
+    color: #92400e;
+  }
+
+  .region-map-card {
+    margin: 1.75rem 0 2.5rem;
+    background: #ffffff;
+    border-radius: 18px;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+    overflow: hidden;
   }
 
   .region-map {
-    background-color: #f8f9fa;
+    width: 100%;
+    height: 360px;
   }
 
-  dt {
-    font-weight: 500;
+  .region-details-card {
+    background: #ffffff;
+    border-radius: 18px;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+    padding: 1.85rem 2rem 2.1rem;
   }
 
-  .badge {
+  .region-details-card .content-heading {
+    margin: 0 0 1.4rem;
+    font-size: 1.35rem;
+    font-weight: 600;
+  }
+
+  .region-details-table-wrapper {
+    overflow-x: auto;
+  }
+
+  .region-details-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .region-details-table tr {
+    border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+  }
+
+  .region-details-table tr:last-child {
+    border-bottom: none;
+  }
+
+  .region-details-table th {
+    width: 240px;
+    padding: 0.95rem 1.15rem;
+    background: #f8fafc;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #0f172a;
+  }
+
+  .region-details-table td {
+    padding: 0.95rem 1.15rem;
+    font-size: 0.97rem;
     font-weight: 500;
+    color: #0f172a;
+  }
+
+  .region-link {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .region-link:hover {
+    text-decoration: underline;
+  }
+
+  .region-muted {
+    color: #94a3b8;
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 768px) {
+    .region-page {
+      padding: 2rem 1.1rem 3.5rem;
+    }
+
+    .region-header__title {
+      font-size: 1.65rem;
+    }
+
+    .region-header__description {
+      margin-top: 0.85rem;
+      font-size: 0.98rem;
+      line-height: 1.6;
+    }
+
+    .region-map {
+      height: 320px;
+    }
+
+    .region-details-card {
+      padding: 1.6rem 1.4rem;
+    }
   }
 </style>

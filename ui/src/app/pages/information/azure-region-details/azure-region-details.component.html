@@ -1,290 +1,243 @@
-<div class="region-page">
-  <nav class="app-breadcrumb" aria-label="Breadcrumb">
-    <ol class="app-breadcrumb__list">
-      <li class="app-breadcrumb__item"><a href="/">Home</a></li>
-      <li class="app-breadcrumb__item"><a href="/Information/AzureRegions">Azure Regions</a></li>
-      <li class="app-breadcrumb__item app-breadcrumb__item--active">
-        {{ regionData?.displayName }}
-      </li>
-    </ol>
+<article class="page-shell section-stack mx-auto max-w-5xl">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a class="breadcrumb-link" routerLink="/">Home</a>
+    <span class="breadcrumb-separator">/</span>
+    <a class="breadcrumb-link" [routerLink]="['/Information/AzureRegions']">Azure regions</a>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current" aria-current="page">{{ breadcrumbLabel() }}</span>
   </nav>
 
-  <header class="region-header">
-    <div class="region-header__title-group">
-      <h1 class="region-header__title">{{ regionData?.displayName }}</h1>
-      <div class="region-header__meta">
-        <span
-          class="status-chip"
-          [class.status-chip--restricted]="regionData?.restricted"
-          [class.status-chip--available]="!regionData?.restricted"
-        >
-          {{ regionData?.restricted ? 'Restricted Access' : 'Generally Available' }}
-        </span>
-        <span class="region-header__code">{{ regionData?.regionId?.toLowerCase() }}</span>
-      </div>
-      <p class="region-header__description">
-        {{ regionDescription }}
-      </p>
-    </div>
+  <header class="page-header">
+    <h1 class="page-title">{{ regionData()?.displayName ?? regionId() }}</h1>
+    <p class="page-lead">{{ regionDescription() }}</p>
   </header>
 
-  <section class="region-map-card">
-    <div id="region-map" class="region-map"></div>
-  </section>
-
-  <section class="region-details-card">
-    <h2 class="content-heading">Region Details</h2>
-    <div class="region-details-table-wrapper">
-      <table class="region-details-table">
-        <tbody>
-          <tr>
-            <th scope="row">Long Name</th>
-            <td>{{ regionData?.longName || 'Not specified' }}</td>
-          </tr>
-          <tr>
-            <th scope="row">Region Identifier</th>
-            <td>{{ regionData?.regionId || regionId }}</td>
-          </tr>
-          <tr>
-            <th scope="row">Geography</th>
-            <td>
-              {{ regionData?.geography || 'Not specified' }}
-              @if (regionData?.geographicGroup) {
-                <span class="region-muted">({{ regionData?.geographicGroup }})</span>
-              }
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">Datacenter Location</th>
-            <td>{{ regionData?.datacenterLocation || 'Not available' }}</td>
-          </tr>
-          <tr>
-            <th scope="row">Availability Zones</th>
-            <td>{{ availabilityZoneStatus }}</td>
-          </tr>
-          @if (regionData?.pairedRegion) {
-            <tr>
-              <th scope="row">Paired Region</th>
-              <td>{{ regionData?.pairedRegion }}</td>
-            </tr>
-          }
-          <tr>
-            <th scope="row">Launch Year</th>
-            <td>{{ regionData?.launchYear ?? 'Not available' }}</td>
-          </tr>
-          <tr>
-            <th scope="row">Coordinates</th>
-            <td>
-              @if (regionData?.latitude && regionData?.longitude) {
-                <a
-                  class="region-link"
-                  [href]="
-                    'https://www.google.com/maps/search/' +
-                    (regionData?.latitude ?? '') +
-                    ',' +
-                    (regionData?.longitude ?? '')
-                  "
-                  target="_blank"
-                  rel="noopener"
-                >
-                  {{ regionData?.latitude }}, {{ regionData?.longitude }}
-                </a>
-              } @else {
-                <span class="region-muted">Not available</span>
-              }
-            </td>
-          </tr>
-          <tr>
-            <th scope="row">Access Status</th>
-            <td>{{ regionData?.restricted ? 'Restricted access' : 'Generally available' }}</td>
-          </tr>
-          <tr>
-            <th scope="row">Available To</th>
-            <td>{{ regionData?.availableTo || 'Available to all customers and partners' }}</td>
-          </tr>
-          <tr>
-            <th scope="row">Data Residency</th>
-            <td>{{ regionData?.dataResidency || 'Not specified' }}</td>
-          </tr>
-          <tr>
-            <th scope="row">IP Ranges</th>
-            <td>
-              <a
-                class="region-link"
-                href="/Information/AzureIpRanges/AzureCloud.{{ regionId.toLowerCase() }}"
-              >
-                View IP ranges
-              </a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+  <section class="section-block" aria-labelledby="status-heading">
+    <h2 id="status-heading" class="sr-only">Region status</h2>
+    <div class="flex flex-wrap items-center gap-3 text-sm">
+      <span
+        class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold"
+        [class]="
+          regionData()?.restricted ? 'bg-warning/20 text-warning' : 'bg-success/20 text-success'
+        "
+      >
+        <app-lucide-icon
+          [name]="regionData()?.restricted ? 'lock' : 'check-circle'"
+          class="h-3.5 w-3.5"
+          aria-hidden="true"
+        />
+        {{ regionData()?.restricted ? 'Restricted Access' : 'Generally Available' }}
+      </span>
+      <span class="text-sm font-semibold tracking-[0.04em] text-brand lowercase">
+        {{ regionData()?.regionId?.toLowerCase() ?? regionIdLowercase() }}
+      </span>
     </div>
   </section>
-</div>
 
-<style>
-  :host {
-    display: block;
+  <section class="section-block" aria-labelledby="map-heading">
+    <h2 id="map-heading" class="sr-only">Region map</h2>
+    <div class="relative overflow-hidden rounded-2xl border border-border-soft shadow-xl">
+      @if (!mapLoaded()) {
+        <div class="absolute inset-0 z-20 flex items-center justify-center bg-surface-muted">
+          <div class="flex flex-col items-center gap-3">
+            <span class="spinner text-brand"></span>
+            <span class="text-sm text-text-muted">Loading map...</span>
+          </div>
+        </div>
+      }
+      <div
+        class="pointer-events-none absolute inset-x-0 top-0 z-10 h-16 bg-gradient-to-b from-surface-raised/80 to-transparent"
+      ></div>
+      <div id="region-map" class="h-[320px] w-full md:h-[400px]"></div>
+      <div class="absolute bottom-4 left-4 z-10">
+        <span
+          class="rounded-lg bg-surface-raised/90 px-3 py-1.5 text-sm font-semibold text-text-strong shadow-lg backdrop-blur-sm"
+        >
+          {{ regionData()?.displayName }}
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-block" aria-labelledby="actions-heading">
+    <h2 id="actions-heading" class="sr-only">Quick actions</h2>
+    <div class="flex flex-wrap gap-3">
+      <a
+        class="btn btn-primary"
+        [routerLink]="['/Azure/Latency']"
+        [queryParams]="{ region: regionData()?.regionId }"
+      >
+        <app-lucide-icon name="activity" class="h-4 w-4" aria-hidden="true" />
+        Test latency
+      </a>
+      <a
+        class="btn btn-secondary"
+        [routerLink]="['/Information/AzureIpRanges', 'AzureCloud.' + regionIdLowercase()]"
+        [state]="{ source: 'region' }"
+      >
+        <app-lucide-icon name="network" class="h-4 w-4" aria-hidden="true" />
+        View IP ranges
+      </a>
+      @if (hasCoordinates()) {
+        <a
+          class="btn btn-outline"
+          [href]="regionCoordinatesHref()"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Open in Google Maps (opens in new tab)"
+        >
+          <app-lucide-icon name="map" class="h-4 w-4" aria-hidden="true" />
+          Open in Maps
+          <app-lucide-icon name="external-link" class="ml-1 h-3 w-3" aria-hidden="true" />
+        </a>
+      }
+    </div>
+  </section>
+
+  <section class="section-block" aria-labelledby="details-heading">
+    <h2 id="details-heading" class="section-title">Region details</h2>
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <!-- Location Card -->
+      <article class="card space-y-3">
+        <div class="flex items-center gap-3">
+          <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-brand/10">
+            <app-lucide-icon name="map-pin" class="h-5 w-5 text-brand" aria-hidden="true" />
+          </div>
+          <h3 class="font-semibold text-text-strong">Location</h3>
+        </div>
+        <dl class="grid grid-cols-[160px,1fr] gap-y-2 text-sm">
+          <div class="contents">
+            <dt class="text-text-muted">Geography</dt>
+            <dd class="text-right font-medium">
+              {{ regionData()?.geography || 'Not specified' }}
+            </dd>
+          </div>
+          <div class="contents">
+            <dt class="text-text-muted">Datacenter</dt>
+            <dd class="font-medium">{{ regionData()?.datacenterLocation || 'N/A' }}</dd>
+          </div>
+          <div class="contents" [class.hidden]="!hasCoordinates()">
+            <dt class="text-text-muted">Coordinates</dt>
+            <dd>
+              <a
+                class="link-primary inline-flex items-center gap-1 font-mono text-xs"
+                [href]="regionCoordinatesHref()"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="View coordinates on Google Maps (opens in new tab)"
+              >
+                {{ regionData()?.latitude }}, {{ regionData()?.longitude }}
+                <app-lucide-icon name="external-link" class="h-3 w-3" aria-hidden="true" />
+              </a>
+            </dd>
+          </div>
+        </dl>
+      </article>
+
+      <!-- Infrastructure Card -->
+      <article class="card space-y-3">
+        <div class="flex items-center gap-3">
+          <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-success/10">
+            <app-lucide-icon name="server" class="h-5 w-5 text-success" aria-hidden="true" />
+          </div>
+          <h3 class="font-semibold text-text-strong">Infrastructure</h3>
+        </div>
+        <dl class="grid grid-cols-[160px,1fr] gap-y-2 text-sm">
+          <div class="contents">
+            <dt class="text-text-muted">Availability zones</dt>
+            <dd class="font-medium">
+              <span
+                [class]="
+                  regionData()?.availabilityZoneCount ? 'badge badge-success' : 'text-text-muted'
+                "
+              >
+                {{
+                  regionData()?.availabilityZoneCount
+                    ? regionData()?.availabilityZoneCount + ' AZ'
+                    : 'None'
+                }}
+              </span>
+            </dd>
+          </div>
+          <div class="contents">
+            <dt class="text-text-muted">Paired region</dt>
+            <dd>
+              <a
+                class="link-primary"
+                [class.hidden]="!regionData()?.pairedRegion"
+                [routerLink]="buildRegionRouterLink(regionData()?.pairedRegion)"
+              >
+                {{ regionData()?.pairedRegion }}
+              </a>
+              <span class="text-text-muted" [class.hidden]="regionData()?.pairedRegion">None</span>
+            </dd>
+          </div>
+          <div class="contents">
+            <dt class="text-text-muted">Launched</dt>
+            <dd class="font-medium">{{ regionData()?.launchYear || 'N/A' }}</dd>
+          </div>
+        </dl>
+      </article>
+
+      <!-- Access Card -->
+      <article class="card space-y-3">
+        <div class="flex items-center gap-3">
+          <div
+            class="flex h-10 w-10 items-center justify-center rounded-lg"
+            [class]="regionData()?.restricted ? 'bg-warning/10' : 'bg-success/10'"
+          >
+            <app-lucide-icon
+              [name]="regionData()?.restricted ? 'lock' : 'unlock'"
+              class="h-5 w-5"
+              [class]="regionData()?.restricted ? 'text-warning' : 'text-success'"
+              aria-hidden="true"
+            />
+          </div>
+          <h3 class="font-semibold text-text-strong">Access</h3>
+        </div>
+        <dl class="grid grid-cols-[160px,1fr] gap-y-2 text-sm">
+          <div class="contents">
+            <dt class="text-text-muted">Status</dt>
+            <dd class="font-medium">
+              {{ regionData()?.restricted ? 'Restricted' : 'Generally Available' }}
+            </dd>
+          </div>
+          <div class="contents">
+            <dt class="text-text-muted">Available to</dt>
+            <dd class="font-medium">
+              {{ regionData()?.availableTo || 'All customers' }}
+            </dd>
+          </div>
+          <div class="contents" [class.hidden]="!regionData()?.dataResidency">
+            <dt class="text-text-muted">Data residency</dt>
+            <dd class="text-xs">
+              {{ regionData()?.dataResidency }}
+            </dd>
+          </div>
+        </dl>
+      </article>
+    </div>
+  </section>
+
+  @if (relatedRegions().length) {
+    <section class="section-block" aria-labelledby="related-heading">
+      <h2 id="related-heading" class="section-title">Related regions</h2>
+      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        @for (region of relatedRegions(); track region.regionId; let idx = $index) {
+          <a
+            class="card card-interactive animate-fade-slide-in flex items-center gap-3"
+            [routerLink]="buildRegionRouterLink(region.displayName)"
+          >
+            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-brand/10">
+              <app-lucide-icon name="server" class="h-5 w-5 text-brand" aria-hidden="true" />
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="truncate font-semibold text-text-strong">{{ region.displayName }}</div>
+              <div class="truncate text-xs text-text-muted">{{ region.datacenterLocation }}</div>
+            </div>
+          </a>
+        }
+      </div>
+    </section>
   }
-
-  .region-page {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 2.5rem 1.5rem 4rem;
-    color: #0f172a;
-  }
-
-  .region-header__title-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .region-header__title {
-    margin: 0;
-    font-size: 2rem;
-    font-weight: 600;
-  }
-
-  .region-header__meta {
-    display: flex;
-    align-items: center;
-    gap: 0.85rem;
-    font-size: 0.95rem;
-  }
-
-  .region-header__code {
-    color: #2563eb;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: lowercase;
-  }
-
-  .region-header__description {
-    margin: 1rem 0 0;
-    font-size: 1rem;
-    line-height: 1.65;
-    color: #334155;
-  }
-
-  .status-chip {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.35rem 0.75rem;
-    border-radius: 999px;
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-weight: 600;
-    background: rgba(34, 197, 94, 0.16);
-    color: #15803d;
-  }
-
-  .status-chip--restricted {
-    background: rgba(250, 204, 21, 0.16);
-    color: #92400e;
-  }
-
-  .region-map-card {
-    margin: 1.75rem 0 2.5rem;
-    background: #ffffff;
-    border-radius: 18px;
-    border: 1px solid rgba(148, 163, 184, 0.18);
-    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
-    overflow: hidden;
-  }
-
-  .region-map {
-    width: 100%;
-    height: 360px;
-  }
-
-  .region-details-card {
-    background: #ffffff;
-    border-radius: 18px;
-    border: 1px solid rgba(148, 163, 184, 0.18);
-    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
-    padding: 1.85rem 2rem 2.1rem;
-  }
-
-  .region-details-card .content-heading {
-    margin: 0 0 1.4rem;
-    font-size: 1.35rem;
-    font-weight: 600;
-  }
-
-  .region-details-table-wrapper {
-    overflow-x: auto;
-  }
-
-  .region-details-table {
-    width: 100%;
-    border-collapse: collapse;
-    border-radius: 14px;
-    overflow: hidden;
-  }
-
-  .region-details-table tr {
-    border-bottom: 1px solid rgba(148, 163, 184, 0.18);
-  }
-
-  .region-details-table tr:last-child {
-    border-bottom: none;
-  }
-
-  .region-details-table th {
-    width: 240px;
-    padding: 0.95rem 1.15rem;
-    background: #f8fafc;
-    font-size: 0.92rem;
-    font-weight: 600;
-    color: #0f172a;
-  }
-
-  .region-details-table td {
-    padding: 0.95rem 1.15rem;
-    font-size: 0.97rem;
-    font-weight: 500;
-    color: #0f172a;
-  }
-
-  .region-link {
-    color: #2563eb;
-    text-decoration: none;
-    font-weight: 600;
-  }
-
-  .region-link:hover {
-    text-decoration: underline;
-  }
-
-  .region-muted {
-    color: #94a3b8;
-    font-size: 0.9rem;
-  }
-
-  @media (max-width: 768px) {
-    .region-page {
-      padding: 2rem 1.1rem 3.5rem;
-    }
-
-    .region-header__title {
-      font-size: 1.65rem;
-    }
-
-    .region-header__description {
-      margin-top: 0.85rem;
-      font-size: 0.98rem;
-      line-height: 1.6;
-    }
-
-    .region-map {
-      height: 320px;
-    }
-
-    .region-details-card {
-      padding: 1.6rem 1.4rem;
-    }
-  }
-</style>
+</article>

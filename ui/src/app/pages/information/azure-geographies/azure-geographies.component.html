@@ -1,83 +1,107 @@
-<div class="page-container py-3">
-  <header class="page-intro">
-    <h1 class="page-title page-intro__title">Azure Geographies</h1>
-    <p class="page-intro__description">
-      Azure geographical locations refer to a set of one or more regions, strategically grouped to
-      meet specific data residency and compliance requirements.
+<article class="page-shell section-stack mx-auto max-w-5xl">
+  <header class="page-header">
+    <h1 class="page-title">Azure geographies</h1>
+    <p class="page-lead">
+      Azure geographies are groups of one or more regions, organized to meet data residency and
+      compliance requirements.
     </p>
   </header>
 
-  <h2 class="content-heading">Global Geographic Distribution</h2>
-  <div class="app-table__container mb-5">
-    <table class="app-table app-table--hover border-t align-middle">
-      <thead class="app-table--light">
-        <tr>
-          <th class="w-1/4 font-semibold">Geography</th>
-          <th class="font-semibold">Regions</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (g of tableData(); track g.name) {
-          <tr>
-            <td class="font-semibold text-slate-800">{{ g.name }}</td>
-            <td>
-              <div class="grid gap-3 sm:grid-cols-2">
-                @for (r of g.regions; track $index) {
-                  <div class="flex items-center justify-between gap-2">
-                    <div class="flex items-center gap-2">
-                      <a
-                        [href]="'/Information/AzureRegions/' + r.displayName.split(' ').join('')"
-                        class="font-semibold text-brand no-underline hover:underline"
-                        target="_blank"
-                      >
-                        {{ r.displayName }}
-                      </a>
-                      <span class="text-xs text-slate-500">({{ r.datacenterLocation }})</span>
-                    </div>
-                  </div>
-                }
-              </div>
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  </div>
+  <section class="section-block" aria-labelledby="geographies-heading">
+    <h2 id="geographies-heading" class="section-title">Global geographic distribution</h2>
+    @defer (on viewport; prefetch on idle) {
+      <div class="table-shell overflow-x-auto">
+        <table class="table-base">
+          <thead class="table-head">
+            <tr>
+              <th scope="col" class="px-4 py-3">Geography</th>
+              <th scope="col" class="px-4 py-3">Regions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border-soft">
+            @for (g of tableData(); track g.name) {
+              <tr class="table-row-hover align-top">
+                <td
+                  class="w-48 px-4 py-4 text-sm font-semibold tracking-wide text-text-muted uppercase"
+                >
+                  {{ g.name }}
+                </td>
+                <td class="px-4 py-4">
+                  <ul class="grid gap-x-6 gap-y-3 sm:grid-cols-2 xl:grid-cols-3" role="list">
+                    @for (r of g.regions; track r.regionId) {
+                      <li class="flex min-w-[12rem] flex-col gap-1">
+                        <a
+                          class="link-primary font-semibold"
+                          [routerLink]="buildRegionRouterLink(r.displayName)"
+                        >
+                          {{ r.displayName }}
+                        </a>
+                        <div class="text-xs font-medium tracking-wide text-text-muted uppercase">
+                          {{ r.datacenterLocation }}
+                        </div>
+                      </li>
+                    }
+                  </ul>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @placeholder {
+      <div
+        class="min-h-[420px] rounded-2xl border border-border-soft bg-surface-raised px-4 py-5 shadow-sm"
+        role="status"
+        aria-label="Loading geographies"
+      >
+        <div class="skeleton-shimmer mb-3 h-6 w-36 rounded"></div>
+        <div class="skeleton-shimmer mb-2 h-10 w-full rounded"></div>
+        <div class="skeleton-shimmer mb-2 h-10 w-full rounded"></div>
+        <div class="skeleton-shimmer mb-2 h-10 w-full rounded"></div>
+        <div class="skeleton-shimmer mb-2 h-10 w-full rounded"></div>
+        <div class="skeleton-shimmer h-10 w-full rounded"></div>
+      </div>
+    }
+  </section>
 
-  <section class="regions__section">
-    <header class="regions__section-header">
-      <h2 class="content-heading">Additional resources</h2>
-      <p>Helpful context for understanding Azure geography boundaries and planning.</p>
-    </header>
-    <div class="regions-resources__grid">
-      <article class="resource-card">
-        <h3 class="resource-card__title">Global Infrastructure</h3>
-        <p class="resource-card__body">
+  <section class="section-block" aria-labelledby="geo-resources-heading">
+    <h2 id="geo-resources-heading" class="section-title mb-4">Additional resources</h2>
+    <p class="mb-4 text-sm text-text-muted">
+      Helpful context for understanding Azure geography boundaries and planning.
+    </p>
+    <div class="resource-grid">
+      <article class="card card-resource">
+        <h3 class="card-title">Global Infrastructure</h3>
+        <p class="card-description">
           Learn about Azure's geographic organization and data residency boundaries.
         </p>
         <a
           href="https://azure.microsoft.com/en-us/explore/global-infrastructure/geographies"
           target="_blank"
           rel="noopener noreferrer"
-          class="resource-card__link"
+          class="card-cta"
+          aria-label="Learn more about Global Infrastructure (opens in new tab)"
         >
           Learn more
+          <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
         </a>
       </article>
-      <article class="resource-card">
-        <h3 class="resource-card__title">Business continuity</h3>
-        <p class="resource-card__body">
+      <article class="card card-resource">
+        <h3 class="card-title">Business continuity</h3>
+        <p class="card-description">
           Guidance on business continuity and disaster recovery with Azure paired regions.
         </p>
         <a
           href="https://docs.microsoft.com/en-us/azure/best-practices-availability-paired-regions"
           target="_blank"
           rel="noopener noreferrer"
-          class="resource-card__link"
+          class="card-cta"
+          aria-label="Learn more about Business continuity (opens in new tab)"
         >
           Learn more
+          <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
         </a>
       </article>
     </div>
   </section>
-</div>
+</article>

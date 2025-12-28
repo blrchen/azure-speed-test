@@ -1,83 +1,130 @@
-<div class="page-container py-3">
-  <header class="page-intro">
-    <h1 class="page-title page-intro__title">ChatGPT Email Generator</h1>
-    <p class="page-intro__description">
+<article class="page-shell section-stack mx-auto max-w-5xl">
+  <header class="page-header">
+    <h1 class="page-title">ChatGPT email generator</h1>
+    <p class="page-lead">
       Instantly generate professional, medium to long-sized emails. Enter your email subject or key
       points below and let our tool craft your message.
     </p>
   </header>
-  <form [formGroup]="userContentForm" (submit)="submitForm()" autocomplete="off" class="mb-3">
-    <fieldset class="app-form mb-3">
-      <label for="userContent" class="app-form__label font-semibold">
-        Email Subject or Key Points
-      </label>
-      <textarea
-        class="app-form__control"
-        id="userContent"
-        formControlName="userContent"
-        placeholder="E.g. Requesting project update, congratulating a colleague, following up after meeting..."
-        required
-        rows="6"
-      ></textarea>
-      <small class="app-form__note text-slate-500">
-        {{ userContentForm.get('userContent')?.value?.length || 0 }}/5000 characters
-      </small>
-      @if (userContentForm.controls['userContent'].errors?.['maxlength']) {
-        <div class="app-alert">
-          Character limit exceeded. Please limit your text to 5000 characters.
+
+  <section class="section-block" aria-labelledby="generator-heading">
+    <h2 id="generator-heading" class="sr-only">Email generator</h2>
+    <form
+      [formGroup]="userContentForm"
+      (ngSubmit)="submitForm()"
+      autocomplete="off"
+      class="mb-3"
+      novalidate
+    >
+      <fieldset class="form group mb-3">
+        <label for="userContent" class="form-label transition-colors group-focus-within:text-brand">
+          Email Subject or Key Points
+        </label>
+        <textarea
+          class="form-control min-h-[6.5rem]"
+          id="userContent"
+          formControlName="userContent"
+          placeholder="E.g. Requesting project update, congratulating a colleague, following up after meeting..."
+          required
+          rows="3"
+        ></textarea>
+        <small class="form-note mt-1"> {{ userContentLength() }}/5000 characters </small>
+        @if (userContentForm.controls['userContent'].errors?.['maxlength']) {
+          <div class="alert alert--error" role="alert">
+            Character limit exceeded. Please limit your text to 5000 characters.
+          </div>
+        }
+      </fieldset>
+      <button
+        type="submit"
+        class="btn btn-primary mr-2"
+        [disabled]="userContentForm.invalid || isLoading()"
+      >
+        Generate Email
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="resetForm()">Reset</button>
+      @if (errorMessage()) {
+        <div class="alert alert--error mt-3" role="alert" aria-live="polite">
+          {{ errorMessage() }}
         </div>
       }
-    </fieldset>
-    <button
-      type="submit"
-      class="app-button app-button--primary mr-2"
-      [disabled]="userContentForm.invalid || isLoading()"
-    >
-      Generate Email
-    </button>
-    <button type="button" class="app-button app-button--outline-secondary" (click)="resetForm()">
-      Reset
-    </button>
-  </form>
-  @if (isLoading()) {
-    <div class="my-4 flex items-center justify-center">
-      <div class="app-spinner mr-2 text-brand" role="status"></div>
-      <span class="font-semibold">Processing...</span>
-    </div>
-  }
-  @if (hasResult()) {
-    <div class="app-card mb-4">
-      <div class="app-card__header flex items-center justify-between">
-        <h2 class="content-heading">Generated Email Draft</h2>
+    </form>
+  </section>
+
+  <section class="section-block" aria-labelledby="results-heading" aria-live="polite">
+    <div class="card">
+      <div
+        class="card-header relative flex flex-wrap items-center justify-between gap-3 overflow-hidden"
+      >
+        <div
+          class="absolute inset-0 bg-gradient-to-r from-brand/5 via-transparent to-transparent"
+          aria-hidden="true"
+        ></div>
+        <h2 id="results-heading" class="section-title relative">Generated email draft</h2>
         <button
           type="button"
-          class="app-button app-button--sm"
-          [class.app-button--outline-primary]="isCopyIdle()"
-          [attr.data-variant]="isCopySuccess() ? 'success' : isCopyError() ? 'danger' : null"
+          class="btn btn-outline btn--sm group relative"
+          [disabled]="!hasResult() || isLoading()"
           (click)="copyToClipboard(result() ?? '')"
         >
           @if (isCopyIdle()) {
+            <app-lucide-icon
+              name="copy"
+              class="size-4 transition-transform group-hover:scale-110"
+              [strokeWidth]="2"
+              aria-hidden="true"
+            />
             <span>Copy</span>
           }
           @if (isCopySuccess()) {
-            <span>&#10003; Copied!</span>
+            <app-lucide-icon
+              name="check"
+              class="size-4 text-success"
+              [strokeWidth]="2"
+              aria-hidden="true"
+            />
+            <span>Copied!</span>
           }
           @if (isCopyError()) {
-            <span>&#10006; Copy Failed</span>
+            <app-lucide-icon
+              name="x"
+              class="size-4 text-danger"
+              [strokeWidth]="2"
+              aria-hidden="true"
+            />
+            <span>Failed</span>
           }
         </button>
       </div>
-      <div class="app-card__body">
-        <div class="rounded border bg-slate-100 p-3">
-          <p style="white-space: pre-wrap" class="mb-0">{{ result() }}</p>
-        </div>
+      <div class="card-body flex min-h-[240px] flex-col justify-center gap-4 py-4 sm:min-h-[260px]">
+        @if (isLoading()) {
+          <div class="flex flex-1 flex-col justify-center space-y-3" role="status">
+            <span class="sr-only">Generating email...</span>
+            <div class="h-4 w-24 animate-pulse rounded bg-surface-muted"></div>
+            <div class="h-4 w-full animate-pulse rounded bg-surface-muted/80 delay-75"></div>
+            <div class="h-4 w-5/6 animate-pulse rounded bg-surface-muted/60 delay-150"></div>
+            <div class="h-4 w-4/5 animate-pulse rounded bg-surface-muted/50 delay-200"></div>
+          </div>
+        } @else if (hasResult()) {
+          <div class="flex flex-1 flex-col">
+            <p class="m-0 leading-relaxed break-words whitespace-pre-wrap text-text-strong">
+              {{ result() }}
+            </p>
+          </div>
+        } @else {
+          <div
+            class="flex flex-1 flex-col items-center justify-center gap-4 text-center text-text-muted"
+          >
+            <app-lucide-icon
+              name="mail"
+              class="size-16 animate-pulse text-text-muted/50"
+              aria-hidden="true"
+            />
+            <p class="m-0 text-sm">Describe your email and watch it come to life</p>
+          </div>
+        }
       </div>
     </div>
-  }
-  @if (errorMessage()) {
-    <div class="app-alert">
-      {{ errorMessage() }}
-    </div>
-  }
-  <app-assistant-footer></app-assistant-footer>
-</div>
+    <app-assistant-footer />
+  </section>
+</article>

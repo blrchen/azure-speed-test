@@ -1,0 +1,41 @@
+.link-primary {
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration-line: none;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+  transition:
+    color 0.15s,
+    text-decoration-color 0.15s;
+}
+.link-primary:hover {
+  color: var(--color-link-hover);
+  text-decoration-line: underline;
+}
+
+.link-primary:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-brand) 30%, transparent);
+  border-radius: 0.375rem;
+}
+
+.row-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 0.75rem;
+  padding: 0.25rem;
+  color: var(--color-text-strong);
+  transition:
+    background-color 0.15s,
+    color 0.15s;
+}
+.row-link:hover {
+  background-color: color-mix(in srgb, var(--color-brand) 10%, transparent);
+}
+.row-link:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--color-surface-base),
+    0 0 0 4px color-mix(in srgb, var(--color-brand) 30%, transparent);
+}

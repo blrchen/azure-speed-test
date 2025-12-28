@@ -1,24 +1,30 @@
-<div class="page-container py-3">
-  <header class="page-intro">
-    <h1 class="page-title page-intro__title">ChatGPT Writing Assistant</h1>
-    <p class="page-intro__description">
-      Transform your writing with our advanced AI-powered writing assistant. Whether you're crafting
-      business documents, academic papers, or creative content, our intelligent platform helps you
-      write with clarity, precision, and confidence.
+<article class="page-shell section-stack mx-auto max-w-5xl">
+  <header class="page-header">
+    <h1 class="page-title">ChatGPT writing assistant</h1>
+    <p class="page-lead">
+      Transform your writing with our advanced AI-powered assistant. Whether you're crafting
+      business documents, academic papers, or creative content, get clarity, precision, and
+      confidence.
     </p>
   </header>
 
-  <div class="grid gap-6 md:grid-cols-2">
-    @for (card of textCards(); track card.title) {
-      <article class="app-card h-full shadow-sm">
-        <div class="app-card__body flex h-full flex-col">
-          <h2 class="content-heading">{{ card.title }}</h2>
-          <p class="app-card__text mb-4 flex-1 text-slate-600">{{ card.text }}</p>
-          <a [href]="card.link" class="app-button app-button--primary mt-auto self-start">
-            Get Started
-          </a>
-        </div>
-      </article>
-    }
-  </div>
-</div>
+  <section class="section-block" aria-labelledby="tools-heading">
+    <h2 id="tools-heading" class="section-title">Writing tools</h2>
+    <div class="grid gap-6 md:grid-cols-2">
+      @for (card of textCards(); track card.title; let idx = $index) {
+        <article class="card h-full shadow-sm" [attr.aria-labelledby]="'writing-card-title-' + idx">
+          <div class="card-body flex h-full flex-col">
+            <h3 class="card-title text-lg" [id]="'writing-card-title-' + idx">{{ card.title }}</h3>
+            <p class="card-text mb-4 flex-1">{{ card.text }}</p>
+            <a
+              [routerLink]="card.link"
+              class="btn btn-primary mt-auto self-start"
+              [attr.aria-label]="'Try ' + card.title"
+              >Try it</a
+            >
+          </div>
+        </article>
+      }
+    </div>
+  </section>
+</article>

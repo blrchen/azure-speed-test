@@ -1,126 +1,191 @@
-<div class="ipranges page-container py-3">
-  <header class="ipranges__hero">
-    <div class="page-intro ipranges__hero-copy">
-      <h1 class="page-title page-intro__title ipranges__title">Azure IP Ranges</h1>
-      <p class="page-intro__description ipranges__subtitle">
-        Explore Microsoft Azure service tag IP ranges to help with firewall rules, network planning,
-        and connectivity validation.
-      </p>
-    </div>
-    <aside class="ipranges__hero-share">
-      Current service tag:
-      <span class="ipranges__chip">{{ serviceTagId() }}</span>
-    </aside>
+<article class="page-shell section-stack mx-auto max-w-5xl">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a class="breadcrumb-link" routerLink="/">Home</a>
+    <span class="breadcrumb-separator">/</span>
+    @if (breadcrumbSource() === 'region') {
+      <a class="breadcrumb-link" routerLink="/Information/AzureIpRangesByRegion"
+        >Azure IP ranges by region</a
+      >
+    } @else {
+      <a class="breadcrumb-link" routerLink="/Information/AzureIpRangesByService"
+        >Azure IP ranges by service</a
+      >
+    }
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current" aria-current="page">{{ serviceTagId() }}</span>
+  </nav>
+
+  <header class="page-header">
+    <h1 class="page-title">Azure IP ranges - {{ serviceTagId() }}</h1>
+    <p class="page-lead">
+      {{ tagInsights().metaDescription }}
+    </p>
   </header>
 
-  @if (isLoading()) {
-    <section class="ipranges__loading">
-      <div class="app-spinner text-brand" role="status">
-        <span class="sr-only">Loading...</span>
+  <section class="section-block" aria-labelledby="ip-ranges-heading" [attr.aria-busy]="isLoading()">
+    <header class="flex flex-wrap items-center justify-between gap-3">
+      <h2 id="ip-ranges-heading" class="section-title">
+        IP address ranges for {{ tableData()?.serviceTagId ?? serviceTagId() }}
+      </h2>
+      <app-copy-button
+        [text]="copyText()"
+        icon="copy"
+        label="Copy all"
+        ariaLabel="Copy all IP address prefixes"
+        [resetOn]="serviceTagId()"
+      />
+    </header>
+    <div class="card">
+      <div class="card-body min-h-[160px]" aria-live="polite">
+        @if (isLoading()) {
+          <div class="animate-pulse space-y-3" role="status">
+            <span class="sr-only">Loading IP ranges...</span>
+            <div class="h-3 rounded-full bg-surface-muted"></div>
+            <div class="h-3 rounded-full bg-surface-muted"></div>
+            <div class="h-3 rounded-full bg-surface-muted"></div>
+            <div class="h-3 rounded-full bg-surface-muted"></div>
+            <div class="h-3 rounded-full bg-surface-muted"></div>
+          </div>
+        } @else {
+          @if (tableData()?.ipAddressPrefixes?.length) {
+            @if (ipv4Addresses().length > 0) {
+              <h3 class="mb-2 text-base font-semibold text-text-strong">
+                IPv4 addresses ({{ ipv4Addresses().length }})
+              </h3>
+              <div
+                class="ip-prefix-list mb-3 scrollbar-thin"
+                aria-label="IPv4 address prefixes"
+                tabindex="0"
+                role="region"
+              >
+                @for (prefix of visibleIpv4Addresses(); track prefix) {
+                  <span class="ip-prefix-list-item">{{ prefix }}</span>
+                }
+              </div>
+              @if (hasMoreIpv4()) {
+                <div class="mb-4 flex items-center gap-3">
+                  <button class="btn btn-outline btn--sm" type="button" (click)="showMoreIpv4()">
+                    Show more ({{ remainingIpv4Count() }} remaining)
+                  </button>
+                  <button class="btn btn-outline btn--sm" type="button" (click)="showAllIpv4()">
+                    Show all
+                  </button>
+                </div>
+              }
+            }
+            @if (ipv6Addresses().length > 0) {
+              <h3 class="mb-2 text-base font-semibold text-text-strong">
+                IPv6 addresses ({{ ipv6Addresses().length }})
+              </h3>
+              <div
+                class="ip-prefix-list mb-3 scrollbar-thin"
+                aria-label="IPv6 address prefixes"
+                tabindex="0"
+                role="region"
+              >
+                @for (prefix of visibleIpv6Addresses(); track prefix) {
+                  <span class="ip-prefix-list-item">{{ prefix }}</span>
+                }
+              </div>
+              @if (hasMoreIpv6()) {
+                <div class="mb-4 flex items-center gap-3">
+                  <button class="btn btn-outline btn--sm" type="button" (click)="showMoreIpv6()">
+                    Show more ({{ remainingIpv6Count() }} remaining)
+                  </button>
+                  <button class="btn btn-outline btn--sm" type="button" (click)="showAllIpv6()">
+                    Show all
+                  </button>
+                </div>
+              }
+            }
+          } @else {
+            <span class="text-sm text-text-muted">No prefixes returned for this service tag.</span>
+          }
+        }
       </div>
-    </section>
-  } @else {
-    <section class="ipranges__results app-card mb-4 shadow-sm">
-      <header class="app-card__header font-semibold">
-        Azure IP prefixes for
-        <code>{{ tableData()?.serviceTagId }}</code>
-      </header>
-      <div class="app-card__body">
-        <div class="app-table__container">
-          <table class="app-table--hover app-table mb-0 align-middle">
-            <thead>
-              <tr>
-                <th>Service tag ID</th>
-                <th>IP address prefixes</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="ipranges__service-tag font-semibold">
-                  {{ tableData()?.serviceTagId }}
-                </td>
-                <td class="ipranges__prefixes">
-                  @if (tableData()?.ipAddressPrefixes?.length) {
-                    @for (prefix of tableData()?.ipAddressPrefixes; track prefix) {
-                      <code>
-                        {{ prefix }}
-                      </code>
-                    }
-                  } @else {
-                    <span class="text-slate-500">No prefixes returned for this service tag.</span>
-                  }
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+    </div>
+  </section>
+
+  @if (!isLoading() && tableData()?.ipAddressPrefixes?.length) {
+    <section class="section-block" aria-labelledby="use-cases-heading">
+      <h2 id="use-cases-heading" class="section-title">Common use cases</h2>
+      <p class="mb-3 text-sm text-text-muted">
+        This service tag often supports Azure networking tasks such as:
+      </p>
+      <ul class="list-disc space-y-2 pl-5 text-sm text-text-body">
+        @for (useCase of commonUseCases; track useCase) {
+          <li>{{ useCase }}</li>
+        }
+      </ul>
     </section>
   }
 
-  <section class="ipranges__links">
-    <h2 class="content-heading">Explore more IP data</h2>
-    <div class="ipranges-links__buttons">
-      <a
-        class="app-button app-button--outline-primary app-button--sm"
-        href="/Information/AzureIpRangesByService"
-      >
+  <section class="section-block" aria-labelledby="explore-heading">
+    <h2 id="explore-heading" class="section-title">Explore more IP data</h2>
+    <div class="flex flex-wrap gap-3">
+      <a class="btn btn-outline btn--sm" routerLink="/Information/AzureIpRangesByService">
         IP ranges by service
       </a>
-      <a
-        class="app-button app-button--outline-primary app-button--sm"
-        href="/Information/AzureIpRangesByRegion"
-      >
+      <a class="btn btn-outline btn--sm" routerLink="/Information/AzureIpRangesByRegion">
         IP ranges by region
       </a>
     </div>
   </section>
 
-  <section class="regions__section mt-4">
-    <header class="regions__section-header">
-      <h2 class="content-heading">Additional resources</h2>
-      <p>Stay current with Azure service tag updates and automation tooling.</p>
-    </header>
-    <div class="regions-resources__grid">
-      <article class="resource-card">
-        <h3 class="resource-card__title">Azure IP ranges downloads</h3>
-        <p class="resource-card__body">
+  <section class="section-block" aria-labelledby="resources-heading">
+    <h2 id="resources-heading" class="section-title">Additional resources</h2>
+    <p class="mb-3 text-sm text-text-muted">
+      Stay current with Azure service tag updates and automation tooling.
+    </p>
+    <div class="resource-grid">
+      <article class="card card-resource">
+        <h3 class="card-title">Azure IP ranges downloads</h3>
+        <p class="card-description">
           Access weekly updates for all Azure clouds to keep network rules current.
         </p>
         <a
           href="https://www.microsoft.com/en-us/download/details.aspx?id=56519"
           target="_blank"
-          class="resource-card__link"
+          rel="noopener noreferrer"
+          class="card-cta"
+          aria-label="Learn more about Azure IP ranges downloads (opens in new tab)"
         >
-          Public cloud download
+          Learn more
+          <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
         </a>
       </article>
-      <article class="resource-card">
-        <h3 class="resource-card__title">Service tags overview</h3>
-        <p class="resource-card__body">
+      <article class="card card-resource">
+        <h3 class="card-title">Service tags overview</h3>
+        <p class="card-description">
           Learn how service tags simplify network security management in Azure.
         </p>
         <a
           href="https://learn.microsoft.com/azure/virtual-network/service-tags-overview"
           target="_blank"
-          class="resource-card__link"
+          rel="noopener noreferrer"
+          class="card-cta"
+          aria-label="Learn more about service tags overview (opens in new tab)"
         >
-          Read documentation
+          Learn more
+          <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
         </a>
       </article>
-      <article class="resource-card">
-        <h3 class="resource-card__title">Programmatic access</h3>
-        <p class="resource-card__body">
+      <article class="card card-resource">
+        <h3 class="card-title">Programmatic access</h3>
+        <p class="card-description">
           Use the Service Tag Discovery API to automate service tag updates in your tooling.
         </p>
         <a
           href="https://learn.microsoft.com/rest/api/virtualnetwork/servicetags/list"
           target="_blank"
-          class="resource-card__link"
+          rel="noopener noreferrer"
+          class="card-cta"
+          aria-label="Learn more about programmatic access (opens in new tab)"
         >
-          Service Tag API
+          Learn more
+          <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
         </a>
       </article>
     </div>
   </section>
-</div>
+</article>

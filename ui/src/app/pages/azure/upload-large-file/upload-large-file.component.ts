@@ -1,13 +1,16 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
-import { CommonModule } from '@angular/common'
+import { DecimalPipe } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { BlockBlobClient, BlockBlobParallelUploadOptions } from '@azure/storage-blob'
-import { firstValueFrom } from 'rxjs'
-import { RegionService, SeoService, UtilsService } from '../../../services'
+import { firstValueFrom, startWith } from 'rxjs'
+
 import { RegionModel } from '../../../models'
+import { RegionService, SeoService } from '../../../services'
 import { API_ENDPOINT } from '../../../shared/constants'
-import { HeroIconComponent } from '../../../shared/icons/hero-icons.imports'
+import { LucideIconComponent } from '../../../shared/icons/lucide-icons.component'
+import { generateTimestampedBlobName } from '../../../shared/utils'
 
 interface LargeFileUploadTestResult {
   id: string
@@ -16,7 +19,6 @@ interface LargeFileUploadTestResult {
   region: string
   concurrency: number
   blockSizeKB: number
-  uploadProgressPercentage: number
   uploadTimeSeconds: number
   uploadSpeedMbps: number
 }
@@ -29,10 +31,9 @@ interface UploadFormGroup {
 
 @Component({
   selector: 'app-upload-large-file',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, HeroIconComponent],
+  imports: [DecimalPipe, ReactiveFormsModule, LucideIconComponent],
   templateUrl: './upload-large-file.component.html',
-  styleUrls: ['./upload-large-file.component.css'],
+  styleUrl: './upload-large-file.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UploadLargeFileComponent implements OnInit {
@@ -42,11 +43,11 @@ export class UploadLargeFileComponent implements OnInit {
   readonly uploadProgressPercentage = signal(0)
   readonly selectedFile = signal<File | null>(null)
   readonly testResults = signal<LargeFileUploadTestResult[]>([])
+  readonly uploadError = signal<string | null>(null)
 
-  private regionService = inject(RegionService)
-  private utilsService = inject(UtilsService)
-  private seoService = inject(SeoService)
-  private http = inject(HttpClient)
+  private readonly regionService = inject(RegionService)
+  private readonly seoService = inject(SeoService)
+  private readonly http = inject(HttpClient)
 
   readonly form = new FormGroup<UploadFormGroup>({
     region: new FormControl('', {
@@ -63,41 +64,30 @@ export class UploadLargeFileComponent implements OnInit {
     })
   })
 
-  ngOnInit() {
-    this.initializeSeoProperties()
-    this.regions.set(this.regionService.getAllRegions())
-  }
+  private readonly formValue = toSignal(
+    this.form.valueChanges.pipe(startWith(this.form.getRawValue())),
+    { initialValue: this.form.getRawValue() }
+  )
 
-  private initializeSeoProperties(): void {
+  readonly selectedRegion = computed(() => this.formValue().region ?? '')
+  readonly selectedBlockSizeKB = computed(() => this.formValue().blockSizeKB ?? 4096)
+  readonly selectedConcurrency = computed(() => this.formValue().concurrency ?? 4)
+
+  ngOnInit() {
     this.seoService.setMetaTitle('Large File Upload Speed Test')
     this.seoService.setMetaDescription(
       'Test the upload speed of large files to Azure worldwide data centers.'
     )
     this.seoService.setCanonicalUrl('https://www.azurespeed.com/Azure/UploadLargeFile')
+    this.regions.set(this.regionService.getAllRegions())
   }
 
-  get regionControl(): FormControl<string> {
-    return this.form.controls.region
+  isBlockSizeSelected(size: number): boolean {
+    return this.form.controls.blockSizeKB.value === size
   }
 
-  get blockSizeControl(): FormControl<number> {
-    return this.form.controls.blockSizeKB
-  }
-
-  get concurrencyControl(): FormControl<number> {
-    return this.form.controls.concurrency
-  }
-
-  get selectedRegion(): string {
-    return this.regionControl.value
-  }
-
-  get selectedBlockSizeKB(): number {
-    return this.blockSizeControl.value
-  }
-
-  get selectedConcurrency(): number {
-    return this.concurrencyControl.value
+  isConcurrencySelected(concurrency: number): boolean {
+    return this.form.controls.concurrency.value === concurrency
   }
 
   onFileChange($event: Event) {
@@ -107,35 +97,37 @@ export class UploadLargeFileComponent implements OnInit {
 
   async onSubmit() {
     const file = this.selectedFile()
-    if (this.form.invalid || !file || !this.selectedRegion) {
+    const region = this.selectedRegion()
+    if (this.form.invalid || !file || !region) {
       this.form.markAllAsTouched()
       return
     }
-    await this.uploadBlob(file, this.selectedRegion)
+    await this.uploadBlob(file, region)
   }
 
   async uploadBlob(file: File, regionName: string) {
-    const id = this.utilsService.getRandomBlobName()
+    const id = generateTimestampedBlobName()
+    const blockSizeKB = this.selectedBlockSizeKB()
+    const concurrency = this.selectedConcurrency()
     const newTestResult: LargeFileUploadTestResult = {
       id,
       fileName: file.name,
       fileSize: file.size / 1024 / 1024,
-      region: this.selectedRegion,
-      concurrency: this.selectedConcurrency,
-      blockSizeKB: this.selectedBlockSizeKB,
-      uploadProgressPercentage: 0,
+      region: regionName,
+      concurrency,
+      blockSizeKB,
       uploadTimeSeconds: 0,
       uploadSpeedMbps: 0
     }
     this.testResults.update((results) => [...results, newTestResult])
     this.uploadProgressPercentage.set(0)
 
-    const sasUrl = await this.getSasUrl(regionName, this.utilsService.getRandomBlobName())
+    const sasUrl = await this.getSasUrl(regionName, generateTimestampedBlobName())
     const blockBlobClient = new BlockBlobClient(sasUrl)
     const uploadStartTime = Date.now()
     const options: BlockBlobParallelUploadOptions = {
-      blockSize: this.selectedBlockSizeKB * 1024,
-      concurrency: this.selectedConcurrency,
+      blockSize: blockSizeKB * 1024,
+      concurrency,
       maxSingleShotSize: 0,
       onProgress: ({ loadedBytes }) => {
         const elapsedSeconds = Math.max((Date.now() - uploadStartTime) / 1000, 0)
@@ -146,7 +138,6 @@ export class UploadLargeFileComponent implements OnInit {
         const uploadProgressPercentage = Math.min(Math.round((loadedBytes / file.size) * 100), 100)
         this.uploadProgressPercentage.set(uploadProgressPercentage)
         this.updateTestResult(id, {
-          uploadProgressPercentage,
           uploadTimeSeconds,
           uploadSpeedMbps
         })
@@ -161,26 +152,20 @@ export class UploadLargeFileComponent implements OnInit {
         elapsedSeconds > 0 ? Number((file.size / 1024 / 1024 / elapsedSeconds).toFixed(2)) : 0
       this.uploadProgressPercentage.set(100)
       this.updateTestResult(id, {
-        uploadProgressPercentage: 100,
         uploadTimeSeconds,
         uploadSpeedMbps
       })
-    } catch (error) {
-      console.error('Failed to upload data:', error)
-      throw error
+    } catch {
+      this.uploadError.set('Upload failed. Please try again.')
+      this.testResults.update((results) => results.filter((r) => r.id !== id))
     }
   }
 
   async getSasUrl(regionName: string, blobName: string, operation = 'upload') {
     const url = `${API_ENDPOINT}/api/sas`
     const params = { regionName, blobName, operation }
-    try {
-      const response = await firstValueFrom(this.http.get<{ url: string }>(url, { params }))
-      return response.url
-    } catch (error) {
-      console.error('Failed to get SAS URL:', error)
-      throw error
-    }
+    const response = await firstValueFrom(this.http.get<{ url: string }>(url, { params }))
+    return response.url
   }
 
   private updateTestResult(id: string, partial: Partial<LargeFileUploadTestResult>): void {

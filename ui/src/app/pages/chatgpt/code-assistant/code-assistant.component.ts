@@ -1,4 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
+import { RouterLink } from '@angular/router'
+
 import { SeoService } from '../../../services'
 
 interface Card {
@@ -9,8 +11,7 @@ interface Card {
 
 @Component({
   selector: 'app-code-assistant',
-  standalone: true,
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './code-assistant.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -36,10 +37,6 @@ export class CodeAssistantComponent implements OnInit {
   ])
 
   ngOnInit(): void {
-    this.initializeSeoProperties()
-  }
-
-  private initializeSeoProperties(): void {
     this.seoService.setMetaTitle('ChatGPT Coding Assistant')
     this.seoService.setMetaDescription(
       'Welcome to ChatGPT Coding Assistant, your AI tool for transforming coding. Perfect for developers and hobbyists to code with confidence.'

@@ -16,8 +16,7 @@ Visit the live demo at [Azure Speed Test](https://www.azurespeed.com).
 ### Prerequisites
 
 - .NET 8.0
-- For Windows: Visual Studio 2022 with ASP.NET and web development workload.
-- For Mac: Rider
+- Node.js 22
 - Azure Storage Account setup:
   - CORS must be enabled.
   - Create a public container (`access level = Blob`) named `public` and upload `latency-test.json`.
@@ -26,9 +25,9 @@ Visit the live demo at [Azure Speed Test](https://www.azurespeed.com).
 
 ### Backend Setup
 
-1. Run `CreateSettingsJson.ps1` to generate `settings.json`, which will replace `src/AzureSpeed.WebApp/Data/settings.json`.
-2. Open `AzureSpeed.sln` using Visual Studio 2022 or Rider.
-3. Launch the `AzureSpeed.WebApp` project.
+1. Update storage account name and keys in `api/AzureSpeed/Data/settings.json`.
+2. Open `api/AzureSpeed.sln` using Visual Studio.
+3. Launch the `AzureSpeed` project.
 
 ### Frontend Setup
 
@@ -40,8 +39,4 @@ For detailed instructions on setting up the frontend, please refer to the [READM
 - [ASP.NET Core](https://github.com/dotnet/aspnetcore)
 - [Azure IP Lookup](https://github.com/blrchen/azure-ip-lookup)
 - [Azure SDK for JavaScript](https://github.com/Azure/azure-sdk-for-js)
-- [Bootstrap](https://github.com/twbs/bootstrap)
-- [Azure Catalog](https://github.com/blrchen/azure-catalog)
-- [d3-shape](https://github.com/d3/d3-shape)
-- [Font Awesome](https://github.com/FortAwesome/Font-Awesome)
-- [ngx-charts](https://github.com/swimlane/ngx-charts)
+- [Tailwind CSS](https://github.com/tailwindlabs/tailwindcss)

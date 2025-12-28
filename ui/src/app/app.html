@@ -1,0 +1,181 @@
+<a
+  href="#main-content"
+  class="fixed -top-10 left-4 z-50 rounded-xl bg-primary px-3 py-2 text-sm font-semibold tracking-[0.01em] text-primary-foreground transition-[top] duration-200 focus-visible:top-4 focus-visible:ring-4 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface-base)] focus-visible:outline-none"
+>
+  Skip to main content
+</a>
+
+<!-- Modern full-width layout -->
+<div class="mx-auto flex min-h-svh w-full max-w-[calc(64rem+16rem)] bg-surface-base">
+  <!-- Desktop Sidebar -->
+  <aside
+    data-desktop-nav
+    class="sticky top-0 hidden h-svh w-64 shrink-0 flex-col border-r border-border-soft bg-sidebar lg:flex"
+    aria-label="Primary navigation"
+  >
+    <!-- Sidebar Header -->
+    <div class="flex h-14 items-center border-b border-border-soft px-4">
+      <a class="flex items-center gap-2 font-bold" routerLink="/">
+        <app-lucide-icon name="cloud" class="size-5 text-primary" aria-hidden="true" />
+        <span class="text-sm">Azure Speed Test</span>
+      </a>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <div
+      class="flex scrollbar-thin flex-1 flex-col overflow-y-auto px-3 py-4 scrollbar-gutter-stable"
+    >
+      <app-nav-groups [navGroups]="navGroups()" class="flex flex-col gap-6 text-sm" />
+    </div>
+  </aside>
+
+  <!-- Main content area -->
+  <div class="flex w-full flex-1 flex-col overflow-x-hidden">
+    <!-- Header -->
+    <header
+      class="sticky top-0 z-40 flex h-14 items-center gap-4 border-b border-border-soft bg-surface-base/95 px-4 lg:px-6"
+    >
+      <!-- Mobile menu button -->
+      <button
+        type="button"
+        class="icon-button lg:hidden"
+        aria-label="Toggle navigation"
+        aria-controls="mobile-nav"
+        [attr.aria-expanded]="mobileNavOpen() ? 'true' : 'false'"
+        (click)="toggleMobileNav()"
+      >
+        <app-lucide-icon name="menu" class="size-5" aria-hidden="true" />
+      </button>
+
+      <!-- Logo (mobile only - desktop shows in sidebar) -->
+      <a class="flex items-center gap-2 font-bold lg:hidden" routerLink="/">
+        <app-lucide-icon name="cloud" class="size-5 text-primary" aria-hidden="true" />
+        <span class="text-sm">Azure Speed Test</span>
+      </a>
+
+      <div class="flex-1"></div>
+
+      <!-- Right actions -->
+      <div class="flex items-center gap-1">
+        <app-theme-toggle />
+        <a
+          class="icon-button"
+          href="https://github.com/blrchen/azure-speed-test"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Azure Speed Test on GitHub"
+        >
+          <app-lucide-icon name="github" class="size-5" aria-hidden="true" />
+        </a>
+      </div>
+    </header>
+
+    <!-- Page content -->
+    <main
+      id="main-content"
+      class="flex flex-1 flex-col overflow-x-hidden"
+      tabindex="-1"
+      [attr.aria-busy]="showRouteLoader() ? 'true' : 'false'"
+    >
+      <router-outlet />
+
+      @if (showRouteLoader()) {
+        <article class="page-shell" aria-label="Loading page">
+          <div class="section-stack">
+            <header class="page-header">
+              <div class="skeleton-block h-10 w-56 rounded-lg"></div>
+              <div class="space-y-2">
+                <div class="skeleton-block h-4 w-11/12 rounded-full"></div>
+                <div class="skeleton-block h-4 w-2/3 rounded-full"></div>
+              </div>
+            </header>
+
+            <hr class="stable-divider border-border-soft" />
+
+            <div class="card space-y-4 p-6 shadow-sm">
+              <div class="flex flex-wrap items-center gap-3">
+                <div class="skeleton-block h-6 w-28 rounded-full"></div>
+                <div class="skeleton-block h-6 w-32 rounded-full"></div>
+                <div class="skeleton-block h-6 w-24 rounded-full"></div>
+              </div>
+              <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                <div class="skeleton-block h-12 rounded-xl"></div>
+                <div class="skeleton-block h-12 rounded-xl"></div>
+                <div class="skeleton-block h-12 rounded-xl"></div>
+                <div class="skeleton-block h-12 rounded-xl"></div>
+                <div class="skeleton-block h-12 rounded-xl"></div>
+                <div class="skeleton-block h-12 rounded-xl"></div>
+              </div>
+            </div>
+
+            <div class="card space-y-4 p-6 shadow-sm">
+              <div class="skeleton-block h-6 w-40 rounded-lg"></div>
+              <div class="skeleton-block h-48 rounded-xl"></div>
+              <div class="skeleton-block h-14 rounded-xl"></div>
+            </div>
+
+            <div class="card space-y-4 p-6 shadow-sm">
+              <div class="skeleton-block h-6 w-44 rounded-lg"></div>
+              <div class="grid gap-3 sm:grid-cols-2">
+                <div class="skeleton-block h-24 rounded-xl"></div>
+                <div class="skeleton-block h-24 rounded-xl"></div>
+              </div>
+              <div class="grid gap-3 sm:grid-cols-3">
+                <div class="skeleton-block h-12 rounded-xl"></div>
+                <div class="skeleton-block h-12 rounded-xl"></div>
+                <div class="skeleton-block h-12 rounded-xl"></div>
+              </div>
+            </div>
+          </div>
+        </article>
+      }
+    </main>
+
+    <!-- Footer -->
+    <app-footer />
+  </div>
+</div>
+
+<!-- Mobile Navigation Overlay -->
+@if (mobileNavOpen()) {
+  <div
+    class="fixed inset-0 z-40 bg-overlay/60 backdrop-blur-sm lg:hidden"
+    (click)="closeMobileNav()"
+    aria-hidden="true"
+  ></div>
+  <aside
+    id="mobile-nav"
+    class="fixed inset-y-0 left-0 z-50 w-72 max-w-full transform bg-surface-base shadow-card transition-transform duration-200 ease-out focus:outline-none lg:hidden"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Primary navigation"
+  >
+    <div class="flex scrollbar-thin h-full flex-col overflow-y-auto scrollbar-gutter-stable">
+      <div class="flex h-14 items-center justify-between border-b border-border-soft px-4">
+        <a
+          routerLink="/"
+          class="flex items-center gap-2 text-sm font-semibold"
+          (click)="closeMobileNav()"
+        >
+          <app-lucide-icon name="cloud" class="size-4 text-primary" aria-hidden="true" />
+          <span>Azure Speed Test</span>
+        </a>
+        <button
+          type="button"
+          class="icon-button"
+          aria-label="Close navigation"
+          (click)="closeMobileNav()"
+        >
+          <app-lucide-icon name="x" class="size-5" aria-hidden="true" />
+        </button>
+      </div>
+      <nav class="flex-1 px-3 py-4" aria-label="Primary navigation">
+        <app-nav-groups
+          [navGroups]="navGroups()"
+          [dismissOnNavigate]="true"
+          (navigate)="handleMobileNavigate()"
+        />
+      </nav>
+    </div>
+  </aside>
+}

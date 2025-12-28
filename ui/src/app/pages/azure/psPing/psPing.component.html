@@ -1,95 +1,187 @@
-<div class="psping page-container py-3">
-  <header class="page-intro psping__intro">
-    <h1 class="page-title page-intro__title">PsPing Network Latency Test</h1>
-    <p class="page-intro__description">
-      Although the web-based Azure speed test tool is helpful, it cannot measure latency with ICMP
-      ping or TCP ping due to browser limitations. To measure ICMP ping latency to Azure
-      datacenters, consider using PsPing from the PsTools suite. This command-line utility
-      accurately measures network performance and implements Ping functionality, TCP ping, as well
-      as latency and bandwidth measurement.
+<article class="page-shell section-stack mx-auto max-w-5xl">
+  <header class="page-header">
+    <h1 class="page-title">PsPing network latency test</h1>
+    <p class="page-lead">
+      The browser-based Azure speed test cannot measure ICMP ping or TCP ping due to platform
+      limits. Use PsPing from the PsTools suite to measure latency directly against Azure targets,
+      including ICMP ping, TCP ping, and bandwidth tests.
     </p>
   </header>
-  <h2 class="content-heading">Run PsPing latency test</h2>
-  <section class="app-card mb-4 shadow-sm">
-    <div class="app-card__body">
-      <p class="app-card__text">
-        To use the PsPing tool for a network latency test, follow these steps:
-      </p>
-      <ol class="psping-steps">
-        <li class="psping-step">
-          <span class="psping-step__badge">1</span>
-          <div class="psping-step__content">
-            <a
-              href="https://learn.microsoft.com/en-us/sysinternals/downloads/pstools"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Download PsTools
-            </a>
-          </div>
-        </li>
-        <li class="psping-step">
-          <span class="psping-step__badge">2</span>
-          <div class="psping-step__content">
-            Extract the entire package and open a command prompt.
-          </div>
-        </li>
-        <li class="psping-step">
-          <span class="psping-step__badge">3</span>
-          <div class="psping-step__content">
-            Enter this command:
-            <code>psping target:port</code>
-            (replace "target" with an IP address or DNS name of publicly accessible virtual
-            machines, storage, SQL databases, or other endpoints).
-          </div>
-        </li>
-        <li class="psping-step">
-          <span class="psping-step__badge">4</span>
-          <div class="psping-step__content">
-            Upon completion, you'll see output displaying latency results in milliseconds (as shown
-            below when using a storage endpoint and port 80 as target):
-            <figure class="psping-step__figure">
-              <img
-                class="psping-step__image"
-                ngSrc="assets/images/psping.png"
-                alt="PsPing output example"
-                width="677"
-                height="442"
-              />
-            </figure>
-          </div>
-        </li>
-      </ol>
+
+  <section class="section-block" aria-labelledby="run-psping-heading">
+    <h2 id="run-psping-heading" class="section-title">Run PsPing latency test</h2>
+    <p class="text-text-muted">
+      To use the PsPing tool for a network latency test, follow these steps:
+    </p>
+    <ol class="flex list-none flex-col gap-4 p-0" aria-label="4 steps to run PsPing">
+      <li class="flex flex-row items-start gap-3 max-md:flex-col">
+        <span class="step-number" aria-hidden="true">1</span>
+        <div class="flex-1 text-base leading-relaxed text-text-body">
+          <span class="sr-only">Step 1: </span>
+          <a
+            href="https://learn.microsoft.com/en-us/sysinternals/downloads/pstools"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="link-primary inline-flex items-center gap-1"
+            aria-label="Download PsTools (opens in new tab)"
+          >
+            Download PsTools
+            <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
+          </a>
+        </div>
+      </li>
+      <li class="flex flex-row items-start gap-3 max-md:flex-col">
+        <span class="step-number" aria-hidden="true">2</span>
+        <div class="flex-1 text-base leading-relaxed text-text-body">
+          <span class="sr-only">Step 2: </span>
+          Extract the entire package and open a command prompt.
+        </div>
+      </li>
+      <li class="flex flex-row items-start gap-3 max-md:flex-col">
+        <span class="step-number" aria-hidden="true">3</span>
+        <div class="flex-1 text-base leading-relaxed text-text-body">
+          <span class="sr-only">Step 3: </span>
+          Enter this command:
+          <kbd
+            class="mx-1 inline-block rounded-lg border border-border-soft bg-surface-muted px-2 py-0.5 font-mono text-sm font-semibold text-text-body"
+          >
+            psping target:port
+          </kbd>
+          (replace "target" with an IP address or DNS name of publicly accessible virtual machines,
+          storage, SQL databases, or other endpoints).
+        </div>
+      </li>
+      <li class="flex flex-row items-start gap-3 max-md:flex-col">
+        <span class="step-number" aria-hidden="true">4</span>
+        <div class="flex-1 space-y-3 text-base leading-relaxed text-text-body">
+          <span class="sr-only">Step 4: </span>
+          Upon completion, you'll see output displaying latency results in milliseconds (as shown
+          below when using a storage endpoint and port 80 as target):
+          <figure
+            class="relative mt-3 w-full overflow-hidden rounded-2xl border border-border-soft shadow-xl"
+            style="aspect-ratio: 560/292"
+          >
+            <img
+              class="absolute inset-0 h-full w-full object-cover"
+              ngSrc="assets/images/psping.webp"
+              alt="PsPing command output showing TCP connect statistics to Azure storage endpoint, including minimum, maximum, and average latency in milliseconds"
+              fill
+              priority
+              sizes="(min-width: 1024px) 45vw, (min-width: 640px) 70vw, 95vw"
+            />
+            <figcaption class="sr-only">
+              PsPing output showing latency test results with connection statistics
+            </figcaption>
+          </figure>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section class="section-block" aria-labelledby="comparison-heading">
+    <h2 id="comparison-heading" class="section-title">Browser test vs PsPing</h2>
+    <p class="text-text-muted">
+      Both tools measure latency, but at different layers of the network stack. Choose based on what
+      you need to measure.
+    </p>
+    <div class="table-shell">
+      <table class="table-base">
+        <thead class="table-head">
+          <tr>
+            <th class="px-4 py-3">Aspect</th>
+            <th class="px-4 py-3">Browser test</th>
+            <th class="px-4 py-3">PsPing</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border-soft">
+          <tr class="table-row-hover">
+            <td class="px-4 py-3 font-semibold text-text-strong">Protocol</td>
+            <td class="px-4 py-3 text-text-body">HTTPS requests to Azure Blob Storage</td>
+            <td class="px-4 py-3 text-text-body">TCP connect or ICMP echo</td>
+          </tr>
+          <tr class="table-row-hover">
+            <td class="px-4 py-3 font-semibold text-text-strong">What it measures</td>
+            <td class="px-4 py-3 text-text-body">
+              Real-world application latency including DNS, TLS handshake, and HTTP processing
+            </td>
+            <td class="px-4 py-3 text-text-body">
+              Raw network round-trip time without application overhead
+            </td>
+          </tr>
+          <tr class="table-row-hover">
+            <td class="px-4 py-3 font-semibold text-text-strong">Use case</td>
+            <td class="px-4 py-3 text-text-body">
+              Simulates actual user experience for web apps, APIs, and cloud services
+            </td>
+            <td class="px-4 py-3 text-text-body">
+              Baseline network diagnostics and infrastructure-level validation
+            </td>
+          </tr>
+          <tr class="table-row-hover">
+            <td class="px-4 py-3 font-semibold text-text-strong">Requirements</td>
+            <td class="px-4 py-3 text-text-body">None (runs in browser)</td>
+            <td class="px-4 py-3 text-text-body">PsTools download, command line</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </section>
 
-  <section class="app-card shadow-sm">
-    <div class="app-card__body">
-      <h2 class="content-heading">Learn more</h2>
-      <ul class="psping-resources">
-        <li class="psping-resources__item">
-          For a detailed understanding of each PsPing parameter, visit the webpage where you
-          downloaded the tool.
-        </li>
-        <li class="psping-resources__item">
-          As Azure blocks external ICMP protocol, the general ping.exe using ICMP won't function.
+  <section class="section-block" aria-labelledby="faq-heading">
+    <h2 id="faq-heading" class="section-title">Frequently asked questions</h2>
+    <div class="faq-list">
+      <details class="faq-item group">
+        <summary class="faq-summary">
+          <span class="faq-question">Where can I learn more about PsPing parameters?</span>
+          <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
+        </summary>
+        <div class="faq-body">
+          Visit the
+          <a
+            href="https://learn.microsoft.com/en-us/sysinternals/downloads/pstools"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="link-primary inline-flex items-center gap-1"
+          >
+            Microsoft Sysinternals PsTools page
+            <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
+          </a>
+          for detailed documentation on each PsPing parameter.
+        </div>
+      </details>
+      <details class="faq-item group">
+        <summary class="faq-summary">
+          <span class="faq-question">Why doesn't regular ping work with Azure?</span>
+          <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
+        </summary>
+        <div class="faq-body">
+          Azure blocks external ICMP protocol, so the general ping.exe using ICMP won't function.
           However, PsPing can directly test connectivity to an unblocked specific TCP port.
-        </li>
-        <li class="psping-resources__item">
+        </div>
+      </details>
+      <details class="faq-item group">
+        <summary class="faq-summary">
+          <span class="faq-question">How do I test latency between Azure virtual machines?</span>
+          <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
+        </summary>
+        <div class="faq-body">
           To test latency between virtual machines in the same VNET or different VNETs across
-          various regions, refer to
-          <a href="/Azure/RegionToRegionLatency" target="_blank">Region to Region Latency</a>
+          various regions, see
+          <a routerLink="/Azure/RegionToRegionLatency" class="link-primary">
+            Region to Region Latency
+          </a>
           and
           <a
             href="https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-test-latency"
             target="_blank"
             rel="noopener noreferrer"
+            class="link-primary inline-flex items-center gap-1"
           >
             Test VM network latency
-          </a>
-          .
-        </li>
-      </ul>
+            <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" /> </a
+          >.
+        </div>
+      </details>
     </div>
   </section>
-</div>
+</article>

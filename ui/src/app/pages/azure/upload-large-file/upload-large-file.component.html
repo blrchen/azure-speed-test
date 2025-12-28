@@ -1,46 +1,55 @@
-<div class="large-upload page-container py-3">
-  <header class="page-intro">
-    <h1 class="page-title page-intro__title">Large File Upload Speed Test</h1>
-    <p class="page-intro__description">
+<article class="page-shell section-stack mx-auto max-w-5xl">
+  <header class="page-header">
+    <h1 class="page-title">Large file upload speed test</h1>
+    <p class="page-lead">
       Evaluate Azure Blob Storage upload performance by pushing your own large file to different
       regions and tracking throughput in real time.
     </p>
   </header>
 
-  <div class="large-upload__card mb-3 shadow-sm">
-    <div class="large-upload__card-body">
-      <div class="app-alert large-upload-instructions mb-3">
-        <div class="large-upload-instructions__content">
-          <span class="large-upload-instructions__label">Testing steps</span>
-          <div class="large-upload-instructions__steps">
-            <span class="large-upload-instructions__step">
-              <span class="large-upload-instructions__badge">1</span>
-              Choose the Azure storage region to target.
-            </span>
-            <span class="large-upload-instructions__step">
-              <span class="large-upload-instructions__badge">2</span>
-              Pick a large test file and tune block size + concurrency.
-            </span>
-            <span class="large-upload-instructions__step">
-              <span class="large-upload-instructions__badge">3</span>
-              Start the upload and watch progress, timing, and throughput.
-            </span>
-          </div>
-          <div class="large-upload-instructions__note">
-            Tip: Larger block sizes and higher concurrency may improve performance, but consume more
-            bandwidth and memory.
+  <section class="section-block" aria-labelledby="upload-test-heading">
+    <h2 id="upload-test-heading" class="sr-only">Large file upload test</h2>
+    <div>
+      <div class="mb-4 rounded-xl bg-gradient-to-r from-primary/5 via-transparent to-primary/5 p-4">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
+            <span class="text-xs font-bold tracking-widest text-primary uppercase">Test Steps</span>
+            <div class="flex flex-wrap items-center gap-4 text-sm">
+              <span class="flex items-center gap-2.5">
+                <span class="step-number" aria-hidden="true">1</span>
+                <span class="text-text-body">Select region</span>
+              </span>
+              <span class="hidden text-border-contrast sm:inline">|</span>
+              <span class="flex items-center gap-2.5">
+                <span class="step-number" aria-hidden="true">2</span>
+                <span class="text-text-body">Choose file & settings</span>
+              </span>
+              <span class="hidden text-border-contrast sm:inline">|</span>
+              <span class="flex items-center gap-2.5">
+                <span class="step-number" aria-hidden="true">3</span>
+                <span class="text-text-body">View results</span>
+              </span>
+            </div>
           </div>
         </div>
       </div>
 
+      @if (uploadError()) {
+        <div class="alert alert--error" role="alert">
+          <app-lucide-icon name="alert-circle" class="h-4 w-4" aria-hidden="true" />
+          <span>{{ uploadError() }}</span>
+          <button class="btn btn-outline btn--sm ml-auto" (click)="uploadError.set(null)">
+            Dismiss
+          </button>
+        </div>
+      }
+
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <div class="grid gap-6 md:grid-cols-12">
           <div class="col-span-12 space-y-2 lg:col-span-6">
-            <label for="regionSelect" class="block text-sm font-semibold text-slate-800">
-              Target region
-            </label>
+            <label for="regionSelect" class="form-label"> Target region </label>
             <select
-              class="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm transition focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30"
+              class="form-select"
               id="regionSelect"
               name="regionSelect"
               formControlName="region"
@@ -54,83 +63,120 @@
             </select>
           </div>
           <div class="col-span-12 space-y-2 lg:col-span-6">
-            <label for="fileInput" class="block text-sm font-semibold text-slate-800">
-              Test file
-            </label>
-            <input
-              type="file"
-              class="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm transition focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30"
-              id="fileInput"
-              (change)="onFileChange($event)"
-              required
-            />
-            <div class="text-sm text-emerald-600">
-              Recommended: Use files larger than 100 MB for realistic results.
+            <span class="form-label">Test file</span>
+            <div class="relative">
+              <input type="file" id="fileInput" class="sr-only" (change)="onFileChange($event)" />
+              @if (selectedFile(); as file) {
+                <label
+                  for="fileInput"
+                  class="flex cursor-pointer flex-col items-center gap-3 rounded-xl border-2 border-dashed border-success-dark bg-success/10 p-6 transition-colors hover:border-primary hover:bg-primary/5"
+                >
+                  <app-lucide-icon
+                    name="file-check"
+                    class="h-8 w-8 text-success"
+                    aria-hidden="true"
+                  />
+                  <div class="text-center">
+                    <p class="font-semibold text-text-strong">{{ file.name }}</p>
+                    <p class="text-sm text-text-muted">
+                      {{ file.size / 1024 / 1024 | number: '1.1-1' }} MB
+                    </p>
+                  </div>
+                </label>
+              } @else {
+                <label
+                  for="fileInput"
+                  class="flex cursor-pointer flex-col items-center gap-3 rounded-xl border-2 border-dashed border-border-contrast bg-surface-muted p-6 transition-colors hover:border-primary hover:bg-primary/5"
+                >
+                  <app-lucide-icon
+                    name="upload-cloud"
+                    class="h-8 w-8 text-text-muted"
+                    aria-hidden="true"
+                  />
+                  <div class="text-center">
+                    <p class="font-semibold text-text-strong">Click to select a file</p>
+                    <p class="text-sm text-text-muted">
+                      Recommended: 100 MB+ for realistic results
+                    </p>
+                  </div>
+                </label>
+              }
             </div>
           </div>
         </div>
 
         <div class="mt-6 grid gap-6 md:grid-cols-12">
-          <div class="col-span-12 space-y-2 lg:col-span-6">
-            <label for="blockSizeGroup" class="block text-sm font-semibold text-slate-800">
-              Block size
-            </label>
-            <div class="text-sm text-slate-500">4 MB+ typically works best for large files.</div>
-            <div id="blockSizeGroup" class="large-upload-options">
-              @for (b of blockSizeKBOptions; track $index) {
-                <label class="large-upload-option">
+          <fieldset class="col-span-12 space-y-2 lg:col-span-6">
+            <legend class="block text-sm font-semibold text-text-body">Block size</legend>
+            <p class="text-sm text-text-muted">4 MB+ typically works best for large files.</p>
+            <div class="flex flex-wrap gap-2" role="radiogroup" aria-label="Block size options">
+              @for (b of blockSizeKBOptions; track b) {
+                <label
+                  class="chip cursor-pointer"
+                  [class.chip-active]="isBlockSizeSelected(b)"
+                  [class.chip-inactive]="!isBlockSizeSelected(b)"
+                >
                   <input
                     type="radio"
                     id="blockSize{{ b }}"
                     name="blockSizeKB"
                     [value]="b"
                     formControlName="blockSizeKB"
+                    class="sr-only"
                   />
                   <span>{{ b }} KB</span>
                 </label>
               }
             </div>
-          </div>
+          </fieldset>
 
-          <div class="col-span-12 space-y-2 lg:col-span-6">
-            <label for="concurrencyGroup" class="block text-sm font-semibold text-slate-800">
-              Concurrency
-            </label>
-            <div class="text-sm text-slate-500">
+          <fieldset class="col-span-12 space-y-2 lg:col-span-6">
+            <legend class="block text-sm font-semibold text-text-body">Concurrency</legend>
+            <p class="text-sm text-text-muted">
               Higher values increase parallel uploads but may be limited by bandwidth.
-            </div>
-            <div id="concurrencyGroup" class="large-upload-options">
-              @for (c of concurrencyOptions; track $index) {
-                <label class="large-upload-option">
+            </p>
+            <div class="flex flex-wrap gap-2" role="radiogroup" aria-label="Concurrency options">
+              @for (c of concurrencyOptions; track c) {
+                <label
+                  class="chip cursor-pointer"
+                  [class.chip-active]="isConcurrencySelected(c)"
+                  [class.chip-inactive]="!isConcurrencySelected(c)"
+                >
                   <input
                     type="radio"
                     id="concurrency{{ c }}"
                     name="concurrency"
                     [value]="c"
                     formControlName="concurrency"
+                    class="sr-only"
                   />
                   <span>{{ c }}</span>
                 </label>
               }
             </div>
-          </div>
+          </fieldset>
         </div>
 
         <div class="mt-4">
           <button
-            class="app-button app-button--primary app-button--lg"
+            class="btn btn-primary btn--lg group"
             type="submit"
-            [disabled]="!selectedFile() || !selectedRegion"
+            [disabled]="!selectedFile() || !selectedRegion()"
             [attr.aria-describedby]="
-              !selectedFile() || !selectedRegion ? 'largeUploadCtaHint' : null
+              !selectedFile() || !selectedRegion() ? 'largeUploadCtaHint' : null
             "
           >
-            Start test
+            <app-lucide-icon
+              name="upload"
+              class="h-4 w-4 transition-transform group-hover:-translate-y-0.5"
+              aria-hidden="true"
+            />
+            Start Upload Test
           </button>
-          @if (!selectedFile() || !selectedRegion) {
+          @if (!selectedFile() || !selectedRegion()) {
             <p
               id="largeUploadCtaHint"
-              class="mt-2 text-sm text-slate-600"
+              class="mt-2 text-sm text-text-muted"
               role="status"
               aria-live="polite"
             >
@@ -140,70 +186,93 @@
         </div>
       </form>
     </div>
-  </div>
 
-  @if (uploadProgressPercentage() > 0 && uploadProgressPercentage() < 100) {
-    <div class="large-upload-progress app-card mb-4 shadow-sm">
-      <div class="app-card__body">
-        <div class="flex items-center justify-between text-sm font-semibold text-slate-700">
-          <strong>Current upload progress</strong>
-          <span>{{ uploadProgressPercentage() }}%</span>
-        </div>
-        <div class="mt-3 h-3 w-full overflow-hidden rounded-full bg-slate-200">
+    @if (uploadProgressPercentage() > 0) {
+      <div class="card mb-4" [class.border-success]="uploadProgressPercentage() === 100">
+        <div class="card-body">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              @if (uploadProgressPercentage() === 100) {
+                <div class="flex h-8 w-8 items-center justify-center rounded-full bg-success/10">
+                  <app-lucide-icon name="check" class="h-4 w-4 text-success" aria-hidden="true" />
+                </div>
+                <span class="font-semibold text-success">Upload complete</span>
+              } @else {
+                <span class="spinner-sm"></span>
+                <span class="font-semibold">Uploading...</span>
+              }
+            </div>
+            <span class="font-mono text-lg font-bold">{{ uploadProgressPercentage() }}%</span>
+          </div>
           <div
-            class="h-full rounded-full bg-brand transition-[width] duration-300 ease-out"
-            [style.width]="uploadProgressPercentage() + '%'"
+            class="mt-3 h-3 w-full overflow-hidden rounded-full bg-border-soft"
+            role="progressbar"
             [attr.aria-valuenow]="uploadProgressPercentage()"
             aria-valuemin="0"
             aria-valuemax="100"
-          ></div>
+          >
+            <div
+              class="h-full rounded-full transition-[width] duration-300"
+              [class.bg-brand]="uploadProgressPercentage() < 100"
+              [class.bg-success]="uploadProgressPercentage() === 100"
+              [class.animate-pulse]="uploadProgressPercentage() < 100"
+              [style.width.%]="uploadProgressPercentage()"
+            ></div>
+          </div>
         </div>
       </div>
-    </div>
-  }
+    }
+  </section>
 
   @if (testResults().length > 0) {
-    <section class="large-upload-results">
-      <header class="large-upload-results__header">
-        <h2 class="content-heading">Test results</h2>
-        <div class="large-upload-results__legend">
-          <span>Upload time · total duration</span>
-          <span>Upload speed · average MB/s</span>
+    <section class="section-block" aria-labelledby="lfu-results-heading">
+      <header class="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <h2 id="lfu-results-heading" class="section-title">Test results</h2>
+        <div class="flex flex-wrap gap-4 text-xs text-text-muted">
+          <span>
+            <span class="font-semibold text-text-body">Upload time</span>
+            – total duration
+          </span>
+          <span>
+            <span class="font-semibold text-text-body">Upload speed</span>
+            – average MB/s
+          </span>
         </div>
       </header>
 
-      <div class="app-table__container">
-        <table
-          class="app-table app-table--hover large-upload-results__table align-middle shadow-sm"
-        >
-          <thead>
+      <!-- Desktop table -->
+      <div class="table-shell hidden md:block">
+        <table class="table-base">
+          <thead class="table-head">
             <tr>
-              <th>File</th>
-              <th>Region</th>
-              <th>Block size</th>
-              <th>Concurrency</th>
-              <th>Size (MB)</th>
-              <th>Upload time</th>
-              <th>Upload speed</th>
+              <th class="px-4 py-3">File</th>
+              <th class="px-4 py-3">Region</th>
+              <th class="px-4 py-3 text-right">Block size</th>
+              <th class="px-4 py-3 text-right">Concurrency</th>
+              <th class="px-4 py-3 text-right">Size (MB)</th>
+              <th class="px-4 py-3 text-right">Upload time</th>
+              <th class="px-4 py-3 text-right">Upload speed</th>
             </tr>
           </thead>
-          <tbody>
-            @for (result of testResults(); track result.id) {
-              <tr>
-                <td>
-                  <span class="large-upload-results__file">{{ result.fileName }}</span>
+          <tbody class="divide-y divide-border-soft">
+            @for (result of testResults(); track result.id; let idx = $index) {
+              <tr class="table-row-hover animate-fade-slide-in">
+                <td class="px-4 py-3">
+                  <span class="font-semibold text-text-strong">{{ result.fileName }}</span>
                 </td>
-                <td>{{ result.region }}</td>
-                <td class="text-center">{{ result.blockSizeKB }} KB</td>
-                <td class="text-center">{{ result.concurrency }}</td>
-                <td>{{ result.fileSize | number: '1.1-1' }}</td>
-                <td>
-                  <span class="large-upload-results__badge large-upload-results__badge--time">
-                    {{ result.uploadTimeSeconds }} s
-                  </span>
+                <td class="px-4 py-3">{{ result.region }}</td>
+                <td class="px-4 py-3 text-right tabular-nums">{{ result.blockSizeKB }} KB</td>
+                <td class="px-4 py-3 text-right tabular-nums">{{ result.concurrency }}</td>
+                <td class="px-4 py-3 text-right tabular-nums">
+                  {{ result.fileSize | number: '1.1-1' }}
                 </td>
-                <td>
-                  <span class="large-upload-results__badge large-upload-results__badge--speed">
+                <td class="px-4 py-3 text-right">
+                  <span class="badge badge-brand tabular-nums"
+                    >{{ result.uploadTimeSeconds }} s</span
+                  >
+                </td>
+                <td class="px-4 py-3 text-right">
+                  <span class="badge badge-success tabular-nums">
                     {{ result.uploadSpeedMbps | number: '1.2-2' }} MB/s
                   </span>
                 </td>
@@ -212,32 +281,71 @@
           </tbody>
         </table>
       </div>
+
+      <!-- Mobile card layout -->
+      <div class="space-y-3 md:hidden">
+        @for (result of testResults(); track result.id; let idx = $index) {
+          <article class="card animate-fade-slide-in">
+            <div class="card-body space-y-3">
+              <div class="flex items-start justify-between gap-2">
+                <div>
+                  <p class="font-semibold text-text-strong">{{ result.fileName }}</p>
+                  <p class="text-sm text-text-muted">{{ result.region }}</p>
+                </div>
+                <span class="badge badge-success">
+                  {{ result.uploadSpeedMbps | number: '1.2-2' }} MB/s
+                </span>
+              </div>
+              <div class="grid grid-cols-2 gap-2 text-sm">
+                <div>
+                  <span class="text-text-muted">Size:</span>
+                  <span class="ml-1 font-medium">{{ result.fileSize | number: '1.1-1' }} MB</span>
+                </div>
+                <div>
+                  <span class="text-text-muted">Time:</span>
+                  <span class="ml-1 font-medium">{{ result.uploadTimeSeconds }} s</span>
+                </div>
+                <div>
+                  <span class="text-text-muted">Block:</span>
+                  <span class="ml-1 font-medium">{{ result.blockSizeKB }} KB</span>
+                </div>
+                <div>
+                  <span class="text-text-muted">Concurrency:</span>
+                  <span class="ml-1 font-medium">{{ result.concurrency }}</span>
+                </div>
+              </div>
+            </div>
+          </article>
+        }
+      </div>
     </section>
   }
 
-  <section class="regions__section mt-12">
-    <header class="regions__section-header">
-      <h2 class="content-heading">Frequently asked questions</h2>
-    </header>
-    <div class="mt-6 space-y-4">
-      <details
-        class="group rounded-2xl border border-slate-200 bg-white/95 shadow-sm transition-colors duration-200 ease-out open:border-brand/40 open:shadow-brand-sm"
-      >
-        <summary
-          class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left text-base font-semibold text-slate-900 outline-none transition-colors hover:text-brand/90 focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white [&::-webkit-details-marker]:hidden"
-        >
-          <span class="flex-1 text-base font-semibold text-slate-900">
-            How does Large File Upload Speed Test tool work?
-          </span>
-          <app-hero-icon
-            name="heroChevronDown"
-            class="h-4 w-4 text-slate-400 transition-transform duration-200 ease-in-out group-open:rotate-180 group-open:text-brand"
-            aria-hidden="true"
-          />
+  <section class="section-block" aria-labelledby="lfu-faq-heading">
+    <h2 id="lfu-faq-heading" class="section-title mb-4">Frequently asked questions</h2>
+    <div class="faq-list">
+      <details class="faq-item group">
+        <summary class="faq-summary">
+          <span class="faq-question">When should I use this tool?</span>
+          <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
         </summary>
-        <div
-          class="space-y-3 border-t border-slate-100 px-6 py-5 text-sm leading-relaxed text-slate-600 [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:text-slate-800 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
-        >
+        <div class="faq-body">
+          <p>This tool is useful when you need to:</p>
+          <ul>
+            <li>Diagnose slow Azure Data Factory copy activity performance</li>
+            <li>Test upload bandwidth from on-premises to Azure before migration</li>
+            <li>Verify network throughput for Self-hosted Integration Runtime</li>
+            <li>Compare upload speeds across different Azure regions</li>
+            <li>Benchmark your network connection for large data transfers</li>
+          </ul>
+        </div>
+      </details>
+      <details class="faq-item group">
+        <summary class="faq-summary">
+          <span class="faq-question">How does Large File Upload Speed Test tool work?</span>
+          <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
+        </summary>
+        <div class="faq-body">
           <p>The performance test tool:</p>
           <ul>
             <li>Uploads your test file to temporary Azure Blob storage in your selected region</li>
@@ -248,24 +356,12 @@
           <p>Results can vary based on network conditions, file size, and selected parameters.</p>
         </div>
       </details>
-      <details
-        class="group rounded-2xl border border-slate-200 bg-white/95 shadow-sm transition-colors duration-200 ease-out open:border-brand/40 open:shadow-brand-sm"
-      >
-        <summary
-          class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left text-base font-semibold text-slate-900 outline-none transition-colors hover:text-brand/90 focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white [&::-webkit-details-marker]:hidden"
-        >
-          <span class="flex-1 text-base font-semibold text-slate-900">
-            How should I choose block size and concurrency?
-          </span>
-          <app-hero-icon
-            name="heroChevronDown"
-            class="h-4 w-4 text-slate-400 transition-transform duration-200 ease-in-out group-open:rotate-180 group-open:text-brand"
-            aria-hidden="true"
-          />
+      <details class="faq-item group">
+        <summary class="faq-summary">
+          <span class="faq-question">How should I choose block size and concurrency?</span>
+          <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
         </summary>
-        <div
-          class="space-y-3 border-t border-slate-100 px-6 py-5 text-sm leading-relaxed text-slate-600 [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:text-slate-800 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
-        >
+        <div class="faq-body">
           <p>
             <strong>Block Size:</strong>
             Larger blocks (4 MB+) typically work better for files over 100 MB but require more
@@ -278,24 +374,12 @@
           <p>Start with default values and adjust based on your results.</p>
         </div>
       </details>
-      <details
-        class="group rounded-2xl border border-slate-200 bg-white/95 shadow-sm transition-colors duration-200 ease-out open:border-brand/40 open:shadow-brand-sm"
-      >
-        <summary
-          class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left text-base font-semibold text-slate-900 outline-none transition-colors hover:text-brand/90 focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white [&::-webkit-details-marker]:hidden"
-        >
-          <span class="flex-1 text-base font-semibold text-slate-900">
-            Why do test results vary between runs?
-          </span>
-          <app-hero-icon
-            name="heroChevronDown"
-            class="h-4 w-4 text-slate-400 transition-transform duration-200 ease-in-out group-open:rotate-180 group-open:text-brand"
-            aria-hidden="true"
-          />
+      <details class="faq-item group">
+        <summary class="faq-summary">
+          <span class="faq-question">Why do test results vary between runs?</span>
+          <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
         </summary>
-        <div
-          class="space-y-3 border-t border-slate-100 px-6 py-5 text-sm leading-relaxed text-slate-600 [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:text-slate-800 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
-        >
+        <div class="faq-body">
           <p>Performance variations are normal and can be attributed to multiple factors:</p>
           <ul>
             <li>Network path changes and internet traffic conditions</li>
@@ -312,4 +396,4 @@
       </details>
     </div>
   </section>
-</div>
+</article>

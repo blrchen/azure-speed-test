@@ -1,33 +1,33 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  DestroyRef,
-  inject,
-  OnInit,
-  signal
-} from '@angular/core'
-import { CommonModule } from '@angular/common'
-import { FormControl, ReactiveFormsModule } from '@angular/forms'
-import { RouterModule } from '@angular/router'
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
+import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms'
+import { RouterLink } from '@angular/router'
+
 import azureGlobalCloudRegionsJson from '../../../../assets/data/regions.json'
 import { Region } from '../../../models'
 import { SeoService } from '../../../services'
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { HeroIconComponent } from '../../../shared/icons/hero-icons.imports'
+import { LucideIconComponent } from '../../../shared/icons/lucide-icons.component'
+import { buildRegionDetailRouterLink } from '../../../shared/utils'
+
+const ALL_REGIONS = azureGlobalCloudRegionsJson as Region[]
+const UNRESTRICTED_REGIONS = ALL_REGIONS.filter((region) => !region.restricted)
+const RESTRICTED_REGIONS = ALL_REGIONS.filter((region) => region.restricted)
+const REGION_GROUPS = [...new Set(ALL_REGIONS.map((region) => region.regionGroup))].sort()
 
 @Component({
   selector: 'app-azure-regions',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, HeroIconComponent],
+  imports: [ReactiveFormsModule, RouterLink, LucideIconComponent],
   templateUrl: './azure-regions.component.html',
-  styleUrls: ['./azure-regions.component.css'],
+  styleUrl: './azure-regions.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AzureRegionsComponent implements OnInit {
-  readonly azureGlobalCloudRegions = signal<Region[]>([])
-  readonly accessRestrictedRegions = signal<Region[]>([])
-  readonly availableRegionGroups = signal<string[]>([])
+  private readonly seoService = inject(SeoService)
+  private readonly formBuilder = inject(NonNullableFormBuilder)
+
+  readonly azureGlobalCloudRegions = UNRESTRICTED_REGIONS
+  readonly accessRestrictedRegions = RESTRICTED_REGIONS
+  readonly availableRegionGroups = REGION_GROUPS
   readonly upcomingRegions = [
     {
       country: 'Saudi Arabia',
@@ -48,29 +48,35 @@ export class AzureRegionsComponent implements OnInit {
       country: 'Denmark',
       name: 'Denmark East',
       link: 'https://aka.ms/DenmarkIntent'
-    },
-    {
-      country: 'Belgium',
-      name: 'Belgium Central',
-      link: 'https://aka.ms/belgiumintent'
     }
   ] as const
-  private readonly searchTerm = signal('')
-  private readonly selectedGeography = signal('')
+
+  readonly filtersForm = this.formBuilder.group({
+    search: [''],
+    geography: ['']
+  })
+
+  private readonly filtersValue = toSignal(this.filtersForm.valueChanges, {
+    initialValue: this.filtersForm.getRawValue()
+  })
+
+  // Computed statistics
+  readonly totalRegions = computed(() => ALL_REGIONS.length)
+  readonly totalAZs = computed(() =>
+    ALL_REGIONS.reduce((sum, r) => sum + (r.availabilityZoneCount || 0), 0)
+  )
+  readonly uniqueGeographies = computed(() => new Set(ALL_REGIONS.map((r) => r.geography)).size)
+
   readonly filteredAzureGlobalCloudRegions = computed(() =>
-    this.filterRegions(this.azureGlobalCloudRegions(), this.searchTerm(), this.selectedGeography())
+    this.filterRegions(this.azureGlobalCloudRegions)
   )
   readonly filteredAccessRestrictedRegions = computed(() =>
-    this.filterRegions(this.accessRestrictedRegions(), this.searchTerm(), this.selectedGeography())
+    this.filterRegions(this.accessRestrictedRegions)
   )
-  readonly searchControl = new FormControl<string>('', { nonNullable: true })
-  readonly geographyControl = new FormControl<string>('', { nonNullable: true })
-  readonly hasSearchTerm = computed(() => this.searchTerm().length > 0)
 
-  private seoService = inject(SeoService)
-  private readonly destroyRef = inject(DestroyRef)
+  protected readonly buildRegionRouterLink = buildRegionDetailRouterLink
 
-  private initializeSeoProperties(): void {
+  ngOnInit(): void {
     this.seoService.setMetaTitle('Azure Regions and Data Centers')
     this.seoService.setMetaDescription(
       'Explore the available and access restricted Azure regions, including their geography, physical location, availability zones, and paired regions for disaster recovery.'
@@ -78,49 +84,34 @@ export class AzureRegionsComponent implements OnInit {
     this.seoService.setCanonicalUrl('https://www.azurespeed.com/Information/AzureRegions')
   }
 
-  ngOnInit() {
-    this.initializeSeoProperties()
-    const unrestrictedRegions = azureGlobalCloudRegionsJson.filter((region) => !region.restricted)
-    const restrictedRegions = azureGlobalCloudRegionsJson.filter((region) => region.restricted)
-
-    this.azureGlobalCloudRegions.set(unrestrictedRegions)
-    this.accessRestrictedRegions.set(restrictedRegions)
-
-    this.availableRegionGroups.set(
-      [...new Set(azureGlobalCloudRegionsJson.map((r) => r.regionGroup))].sort()
-    )
-
-    this.searchTerm.set(this.searchControl.value.trim())
-    this.selectedGeography.set(this.geographyControl.value)
-
-    this.searchControl.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((value) => this.searchTerm.set((value ?? '').trim()))
-
-    this.geographyControl.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((value) => this.selectedGeography.set(value ?? ''))
+  trackByRegion(_index: number, region: Region): string {
+    return region.regionId
   }
 
-  private filterRegions(
-    regions: Region[],
-    searchTerm: string,
-    selectedGeography: string
-  ): Region[] {
-    const normalizedSearch = searchTerm.trim().toLowerCase()
+  readonly hasActiveFilters = computed(() => {
+    const { search, geography } = this.filtersValue()
+    return Boolean((search ?? '').trim()) || Boolean(geography)
+  })
+
+  clearFilters(): void {
+    this.filtersForm.setValue({ search: '', geography: '' })
+  }
+
+  private filterRegions(regions: Region[]): Region[] {
+    const { search, geography } = this.filtersValue()
+    const normalizedSearch = (search ?? '').trim().toLowerCase()
+    const selectedGeography = geography ?? ''
+
     return regions.filter((region) => {
       const matchesSearch =
         !normalizedSearch ||
         region.displayName.toLowerCase().includes(normalizedSearch) ||
-        region.datacenterLocation.toLowerCase().includes(normalizedSearch)
+        region.datacenterLocation.toLowerCase().includes(normalizedSearch) ||
+        (!!region.launchYear && region.launchYear.toString().includes(normalizedSearch))
 
       const matchesGeography = !selectedGeography || region.regionGroup === selectedGeography
 
       return matchesSearch && matchesGeography
     })
-  }
-
-  clearSearch(): void {
-    this.searchControl.setValue('')
   }
 }

@@ -17,7 +17,7 @@ export const CHATGPT_ROUTES: Routes = [
             (_) => _.WritingAssistantComponent
           )
       },
-      // Code Assistant
+      // Writing Assistant
       {
         path: 'TranslateText',
         loadComponent: () =>
@@ -46,7 +46,7 @@ export const CHATGPT_ROUTES: Routes = [
             (_) => _.GenerateEmailComponent
           )
       },
-      // Writing Assistant
+      // Code Assistant
       {
         path: 'ExplainCode',
         loadComponent: () =>

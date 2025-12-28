@@ -1,129 +1,277 @@
-<div class="download page-container py-3">
-  <header class="page-intro">
-    <h1 class="page-title page-intro__title">Azure Storage Download Speed Test</h1>
-    <p class="page-intro__description">
+<article class="page-shell section-stack mx-auto max-w-5xl">
+  <header class="page-header">
+    <h1 class="page-title">Azure storage download speed test</h1>
+    <p class="page-lead">
       Measure download performance from Azure Storage across regions to find the datacenter that
       best serves your users.
     </p>
   </header>
 
-  <div class="download__card mb-3 shadow-sm">
-    <div class="download__card-body">
-      <div class="app-alert download-instructions mb-3">
-        <div class="download-instructions__content">
-          <span class="download-instructions__label">Testing steps</span>
-          <div class="download-instructions__steps">
-            <span class="download-instructions__step">
-              <span class="download-instructions__badge">1</span>
-              Choose your Azure regions below.
-            </span>
-            <span class="download-instructions__step">
-              <span class="download-instructions__badge">2</span>
-              Grab a 100&nbsp;MB test file from each region.
-            </span>
-            <span class="download-instructions__step">
-              <span class="download-instructions__badge">3</span>
-              Compare speeds to pick the fastest storage endpoint.
-            </span>
-          </div>
-          <div class="download-instructions__note">
-            If the download does not start automatically, right-click the link and choose
-            <strong>Save link as…</strong>
+  <section class="section-block" aria-labelledby="download-test-heading">
+    <h2 id="download-test-heading" class="sr-only">Download speed test</h2>
+    <div>
+      <div class="mb-4 rounded-xl bg-gradient-to-r from-primary/5 via-transparent to-primary/5 p-4">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
+            <span class="text-xs font-bold tracking-widest text-primary uppercase">Test Steps</span>
+            <div class="flex flex-wrap items-center gap-4 text-sm">
+              <span class="flex items-center gap-2.5">
+                <span class="step-number" aria-hidden="true">1</span>
+                <span class="text-text-body">Select regions</span>
+              </span>
+              <span class="hidden text-border-contrast sm:inline">|</span>
+              <span class="flex items-center gap-2.5">
+                <span class="step-number" aria-hidden="true">2</span>
+                <span class="text-text-body">Download 100 MB file</span>
+              </span>
+              <span class="hidden text-border-contrast sm:inline">|</span>
+              <span class="flex items-center gap-2.5">
+                <span class="step-number" aria-hidden="true">3</span>
+                <span class="text-text-body">Compare speeds</span>
+              </span>
+            </div>
           </div>
         </div>
       </div>
       <app-region-group></app-region-group>
     </div>
-  </div>
 
-  @if (!tableData().length) {
-    <div class="app-card mb-4 shadow-sm" style="min-height: 260px">
-      <div
-        class="app-card__body flex flex-col items-center justify-center gap-4 text-center text-slate-500"
-      >
-        <div
-          class="flex h-14 w-14 items-center justify-center rounded-full bg-slate-200/60 text-slate-500"
-          aria-hidden="true"
-        >
-          <svg width="48" height="48" fill="currentColor" viewBox="0 0 16 16">
-            <path
-              d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm0 14.5A6.5 6.5 0 1 1 8 1.5a6.5 6.5 0 0 1 0 13zm-.25-4.25h.5a.75.75 0 0 1 .75.75v.5a.75.75 0 0 1-.75.75h-.5a.75.75 0 0 1-.75-.75v-.5a.75.75 0 0 1 .75-.75zm.25-8a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 8 2.25z"
-            />
-          </svg>
-        </div>
-        <div class="space-y-2">
-          <div class="text-base font-semibold text-slate-900">No regions selected</div>
-          <div class="space-y-1 text-sm text-slate-600">
-            <span class="block">Pick one or more regions above.</span>
-            <span class="block">
-              We will generate download test links here once they are ready.
-            </span>
+    @if (!tableData().length) {
+      <div class="card min-h-[200px]">
+        <div class="card-body flex flex-col items-center justify-center gap-4 py-12 text-center">
+          <div
+            class="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-primary/10 to-primary/20"
+          >
+            <app-lucide-icon name="download" class="h-7 w-7 text-primary" aria-hidden="true" />
+          </div>
+          <div class="space-y-2">
+            <div class="text-lg font-bold text-text-strong">No regions selected</div>
+            <p class="text-sm text-text-muted">Select regions above to generate download links.</p>
           </div>
         </div>
       </div>
-    </div>
-  } @else {
-    <section class="download-table app-table__container mb-4">
-      <table class="app-table app-table--hover align-middle shadow-sm">
-        <thead>
-          <tr>
-            <th>Geography</th>
-            <th>Region</th>
-            <th>Datacenter</th>
-            <th class="text-center">Download test</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (item of tableData(); track item.regionId) {
+    } @else {
+      <p class="mb-3 text-xs text-text-muted">
+        <strong>Tip:</strong> If the download does not start automatically, right-click the button
+        and choose <strong>Save link as</strong>.
+      </p>
+      <!-- Desktop table view -->
+      <div class="table-shell mb-4 hidden sm:block">
+        <table class="table-base">
+          <thead class="table-head">
             <tr>
-              <td>{{ item.geography }}</td>
-              <td>
-                <div class="download-table__region">
-                  <span class="download-table__region-name">{{ item.displayName }}</span>
-                  <span class="download-table__region-code">{{ item.regionId }}</span>
-                </div>
-              </td>
-              <td>{{ item.datacenterLocation }}</td>
-              <td class="text-center">
-                @if (item.url) {
-                  <a class="download-table__link" href="{{ item.url }}" download>
-                    Download 100 MB
-                    <app-hero-icon name="heroArrowDown" class="ml-1 h-4 w-4" aria-hidden="true" />
-                  </a>
-                } @else {
-                  <span class="download-table__placeholder text-slate-500">Preparing link…</span>
-                }
-              </td>
+              <th class="px-4 py-3">Geography</th>
+              <th class="px-4 py-3">Region</th>
+              <th class="px-4 py-3">Datacenter</th>
+              <th class="px-4 py-3 text-right">Download test</th>
             </tr>
-          }
-        </tbody>
-      </table>
-    </section>
-  }
+          </thead>
+          <tbody class="divide-y divide-border-soft">
+            @for (item of tableData(); track item.regionId) {
+              <tr class="table-row-hover">
+                <td class="px-4 py-3 text-text-muted">{{ item.geography }}</td>
+                <td class="px-4 py-3">
+                  <div class="space-y-1 text-left">
+                    <a
+                      class="link-primary font-semibold"
+                      [routerLink]="buildRegionRouterLink(item.displayName)"
+                    >
+                      {{ item.displayName }}
+                      <span aria-hidden="true" class="text-text-muted">›</span>
+                    </a>
+                    <div class="text-xs font-semibold tracking-wide text-text-subtle uppercase">
+                      {{ item.regionId }}
+                    </div>
+                  </div>
+                </td>
+                <td class="px-4 py-3 text-text-muted">
+                  {{ item.datacenterLocation }}
+                </td>
+                <td class="px-4 py-3 text-right">
+                  @if (item.url) {
+                    <a
+                      class="btn btn-primary btn--sm group"
+                      [href]="item.url"
+                      download
+                      [attr.aria-label]="'Download 100 MB from ' + item.displayName"
+                    >
+                      <app-lucide-icon
+                        name="download"
+                        class="h-4 w-4 transition-transform group-hover:translate-y-0.5"
+                        aria-hidden="true"
+                      />
+                      Download 100 MB
+                    </a>
+                  } @else {
+                    <span class="inline-flex items-center gap-2 text-sm text-text-muted">
+                      <span class="spinner-sm"></span>
+                      Preparing...
+                    </span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
 
-  <section class="regions__section mt-12">
-    <header class="regions__section-header">
-      <h2 class="content-heading">Frequently asked questions</h2>
+      <!-- Mobile card view -->
+      <div class="mb-4 space-y-3 sm:hidden">
+        @for (item of tableData(); track item.regionId; let idx = $index) {
+          <article class="card animate-fade-slide-in space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+              <span class="text-sm font-semibold text-text-strong">{{ item.geography }}</span>
+              <div class="flex items-center gap-1.5 text-sm text-text-muted">
+                <app-lucide-icon name="map-pin" class="h-3.5 w-3.5" aria-hidden="true" />
+                {{ item.datacenterLocation }}
+              </div>
+            </div>
+            <a
+              class="group flex items-center justify-between gap-3 rounded-lg bg-surface-muted px-3 py-2.5 transition-colors hover:bg-surface-raised focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
+              [routerLink]="buildRegionRouterLink(item.displayName)"
+            >
+              <div class="min-w-0 flex-1">
+                <div
+                  class="font-semibold text-text-strong transition-colors group-hover:text-brand"
+                >
+                  {{ item.displayName }}
+                </div>
+                <div class="font-mono text-xs text-text-subtle uppercase">
+                  {{ item.regionId }}
+                </div>
+              </div>
+              <app-lucide-icon
+                name="chevron-right"
+                class="h-4 w-4 text-text-muted transition-transform group-hover:translate-x-1"
+                aria-hidden="true"
+              />
+            </a>
+            <div class="pt-1">
+              @if (item.url) {
+                <a
+                  class="btn btn-primary btn--sm group w-full justify-center"
+                  [href]="item.url"
+                  download
+                  [attr.aria-label]="'Download 100 MB from ' + item.displayName"
+                >
+                  <app-lucide-icon
+                    name="download"
+                    class="h-4 w-4 transition-transform group-hover:translate-y-0.5"
+                    aria-hidden="true"
+                  />
+                  Download 100 MB
+                </a>
+              } @else {
+                <div class="flex items-center justify-center gap-2 py-2 text-sm text-text-muted">
+                  <span class="spinner-sm"></span>
+                  Preparing download link...
+                </div>
+              }
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </section>
+
+  <section class="section-block" aria-labelledby="download-alternatives-heading">
+    <header class="mb-4">
+      <h2 id="download-alternatives-heading" class="section-title">
+        Alternatives for benchmarking
+      </h2>
     </header>
-    <div class="mt-6 space-y-4">
-      <details
-        class="group rounded-2xl border border-slate-200 bg-white/95 shadow-sm transition-colors duration-200 ease-out open:border-brand/40 open:shadow-brand-sm"
-      >
-        <summary
-          class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left text-base font-semibold text-slate-900 outline-none transition-colors hover:text-brand/90 focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white [&::-webkit-details-marker]:hidden"
+    <div class="space-y-4">
+      <div class="flex items-start gap-3">
+        <div
+          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary/10 to-primary/20"
         >
-          <span class="flex-1 text-base font-semibold text-slate-900">
-            What is Azure Storage Download Speed?
-          </span>
-          <app-hero-icon
-            name="heroChevronDown"
-            class="h-4 w-4 text-slate-400 transition-transform duration-200 ease-in-out group-open:rotate-180 group-open:text-brand"
+          <app-lucide-icon name="terminal" class="h-5 w-5 text-primary" aria-hidden="true" />
+        </div>
+        <div class="space-y-1">
+          <h3 class="font-semibold text-text-strong">AzCopy Bench</h3>
+          <p class="text-sm text-text-muted">
+            Microsoft's official CLI tool for Azure Storage performance benchmarking. Ideal for
+            automated testing, CI/CD pipelines, and high-throughput scenarios where you need precise
+            control over test parameters.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid gap-3 sm:grid-cols-2">
+        <div
+          class="flex items-start gap-2.5 rounded-lg border border-border-soft bg-surface-muted p-3"
+        >
+          <app-lucide-icon name="zap" class="mt-0.5 h-4 w-4 text-warning" aria-hidden="true" />
+          <div class="text-sm">
+            <span class="font-medium text-text-body">Auto-tuning</span>
+            <p class="text-text-muted">
+              Automatically optimizes parallel TCP connections for maximum throughput
+            </p>
+          </div>
+        </div>
+        <div
+          class="flex items-start gap-2.5 rounded-lg border border-border-soft bg-surface-muted p-3"
+        >
+          <app-lucide-icon
+            name="shield-check"
+            class="mt-0.5 h-4 w-4 text-success"
             aria-hidden="true"
           />
-        </summary>
-        <div
-          class="space-y-3 border-t border-slate-100 px-6 py-5 text-sm leading-relaxed text-slate-600 [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:text-slate-800 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
+          <div class="text-sm">
+            <span class="font-medium text-text-body">Zero disk writes</span>
+            <p class="text-text-muted">Downloaded data is discarded, never saved locally</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <div class="flex items-center gap-2 text-sm font-medium text-text-body">
+          <app-lucide-icon name="code" class="h-4 w-4" aria-hidden="true" />
+          Download benchmark examples
+        </div>
+        <div class="space-y-2">
+          <p class="text-xs font-medium text-text-muted">Basic download benchmark:</p>
+          <div class="code-block">
+            <pre><code>azcopy bench --mode=Download "https://[account].blob.core.windows.net/[container]?[SAS]"</code></pre>
+          </div>
+        </div>
+        <div class="space-y-2">
+          <p class="text-xs font-medium text-text-muted">Rate-limited download test (500 Mbps):</p>
+          <div class="code-block">
+            <pre><code>azcopy bench --mode=Download "https://[account].blob.core.windows.net/[container]?[SAS]" \
+  --cap-mbps 500</code></pre>
+          </div>
+        </div>
+        <p class="text-xs text-text-muted">
+          Download mode tests against existing files in your container. Data is streamed but never
+          written to disk.
+        </p>
+      </div>
+
+      <div class="flex items-center justify-between border-t border-border-soft pt-4">
+        <a
+          href="https://learn.microsoft.com/azure/storage/common/storage-ref-azcopy-bench"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="link-primary inline-flex items-center gap-1.5 text-sm font-medium"
         >
+          <span>View documentation</span>
+          <app-lucide-icon name="external-link" class="h-3.5 w-3.5" aria-hidden="true" />
+        </a>
+        <span class="text-xs text-text-subtle">Requires AzCopy v10+</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-block" aria-labelledby="download-faq-heading">
+    <h2 id="download-faq-heading" class="section-title mb-4">Frequently asked questions</h2>
+    <div class="faq-list">
+      <details class="faq-item group">
+        <summary class="faq-summary">
+          <span class="faq-question">What is Azure Storage Download Speed?</span>
+          <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
+        </summary>
+        <div class="faq-body">
           <p>
             Azure Storage Download Speed measures the rate at which data is transferred from Azure
             Storage to your local system. It affects how quickly you can download large files,
@@ -132,24 +280,14 @@
           </p>
         </div>
       </details>
-      <details
-        class="group rounded-2xl border border-slate-200 bg-white/95 shadow-sm transition-colors duration-200 ease-out open:border-brand/40 open:shadow-brand-sm"
-      >
-        <summary
-          class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left text-base font-semibold text-slate-900 outline-none transition-colors hover:text-brand/90 focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white [&::-webkit-details-marker]:hidden"
-        >
-          <span class="flex-1 text-base font-semibold text-slate-900">
+      <details class="faq-item group">
+        <summary class="faq-summary">
+          <span class="faq-question">
             What is the purpose of the Azure Storage Download Speed Test?
           </span>
-          <app-hero-icon
-            name="heroChevronDown"
-            class="h-4 w-4 text-slate-400 transition-transform duration-200 ease-in-out group-open:rotate-180 group-open:text-brand"
-            aria-hidden="true"
-          />
+          <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
         </summary>
-        <div
-          class="space-y-3 border-t border-slate-100 px-6 py-5 text-sm leading-relaxed text-slate-600 [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:text-slate-800 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
-        >
+        <div class="faq-body">
           <p>
             The Azure Storage Download Speed Test measures the download speeds from various Azure
             regions to help users determine the most suitable region for hosting their services
@@ -157,24 +295,12 @@
           </p>
         </div>
       </details>
-      <details
-        class="group rounded-2xl border border-slate-200 bg-white/95 shadow-sm transition-colors duration-200 ease-out open:border-brand/40 open:shadow-brand-sm"
-      >
-        <summary
-          class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left text-base font-semibold text-slate-900 outline-none transition-colors hover:text-brand/90 focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white [&::-webkit-details-marker]:hidden"
-        >
-          <span class="flex-1 text-base font-semibold text-slate-900">
-            How should I use the results from this test?
-          </span>
-          <app-hero-icon
-            name="heroChevronDown"
-            class="h-4 w-4 text-slate-400 transition-transform duration-200 ease-in-out group-open:rotate-180 group-open:text-brand"
-            aria-hidden="true"
-          />
+      <details class="faq-item group">
+        <summary class="faq-summary">
+          <span class="faq-question">How should I use the results from this test?</span>
+          <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
         </summary>
-        <div
-          class="space-y-3 border-t border-slate-100 px-6 py-5 text-sm leading-relaxed text-slate-600 [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:text-slate-800 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
-        >
+        <div class="faq-body">
           <p>
             Use the results to compare download speeds from different Azure regions. This can guide
             you in choosing a region that offers the best performance for users in specific
@@ -184,4 +310,4 @@
       </details>
     </div>
   </section>
-</div>
+</article>

@@ -1,98 +1,124 @@
-<div class="page-container ip-region-page py-3">
-  <header class="page-intro">
-    <h1 class="page-title page-intro__title">Azure IP Ranges By Region</h1>
-    <p class="page-intro__description">
-      Explore Azure IP ranges across every public region. Filter by geography, scan the latest
-      service tags, and jump directly to the ranges that matter for your deployments.
+<article class="page-shell section-stack mx-auto max-w-5xl">
+  <header class="page-header">
+    <h1 class="page-title">Azure IP ranges by region</h1>
+    <p class="page-lead">
+      Explore Azure IP ranges by region for geo-scoped firewall rules, data residency compliance, or
+      traffic origin analysis. Filter by geography and jump directly to ranges for your deployments.
     </p>
-    <p class="page-intro__description">
+    <p class="text-sm text-text-muted">
       Need service-specific ranges?
-      <a class="link-inline" routerLink="/Information/AzureIpRangesByService">View by service</a>
+      <a class="link-primary" routerLink="/Information/AzureIpRangesByService">View by service</a>
       instead.
     </p>
   </header>
 
-  <section class="ip-region-controls" aria-label="Filter regions">
-    <label class="ip-region-controls__label" for="ip-region-search">Search regions</label>
-    <div class="ip-region-controls__input">
-      <app-hero-icon name="heroMagnifyingGlass" class="h-4 w-4" aria-hidden="true" />
-      <input
-        id="ip-region-search"
-        type="search"
-        [value]="searchTerm()"
-        (input)="onSearchInput($event)"
-        placeholder="Search by region name, code, or geography"
-        autocomplete="off"
-      />
-      @if (searchTerm()) {
-        <button
-          type="button"
-          class="ip-region-controls__clear"
-          (click)="clearSearch()"
-          aria-label="Clear search"
+  <section class="section-block" aria-labelledby="regions-heading">
+    <h2 id="regions-heading" class="sr-only">Region directory</h2>
+    <div class="card overflow-hidden" aria-label="Filter regions">
+      <header class="card-header flex flex-wrap items-center gap-3">
+        <span class="text-xs font-semibold tracking-[0.2em] text-text-subtle uppercase">
+          Search regions
+        </span>
+        <span
+          class="inline-flex items-center rounded-full bg-surface-muted px-3 py-1 text-xs font-semibold text-text-muted"
         >
-          <app-hero-icon name="heroXMark" class="h-4 w-4" aria-hidden="true" />
-        </button>
-      }
+          Showing {{ filteredRegionCount() }} of {{ totalRegionCount() }} regions
+        </span>
+      </header>
+      <div class="card-body flex flex-col gap-4">
+        <label class="sr-only" for="ip-region-search">Search regions</label>
+        <div class="relative w-full">
+          <app-lucide-icon
+            name="search"
+            class="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-text-muted"
+            aria-hidden="true"
+          />
+          <input
+            id="ip-region-search"
+            type="search"
+            [value]="searchTerm()"
+            (input)="onSearchInput($event)"
+            placeholder="Search by region name, code, or geography"
+            autocomplete="off"
+            class="form-control form-control-focus-ring w-full pr-10 pl-9 placeholder:text-text-placeholder"
+          />
+          @if (searchTerm()) {
+            <button
+              type="button"
+              class="form-icon-clear h-7 w-7 rounded-full border-none bg-transparent text-text-subtle transition hover:bg-surface-muted focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-none"
+              (click)="clearSearch()"
+              aria-label="Clear search"
+            >
+              <app-lucide-icon name="x" class="h-4 w-4" aria-hidden="true" />
+            </button>
+          }
+        </div>
+        <p class="text-sm text-text-subtle">
+          Filter by typing a geography, region name, or service tag identifier. Results update
+          instantly.
+          <kbd
+            class="ml-1 rounded border border-border-soft bg-surface-muted px-1.5 py-0.5 font-mono text-xs"
+            >Esc</kbd
+          >
+          to clear.
+        </p>
+      </div>
     </div>
-    <p class="ip-region-controls__summary">
-      Showing {{ filteredRegionCount() }} of {{ totalRegionCount() }} regions
-    </p>
   </section>
 
   @if (!filteredRegionCount()) {
-    <section class="ip-region-empty" aria-live="polite">
-      <app-hero-icon
-        name="heroExclamationCircle"
-        class="ip-region-empty__icon h-7 w-7"
-        aria-hidden="true"
-      />
-      <h2 class="content-heading">No regions match your search</h2>
+    <section
+      class="section-block flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border-soft bg-surface-raised/70 p-8 text-center text-sm text-text-muted"
+      aria-labelledby="no-results-heading"
+      aria-live="polite"
+    >
+      <app-lucide-icon name="alert-circle" class="h-10 w-10 text-warning" aria-hidden="true" />
+      <h2 id="no-results-heading" class="text-base font-semibold text-text-strong">
+        No regions match your search
+      </h2>
       <p>Try a different keyword or reset the filter to explore the full directory.</p>
-      <button
-        type="button"
-        class="app-button app-button--outline-secondary"
-        (click)="clearSearch()"
-      >
-        Reset search
-      </button>
+      <button type="button" class="btn btn-secondary" (click)="clearSearch()">Reset search</button>
     </section>
   } @else {
-    @for (group of groupedRegions(); track trackByGroup($index, group)) {
-      <section class="ip-region-group">
-        <header class="ip-region-group__header">
-          <h2 class="content-heading">{{ group.label }}</h2>
-          <span class="ip-region-group__count">{{ group.regions.length }}</span>
+    @for (group of groupedRegions(); track group.key) {
+      <section
+        class="section-block flex flex-col gap-2 rounded-xl bg-surface-muted/30 p-3"
+        [attr.aria-labelledby]="'group-heading-' + group.key"
+      >
+        <header
+          class="sticky top-0 z-10 -mx-3 flex flex-wrap items-center justify-between gap-2 bg-surface-raised px-3 py-2 shadow-sm"
+        >
+          <h2 [id]="'group-heading-' + group.key" class="text-sm font-semibold text-text-strong">
+            {{ group.label }}
+          </h2>
+          <span class="badge badge-brand min-w-[2rem] justify-center text-xs">
+            {{ group.regions.length }}
+          </span>
         </header>
-        <div class="ip-region-group__grid">
-          @for (region of group.regions; track trackByRegion($index, region)) {
-            <article class="ip-region-card">
-              <header class="ip-region-card__header">
-                <div>
-                  <p class="ip-region-card__name">{{ region.displayName }}</p>
-                  <span class="ip-region-card__code">{{ region.regionId }}</span>
-                </div>
-                <span class="ip-region-card__geography">{{ region.geography }}</span>
-              </header>
-              <div class="ip-region-card__body">
-                <span class="ip-region-card__location">
-                  <app-hero-icon name="heroMapPin" class="h-4 w-4" aria-hidden="true" />
-                  {{ region.datacenterLocation }}
-                </span>
-                <span class="ip-region-card__service-tag">{{ region.serviceTagId }}</span>
+        <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          @for (region of group.regions; track region.regionId) {
+            <a
+              class="group flex items-center gap-3 rounded-xl border border-border-soft bg-surface-raised/90 p-3 transition hover:border-brand/40 hover:shadow-md"
+              [routerLink]="['/Information/AzureIpRanges', region.serviceTagId]"
+              [state]="{ source: 'region' }"
+            >
+              <div class="min-w-0 flex-1">
+                <p class="truncate text-sm font-semibold text-text-strong">
+                  {{ region.displayName }}
+                </p>
+                <p class="truncate text-xs text-text-muted">
+                  {{ region.datacenterLocation || region.regionId }}
+                </p>
               </div>
-              <footer class="ip-region-card__actions">
-                <a
-                  class="app-button app-button--outline-secondary app-button--sm"
-                  [routerLink]="['/Information/AzureIpRanges', region.serviceTagId]"
-                >
-                  View IP ranges
-                </a>
-              </footer>
-            </article>
+              <app-lucide-icon
+                name="chevron-right"
+                class="h-4 w-4 shrink-0 text-text-subtle transition-transform group-hover:translate-x-0.5 group-hover:text-brand"
+                aria-hidden="true"
+              />
+            </a>
           }
         </div>
       </section>
     }
   }
-</div>
+</article>

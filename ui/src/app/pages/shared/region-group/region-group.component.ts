@@ -1,20 +1,7 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  inject,
-  OnDestroy,
-  signal
-} from '@angular/core'
-import { CommonModule } from '@angular/common'
-import { RegionModel } from '../../../models'
-import { RegionService } from '../../../services'
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
 
-interface RegionGroup {
-  regionGroup: string
-  regions: RegionModel[]
-}
+import { RegionModel } from '../../../models'
+import { RegionGroup, RegionService } from '../../../services'
 
 interface GroupSelectionLookup {
   fullySelected: Set<string>
@@ -23,17 +10,18 @@ interface GroupSelectionLookup {
 
 @Component({
   selector: 'app-region-group',
-  standalone: true,
-  imports: [CommonModule],
   templateUrl: './region-group.component.html',
   styleUrl: './region-group.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class RegionGroupComponent implements OnDestroy {
+export class RegionGroupComponent {
   private readonly regionService = inject(RegionService)
   private readonly allRegions: RegionModel[] = this.regionService.getAllRegions()
-  private readonly selectedRegionIds = signal<Set<string>>(new Set())
-  readonly regionGroups: RegionGroup[] = this.buildRegionGroups(this.allRegions)
+  private readonly selectedRegionIds = computed<Set<string>>(() => {
+    const selectedRegions = this.regionService.selectedRegions()
+    return new Set(selectedRegions.map((region) => region.regionId))
+  })
+  readonly regionGroups: RegionGroup[] = this.regionService.getRegionGroups()
   private readonly groupSelectionLookup = computed<GroupSelectionLookup>(() => {
     const selected = this.selectedRegionIds()
     const fullySelected = new Set<string>()
@@ -66,19 +54,6 @@ export class RegionGroupComponent implements OnDestroy {
 
   readonly selectedRegionCount = computed(() => this.selectedRegionIds().size)
   readonly totalRegionCount = this.allRegions.length
-
-  private readonly _syncFromServiceEffect = effect(
-    () => {
-      const regions = this.regionService.selectedRegions()
-      const ids = new Set(regions.map((region) => region.regionId))
-      const current = this.selectedRegionIds()
-      if (this.areSetsEqual(current, ids)) {
-        return
-      }
-      this.selectedRegionIds.set(ids)
-    },
-    { allowSignalWrites: true }
-  )
 
   clearSelection(): void {
     const current = this.selectedRegionIds()
@@ -132,13 +107,14 @@ export class RegionGroupComponent implements OnDestroy {
     if (this.areSetsEqual(current, next)) {
       return
     }
-    this.selectedRegionIds.set(next)
-    const selectedRegions = this.allRegions.filter((region) => next.has(region.regionId))
-    this.regionService.updateSelectedRegions(selectedRegions)
+    this.syncRegionService(next)
   }
 
-  ngOnDestroy(): void {
-    this._syncFromServiceEffect.destroy()
+  private syncRegionService(selection: Set<string>): void {
+    const selectedRegions = selection.size
+      ? this.allRegions.filter((region) => selection.has(region.regionId))
+      : []
+    this.regionService.updateSelectedRegions(selectedRegions)
   }
 
   private areSetsEqual(a: Set<string>, b: Set<string>): boolean {
@@ -151,28 +127,5 @@ export class RegionGroupComponent implements OnDestroy {
       }
     }
     return true
-  }
-
-  private buildRegionGroups(regions: RegionModel[]): RegionGroup[] {
-    const groupsByName = new Map<string, RegionModel[]>()
-
-    for (const region of regions) {
-      const key = region.regionGroup
-      if (!key) continue
-
-      const group = groupsByName.get(key)
-      if (group) {
-        group.push(region)
-      } else {
-        groupsByName.set(key, [region])
-      }
-    }
-
-    return Array.from(groupsByName.entries())
-      .map(([regionGroup, groupedRegions]) => ({
-        regionGroup,
-        regions: [...groupedRegions].sort((a, b) => a.regionId.localeCompare(b.regionId))
-      }))
-      .sort((a, b) => b.regions.length - a.regions.length)
   }
 }

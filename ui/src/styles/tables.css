@@ -1,0 +1,31 @@
+.table-shell {
+  @apply scrollbar-thin;
+  overflow-x: auto;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-border-soft);
+  background-color: var(--color-surface-raised);
+  box-shadow: var(--shadow-card);
+}
+
+.table-base {
+  min-width: 100%;
+  text-align: left;
+  font-size: 0.875rem;
+  color: var(--color-text-body);
+}
+
+.table-head {
+  background-color: var(--color-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.table-row-hover {
+  transition: background-color 0.15s;
+}
+.table-row-hover:hover {
+  background-color: color-mix(in srgb, var(--color-secondary) 50%, transparent);
+}

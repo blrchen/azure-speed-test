@@ -1,58 +1,55 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  effect,
-  EffectRef,
-  inject,
-  OnDestroy,
-  OnInit,
-  signal
-} from '@angular/core'
-import { CommonModule } from '@angular/common'
+import { DecimalPipe } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { firstValueFrom } from 'rxjs'
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core'
+import { RouterLink } from '@angular/router'
 import { BlockBlobClient, BlockBlobParallelUploadOptions } from '@azure/storage-blob'
-import { RegionService, SeoService, UtilsService } from '../../../services'
+import { firstValueFrom } from 'rxjs'
+
 import { RegionModel } from '../../../models'
+import { RegionService, SeoService } from '../../../services'
 import { API_ENDPOINT } from '../../../shared/constants'
+import { ExportCsvButtonComponent } from '../../../shared/export-csv-button/export-csv-button.component'
+import { LucideIconComponent } from '../../../shared/icons/lucide-icons.component'
+import { buildRegionDetailRouterLink, generateTimestampedBlobName } from '../../../shared/utils'
 import { RegionGroupComponent } from '../../shared'
-import { HeroIconComponent } from '../../../shared/icons/hero-icons.imports'
 
 interface UploadSpeedTestResult {
   displayName: string
+  regionId: string
   datacenterLocation: string
   uploadProgressPercentage: number
   uploadTimeSeconds: number
   uploadSpeedMbps: number
+  error?: string
 }
 
 @Component({
   selector: 'app-upload',
-  standalone: true,
-  imports: [CommonModule, RegionGroupComponent, HeroIconComponent],
+  imports: [
+    DecimalPipe,
+    RouterLink,
+    RegionGroupComponent,
+    LucideIconComponent,
+    ExportCsvButtonComponent
+  ],
   templateUrl: './upload.component.html',
-  styleUrls: ['./upload.component.css'],
+  styleUrl: './upload.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class UploadComponent implements OnInit, OnDestroy {
-  readonly uploadSizeMBOptions = [100, 200, 500] as const
-  readonly regions = signal<RegionModel[]>([])
-  readonly selectedUploadSizeBytes = signal<number>(100 * 1024 * 1024) // Default to 100MB
+export class UploadComponent implements OnInit {
+  readonly uploadSizeMBOptions = [100, 200, 500, 1000] as const
+  readonly selectedRegions = computed<RegionModel[]>(() => this.regionService.selectedRegions())
+  readonly selectedUploadSizeMB = signal<number>(100) // Default to 100MB
+  readonly selectedUploadSizeBytes = computed<number>(
+    () => this.selectedUploadSizeMB() * 1024 * 1024
+  )
   readonly testResults = signal<UploadSpeedTestResult[]>([])
 
-  private regionService = inject(RegionService)
-  private utilsService = inject(UtilsService)
-  private seoService = inject(SeoService)
-  private http = inject(HttpClient)
-  private readonly selectedRegionsEffect: EffectRef = effect(() => {
-    this.regions.set(this.regionService.selectedRegions())
-  })
+  private readonly regionService = inject(RegionService)
+  private readonly seoService = inject(SeoService)
+  private readonly http = inject(HttpClient)
 
   ngOnInit() {
-    this.initializeSeoProperties()
-  }
-
-  private initializeSeoProperties(): void {
     this.seoService.setMetaTitle('Azure Storage Upload Speed Test')
     this.seoService.setMetaDescription(
       'Test the upload speed to Azure Storage Service across different regions worldwide.'
@@ -62,21 +59,25 @@ export class UploadComponent implements OnInit, OnDestroy {
 
   async onSubmit() {
     this.testResults.set([])
-    for (const region of this.regions()) {
-      const regionName = region.regionId
-      await this.uploadToAzure(region, regionName)
+    for (const region of this.selectedRegions()) {
+      await this.uploadToAzure(region)
     }
   }
 
   selectUploadSize(uploadSizeMB: number): void {
-    this.selectedUploadSizeBytes.set(uploadSizeMB * 1024 * 1024)
+    this.selectedUploadSizeMB.set(uploadSizeMB)
   }
 
-  async uploadToAzure(region: RegionModel, regionName: string) {
-    const { displayName, datacenterLocation } = region
+  isSelected(uploadSizeMB: number): boolean {
+    return this.selectedUploadSizeMB() === uploadSizeMB
+  }
+
+  async uploadToAzure(region: RegionModel) {
+    const { displayName, datacenterLocation, regionId } = region
 
     const newTestResult: UploadSpeedTestResult = {
       displayName,
+      regionId,
       datacenterLocation,
       uploadProgressPercentage: 0,
       uploadTimeSeconds: 0,
@@ -84,7 +85,7 @@ export class UploadComponent implements OnInit, OnDestroy {
     }
     this.testResults.update((results) => [...results, newTestResult])
 
-    const sasUrl = await this.getSasUrl(regionName, this.utilsService.getRandomBlobName())
+    const sasUrl = await this.getSasUrl(regionId, generateTimestampedBlobName())
     const blockBlobClient = new BlockBlobClient(sasUrl)
     const uploadStartTime = Date.now()
     const totalBytes = this.selectedUploadSizeBytes()
@@ -118,9 +119,10 @@ export class UploadComponent implements OnInit, OnDestroy {
         },
         { sort: true }
       )
-    } catch (error) {
-      console.error('Failed to upload data:', error)
-      throw error
+    } catch {
+      this.updateTestResult(displayName, {
+        error: 'Upload failed'
+      })
     }
   }
 
@@ -132,18 +134,31 @@ export class UploadComponent implements OnInit, OnDestroy {
   async getSasUrl(regionName: string, blobName: string, operation = 'upload') {
     const url = `${API_ENDPOINT}/api/sas`
     const params = { regionName, blobName, operation }
-    try {
-      const response = await firstValueFrom(this.http.get<{ url: string }>(url, { params }))
-      return response.url
-    } catch (error) {
-      console.error('Failed to get SAS URL:', error)
-      throw error
-    }
+    const response = await firstValueFrom(this.http.get<{ url: string }>(url, { params }))
+    return response.url
   }
 
-  ngOnDestroy() {
-    this.selectedRegionsEffect.destroy()
-  }
+  readonly buildRegionRouterLink = buildRegionDetailRouterLink
+
+  // CSV export data
+  readonly csvHeaders = [
+    'Region',
+    'Region ID',
+    'Datacenter',
+    'Upload Time (s)',
+    'Upload Speed (MB/s)'
+  ]
+  readonly csvRows = computed<string[][] | null>(() => {
+    const results = this.testResults()
+    if (results.length === 0) return null
+    return results.map((row) => [
+      row.displayName,
+      row.regionId,
+      row.datacenterLocation,
+      row.uploadTimeSeconds.toFixed(1),
+      row.uploadSpeedMbps.toFixed(2)
+    ])
+  })
 
   private updateTestResult(
     displayName: string,

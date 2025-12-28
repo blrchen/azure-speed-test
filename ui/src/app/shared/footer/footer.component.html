@@ -1,32 +1,75 @@
-<footer class="mt-auto border-t border-slate-200 bg-slate-900/95 text-white">
-  <div
-    class="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-6 text-sm sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8"
-  >
-    <div class="flex flex-wrap items-center gap-2 text-white/80">
-      <span class="font-semibold text-white">Azure Speed Test</span>
-      <span>&copy; {{ copyrightYears }}</span>
+<footer class="w-full border-t border-border-soft bg-surface-base/95 backdrop-blur-sm">
+  <div class="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+    <div class="grid gap-8 sm:grid-cols-2 md:grid-cols-4">
+      <!-- Brand Section -->
+      <div class="col-span-2 max-w-md space-y-4">
+        <div class="flex items-center gap-2">
+          <app-lucide-icon name="cloud" class="size-6 text-primary" aria-hidden="true" />
+          <span class="font-semibold text-text-strong">Azure Speed Test</span>
+        </div>
+        <p class="text-sm leading-relaxed text-text-muted">
+          Measure your network latency to Azure regions worldwide. Open source and privacy-focused.
+        </p>
+      </div>
+
+      <!-- External Links -->
+      <div class="space-y-4">
+        <p class="text-sm font-semibold text-text-strong">External Links</p>
+        <ul class="space-y-2 text-sm">
+          <li>
+            <a
+              href="https://awsspeedtest.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1 text-text-muted no-underline transition-colors hover:text-text-body hover:underline"
+            >
+              AWS Speed Test
+              <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Resources Links -->
+      <div class="space-y-4">
+        <p class="text-sm font-semibold text-text-strong">Resources</p>
+        <ul class="space-y-2 text-sm">
+          <li>
+            <a
+              href="mailto:admin@azurespeed.com"
+              class="text-text-muted no-underline transition-colors hover:text-text-body hover:underline"
+            >
+              Contact
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://github.com/blrchen/azure-speed-test/issues"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1 text-text-muted no-underline transition-colors hover:text-text-body hover:underline"
+            >
+              Feedback
+              <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
-    <nav class="flex flex-wrap gap-4 text-white/70" aria-label="Utility navigation">
+
+    <!-- Footer Bottom -->
+    <div
+      class="mt-8 flex flex-col items-center justify-between gap-4 border-t border-border-soft pt-6 sm:flex-row"
+    >
+      <p class="text-sm text-text-muted">
+        &copy; {{ startYear }}–present Azure Speed Test. All rights reserved.
+      </p>
       <a
-        class="transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
         routerLink="/Privacy"
+        class="text-sm text-text-muted no-underline transition-colors hover:text-text-body hover:underline"
       >
         Privacy Policy
       </a>
-      <a
-        class="transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-        href="https://github.com/blrchen/azure-speed-test/issues"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Feedback
-      </a>
-      <a
-        class="transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-        href="mailto:admin@azurespeedtest.com"
-      >
-        Contact
-      </a>
-    </nav>
+    </div>
   </div>
 </footer>

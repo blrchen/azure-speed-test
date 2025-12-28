@@ -1,24 +1,12 @@
-<section class="region-groups">
-  <h2 class="content-heading sr-only">Azure region groups</h2>
-  <div class="region-groups__summary">
-    <div class="region-groups__summary-primary">
-      <span class="region-groups__summary-count">
-        {{ selectedRegionCount() }} / {{ totalRegionCount }} regions selected
-      </span>
-      <span
-        class="region-groups__summary-message"
-        [attr.data-status]="selectedRegionCount() === 0 ? 'alert' : null"
-      >
-        @if (selectedRegionCount() === 0) {
-          Select at least one region to start your test.
-        } @else {
-          Ready to run your test.
-        }
-      </span>
-    </div>
+<section class="section-block">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <span class="text-sm text-text-muted">
+      <span class="font-semibold text-text-strong">{{ selectedRegionCount() }}</span> /
+      {{ totalRegionCount }} regions selected
+    </span>
     <button
       type="button"
-      class="app-button app-button--link app-button--sm region-groups__summary-clear"
+      class="btn btn-outline btn--sm"
       (click)="clearSelection()"
       [disabled]="selectedRegionCount() === 0"
     >
@@ -26,33 +14,36 @@
     </button>
   </div>
 
-  <div class="region-groups__list">
+  <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
     @for (group of regionGroups; track trackByGroup($index, group)) {
+      @let groupActive = isGroupChecked(group) || isGroupIndeterminate(group);
       <article
-        class="region-group-row"
-        [attr.data-state]="isGroupChecked(group) || isGroupIndeterminate(group) ? 'active' : null"
+        class="card card-interactive flex flex-col gap-3"
+        [class.border-brand]="groupActive"
+        [class.ring-2]="groupActive"
+        [class.ring-brand]="groupActive"
       >
-        <header class="region-group-row__header">
-          <h3 class="region-group-row__title">{{ group.regionGroup }}</h3>
-          <button type="button" class="region-group-row__action" (click)="onChange(null, group)">
+        <header class="flex items-center justify-between gap-3">
+          <h3 class="text-base font-bold text-text-strong">{{ group.regionGroup }}</h3>
+
+          <button type="button" class="btn btn-outline btn--sm" (click)="onChange(null, group)">
             {{ isGroupChecked(group) ? 'Deselect all' : 'Select all' }}
           </button>
         </header>
 
-        <div class="region-chip-collection" role="group" [attr.aria-label]="group.regionGroup">
+        <div class="flex flex-wrap gap-2" role="group" [attr.aria-label]="group.regionGroup">
           @for (region of group?.regions; track trackByRegion($index, region)) {
-            <label
-              class="region-chip"
-              [attr.data-active]="isRegionChecked(region.regionId) ? 'true' : null"
-            >
+            @let isActive = isRegionChecked(region.regionId);
+            <label class="chip" [class.chip-active]="isActive" [class.chip-inactive]="!isActive">
               <input
                 type="checkbox"
                 [id]="region.regionId"
-                [checked]="isRegionChecked(region.regionId)"
+                [checked]="isActive"
                 (change)="onChange(region, group)"
                 [attr.aria-label]="region.displayName"
+                class="sr-only"
               />
-              <span class="region-chip__label">{{ region.displayName }}</span>
+              <span>{{ region.displayName }}</span>
             </label>
           }
         </div>

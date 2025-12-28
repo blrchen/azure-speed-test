@@ -1,0 +1,10 @@
+.angular/
+dist/
+node_modules/
+
+*.md
+*.json
+package.json
+package-lock.json
+tsconfig.json
+src/styles/theme.css

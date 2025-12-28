@@ -1,11 +1,11 @@
-import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core'
 import { RouterLink, RouterLinkActive } from '@angular/router'
-import { HeroIconComponent, HeroIconName } from '../icons/hero-icons.imports'
+
+import { LucideIconComponent, LucideIconName } from '../icons/lucide-icons.component'
 
 export interface NavItem {
   readonly label: string
-  readonly icon: HeroIconName
+  readonly icon: LucideIconName
   readonly routerLink: string
 }
 
@@ -16,8 +16,7 @@ export interface NavGroup {
 
 @Component({
   selector: 'app-nav-groups',
-  standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, HeroIconComponent],
+  imports: [RouterLink, RouterLinkActive, LucideIconComponent],
   templateUrl: './nav-groups.component.html',
   styleUrl: './nav-groups.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -29,10 +28,13 @@ export class NavGroupsComponent {
 
   readonly groups = computed<readonly NavGroup[]>(() => this.navGroups() ?? [])
 
-  readonly navGroupTrackBy = (_index: number, group: NavGroup): string =>
-    group.heading ?? `group-${_index}`
+  navGroupTrackBy(_index: number, group: NavGroup): string {
+    return group.heading ?? `group-${_index}`
+  }
 
-  readonly navItemTrackBy = (_index: number, item: NavItem): string => item.routerLink
+  navItemTrackBy(_index: number, item: NavItem): string {
+    return item.routerLink
+  }
 
   handleNavLinkClick(): void {
     if (this.dismissOnNavigate()) {

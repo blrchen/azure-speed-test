@@ -1,150 +1,148 @@
-<div class="page-container py-3">
-  <header class="page-intro">
-    <h1 class="page-title page-intro__title">Azure Region to Region Latency</h1>
-    <p class="page-intro__description">
+<article class="page-shell section-stack mx-auto max-w-5xl">
+  <header class="page-header">
+    <h1 class="page-title">Azure Region to Region Latency</h1>
+    <p class="page-lead">
       Discover average latency between Azure datacenters on the backbone network. Visit the
       <a
         href="https://docs.microsoft.com/en-us/azure/networking/azure-network-latency"
         target="_blank"
+        rel="noopener noreferrer"
+        class="link-primary inline-flex items-center gap-1"
+        aria-label="Azure Network Latency Documentation (opens in new tab)"
       >
         Azure Network Latency Documentation
+        <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
       </a>
-      for the latest updates. The screenshot below illustrates latency as of December 2020.
+      for the latest updates. The snapshot below illustrates latency as of December 2020.
     </p>
   </header>
-  <div class="app-card mb-6 shadow-sm">
-    <div class="app-card__body">
-      <figure class="mb-3">
-        <img
-          ngSrc="assets/images/azure-network-latency-2020-12.png"
-          class="w-full rounded-xl border border-slate-200"
-          alt="Screenshot of Azure network latency statistics as of December 2020"
-          priority
-          width="720"
-          height="422"
-        />
-        <figcaption class="mt-2 text-center text-xs text-slate-500">
-          Azure backbone latency matrix (December 2020 snapshot)
-        </figcaption>
-      </figure>
-      <div class="text-sm text-slate-600">
-        Pair this historical snapshot with the live tests on Azure Speed Test to validate that your
-        chosen region pair still delivers the right experience.
+
+  <section class="section-block" aria-labelledby="latency-matrix-heading">
+    <h2 id="latency-matrix-heading" class="section-title">Latency matrix snapshot</h2>
+    <div class="card">
+      <div class="card-body">
+        <figure class="mb-3">
+          <img
+            ngSrc="assets/images/azure-network-latency-2020-12.webp"
+            class="mx-auto block w-full max-w-3xl rounded-xl border border-border-card shadow-sm"
+            alt="Azure network latency matrix showing round-trip times between regions, ranging from under 2ms within geography to over 200ms cross-continent, December 2020"
+            priority
+            width="720"
+            height="422"
+            sizes="(min-width: 1280px) 55vw, (min-width: 768px) 70vw, 92vw"
+          />
+          <figcaption class="mt-2 text-center text-xs text-text-muted">
+            Azure backbone latency matrix (December 2020 snapshot)
+          </figcaption>
+        </figure>
+        <div class="text-sm text-text-muted">
+          Pair this historical snapshot with the live tests on Azure Speed Test to validate that
+          your chosen region pair still delivers the right experience.
+        </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <section class="space-y-4">
-    <h2 class="content-heading">Additional resources</h2>
-    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      <a
-        class="section-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
-        href="https://docs.microsoft.com/en-us/azure/networking/azure-network-latency"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <div class="section-card__body space-y-2">
-          <h3 class="text-base font-semibold text-slate-900">
-            Azure network round trip latency statistics
-          </h3>
-          <p class="text-sm text-slate-600">
-            Review the latest Microsoft-published tables that highlight average inter-region
-            latency.
-          </p>
-          <span class="text-sm font-semibold text-brand underline underline-offset-4">
-            Read article
-          </span>
-        </div>
-      </a>
-      <a
-        class="section-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
-        href="https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-test-latency"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <div class="section-card__body space-y-2">
-          <h3 class="text-base font-semibold text-slate-900">Test VM network latency</h3>
-          <p class="text-sm text-slate-600">
-            Learn how to benchmark VM-to-VM latency using Azure tools and recommended
-            configurations.
-          </p>
-          <span class="text-sm font-semibold text-brand underline underline-offset-4">
-            View guidance
-          </span>
-        </div>
-      </a>
-      <a
-        class="section-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
-        href="https://docs.microsoft.com/en-us/azure/network-watcher/view-relative-latencies"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <div class="section-card__body space-y-2">
-          <h3 class="text-base font-semibold text-slate-900">
-            View relative latency to Azure regions
-          </h3>
-          <p class="text-sm text-slate-600">
-            Leverage Azure Network Watcher to monitor edge-to-region latency from specific
-            locations.
-          </p>
-          <span class="text-sm font-semibold text-brand underline underline-offset-4">
-            Monitor latency
-          </span>
-        </div>
-      </a>
-      <a
-        class="section-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
-        href="https://docs.microsoft.com/en-us/azure/expressroute/expressroute-troubleshooting-network-performance"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <div class="section-card__body space-y-2">
-          <h3 class="text-base font-semibold text-slate-900">
-            Troubleshooting network performance
-          </h3>
-          <p class="text-sm text-slate-600">
-            Follow a diagnostic checklist to resolve throughput or latency concerns on ExpressRoute.
-          </p>
-          <span class="text-sm font-semibold text-brand underline underline-offset-4">
-            Troubleshoot now
-          </span>
-        </div>
-      </a>
-      <a
-        class="section-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
-        href="https://www.networkworld.com/article/3319776/the-network-matters-for-public-cloud-performance.html"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <div class="section-card__body space-y-2">
-          <h3 class="text-base font-semibold text-slate-900">
-            Which cloud performs better, AWS, Azure or Google?
-          </h3>
-          <p class="text-sm text-slate-600">
-            Explore an industry comparison of backbone design choices across major cloud providers.
-          </p>
-          <span class="text-sm font-semibold text-brand underline underline-offset-4">
-            Read analysis
-          </span>
-        </div>
-      </a>
-      <a
-        class="section-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
-        href="https://learn.microsoft.com/en-us/azure/networking/azure-network-latency"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <div class="section-card__body space-y-2">
-          <h3 class="text-base font-semibold text-slate-900">Round trip between Azure regions</h3>
-          <p class="text-sm text-slate-600">
-            Dive into the Learn article for architectural best practices and historical latency
-            charts.
-          </p>
-          <span class="text-sm font-semibold text-brand underline underline-offset-4">
-            Start learning
-          </span>
-        </div>
-      </a>
+  <section class="section-block" aria-labelledby="resources-heading">
+    <h2 id="resources-heading" class="section-title">Additional resources</h2>
+    <div class="resource-grid">
+      <article class="card card-resource">
+        <h3 class="card-title">Azure network round trip latency statistics</h3>
+        <p class="card-description">
+          Review the latest Microsoft-published tables that highlight average inter-region latency.
+        </p>
+        <a
+          href="https://docs.microsoft.com/en-us/azure/networking/azure-network-latency"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="card-cta"
+          aria-label="View latency statistics (opens in new tab)"
+        >
+          View latency statistics
+          <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
+        </a>
+      </article>
+      <article class="card card-resource">
+        <h3 class="card-title">Test VM network latency</h3>
+        <p class="card-description">
+          Learn how to benchmark VM-to-VM latency using Azure tools and recommended configurations.
+        </p>
+        <a
+          href="https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-test-latency"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="card-cta"
+          aria-label="Benchmark VM latency (opens in new tab)"
+        >
+          Benchmark VM latency
+          <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
+        </a>
+      </article>
+      <article class="card card-resource">
+        <h3 class="card-title">View relative latency to Azure regions</h3>
+        <p class="card-description">
+          Leverage Azure Network Watcher to monitor edge-to-region latency from specific locations.
+        </p>
+        <a
+          href="https://docs.microsoft.com/en-us/azure/network-watcher/view-relative-latencies"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="card-cta"
+          aria-label="Network Watcher guide (opens in new tab)"
+        >
+          Network Watcher guide
+          <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
+        </a>
+      </article>
+      <article class="card card-resource">
+        <h3 class="card-title">Troubleshooting network performance</h3>
+        <p class="card-description">
+          Follow a diagnostic checklist to resolve throughput or latency concerns on ExpressRoute.
+        </p>
+        <a
+          href="https://docs.microsoft.com/en-us/azure/expressroute/expressroute-troubleshooting-network-performance"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="card-cta"
+          aria-label="ExpressRoute troubleshooting (opens in new tab)"
+        >
+          ExpressRoute troubleshooting
+          <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
+        </a>
+      </article>
+      <article class="card card-resource">
+        <h3 class="card-title">Which cloud performs better, AWS, Azure or Google?</h3>
+        <p class="card-description">
+          Explore an industry comparison of backbone design choices across major cloud providers.
+        </p>
+        <a
+          href="https://www.networkworld.com/article/3319776/the-network-matters-for-public-cloud-performance.html"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="card-cta"
+          aria-label="Compare cloud providers (opens in new tab)"
+        >
+          Compare cloud providers
+          <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
+        </a>
+      </article>
+      <article class="card card-resource">
+        <h3 class="card-title">Round trip between Azure regions</h3>
+        <p class="card-description">
+          Dive into the Learn article for architectural best practices and historical latency
+          charts.
+        </p>
+        <a
+          href="https://learn.microsoft.com/en-us/azure/networking/azure-network-latency"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="card-cta"
+          aria-label="View best practices (opens in new tab)"
+        >
+          View best practices
+          <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
+        </a>
+      </article>
     </div>
   </section>
-</div>
+</article>

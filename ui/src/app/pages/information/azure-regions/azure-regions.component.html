@@ -1,327 +1,400 @@
-<div class="regions page-container py-3">
-  <header class="mb-8 flex flex-col gap-6">
-    <div class="page-intro">
-      <h1 class="page-title page-intro__title">Azure Regions</h1>
-      <p class="page-intro__description max-w-3xl text-base">
-        Azure regions are sets of datacenters inside a latency-defined perimeter, connected through
-        a dedicated regional network. Explore availability, geography, and restricted access
-        locations.
-      </p>
-    </div>
-    <aside class="flex flex-wrap items-center gap-2 text-sm">
-      <span class="text-xs font-semibold uppercase tracking-wide text-slate-600">
-        Other Azure clouds
-      </span>
-      <a [routerLink]="['/Information/AzureChinaRegions']" class="app-tag app-tag--primary">
-        China operated by 21Vianet
-      </a>
-      <a [routerLink]="['/Information/AzureUSGovernmentRegions']" class="app-tag app-tag--primary">
-        US Government regions
-      </a>
-    </aside>
+<article class="page-shell section-stack mx-auto max-w-5xl">
+  <header class="page-header">
+    <h1 class="page-title">Azure regions</h1>
+    <p class="page-lead">
+      Azure regions are sets of datacenters inside a latency-defined perimeter, connected through a
+      dedicated regional network. Explore availability, geography, and restricted access locations.
+    </p>
   </header>
 
-  <section class="mb-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-    <article class="regions__card regions__card--brand regions__stat-card">
-      <span class="block text-xs font-semibold uppercase tracking-wide text-slate-600">
-        Global cloud regions
-      </span>
-      <span class="text-2xl font-semibold text-slate-900">
-        {{ filteredAzureGlobalCloudRegions().length }}
-      </span>
-    </article>
-    <article class="regions__card regions__card--warning regions__stat-card">
-      <span class="block text-xs font-semibold uppercase tracking-wide text-slate-600">
-        Restricted regions
-      </span>
-      <span class="text-2xl font-semibold text-slate-900">
-        {{ filteredAccessRestrictedRegions().length }}
-      </span>
-    </article>
-    <article class="regions__card regions__card--success regions__stat-card">
-      <span class="block text-xs font-semibold uppercase tracking-wide text-slate-600">
-        Upcoming regions
-      </span>
-      <span class="text-2xl font-semibold text-slate-900">
-        {{ upcomingRegions.length }}
-      </span>
-    </article>
-  </section>
-
-  <section class="mb-8 grid gap-4 md:grid-cols-2">
-    <div class="flex flex-col gap-2">
-      <label for="searchInput" class="text-sm font-semibold text-slate-900">Search regions</label>
-      <div
-        class="flex items-center gap-3 rounded-xl border border-brand/20 bg-white px-3 py-2 shadow-sm"
-      >
-        <app-hero-icon name="heroMagnifyingGlass" class="h-4 w-4 text-brand" aria-hidden="true" />
-        <input
-          type="text"
-          id="searchInput"
-          placeholder="Search by region name or location…"
-          [formControl]="searchControl"
-        />
-        @if (hasSearchTerm()) {
-          <button
-            type="button"
-            (click)="clearSearch()"
-            aria-label="Clear search"
-            class="text-slate-500 transition-colors hover:text-slate-700"
-          >
-            <app-hero-icon name="heroXMark" class="h-4 w-4" aria-hidden="true" />
-          </button>
-        }
-      </div>
-    </div>
-    <div class="flex flex-col gap-2">
-      <label for="geographyFilter" class="text-sm font-semibold text-slate-900">
-        Filter by geography
-      </label>
-      <select
-        id="geographyFilter"
-        [formControl]="geographyControl"
-        class="rounded-xl border border-brand/20 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/30"
-      >
-        <option value="">All region groups</option>
-        @for (regionGroup of availableRegionGroups(); track regionGroup) {
-          <option [value]="regionGroup">
-            {{ regionGroup }}
-          </option>
-        }
-      </select>
-    </div>
-  </section>
-
-  <section class="regions__section">
-    <header class="regions__section-header">
-      <h2 class="content-heading">Azure Global Cloud Regions</h2>
-      <p>Browse live production regions with geography, paired region, launch year, and availability zone details.</p>
-    </header>
-    <div
-      class="region-table region-table--card"
+  <aside class="flex flex-wrap items-center gap-2 text-sm">
+    <span class="eyebrow-muted">Other Azure clouds</span>
+    <a
+      [routerLink]="['/Information/AzureChinaRegions']"
+      class="badge badge-brand transition hover:bg-brand/20"
     >
-      <div class="region-table__scroll">
-        <table class="region-table__table w-full border-collapse text-sm">
-          <thead
-            class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500"
+      China operated by 21Vianet
+    </a>
+    <a
+      [routerLink]="['/Information/AzureUSGovernmentRegions']"
+      class="badge badge-brand transition hover:bg-brand/20"
+    >
+      US Government regions
+    </a>
+  </aside>
+
+  <section class="section-block" aria-labelledby="regions-stats-heading">
+    <h2 id="regions-stats-heading" class="sr-only">Region statistics</h2>
+    <div class="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <article
+        class="flex flex-col gap-2 rounded-2xl border border-brand/40 bg-surface-raised p-4 shadow-sm"
+      >
+        <span class="eyebrow-muted">Total regions</span>
+        <span class="text-2xl font-semibold text-text-strong">
+          {{ totalRegions() }}
+        </span>
+      </article>
+      <article
+        class="flex flex-col gap-2 rounded-2xl border border-brand/40 bg-surface-raised p-4 shadow-sm"
+      >
+        <span class="eyebrow-muted">Availability zones</span>
+        <span class="text-2xl font-semibold text-text-strong">
+          {{ totalAZs() }}
+        </span>
+      </article>
+      <article
+        class="flex flex-col gap-2 rounded-2xl border border-brand/40 bg-surface-raised p-4 shadow-sm"
+      >
+        <span class="eyebrow-muted">Geographies</span>
+        <span class="text-2xl font-semibold text-text-strong">
+          {{ uniqueGeographies() }}
+        </span>
+      </article>
+      <article
+        class="flex flex-col gap-2 rounded-2xl border border-success/60 bg-surface-raised p-4 shadow-sm"
+      >
+        <span class="eyebrow-muted">Upcoming regions</span>
+        <span class="text-2xl font-semibold text-text-strong">
+          {{ upcomingRegions.length }}
+        </span>
+      </article>
+    </div>
+    <form [formGroup]="filtersForm" class="grid gap-4 md:grid-cols-2" role="search">
+      <div class="flex flex-col gap-3">
+        <label for="searchInput" class="text-sm font-medium text-text-body">Search regions</label>
+        <div class="relative">
+          <app-lucide-icon
+            name="search"
+            class="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-text-muted"
+            aria-hidden="true"
+          />
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="Search by region name, location, or launch year…"
+            formControlName="search"
+            class="h-9 w-full rounded-md border border-border-contrast bg-transparent pr-3 pl-9 text-sm text-text-body shadow-sm transition-colors placeholder:text-text-placeholder focus:ring-1 focus:ring-brand focus:outline-none"
+            autocomplete="off"
+          />
+        </div>
+      </div>
+      <div class="flex flex-col gap-3">
+        <label for="geographyFilter" class="text-sm font-medium text-text-body">
+          Filter by geography
+        </label>
+        <div class="relative">
+          <select
+            id="geographyFilter"
+            formControlName="geography"
+            class="h-9 w-full appearance-none rounded-md border border-border-contrast bg-surface-base px-3 pr-8 text-sm text-text-body shadow-sm transition-colors focus:ring-1 focus:ring-brand focus:outline-none"
           >
-            <tr>
-              <th class="px-3 py-3">Region</th>
-              <th class="px-3 py-3">Geography</th>
-              <th class="px-3 py-3">Datacenter Location</th>
-              <th class="px-3 py-3">Availability zones</th>
-              <th class="px-3 py-3">Paired region</th>
-              <th class="w-20 px-3 py-3 text-right">Launched</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (region of filteredAzureGlobalCloudRegions(); track region.regionId) {
-              <tr
-                class="region-table__row"
-              >
-                <td class="region-table__cell region-table__cell--region px-3 py-3 align-top">
-                  <div class="flex flex-col gap-1">
-                    <a
-                      class="region-table__region-link"
-                      [routerLink]="['/Information/AzureRegions', region.regionId]"
-                    >
-                      <span class="region-table__region-link-label">{{ region.displayName }}</span>
-                      <app-hero-icon
-                        name="heroArrowTopRightOnSquare"
-                        class="region-table__region-link-icon"
-                        aria-hidden="true"
-                      />
-                    </a>
-                  </div>
-                </td>
-                <td class="region-table__cell px-3 py-3 align-top text-slate-600">
-                  {{ region.geography }}
-                </td>
-                <td
-                  class="region-table__cell region-table__cell--location min-w-[7rem] px-3 py-3 align-top text-slate-600"
-                >
-                  {{ region.datacenterLocation }}
-                </td>
-                <td class="region-table__cell region-table__cell--zones px-3 py-3 align-top">
-                  <span
-                    class="app-badge-pill"
-                    [class.app-badge-pill--success]="!!region.availabilityZoneCount"
-                    [class.app-badge-pill--warning]="!region.availabilityZoneCount"
+            <option value="">All region groups</option>
+            @for (regionGroup of availableRegionGroups; track regionGroup) {
+              <option [value]="regionGroup">
+                {{ regionGroup }}
+              </option>
+            }
+          </select>
+          <app-lucide-icon
+            name="chevron-down"
+            class="pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 text-text-muted"
+            aria-hidden="true"
+          />
+        </div>
+      </div>
+    </form>
+  </section>
+
+  <section class="section-block" aria-labelledby="global-regions-heading">
+    <h2 id="global-regions-heading" class="section-title mb-4">Azure global cloud regions</h2>
+    <p class="mb-4 text-base leading-relaxed text-text-body">
+      Browse live production regions with geography, paired region, launch year, and availability
+      zone details.
+    </p>
+    <div class="table-shell">
+      <table class="table-base">
+        <thead class="table-head">
+          <tr>
+            <th class="px-4 py-3">Region</th>
+            <th class="px-4 py-3">Geography</th>
+            <th class="px-4 py-3">Datacenter</th>
+            <th class="px-4 py-3 text-right">Availability zones</th>
+            <th class="px-4 py-3">Paired region</th>
+            <th class="w-20 px-4 py-3 text-right">Launched</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border-soft">
+          @for (region of filteredAzureGlobalCloudRegions(); track region.regionId) {
+            <tr class="table-row-hover">
+              <td class="px-4 py-3">
+                <div class="space-y-1 text-left">
+                  <a
+                    class="link-primary font-semibold"
+                    [routerLink]="buildRegionRouterLink(region.displayName)"
                   >
-                    {{ region.availabilityZoneCount || 'Not supported' }}
-                  </span>
-                </td>
-                <td
-                  class="region-table__cell region-table__cell--paired px-3 py-3 align-top text-slate-600"
-                >
-                  {{ region.pairedRegion || '-' }}
-                </td>
-                <td
-                  class="region-table__cell region-table__cell--launch px-3 py-3 text-right text-slate-700"
-                >
-                  {{ region.launchYear || '-' }}
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-      @if (!filteredAzureGlobalCloudRegions().length) {
-        <div class="px-4 py-6 text-center text-sm text-slate-500">
-          No regions match your filters. Try adjusting your search.
-        </div>
-      }
-    </div>
-  </section>
-
-  <section class="regions__section">
-    <header class="regions__section-header">
-      <h2 class="content-heading">Access Restricted Regions</h2>
-      <p>Azure regions with limited availability, typically requiring special onboarding.</p>
-    </header>
-    <div
-      class="region-table region-table--card"
-    >
-      <div class="region-table__scroll">
-        <table class="region-table__table w-full border-collapse text-sm">
-          <thead
-            class="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500"
-          >
-            <tr>
-              <th class="px-3 py-3">Region</th>
-              <th class="px-3 py-3">Geography</th>
-              <th class="px-3 py-3">Datacenter Location</th>
-              <th class="px-3 py-3">Available to</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (region of filteredAccessRestrictedRegions(); track region.regionId) {
-              <tr
-                class="region-table__row"
-              >
-                <td class="region-table__cell region-table__cell--region px-3 py-3 align-top">
-                  <div class="flex flex-col gap-1">
-                    <a
-                      class="region-table__region-link"
-                      [routerLink]="['/Information/AzureRegions', region.regionId]"
-                    >
-                      <span class="region-table__region-link-label">{{ region.displayName }}</span>
-                      <app-hero-icon
-                        name="heroArrowTopRightOnSquare"
-                        class="region-table__region-link-icon"
-                        aria-hidden="true"
-                      />
-                    </a>
+                    {{ region.displayName }}
+                    <span aria-hidden="true" class="text-text-muted">></span>
+                  </a>
+                  <div class="text-xs font-semibold tracking-wide text-text-subtle uppercase">
+                    {{ region.regionId }}
                   </div>
-                </td>
-                <td class="region-table__cell px-3 py-3 align-top text-slate-600">
-                  {{ region.geography }}
-                </td>
-                <td
-                  class="region-table__cell region-table__cell--location min-w-[7rem] px-3 py-3 align-top text-slate-600"
-                >
-                  {{ region.datacenterLocation }}
-                </td>
-                <td
-                  class="region-table__cell region-table__cell--available max-w-[17rem] whitespace-pre-line break-words px-3 py-3 align-top text-sm leading-6 text-slate-700"
-                >
-                  {{ region.availableTo || 'Limited availability' }}
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-      @if (!filteredAccessRestrictedRegions().length) {
-        <div class="px-4 py-6 text-center text-sm text-slate-500">
-          No restricted regions match your filters.
+                </div>
+              </td>
+              <td class="px-4 py-3 text-text-muted">
+                {{ region.geography }}
+              </td>
+              <td class="px-4 py-3 text-text-muted">
+                {{ region.datacenterLocation }}
+              </td>
+              <td class="px-4 py-3 text-right">
+                @if (region.availabilityZoneCount) {
+                  <span
+                    class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-success text-sm font-semibold text-success-foreground tabular-nums"
+                  >
+                    {{ region.availabilityZoneCount }}
+                  </span>
+                } @else {
+                  <span class="text-text-muted">-</span>
+                }
+              </td>
+              <td class="px-4 py-3 text-text-muted">
+                {{ region.pairedRegion || '-' }}
+              </td>
+              <td class="px-4 py-3 text-right text-text-body">
+                {{ region.launchYear || '-' }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      @if (!filteredAzureGlobalCloudRegions().length) {
+        <div
+          class="flex flex-col items-center justify-center gap-3 px-4 py-6 text-center text-sm text-text-muted"
+        >
+          <app-lucide-icon name="search" class="h-8 w-8 text-text-muted" aria-hidden="true" />
+          <p>No regions match your filters.</p>
+          @if (hasActiveFilters()) {
+            <button type="button" class="btn btn-outline btn--sm" (click)="clearFilters()">
+              <app-lucide-icon name="x" class="h-3 w-3" aria-hidden="true" />
+              Clear Filters
+            </button>
+          }
         </div>
       }
     </div>
   </section>
 
-  <section class="regions__section">
-    <header class="regions__section-header">
-      <h2 class="content-heading">Upcoming Azure Regions</h2>
-      <p>Microsoft-announced regions that are under development.</p>
-    </header>
+  <section class="section-block" aria-labelledby="restricted-regions-heading">
+    <h2 id="restricted-regions-heading" class="section-title mb-4">Access restricted regions</h2>
+    <p class="mb-4 text-base leading-relaxed text-text-body">
+      Azure regions with limited availability, typically requiring special onboarding.
+    </p>
+    <div class="table-shell">
+      <table class="table-base">
+        <thead class="table-head">
+          <tr>
+            <th class="px-4 py-3">Region</th>
+            <th class="px-4 py-3">Geography</th>
+            <th class="px-4 py-3">Datacenter</th>
+            <th class="px-4 py-3">Available to</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border-soft">
+          @for (region of filteredAccessRestrictedRegions(); track region.regionId) {
+            <tr class="table-row-hover">
+              <td class="px-4 py-3">
+                <div class="space-y-1 text-left">
+                  <a
+                    class="link-primary font-semibold"
+                    [routerLink]="buildRegionRouterLink(region.displayName)"
+                  >
+                    {{ region.displayName }}
+                    <span aria-hidden="true" class="text-text-muted">></span>
+                  </a>
+                  <div class="text-xs font-semibold tracking-wide text-text-subtle uppercase">
+                    {{ region.regionId }}
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 text-text-muted">
+                {{ region.geography }}
+              </td>
+              <td class="px-4 py-3 text-text-muted">
+                {{ region.datacenterLocation }}
+              </td>
+              <td class="px-4 py-3 text-text-body">
+                {{ region.availableTo || 'Limited availability' }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      @if (!filteredAccessRestrictedRegions().length) {
+        <div
+          class="flex flex-col items-center justify-center gap-3 px-4 py-6 text-center text-sm text-text-muted"
+        >
+          <app-lucide-icon name="search" class="h-8 w-8 text-text-muted" aria-hidden="true" />
+          <p>No restricted regions match your filters.</p>
+          @if (hasActiveFilters()) {
+            <button type="button" class="btn btn-outline btn--sm" (click)="clearFilters()">
+              <app-lucide-icon name="x" class="h-3 w-3" aria-hidden="true" />
+              Clear Filters
+            </button>
+          }
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="section-block" aria-labelledby="upcoming-regions-heading">
+    <h2 id="upcoming-regions-heading" class="section-title mb-4">Upcoming Azure regions</h2>
+    <p class="mb-4 text-base leading-relaxed text-text-body">
+      Microsoft-announced regions that are under development.
+    </p>
     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
       @for (region of upcomingRegions; track region.name) {
-        <article class="regions__card regions__card--brand">
-          <span class="text-xs font-semibold uppercase tracking-wide text-slate-600">
-            {{ region.country }}
-          </span>
-          <h3 class="mt-2 text-lg font-semibold text-slate-900">{{ region.name }}</h3>
+        <article
+          class="flex flex-col gap-3 rounded-2xl border border-brand/40 bg-surface-raised p-4 shadow-sm"
+        >
+          <span class="eyebrow-muted">{{ region.country }}</span>
+          <h3 class="mt-2 text-lg font-semibold text-text-strong">{{ region.name }}</h3>
           <a
-            class="inline-flex items-center gap-1.5 text-sm font-semibold text-brand transition hover:text-brand/80"
+            class="link-primary inline-flex items-center gap-1.5 text-sm"
             [href]="region.link"
             target="_blank"
             rel="noopener noreferrer"
           >
             Learn more
-            <app-hero-icon
-              name="heroArrowTopRightOnSquare"
-              class="h-4 w-4 text-brand"
-              aria-hidden="true"
-            />
+            <app-lucide-icon name="external-link" class="h-4 w-4 text-brand" aria-hidden="true" />
           </a>
         </article>
       }
     </div>
   </section>
 
-  <section class="mt-12">
-    <header class="regions__section-header">
-      <h2 class="content-heading">Frequently asked questions</h2>
-      <p>Helpful context when planning region-specific deployments.</p>
-    </header>
-    <div class="mt-6 space-y-4">
-      <details class="faq-item">
-        <summary class="faq-item__summary">
-          <span class="faq-item__summary-text">
-            What defines an Azure region?
-          </span>
-          <app-hero-icon
-            name="heroChevronDown"
-            class="faq-item__icon"
-            aria-hidden="true"
-          />
+  <section class="section-block" aria-labelledby="key-concepts-heading">
+    <h2 id="key-concepts-heading" class="section-title mb-4">Key concepts</h2>
+    <p class="mb-4 text-text-muted">
+      Understanding these architectural concepts helps you design resilient Azure deployments.
+    </p>
+    <div class="grid gap-4 md:grid-cols-2">
+      <article class="rounded-2xl border border-border-soft bg-surface-raised p-5 shadow-sm">
+        <div class="flex items-center gap-3">
+          <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+            <app-lucide-icon
+              name="arrow-left-right"
+              class="h-5 w-5 text-primary"
+              aria-hidden="true"
+            />
+          </div>
+          <h3 class="text-lg font-semibold text-text-strong">Paired regions</h3>
+        </div>
+        <p class="mt-3 text-sm leading-relaxed text-text-muted">
+          Most Azure regions are paired with another region within the same geography, located at
+          least 300 miles apart. Paired regions enable geo-redundant storage replication and receive
+          prioritized recovery during widespread outages.
+        </p>
+        <ul class="mt-3 space-y-1.5 text-sm text-text-body">
+          <li class="flex items-start gap-2">
+            <app-lucide-icon
+              name="check"
+              class="mt-0.5 h-4 w-4 shrink-0 text-success"
+              aria-hidden="true"
+            />
+            Sequential platform updates to minimize downtime
+          </li>
+          <li class="flex items-start gap-2">
+            <app-lucide-icon
+              name="check"
+              class="mt-0.5 h-4 w-4 shrink-0 text-success"
+              aria-hidden="true"
+            />
+            Prioritized recovery during region-wide failures
+          </li>
+          <li class="flex items-start gap-2">
+            <app-lucide-icon
+              name="check"
+              class="mt-0.5 h-4 w-4 shrink-0 text-success"
+              aria-hidden="true"
+            />
+            Data residency maintained within geography
+          </li>
+        </ul>
+      </article>
+      <article class="rounded-2xl border border-border-soft bg-surface-raised p-5 shadow-sm">
+        <div class="flex items-center gap-3">
+          <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+            <app-lucide-icon name="building-2" class="h-5 w-5 text-primary" aria-hidden="true" />
+          </div>
+          <h3 class="text-lg font-semibold text-text-strong">Availability zones</h3>
+        </div>
+        <p class="mt-3 text-sm leading-relaxed text-text-muted">
+          Availability zones are physically separate datacenters within a region, each with
+          independent power, cooling, and networking. Deploying across zones protects against
+          datacenter-level failures.
+        </p>
+        <ul class="mt-3 space-y-1.5 text-sm text-text-body">
+          <li class="flex items-start gap-2">
+            <app-lucide-icon
+              name="check"
+              class="mt-0.5 h-4 w-4 shrink-0 text-success"
+              aria-hidden="true"
+            />
+            99.99% SLA for zone-redundant deployments
+          </li>
+          <li class="flex items-start gap-2">
+            <app-lucide-icon
+              name="check"
+              class="mt-0.5 h-4 w-4 shrink-0 text-success"
+              aria-hidden="true"
+            />
+            Sub-2ms latency between zones in a region
+          </li>
+          <li class="flex items-start gap-2">
+            <app-lucide-icon
+              name="check"
+              class="mt-0.5 h-4 w-4 shrink-0 text-success"
+              aria-hidden="true"
+            />
+            Independent infrastructure to isolate failures
+          </li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <section class="section-block" aria-labelledby="regions-faq-heading">
+    <h2 id="regions-faq-heading" class="section-title mb-4">Frequently asked questions</h2>
+    <p class="mb-4 text-text-muted">Helpful context when planning region-specific deployments.</p>
+    <div class="faq-list">
+      <details class="faq-item group">
+        <summary class="faq-summary">
+          <span class="faq-question">What defines an Azure region?</span>
+          <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
         </summary>
-        <div class="faq-item__body">
+        <div class="faq-body">
           Azure regions are sets of datacenters connected through a dedicated low-latency network.
           They are grouped into geographies for data residency and compliance. Some services require
           availability zones, which are multiple independent datacenters within a region.
         </div>
       </details>
-      <details class="faq-item">
-        <summary class="faq-item__summary">
-          <span class="faq-item__summary-text">
-            How do paired regions work?
-          </span>
-          <app-hero-icon
-            name="heroChevronDown"
-            class="faq-item__icon"
-            aria-hidden="true"
-          />
+      <details class="faq-item group">
+        <summary class="faq-summary">
+          <span class="faq-question">How do paired regions work?</span>
+          <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
         </summary>
-        <div class="faq-item__body">
+        <div class="faq-body">
           Every Azure region is paired with another region within the same geography for disaster
           recovery. Paired regions are designed to be at least 300 miles apart and prioritized for
           sequential updates to reduce downtime during platform maintenance.
         </div>
       </details>
-      <details class="faq-item">
-        <summary class="faq-item__summary">
-          <span class="faq-item__summary-text">
-            Why are some regions restricted?
-          </span>
-          <app-hero-icon
-            name="heroChevronDown"
-            class="faq-item__icon"
-            aria-hidden="true"
-          />
+      <details class="faq-item group">
+        <summary class="faq-summary">
+          <span class="faq-question">Why are some regions restricted?</span>
+          <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
         </summary>
-        <div class="faq-item__body">
+        <div class="faq-body">
           Regions like Azure Government or Azure China require additional onboarding due to
           compliance or sovereignty requirements. Customers must meet specific eligibility criteria
           before gaining access to these datacenters.
@@ -330,52 +403,56 @@
     </div>
   </section>
 
-  <section class="regions__resources mt-5">
-    <header class="regions__section-header">
-      <h2 class="content-heading">Additional resources</h2>
-      <p>Deeper guidance for planning deployments across Azure regions.</p>
-    </header>
-    <div class="regions-resources__grid">
-      <article class="resource-card">
-        <h3 class="resource-card__title">Azure datacenters map</h3>
-        <p class="resource-card__body">Explore Microsoft's datacenters around the globe.</p>
+  <section class="section-block" aria-labelledby="regions-resources-heading">
+    <h2 id="regions-resources-heading" class="section-title mb-4">Additional resources</h2>
+    <p class="mb-4 text-text-muted">
+      Deeper guidance for planning deployments across Azure regions.
+    </p>
+    <div class="resource-grid">
+      <article class="card card-resource">
+        <h3 class="card-title">Azure datacenters map</h3>
+        <p class="card-description">Explore Microsoft's datacenters around the globe.</p>
         <a
           href="https://datacenters.microsoft.com/globe/explore"
           target="_blank"
           rel="noopener noreferrer"
-          class="resource-card__link"
+          class="card-cta"
+          aria-label="Learn more about Azure datacenters map (opens in new tab)"
         >
           Learn more
+          <app-lucide-icon name="external-link" class="h-3.5 w-3.5" aria-hidden="true" />
         </a>
       </article>
-      <article class="resource-card">
-        <h3 class="resource-card__title">Select Azure regions</h3>
-        <p class="resource-card__body">Guidance on choosing regions for your workloads.</p>
+      <article class="card card-resource">
+        <h3 class="card-title">Select Azure regions</h3>
+        <p class="card-description">Guidance on choosing regions for your workloads.</p>
         <a
           href="https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-setup-guide/regions"
           target="_blank"
           rel="noopener noreferrer"
-          class="resource-card__link"
+          class="card-cta"
+          aria-label="Learn more about selecting Azure regions (opens in new tab)"
         >
           Learn more
+          <app-lucide-icon name="external-link" class="h-3.5 w-3.5" aria-hidden="true" />
         </a>
       </article>
-      <article class="resource-card">
-        <h3 class="resource-card__title">BCDR & cross-region replication</h3>
-        <p class="resource-card__body">
+      <article class="card card-resource">
+        <h3 class="card-title">BCDR & cross-region replication</h3>
+        <p class="card-description">
           Strategies for cross-region redundancy and disaster recovery.
         </p>
         <a
           href="https://learn.microsoft.com/en-us/azure/reliability/cross-region-replication-azure"
           target="_blank"
           rel="noopener noreferrer"
-          class="resource-card__link"
+          class="card-cta"
+          aria-label="Learn more about BCDR and cross-region replication (opens in new tab)"
         >
           Learn more
+          <app-lucide-icon name="external-link" class="h-3.5 w-3.5" aria-hidden="true" />
         </a>
       </article>
     </div>
   </section>
-</div>
-
-
+</article>

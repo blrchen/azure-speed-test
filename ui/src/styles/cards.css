@@ -1,0 +1,127 @@
+/* ===========================================
+   CARD SYSTEM
+   =========================================== */
+
+/* --- Base --- */
+.card {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border-soft);
+  background-color: var(--color-surface-raised);
+  padding: 1rem;
+  box-shadow: var(--shadow-card);
+}
+
+:root {
+  --card-inner-radius: var(--radius-lg);
+}
+
+/* --- Variants --- */
+.card-interactive {
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+.card-interactive:hover {
+  border-color: color-mix(in srgb, var(--color-primary) 40%, transparent);
+  box-shadow: var(--shadow-lg);
+}
+.card-interactive:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 40%, transparent);
+}
+
+.card-muted {
+  background-color: var(--color-secondary);
+}
+
+.card-accent {
+  border-color: color-mix(in srgb, var(--color-brand) 20%, transparent);
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--color-brand) 5%, transparent),
+    var(--color-surface-raised),
+    var(--color-surface-raised)
+  );
+}
+
+.card-stat {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.card-tall {
+  min-height: 16rem;
+}
+
+/* --- Resource Card (interactive + column layout) --- */
+.card-resource {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 0.5rem;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+.card-resource:hover {
+  border-color: color-mix(in srgb, var(--color-primary) 40%, transparent);
+  box-shadow: var(--shadow-lg);
+}
+.card-resource:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 40%, transparent);
+}
+
+/* --- Structural Elements --- */
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-border-soft);
+  margin-bottom: 0.75rem;
+}
+
+.card-body {
+  flex: 1;
+}
+
+.card-text {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.card-title {
+  font-weight: 600;
+  color: var(--color-text-strong);
+}
+
+.card-description {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  flex: 1;
+}
+
+.card-cta {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-link-primary);
+  border-radius: 0.375rem;
+}
+.card-cta:hover {
+  color: var(--color-link-hover);
+}
+.card-cta:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-brand) 30%, transparent);
+}
+
+.card-inline {
+  border-radius: 0;
+  border: 0;
+  background-color: transparent;
+  padding: 1.5rem 0 0 0;
+  box-shadow: none;
+}

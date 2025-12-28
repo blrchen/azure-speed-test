@@ -1,30 +1,56 @@
-import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core'
-import { RouterLink, RouterOutlet } from '@angular/router'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  signal
+} from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import {
+  NavigationCancel,
+  NavigationEnd,
+  NavigationError,
+  NavigationStart,
+  RouteConfigLoadEnd,
+  RouteConfigLoadStart,
+  Router,
+  RouterLink,
+  RouterOutlet
+} from '@angular/router'
+
 import { FooterComponent } from './shared/footer/footer.component'
-import { HeroIconComponent } from './shared/icons/hero-icons.imports'
+import { LucideIconComponent } from './shared/icons/lucide-icons.component'
 import { NavGroup, NavGroupsComponent } from './shared/nav-groups/nav-groups.component'
+import { ThemeToggleComponent } from './shared/theme'
 
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [
-    CommonModule,
     RouterOutlet,
     RouterLink,
     FooterComponent,
     NavGroupsComponent,
-    HeroIconComponent
+    LucideIconComponent,
+    ThemeToggleComponent
   ],
   host: {
     '(document:keydown.escape)': 'handleEscapeKey()'
   },
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css',
+  templateUrl: './app.html',
+  styleUrl: './app.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AppComponent {
+export class App {
+  private readonly router = inject(Router)
+  private readonly destroyRef = inject(DestroyRef)
+
   readonly mobileNavOpen = signal(false)
+  readonly isRouteLoading = signal(false)
+  private readonly hasCompletedInitialNavigation = signal(false)
+  readonly showRouteLoader = computed(
+    () => this.hasCompletedInitialNavigation() && this.isRouteLoading()
+  )
 
   readonly navGroups = signal<NavGroup[]>([
     {
@@ -32,12 +58,12 @@ export class AppComponent {
       items: [
         {
           label: 'ChatGPT Coding Assistant',
-          icon: 'heroCodeBracket',
+          icon: 'braces',
           routerLink: '/ChatGPT/CodeAssistant'
         },
         {
           label: 'ChatGPT Writing Assistant',
-          icon: 'heroPencilSquare',
+          icon: 'pencil',
           routerLink: '/ChatGPT/WritingAssistant'
         }
       ]
@@ -47,32 +73,32 @@ export class AppComponent {
       items: [
         {
           label: 'Azure Latency Test',
-          icon: 'heroBolt',
+          icon: 'zap',
           routerLink: '/Azure/Latency'
         },
         {
           label: 'Region to Region Latency',
-          icon: 'heroArrowsRightLeft',
+          icon: 'arrow-left-right',
           routerLink: '/Azure/RegionToRegionLatency'
         },
         {
           label: 'PsPing Network Latency Test',
-          icon: 'heroSignal',
+          icon: 'signal-high',
           routerLink: '/Azure/PsPing'
         },
         {
           label: 'Download Speed Test',
-          icon: 'heroArrowDownTray',
+          icon: 'download',
           routerLink: '/Azure/Download'
         },
         {
           label: 'Upload Speed Test',
-          icon: 'heroArrowUpTray',
+          icon: 'upload',
           routerLink: '/Azure/Upload'
         },
         {
           label: 'Large File Upload Speed Test',
-          icon: 'heroArrowUpOnSquareStack',
+          icon: 'upload-cloud',
           routerLink: '/Azure/UploadLargeFile'
         }
       ]
@@ -82,27 +108,27 @@ export class AppComponent {
       items: [
         {
           label: 'Azure Regions',
-          icon: 'heroGlobeAmericas',
+          icon: 'globe-2',
           routerLink: '/Information/AzureRegions'
         },
         {
           label: 'Azure Availability Zones',
-          icon: 'heroServerStack',
+          icon: 'server',
           routerLink: '/Information/AzureAvailabilityZones'
         },
         {
           label: 'Azure Geographies',
-          icon: 'heroGlobeAlt',
+          icon: 'globe',
           routerLink: '/Information/AzureGeographies'
         },
         {
           label: 'Azure Sovereign Clouds',
-          icon: 'heroCloud',
+          icon: 'cloud',
           routerLink: '/Information/AzureSovereignClouds'
         },
         {
           label: 'Azure Environments',
-          icon: 'heroCog6Tooth',
+          icon: 'cog',
           routerLink: '/Information/AzureEnvironments'
         }
       ]
@@ -112,22 +138,22 @@ export class AppComponent {
       items: [
         {
           label: 'Azure IP Lookup',
-          icon: 'heroMagnifyingGlassCircle',
+          icon: 'search',
           routerLink: '/Azure/IPLookup'
         },
         {
           label: 'Azure IP Ranges',
-          icon: 'heroMap',
+          icon: 'map',
           routerLink: '/Information/AzureIpRanges/AzureCloud'
         },
         {
           label: 'Azure IP Ranges By Region',
-          icon: 'heroMapPin',
+          icon: 'map-pin',
           routerLink: '/Information/AzureIpRangesByRegion'
         },
         {
           label: 'Azure IP Ranges By Service',
-          icon: 'heroChartBar',
+          icon: 'bar-chart-3',
           routerLink: '/Information/AzureIpRangesByService'
         }
       ]
@@ -137,17 +163,35 @@ export class AppComponent {
       items: [
         {
           label: 'About',
-          icon: 'heroInformationCircle',
+          icon: 'info',
           routerLink: '/Azure/About'
-        },
-        {
-          label: 'Privacy Policy',
-          icon: 'heroShieldCheck',
-          routerLink: '/Privacy'
         }
       ]
     }
   ])
+
+  constructor() {
+    this.router.events.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event) => {
+      if (event instanceof NavigationStart || event instanceof RouteConfigLoadStart) {
+        if (this.hasCompletedInitialNavigation()) {
+          this.isRouteLoading.set(true)
+        }
+        return
+      }
+
+      if (
+        event instanceof RouteConfigLoadEnd ||
+        event instanceof NavigationEnd ||
+        event instanceof NavigationCancel ||
+        event instanceof NavigationError
+      ) {
+        this.isRouteLoading.set(false)
+        if (!this.hasCompletedInitialNavigation()) {
+          this.hasCompletedInitialNavigation.set(true)
+        }
+      }
+    })
+  }
 
   toggleMobileNav(): void {
     this.mobileNavOpen.update((open) => !open)

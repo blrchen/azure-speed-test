@@ -1,0 +1,29 @@
+* {
+  color-scheme: light dark;
+}
+
+html {
+  /* Prevent CLS from scrollbar appearance shifting centered content */
+  scrollbar-gutter: stable;
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: var(--tracking-normal);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
+}

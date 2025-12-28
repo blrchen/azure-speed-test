@@ -1,0 +1,92 @@
+<div
+  class="overflow-hidden rounded-lg border border-border-soft bg-surface-raised text-sm"
+  role="region"
+  aria-label="Connection details"
+>
+  <!-- Header row - always visible -->
+  <button
+    type="button"
+    class="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-surface-muted"
+    (click)="toggleVisibility.emit()"
+    [attr.aria-expanded]="isVisible()"
+    aria-controls="connection-details-content"
+  >
+    <div class="flex items-center gap-2">
+      <app-lucide-icon name="globe" class="size-4 text-text-subtle" aria-hidden="true" />
+      <span class="font-medium text-text-body">Your connection</span>
+    </div>
+    <app-lucide-icon
+      [name]="isVisible() ? 'chevron-down' : 'chevron-right'"
+      class="size-4 text-text-muted"
+      aria-hidden="true"
+    />
+  </button>
+
+  <!-- Expandable content -->
+  @if (isVisible()) {
+    <div
+      id="connection-details-content"
+      class="border-t border-border-soft px-4 py-3"
+      [attr.aria-busy]="isLoading()"
+    >
+      <dl class="grid gap-2 text-sm">
+        <!-- Network -->
+        <div class="flex items-center gap-3">
+          <dt class="flex w-20 shrink-0 items-center gap-1.5 text-text-subtle">
+            <app-lucide-icon name="building-2" class="size-3.5" aria-hidden="true" />
+            <span>Network</span>
+          </dt>
+          <dd class="min-w-0 truncate text-text-body">
+            @if (error()) {
+              <span class="text-text-muted">—</span>
+            } @else if (isLoading()) {
+              <span class="inline-block h-4 w-36 animate-pulse rounded bg-border-soft"></span>
+            } @else if (networkLabel()) {
+              {{ networkLabel() }}
+            } @else {
+              <span class="text-text-muted">—</span>
+            }
+          </dd>
+        </div>
+
+        <!-- Location -->
+        <div class="flex items-center gap-3">
+          <dt class="flex w-20 shrink-0 items-center gap-1.5 text-text-subtle">
+            <app-lucide-icon name="map-pin" class="size-3.5" aria-hidden="true" />
+            <span>Location</span>
+          </dt>
+          <dd class="min-w-0 truncate text-text-body">
+            @if (error()) {
+              <span class="text-text-muted">—</span>
+            } @else if (isLoading()) {
+              <span class="inline-block h-4 w-28 animate-pulse rounded bg-border-soft"></span>
+            } @else if (locationLabel()) {
+              {{ locationLabel() }}
+            } @else {
+              <span class="text-text-muted">—</span>
+            }
+          </dd>
+        </div>
+
+        <!-- IP Address -->
+        <div class="flex items-center gap-3">
+          <dt class="flex w-20 shrink-0 items-center gap-1.5 text-text-subtle">
+            <app-lucide-icon name="globe" class="size-3.5" aria-hidden="true" />
+            <span>IP</span>
+          </dt>
+          <dd class="min-w-0 truncate font-mono text-text-body">
+            @if (error()) {
+              <span class="text-text-muted">—</span>
+            } @else if (isLoading()) {
+              <span class="inline-block h-4 w-28 animate-pulse rounded bg-border-soft"></span>
+            } @else if (ipLabel()) {
+              {{ ipLabel() }}
+            } @else {
+              <span class="text-text-muted">—</span>
+            }
+          </dd>
+        </div>
+      </dl>
+    </div>
+  }
+</div>

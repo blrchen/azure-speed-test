@@ -1,0 +1,174 @@
+/* ==========================================================================
+   Badge Base
+   ========================================================================== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  height: 1.9rem;
+  min-width: 2.25rem;
+  justify-content: center;
+  border-radius: 9999px;
+  padding: 0 0.85rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background-color: var(--color-surface-muted);
+  color: var(--color-text-strong);
+  border: 1px solid var(--color-border-soft);
+  transition:
+    background-color 0.15s,
+    color 0.15s,
+    border-color 0.15s;
+}
+
+.badge:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--color-surface-base),
+    0 0 0 4px var(--color-primary);
+}
+
+/* ==========================================================================
+   Badge Variants (data-attribute approach)
+   ========================================================================== */
+.badge[data-variant='brand'],
+.badge-brand {
+  background-color: color-mix(in srgb, var(--color-brand) 12%, transparent);
+  border-color: color-mix(in srgb, var(--color-brand) 40%, transparent);
+  color: var(--color-brand);
+}
+
+.badge[data-variant='success'],
+.badge-success {
+  background-color: var(--color-success);
+  border-color: var(--color-success);
+  color: var(--color-success-foreground);
+}
+
+.badge[data-variant='warning'],
+.badge-warning {
+  background-color: var(--color-warning);
+  border-color: var(--color-warning);
+  color: var(--color-warning-foreground);
+}
+
+.badge[data-variant='danger'],
+.badge-danger {
+  background-color: var(--color-danger);
+  border-color: var(--color-danger);
+  color: var(--color-danger-foreground);
+}
+
+.badge[data-variant='neutral'],
+.badge-neutral {
+  background-color: var(--color-neutral-muted);
+  border-color: var(--color-border-soft);
+  color: var(--color-text-muted);
+}
+
+.badge[data-variant='secondary'],
+.badge-secondary {
+  background-color: var(--color-surface-muted);
+  border-color: var(--color-border-soft);
+  color: var(--color-text-body);
+}
+
+/* ==========================================================================
+   Pill Badge (step indicators, compact tags)
+   ========================================================================== */
+.pill-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.75rem;
+  min-width: 2.5rem;
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  line-height: 1.1;
+  box-shadow: var(--shadow-xs);
+  transition: all 0.15s;
+}
+
+/* ==========================================================================
+   Latency Badge (larger, centered for numeric values)
+   ========================================================================== */
+.badge-latency {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2rem;
+  min-width: 3.5rem;
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.1;
+  text-align: center;
+  box-shadow: var(--shadow-xs);
+  transition:
+    transform 0.15s ease-out,
+    box-shadow 0.15s ease-out;
+}
+
+.badge-latency:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-card);
+}
+
+.badge-latency-success {
+  background-color: var(--color-success);
+  color: var(--color-success-foreground);
+}
+
+.badge-latency-warning {
+  background-color: var(--color-warning);
+  color: var(--color-warning-foreground);
+}
+
+.badge-latency-danger {
+  background-color: var(--color-danger);
+  color: var(--color-danger-foreground);
+}
+
+.badge-latency-neutral {
+  background-color: var(--color-secondary);
+  color: var(--color-foreground);
+}
+
+/* ==========================================================================
+   Eyebrow (section labels, uppercase headings)
+   ========================================================================== */
+.eyebrow,
+.eyebrow-muted,
+.eyebrow-brand {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.eyebrow-xs {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-subtle);
+}
+
+.eyebrow {
+  color: var(--color-text-subtle);
+}
+
+.eyebrow-muted {
+  color: var(--color-text-muted);
+}
+
+.eyebrow-brand {
+  color: var(--color-brand-dark);
+}

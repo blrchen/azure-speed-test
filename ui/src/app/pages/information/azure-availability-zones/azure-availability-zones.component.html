@@ -1,216 +1,213 @@
-<div class="azones page-container py-3">
-  <header class="azones__hero">
-    <div class="page-intro azones__hero-copy">
-      <h1 class="page-title page-intro__title azones__title">Azure Availability Zones</h1>
-      <p class="page-intro__description azones__subtitle">
-        Availability Zones are physically separate datacenter locations within an Azure region. They
-        provide independent power, cooling, and networking so you can design high availability
-        workloads with minimal latency.
-      </p>
-    </div>
-    <aside class="azones__hero-hint">
+<article class="page-shell section-stack mx-auto max-w-5xl">
+  <header class="page-header">
+    <h1 class="page-title">Azure availability zones</h1>
+    <p class="page-lead">
+      Availability Zones are physically separate datacenter locations within an Azure region. They
+      provide independent power, cooling, and networking so you can design high availability
+      workloads with minimal latency.
+    </p>
+    <p class="mt-2 text-sm text-text-muted">
       Need the full region catalogue?
-      <a class="azones__chip" href="/Information/AzureRegions">Browse Azure regions</a>
-    </aside>
+      <a class="link-primary" [routerLink]="['/Information/AzureRegions']">Browse Azure regions</a>
+    </p>
   </header>
 
-  <section class="azones__summary">
-    <article class="azones-tile">
-      <span class="azones-tile__label">Regions with zones</span>
-      <span class="azones-tile__value">{{ tableData().length }}</span>
-    </article>
-    <article class="azones-tile">
-      <span class="azones-tile__label">VM SLA across zones</span>
-      <span class="azones-tile__value">99.99%</span>
-    </article>
-    <article class="azones-tile">
-      <span class="azones-tile__label">Typical zone latency</span>
-      <span class="azones-tile__value">&lt; 2&nbsp;ms</span>
-    </article>
-  </section>
-
-  <section class="azones__section">
-    <header class="regions__section-header">
-      <h2 class="content-heading">Azure regions with Availability Zone support</h2>
-      <p>
-        Deploy your resources across zones within a region to achieve higher resiliency without
-        significantly increasing latency.
-      </p>
-    </header>
-    <div class="azones__table-wrapper">
-      <table class="azones-table">
-        <thead>
-          <tr>
-            <th>Region</th>
-            <th>Geography</th>
-            <th>Datacenter location</th>
-            <th>Availability zones</th>
-            <th class="text-right">Details</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (r of tableData(); track r.regionId) {
-            <tr>
-              <td>
-                <div class="azones-table__region">
-                  <span class="azones-table__region-name">{{ r.displayName }}</span>
-                  <span class="azones-table__region-code">{{ r.regionId }}</span>
-                </div>
-              </td>
-              <td>{{ r.geography }}</td>
-              <td>{{ r.datacenterLocation }}</td>
-              <td>
-                <span class="azones-table__badge">
-                  {{ r.availabilityZoneCount || 'Not supported' }}
-                </span>
-              </td>
-              <td class="azones-table__actions">
-                <a
-                  class="azones-table__detail-link"
-                  [routerLink]="['/Information/AzureRegions', r.regionId]"
-                >
-                  View region
-                  <app-hero-icon
-                    name="heroArrowTopRightOnSquare"
-                    class="h-4 w-4"
-                    aria-hidden="true"
-                  />
-                </a>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-      @if (!tableData().length) {
-        <div class="azones-table__empty">No regions with Availability Zones were found.</div>
-      }
+  <section class="section-block" aria-labelledby="zones-stats-heading">
+    <h2 id="zones-stats-heading" class="sr-only">Availability zones statistics</h2>
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <article
+        class="flex flex-col gap-2 rounded-2xl border border-brand/40 bg-surface-raised px-5 py-4 shadow-sm"
+      >
+        <span class="eyebrow">Regions with zones</span>
+        <span class="text-3xl font-bold text-brand-dark">{{ tableData().length }}</span>
+      </article>
+      <article
+        class="flex flex-col gap-2 rounded-2xl border border-brand/40 bg-surface-raised px-5 py-4 shadow-sm"
+      >
+        <span class="eyebrow">VM SLA across zones</span>
+        <span class="text-3xl font-bold text-brand-dark">99.99%</span>
+      </article>
+      <article
+        class="flex flex-col gap-2 rounded-2xl border border-brand/40 bg-surface-raised px-5 py-4 shadow-sm"
+      >
+        <span class="eyebrow">Typical zone latency</span>
+        <span class="text-3xl font-bold text-brand-dark">&lt; 2&nbsp;ms</span>
+      </article>
     </div>
   </section>
 
-  <section class="regions__section mt-5">
-    <header class="regions__section-header">
-      <h2 class="content-heading">Additional resources</h2>
-      <p>Use these references to plan resilient architectures with Availability Zones.</p>
-    </header>
-    <div class="regions-resources__grid">
-      <article class="resource-card">
-        <h3 class="resource-card__title">Availability Zones overview</h3>
-        <p class="resource-card__body">
+  <section class="section-block" aria-labelledby="regions-zones-heading">
+    <h2 id="regions-zones-heading" class="section-title mb-4">
+      Azure regions with availability zone support
+    </h2>
+    @defer (on viewport; prefetch on idle) {
+      <div class="table-shell">
+        <table class="table-base">
+          <thead class="table-head">
+            <tr>
+              <th class="px-4 py-3">Region</th>
+              <th class="px-4 py-3">Geography</th>
+              <th class="px-4 py-3">Datacenter</th>
+              <th class="px-4 py-3 text-right">Availability zones</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border-soft">
+            @for (r of tableData(); track r.regionId) {
+              <tr class="table-row-hover">
+                <td class="px-4 py-3">
+                  <div class="space-y-1 text-left">
+                    <a
+                      class="link-primary font-semibold"
+                      [routerLink]="buildRegionRouterLink(r.displayName)"
+                    >
+                      {{ r.displayName }}
+                      <span aria-hidden="true" class="text-text-muted">></span>
+                    </a>
+                    <div class="text-xs font-semibold tracking-wide text-text-subtle uppercase">
+                      {{ r.regionId }}
+                    </div>
+                  </div>
+                </td>
+                <td class="px-4 py-3 text-text-muted">{{ r.geography }}</td>
+                <td class="px-4 py-3 text-text-muted">{{ r.datacenterLocation }}</td>
+                <td class="px-4 py-3 text-right">
+                  @if (r.availabilityZoneCount) {
+                    <span
+                      class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-success text-sm font-semibold text-success-foreground tabular-nums"
+                    >
+                      {{ r.availabilityZoneCount }}
+                    </span>
+                  } @else {
+                    <span class="text-text-muted">-</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        @if (!tableData().length) {
+          <div class="flex flex-col items-center justify-center gap-3 px-5 py-8 text-center">
+            <app-lucide-icon name="server" class="h-8 w-8 text-text-muted/70" aria-hidden="true" />
+            <p class="text-sm text-text-muted">No regions with Availability Zones were found.</p>
+          </div>
+        }
+      </div>
+    } @placeholder {
+      <div
+        class="rounded-2xl border border-border-soft bg-surface-raised px-4 py-5 shadow-sm"
+        role="status"
+        aria-label="Loading Availability Zones table"
+      >
+        <div class="skeleton-shimmer mb-3 h-6 w-40 rounded"></div>
+        <div class="skeleton-shimmer mb-2 h-10 w-full rounded"></div>
+        <div class="skeleton-shimmer mb-2 h-10 w-full rounded"></div>
+        <div class="skeleton-shimmer h-10 w-full rounded"></div>
+      </div>
+    }
+  </section>
+
+  <section class="section-block" aria-labelledby="az-resources-heading">
+    <h2 id="az-resources-heading" class="section-title mb-4">Additional resources</h2>
+    <p class="mb-4 text-sm text-text-muted">
+      Use these references to plan resilient architectures with Availability Zones.
+    </p>
+    <div class="resource-grid">
+      <article class="card card-resource">
+        <h3 class="card-title">Availability Zones overview</h3>
+        <p class="card-description">
           Understand the design goals, resiliency model, and supported services for Availability
           Zones.
         </p>
-        <a href="https://aka.ms/AZoverview" target="_blank" class="resource-card__link">
+        <a
+          href="https://aka.ms/AZoverview"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="card-cta"
+          aria-label="Learn more about Availability Zones overview (opens in new tab)"
+        >
           Learn more
+          <app-lucide-icon name="external-link" class="h-3.5 w-3.5" aria-hidden="true" />
         </a>
       </article>
-      <article class="resource-card">
-        <h3 class="resource-card__title">Regional support</h3>
-        <p class="resource-card__body">
+      <article class="card card-resource">
+        <h3 class="card-title">Regional support</h3>
+        <p class="card-description">
           Review which regions currently provide zone support and how Microsoft is expanding
           coverage.
         </p>
         <a
           href="https://learn.microsoft.com/en-us/azure/reliability/availability-zones-region-support"
           target="_blank"
-          class="resource-card__link"
+          rel="noopener noreferrer"
+          class="card-cta"
+          aria-label="Learn more about regional support (opens in new tab)"
         >
           Learn more
+          <app-lucide-icon name="external-link" class="h-3.5 w-3.5" aria-hidden="true" />
         </a>
       </article>
-      <article class="resource-card">
-        <h3 class="resource-card__title">Service zone support</h3>
-        <p class="resource-card__body">
+      <article class="card card-resource">
+        <h3 class="card-title">Service zone support</h3>
+        <p class="card-description">
           Check the list of Azure services that are zonal or zone-redundant in each supported
           region.
         </p>
         <a
           href="https://learn.microsoft.com/en-us/azure/reliability/availability-zones-service-support"
           target="_blank"
-          class="resource-card__link"
+          rel="noopener noreferrer"
+          class="card-cta"
+          aria-label="Learn more about service zone support (opens in new tab)"
         >
           Learn more
+          <app-lucide-icon name="external-link" class="h-3.5 w-3.5" aria-hidden="true" />
         </a>
       </article>
     </div>
   </section>
 
-  <section class="regions__section mt-12">
-    <header class="regions__section-header">
-      <h2 class="content-heading">Frequently asked questions</h2>
-    </header>
-    <div class="mt-6 space-y-4">
-      <details
-        class="group rounded-2xl border border-slate-200 bg-white/95 shadow-sm transition-colors duration-200 ease-out open:border-brand/40 open:shadow-brand-sm"
-      >
-        <summary
-          class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left text-base font-semibold text-slate-900 outline-none transition-colors hover:text-brand/90 focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white [&::-webkit-details-marker]:hidden"
-        >
-          <span class="flex-1 text-base font-semibold text-slate-900">
-            How can I verify service support for a region?
-          </span>
-          <app-hero-icon
-            name="heroChevronDown"
-            class="h-4 w-4 text-slate-400 transition-transform duration-200 ease-in-out group-open:rotate-180 group-open:text-brand"
-            aria-hidden="true"
-          />
+  <section class="section-block" aria-labelledby="az-faq-heading">
+    <h2 id="az-faq-heading" class="section-title mb-4">Frequently asked questions</h2>
+    <div class="faq-list">
+      <details class="faq-item group">
+        <summary class="faq-summary">
+          <span class="faq-question">Do Availability Zones add latency?</span>
+          <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
         </summary>
-        <div
-          class="space-y-3 border-t border-slate-100 px-6 py-5 text-sm leading-relaxed text-slate-600 [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:text-slate-800 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
-        >
-          Microsoft publishes service availability for each region. Visit the
-          <a
-            href="https://azure.microsoft.com/explore/global-infrastructure/products-by-region/"
-            target="_blank"
-          >
-            Azure products by region
-          </a>
-          page to confirm support for your workloads.
-        </div>
-      </details>
-      <details
-        class="group rounded-2xl border border-slate-200 bg-white/95 shadow-sm transition-colors duration-200 ease-out open:border-brand/40 open:shadow-brand-sm"
-      >
-        <summary
-          class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left text-base font-semibold text-slate-900 outline-none transition-colors hover:text-brand/90 focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white [&::-webkit-details-marker]:hidden"
-        >
-          <span class="flex-1 text-base font-semibold text-slate-900">
-            Do Availability Zones add latency?
-          </span>
-          <app-hero-icon
-            name="heroChevronDown"
-            class="h-4 w-4 text-slate-400 transition-transform duration-200 ease-in-out group-open:rotate-180 group-open:text-brand"
-            aria-hidden="true"
-          />
-        </summary>
-        <div
-          class="space-y-3 border-t border-slate-100 px-6 py-5 text-sm leading-relaxed text-slate-600 [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:text-slate-800 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
-        >
+        <div class="faq-body">
           Availability Zones are designed to maintain low-latency connections within a region. Azure
           keeps zones physically separate yet close enough to support synchronous replication.
         </div>
       </details>
-      <details
-        class="group rounded-2xl border border-slate-200 bg-white/95 shadow-sm transition-colors duration-200 ease-out open:border-brand/40 open:shadow-brand-sm"
-      >
-        <summary
-          class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left text-base font-semibold text-slate-900 outline-none transition-colors hover:text-brand/90 focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white [&::-webkit-details-marker]:hidden"
-        >
-          <span class="flex-1 text-base font-semibold text-slate-900">
-            What resiliency options use zones?
-          </span>
-          <app-hero-icon
-            name="heroChevronDown"
-            class="h-4 w-4 text-slate-400 transition-transform duration-200 ease-in-out group-open:rotate-180 group-open:text-brand"
-            aria-hidden="true"
-          />
+      <details class="faq-item group">
+        <summary class="faq-summary">
+          <span class="faq-question">How can I verify service support for a region?</span>
+          <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
         </summary>
-        <div
-          class="space-y-3 border-t border-slate-100 px-6 py-5 text-sm leading-relaxed text-slate-600 [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:text-slate-800 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
-        >
+        <div class="faq-body">
+          Microsoft publishes service availability for each region. Visit the
+          <a
+            class="link-primary inline-flex items-center gap-1"
+            href="https://azure.microsoft.com/explore/global-infrastructure/products-by-region/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Azure products by region
+            <app-lucide-icon name="external-link" class="h-3 w-3" aria-hidden="true" />
+          </a>
+          page to confirm support for your workloads.
+        </div>
+      </details>
+      <details class="faq-item group">
+        <summary class="faq-summary">
+          <span class="faq-question">What resiliency options use zones?</span>
+          <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
+        </summary>
+        <div class="faq-body">
           Many Azure services support zonal or zone-redundant deployments. Review service-specific
           documentation to understand how zones improve availability and recovery objectives.
         </div>
       </details>
     </div>
   </section>
-</div>
+</article>

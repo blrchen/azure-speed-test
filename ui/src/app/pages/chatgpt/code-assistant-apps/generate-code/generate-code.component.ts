@@ -1,3 +1,5 @@
+import { isPlatformBrowser } from '@angular/common'
+import { HttpClient } from '@angular/common/http'
 import {
   ChangeDetectionStrategy,
   Component,
@@ -5,24 +7,21 @@ import {
   DestroyRef,
   inject,
   OnInit,
-  PLATFORM_ID,
-  signal
+  PLATFORM_ID
 } from '@angular/core'
-import { CommonModule, isPlatformBrowser } from '@angular/common'
-import { HttpClient, HttpErrorResponse } from '@angular/common/http'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms'
-import { firstValueFrom } from 'rxjs'
-import { AssistantResponse } from '../../../../models'
-import { chatGPTConfig } from '../../chatgpt.config'
-import { SystemPrompts } from '../../system-prompts'
-import { API_ENDPOINT } from '../../../../shared/constants'
+import { startWith } from 'rxjs'
+
 import { SeoService } from '../../../../services'
+import { LucideIconComponent } from '../../../../shared/icons/lucide-icons.component'
 import { AssistantFooterComponent } from '../../assistant-footer/assistant-footer.component'
+import { createAssistantController } from '../../shared/assistant-controller'
+import { SystemPrompts } from '../../system-prompts'
 
 @Component({
   selector: 'app-generate-code',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, AssistantFooterComponent],
+  imports: [ReactiveFormsModule, AssistantFooterComponent, LucideIconComponent],
   templateUrl: './generate-code.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -39,29 +38,41 @@ export class GenerateCodeComponent implements OnInit {
     userContent: ['', [Validators.required, Validators.maxLength(5000)]],
     programLanguage: [this.getSavedLanguage(), Validators.required]
   })
-  readonly isLoading = signal(false)
-  readonly result = signal<string | null>(null)
-  readonly errorMessage = signal<string | null>(null)
-  readonly copyStatus = signal<'idle' | 'copied' | 'failed'>('idle')
+  private readonly assistant = createAssistantController<{
+    userContent: string
+    programLanguage: string
+  }>(this.http, {
+    systemPromptId: this.systemPromptId,
+    buildPayload: (formValue) => ({
+      userContent: formValue.userContent,
+      programLanguage: formValue.programLanguage
+    })
+  })
+  readonly isLoading = this.assistant.isLoading
+  readonly result = this.assistant.result
+  readonly errorMessage = this.assistant.errorMessage
+  readonly copyStatus = this.assistant.copyStatus
   readonly hasResult = computed(() => this.result() !== null)
-  readonly isCopyIdle = computed(() => this.copyStatus() === 'idle')
-  readonly isCopySuccess = computed(() => this.copyStatus() === 'copied')
-  readonly isCopyError = computed(() => this.copyStatus() === 'failed')
+  readonly isCopyIdle = this.assistant.isCopyIdle
+  readonly isCopySuccess = this.assistant.isCopySuccess
+  readonly isCopyError = this.assistant.isCopyError
+  private readonly userContentValue = toSignal(
+    this.userContentForm.controls.userContent.valueChanges.pipe(
+      startWith(this.userContentForm.controls.userContent.value)
+    ),
+    { initialValue: this.userContentForm.controls.userContent.value }
+  )
+  readonly userContentLength = computed(() => this.userContentValue()?.length ?? 0)
 
-  private copyResetTimeoutId: number | null = null
   private readonly localStorageKey = 'selectedProgramLanguage'
 
   ngOnInit(): void {
-    this.initializeSeoProperties()
-    this.destroyRef.onDestroy(() => this.clearCopyStatusTimer())
-  }
-
-  private initializeSeoProperties(): void {
     this.seoService.setMetaTitle('ChatGPT Code Generator - Generate Code with AI')
     this.seoService.setMetaDescription(
       'Welcome to ChatGPT Code Generator. This tool uses AI technology to generate code based on your natural language descriptions.'
     )
     this.seoService.setCanonicalUrl('https://www.azurespeed.com/ChatGPT/GenerateCode')
+    this.destroyRef.onDestroy(() => this.assistant.destroy())
   }
 
   async submitForm(): Promise<void> {
@@ -69,57 +80,11 @@ export class GenerateCodeComponent implements OnInit {
       return
     }
 
-    this.isLoading.set(true)
-    this.result.set(null)
-    this.errorMessage.set(null)
-    this.copyStatus.set('idle')
-    this.clearCopyStatusTimer()
-
-    const { userContent, programLanguage } = this.userContentForm.getRawValue()
-    const payload = {
-      accessToken: chatGPTConfig.accessToken,
-      systemPromptId: this.systemPromptId,
-      userContent,
-      programLanguage
-    }
-
-    try {
-      const response = await firstValueFrom(
-        this.http.post<AssistantResponse>(
-          `${API_ENDPOINT}/api/10-free-calls-per-ip-each-day`,
-          payload
-        )
-      )
-      this.result.set(response?.choices[0]?.message?.content ?? null)
-    } catch (error) {
-      let message = 'An unexpected error occurred'
-      if (error instanceof HttpErrorResponse) {
-        const errorPayload = error.error as { message?: string } | undefined
-        message =
-          errorPayload?.message ?? (typeof error.error === 'string' ? error.error : error.message)
-      } else if (error instanceof Error) {
-        message = error.message
-      }
-      this.errorMessage.set(message)
-    } finally {
-      this.isLoading.set(false)
-    }
+    await this.assistant.submit(this.userContentForm.getRawValue())
   }
 
-  async copyToClipboard(text: string): Promise<void> {
-    if (!text) {
-      return
-    }
-
-    try {
-      await navigator.clipboard.writeText(text)
-      this.copyStatus.set('copied')
-    } catch (err) {
-      console.error('Failed to copy text: ', err)
-      this.copyStatus.set('failed')
-    }
-
-    this.scheduleCopyStatusReset()
+  async copyToClipboard(text: string | null | undefined): Promise<void> {
+    await this.assistant.copy(text)
   }
 
   resetForm(): void {
@@ -127,11 +92,7 @@ export class GenerateCodeComponent implements OnInit {
       userContent: '',
       programLanguage: this.getSavedLanguage()
     })
-    this.result.set(null)
-    this.errorMessage.set(null)
-    this.copyStatus.set('idle')
-    this.clearCopyStatusTimer()
-    this.isLoading.set(false)
+    this.assistant.reset()
   }
 
   onProgramLanguageChange(lang: string): void {
@@ -149,20 +110,5 @@ export class GenerateCodeComponent implements OnInit {
       return localStorage.getItem(this.localStorageKey) || 'C#'
     }
     return 'C#' // Default value when not running in the browser
-  }
-
-  private scheduleCopyStatusReset(): void {
-    this.clearCopyStatusTimer()
-    this.copyResetTimeoutId = window.setTimeout(() => {
-      this.copyResetTimeoutId = null
-      this.copyStatus.set('idle')
-    }, 3000)
-  }
-
-  private clearCopyStatusTimer(): void {
-    if (this.copyResetTimeoutId !== null) {
-      window.clearTimeout(this.copyResetTimeoutId)
-      this.copyResetTimeoutId = null
-    }
   }
 }

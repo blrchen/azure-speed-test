@@ -1,4 +1,0 @@
-/Azure/RegionToRegionLatency
-/Information/AzureRegions
-/Information/AzureAvailabilityZones
-/Information/AzureGeographies

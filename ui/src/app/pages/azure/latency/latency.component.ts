@@ -1,10 +1,9 @@
-import { CommonModule, isPlatformBrowser } from '@angular/common'
+import { isPlatformBrowser } from '@angular/common'
 import {
   ChangeDetectionStrategy,
   Component,
   computed,
   effect,
-  EffectRef,
   inject,
   OnDestroy,
   OnInit,
@@ -12,14 +11,18 @@ import {
   signal,
   untracked
 } from '@angular/core'
-import { colorSets, DataItem, LegendPosition, NgxChartsModule } from '@swimlane/ngx-charts'
-import { curveBasis } from 'd3-shape'
+import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { Subscription, timer } from 'rxjs'
+
 import { RegionModel } from '../../../models'
 import { RegionService, SeoService } from '../../../services'
+import { CopyButtonComponent } from '../../../shared/copy-button/copy-button.component'
+import { ExportCsvButtonComponent } from '../../../shared/export-csv-button/export-csv-button.component'
+import { LucideIconComponent } from '../../../shared/icons/lucide-icons.component'
+import { buildRegionDetailRouterLink } from '../../../shared/utils'
 import { RegionGroupComponent } from '../../shared'
-import { ActivatedRoute, Router, RouterLink } from '@angular/router'
-import { HeroIconComponent } from '../../../shared/icons/hero-icons.imports'
+import { CloudflareMetaStore } from './cloudflare-meta.store'
+import { ConnectionDetailsComponent } from './connection-details.component'
 
 // Single source of truth - minimal state
 interface RegionPingData {
@@ -39,12 +42,6 @@ interface RegionWithLatencyMetrics extends RegionPingData {
   currentLatency: number
 }
 
-interface ChartSeries {
-  name: string
-  series: DataItem[]
-  storageAccountName: string
-}
-
 interface LatencyState {
   regions: Map<string, RegionPingData>
   pingAttemptCount: number
@@ -53,8 +50,14 @@ interface LatencyState {
 
 @Component({
   selector: 'app-azure-latency',
-  standalone: true,
-  imports: [CommonModule, NgxChartsModule, RegionGroupComponent, RouterLink, HeroIconComponent],
+  imports: [
+    RegionGroupComponent,
+    RouterLink,
+    LucideIconComponent,
+    ConnectionDetailsComponent,
+    CopyButtonComponent,
+    ExportCsvButtonComponent
+  ],
   templateUrl: './latency.component.html',
   styleUrl: './latency.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -72,17 +75,13 @@ export class LatencyComponent implements OnInit, OnDestroy {
   private lastUrlStateSignature = ''
   private canUpdateUrl = false
   public readonly shareUrl = signal('')
-  public readonly copyStatus = signal<'idle' | 'copied' | 'failed'>('idle')
-  public readonly isCopyIdle = computed(() => this.copyStatus() === 'idle')
-  public readonly isCopySuccess = computed(() => this.copyStatus() === 'copied')
-  public readonly isCopyError = computed(() => this.copyStatus() === 'failed')
-  private copyFeedbackTimeout: ReturnType<typeof setTimeout> | null = null
+  protected readonly cloudflareMetaStore = inject(CloudflareMetaStore)
+  private hasComponentDestroyed = false
 
   // Configuration constants
   private static readonly CONFIG = {
     MAX_PING_ATTEMPTS: 180,
     PING_INTERVAL_MS: 2000,
-    CHART_POINTS: 60,
     MAX_PING_HISTORY: 20,
     PING_TIMEOUT_MS: 2000,
     MAX_ACCEPTABLE_LATENCY_MS: 500,
@@ -102,9 +101,6 @@ export class LatencyComponent implements OnInit, OnDestroy {
   // Batch update mechanism
   private pendingPingUpdates = new Map<string, number>()
   private batchUpdateTimer?: ReturnType<typeof setTimeout>
-  // Cache chart data to avoid regenerating entire series on every latency tick
-  private readonly chartTimeline = signal<string[]>([])
-  private readonly chartSeriesSignal = signal<ChartSeries[]>([])
 
   // All derived data as computed signals - no manual updates needed
   public regionsWithMedian = computed<RegionWithLatencyMetrics[]>(() => {
@@ -125,6 +121,16 @@ export class LatencyComponent implements OnInit, OnDestroy {
     return regions.length ? [...regions].sort((a, b) => a.medianLatency - b.medianLatency) : []
   })
 
+  public readonly isTestRunning = computed(() => this.state().isTestRunning)
+
+  public readonly hasSelectedRegions = computed(
+    () => this.regionService.selectedRegions().length > 0
+  )
+
+  public readonly shouldShowLatencySkeleton = computed(() => {
+    return this.hasSelectedRegions() && this.tableData().length === 0
+  })
+
   public tableDataTop3 = computed<RegionWithLatencyMetrics[]>(() => this.tableData().slice(0, 3))
   public bestRegion = computed<RegionWithLatencyMetrics | null>(() => {
     const top = this.tableDataTop3()
@@ -133,6 +139,29 @@ export class LatencyComponent implements OnInit, OnDestroy {
   public runnerUpRegions = computed<RegionWithLatencyMetrics[]>(() => {
     const top = this.tableDataTop3()
     return top.length > 1 ? top.slice(1) : []
+  })
+  protected buildRegionRouterLink = buildRegionDetailRouterLink
+
+  // CSV export data
+  readonly csvHeaders = [
+    'Geography',
+    'Region',
+    'Region ID',
+    'Datacenter Location',
+    'Median Latency (ms)',
+    'Latest Latency (ms)'
+  ]
+  readonly csvRows = computed<string[][] | null>(() => {
+    const data = this.tableData()
+    if (data.length === 0) return null
+    return data.map((row) => [
+      row.geography,
+      row.displayName,
+      row.regionId,
+      row.datacenterLocation,
+      row.medianLatency.toString(),
+      (row.currentLatency || '-').toString()
+    ])
   })
 
   protected getLatencyBadgeState(
@@ -154,111 +183,91 @@ export class LatencyComponent implements OnInit, OnDestroy {
     return typeof latency === 'number' && latency > 0
   }
 
-  public chartDataSeries = computed<ChartSeries[]>(() => {
-    const activeRegions = this.regionsWithLatency()
-    if (!activeRegions.length) {
-      return []
-    }
-
-    const allowed = new Set(
-      activeRegions
-        .map((region) => region.storageAccountName)
-        .filter((name): name is string => Boolean(name))
-    )
-
-    if (!allowed.size) {
-      return []
-    }
-
-    return this.chartSeriesSignal().filter((series) => allowed.has(series.storageAccountName))
-  })
-
-  public xAxisTicks = computed<string[]>(() => {
-    if (!this.chartDataSeries().length) {
-      return []
-    }
-
-    const timeline = this.chartTimeline()
-    if (!timeline.length) return []
-
-    // Filter to every 5 seconds to reduce x-axis clutter
-    return timeline.filter((label) => {
-      const parts = label.split(':').map(Number)
-      if (parts.length < 2) return false
-      const seconds = parts[1]
-      return Number.isFinite(seconds) && seconds % 5 === 0
-    })
-  })
-
-  // Chart configuration (static, no state needed)
-  public colorScheme = colorSets.find((s) => s.name === 'picnic') || colorSets[0]
-  public curve = curveBasis
-  public legendPosition: LegendPosition = LegendPosition.Below
-
   // TrackBy functions for optimal rendering performance
-  readonly trackByRegionData = (_: number, item: RegionWithLatencyMetrics): string =>
-    item.storageAccountName || item.regionId || item.displayName
+  trackByRegionData(_: number, item: RegionWithLatencyMetrics): string {
+    return item.storageAccountName || item.regionId || item.displayName
+  }
 
   private pingSubscription?: Subscription
-  private readonly selectedRegionsEffect: EffectRef | null = this.isBrowser
-    ? effect(() => {
-        const regions = this.regionService.selectedRegions()
-        const hasSelection = regions.length > 0
-        const hasReachedLimit = untracked(() => {
-          const currentState = this.state()
-          return currentState.pingAttemptCount >= LatencyComponent.CONFIG.MAX_PING_ATTEMPTS
-        })
 
-        this.syncUrlWithSelection(regions)
+  constructor() {
+    this.applyInitialUrlState()
+    if (this.isBrowser) {
+      this.registerSelectedRegionsEffect()
+    }
+  }
 
-        if (!hasSelection) {
-          this.pendingPingUpdates.clear()
-          this.initializeRegions([], { resetPingState: true })
-          this.stopPingTimer()
-          return
-        }
-
-        if (hasReachedLimit) {
-          this.pendingPingUpdates.clear()
-          this.stopPingTimer()
-        }
-
-        this.initializeRegions(regions, { resetPingState: hasReachedLimit })
-
-        if (!this.pingSubscription) {
-          this.startPingTimer()
-        }
+  private registerSelectedRegionsEffect(): void {
+    effect(() => {
+      const regions = this.regionService.selectedRegions()
+      const hasSelection = regions.length > 0
+      const hasReachedLimit = untracked(() => {
+        const currentState = this.state()
+        return currentState.pingAttemptCount >= LatencyComponent.CONFIG.MAX_PING_ATTEMPTS
       })
-    : null
+
+      this.syncUrlWithSelection(regions)
+
+      if (!hasSelection) {
+        this.pendingPingUpdates.clear()
+        this.initializeRegions([], { resetPingState: true })
+        this.stopPingTimer()
+        return
+      }
+
+      if (hasReachedLimit) {
+        this.pendingPingUpdates.clear()
+        this.stopPingTimer()
+      }
+
+      this.initializeRegions(regions, { resetPingState: hasReachedLimit })
+
+      if (!this.pingSubscription) {
+        this.startPingTimer()
+      }
+    })
+  }
 
   ngOnInit(): void {
-    this.initializeSeoProperties()
-    this.applyInitialUrlState()
-  }
-
-  ngOnDestroy(): void {
-    this.selectedRegionsEffect?.destroy()
-    this.stopPingTimer()
-    if (this.batchUpdateTimer) {
-      clearTimeout(this.batchUpdateTimer)
-    }
-    if (this.copyFeedbackTimeout) {
-      clearTimeout(this.copyFeedbackTimeout)
-      this.copyFeedbackTimeout = null
-    }
-  }
-
-  private initializeSeoProperties(): void {
     this.seoService.setMetaTitle('Azure Latency Test | Measure Datacenter Latency')
     this.seoService.setMetaDescription(
       'Test latency from your location to Azure datacenters worldwide. Measure the latency to various Azure regions and find the closest Azure datacenters.'
     )
     this.seoService.setCanonicalUrl('https://www.azurespeed.com/Azure/Latency')
+    if (this.isBrowser) {
+      // Defer Cloudflare metadata fetch until the browser is idle so initial render stays unblocked.
+      const globalScope = globalThis as typeof globalThis & {
+        requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number
+      }
+      if (typeof globalScope.requestIdleCallback === 'function') {
+        globalScope.requestIdleCallback(
+          () => {
+            if (!this.hasComponentDestroyed) {
+              void this.cloudflareMetaStore.load()
+            }
+          },
+          { timeout: 3000 }
+        )
+      } else {
+        setTimeout(() => {
+          if (!this.hasComponentDestroyed) {
+            void this.cloudflareMetaStore.load()
+          }
+        }, 0)
+      }
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.hasComponentDestroyed = true
+    this.stopPingTimer()
+    if (this.batchUpdateTimer) {
+      clearTimeout(this.batchUpdateTimer)
+    }
+    this.cloudflareMetaStore.destroy()
   }
 
   private applyInitialUrlState(): void {
-    if (!this.isBrowser) return
-
     const rawRegions = this.route.snapshot.queryParamMap.get(this.regionsParamKey)
     const parsedRegionTokens = this.parseRegionParam(rawRegions)
     const regions = parsedRegionTokens.length ? this.resolveRegionsFromIds(parsedRegionTokens) : []
@@ -270,10 +279,6 @@ export class LatencyComponent implements OnInit, OnDestroy {
     }
 
     this.updateShareUrl(hasSelection)
-    if (!hasSelection) {
-      this.setCopyStatus('idle')
-    }
-
     this.canUpdateUrl = true
   }
 
@@ -357,7 +362,7 @@ export class LatencyComponent implements OnInit, OnDestroy {
       delete queryParams[this.regionsParamKey]
     }
 
-    this.router
+    void this.router
       .navigate([], {
         relativeTo: this.route,
         queryParams,
@@ -370,61 +375,9 @@ export class LatencyComponent implements OnInit, OnDestroy {
     if (!this.isBrowser) return
     if (!hasSelection) {
       this.shareUrl.set('')
-      this.setCopyStatus('idle')
       return
     }
     this.shareUrl.set(window.location.href)
-  }
-
-  async copyShareUrl(): Promise<void> {
-    if (!this.isBrowser) return
-    const url = this.shareUrl()
-    if (!url) return
-
-    try {
-      if (!navigator.clipboard?.writeText) {
-        throw new Error('Clipboard API unavailable')
-      }
-
-      await navigator.clipboard.writeText(url)
-      this.setCopyStatus('copied')
-    } catch (error) {
-      console.error('Failed to copy latency share link', error)
-      this.setCopyStatus('failed')
-      this.focusShareInput()
-    }
-  }
-
-  private focusShareInput(): void {
-    if (!this.isBrowser) return
-
-    const shareInput = document.getElementById('latency-share-input')
-    if (shareInput instanceof HTMLInputElement) {
-      shareInput.focus()
-      shareInput.select()
-    }
-  }
-
-  private setCopyStatus(status: 'idle' | 'copied' | 'failed'): void {
-    this.copyStatus.set(status)
-    if (this.copyFeedbackTimeout) {
-      clearTimeout(this.copyFeedbackTimeout)
-      this.copyFeedbackTimeout = null
-    }
-    if (status === 'idle') {
-      return
-    }
-    this.copyFeedbackTimeout = setTimeout(() => {
-      this.copyStatus.set('idle')
-      this.copyFeedbackTimeout = null
-    }, 3000)
-  }
-
-  selectShareInput(event: FocusEvent): void {
-    const target = event.target
-    if (target instanceof HTMLInputElement) {
-      target.select()
-    }
   }
 
   private initializeRegions(
@@ -468,55 +421,6 @@ export class LatencyComponent implements OnInit, OnDestroy {
       // Reset ping attempt count when starting a new run or when no regions are selected
       pingAttemptCount: resetPingState || !hasRegions ? 0 : currentState.pingAttemptCount || 0,
       isTestRunning: hasRegions && !resetPingState ? currentState.isTestRunning : false
-    })
-
-    if (!hasRegions || resetPingState) {
-      this.chartTimeline.set([])
-      this.chartSeriesSignal.set([])
-    } else {
-      this.syncChartSeriesWithRegions(regionMap)
-    }
-  }
-
-  private syncChartSeriesWithRegions(regions: Map<string, RegionPingData>): void {
-    this.chartSeriesSignal.update((current) => {
-      const timeline = this.chartTimeline()
-      const existing = new Map(current.map((series) => [series.storageAccountName, series]))
-      const nextSeries: ChartSeries[] = []
-      let mutated = false
-
-      for (const region of regions.values()) {
-        const storageAccountName = region.storageAccountName
-        if (!storageAccountName) continue
-
-        const match = existing.get(storageAccountName)
-        if (match) {
-          if (match.name !== region.displayName) {
-            match.name = region.displayName
-            mutated = true
-          }
-          nextSeries.push(match)
-          existing.delete(storageAccountName)
-        } else {
-          const series: DataItem[] = timeline.map((label) => ({
-            name: label,
-            value: 0
-          }))
-
-          nextSeries.push({
-            name: region.displayName,
-            series,
-            storageAccountName
-          })
-          mutated = true
-        }
-      }
-
-      if (existing.size > 0 || nextSeries.length !== current.length) {
-        mutated = true
-      }
-
-      return mutated ? nextSeries : current
     })
   }
 
@@ -617,7 +521,6 @@ export class LatencyComponent implements OnInit, OnDestroy {
 
     const updates = new Map(this.pendingPingUpdates)
     this.pendingPingUpdates.clear()
-    let updatedRegions: Map<string, RegionPingData> | null = null
 
     this.state.update((currentState) => {
       const regions = new Map(currentState.regions)
@@ -640,100 +543,10 @@ export class LatencyComponent implements OnInit, OnDestroy {
         })
       }
 
-      updatedRegions = regions
-
       return {
         ...currentState,
         regions
       }
-    })
-
-    if (updatedRegions) {
-      this.updateChartData(updatedRegions, updates)
-    }
-  }
-
-  private updateChartData(
-    regions: Map<string, RegionPingData>,
-    updates: Map<string, number>
-  ): void {
-    const { CHART_POINTS } = LatencyComponent.CONFIG
-    const timestamp = Date.now()
-    const currentTimeline = this.chartTimeline()
-    let nextTimeline: string[]
-
-    if (currentTimeline.length === 0) {
-      nextTimeline = Array.from({ length: CHART_POINTS }, (_, index) =>
-        this.formatXAxisTick(timestamp - (CHART_POINTS - 1 - index) * 1000)
-      )
-    } else {
-      nextTimeline = [...currentTimeline, this.formatXAxisTick(timestamp)]
-      const overflow = Math.max(0, nextTimeline.length - CHART_POINTS)
-      if (overflow > 0) {
-        nextTimeline.splice(0, overflow)
-      }
-    }
-
-    this.chartTimeline.set(nextTimeline)
-
-    this.syncChartSeriesWithRegions(regions)
-
-    if (!nextTimeline.length) {
-      return
-    }
-
-    const historicalLabels = nextTimeline.slice(0, nextTimeline.length - 1)
-    const latestLabel = nextTimeline[nextTimeline.length - 1]
-
-    this.chartSeriesSignal.update((current) => {
-      let mutated = false
-      const next = current.map((series) => {
-        const data = series.series
-
-        const hasNewLatency = updates.has(series.storageAccountName)
-        if (!hasNewLatency && data.length === 0) {
-          return series
-        }
-
-        const previousValue = data.length ? data[data.length - 1].value : 0
-        const nextValue = hasNewLatency ? updates.get(series.storageAccountName)! : previousValue
-
-        if (data.length === 0) {
-          for (const label of historicalLabels) {
-            data.push({ name: label, value: 0 })
-          }
-        } else {
-          while (data.length > historicalLabels.length) {
-            data.shift()
-          }
-          while (data.length < historicalLabels.length) {
-            const value = data.length ? data[0].value : 0
-            data.unshift({ name: '', value })
-          }
-          for (let i = 0; i < historicalLabels.length && i < data.length; i++) {
-            data[i].name = historicalLabels[i]
-          }
-        }
-
-        data.push({
-          name: latestLabel,
-          value: nextValue
-        })
-
-        if (data.length > nextTimeline.length) {
-          data.splice(0, data.length - nextTimeline.length)
-        }
-
-        const startIndex = nextTimeline.length - data.length
-        for (let i = 0; i < data.length; i++) {
-          data[i].name = nextTimeline[startIndex + i]
-        }
-
-        mutated = true
-        return series
-      })
-
-      return mutated ? [...next] : current
     })
   }
 
@@ -767,12 +580,5 @@ export class LatencyComponent implements OnInit, OnDestroy {
 
     const mid = Math.floor(sorted.length / 2)
     return sorted.length % 2 === 0 ? Math.floor((sorted[mid - 1] + sorted[mid]) / 2) : sorted[mid]
-  }
-
-  private formatXAxisTick(timestamp: number): string {
-    const date = new Date(timestamp)
-    const minutes = date.getMinutes().toString().padStart(2, '0')
-    const seconds = date.getSeconds().toString().padStart(2, '0')
-    return `${minutes}:${seconds}`
   }
 }

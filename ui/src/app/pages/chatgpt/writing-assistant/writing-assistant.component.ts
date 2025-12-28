@@ -1,4 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
+import { RouterLink } from '@angular/router'
+
 import { SeoService } from '../../../services'
 
 interface Card {
@@ -9,8 +11,7 @@ interface Card {
 
 @Component({
   selector: 'app-writing-assistant',
-  standalone: true,
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './writing-assistant.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -41,10 +42,6 @@ export class WritingAssistantComponent implements OnInit {
   ])
 
   ngOnInit(): void {
-    this.initializeSeoProperties()
-  }
-
-  private initializeSeoProperties(): void {
     this.seoService.setMetaTitle('ChatGPT Writing Assistant')
     this.seoService.setMetaDescription(
       'Welcome to ChatGPT Writing Assistant, your companion for mastering the art of written communication. This AI-driven assistant is ideal for writers, students, professionals, and anyone passionate about crafting compelling narratives with ease and precision.'

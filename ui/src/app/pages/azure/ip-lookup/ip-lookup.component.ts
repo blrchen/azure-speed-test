@@ -1,3 +1,5 @@
+import { isPlatformBrowser } from '@angular/common'
+import { HttpClient } from '@angular/common/http'
 import {
   ChangeDetectionStrategy,
   Component,
@@ -8,8 +10,7 @@ import {
   PLATFORM_ID,
   signal
 } from '@angular/core'
-import { CommonModule, isPlatformBrowser } from '@angular/common'
-import { HttpClient } from '@angular/common/http'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import {
   AbstractControl,
   FormBuilder,
@@ -19,12 +20,13 @@ import {
   ValidatorFn,
   Validators
 } from '@angular/forms'
-import { ActivatedRoute, Router, RouterModule } from '@angular/router'
+import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { API_ENDPOINT } from '../../../shared/constants'
+
 import { SeoService } from '../../../services'
-import { HeroIconComponent } from '../../../shared/icons/hero-icons.imports'
+import { API_ENDPOINT } from '../../../shared/constants'
+import { CopyButtonComponent } from '../../../shared/copy-button/copy-button.component'
+import { LucideIconComponent } from '../../../shared/icons/lucide-icons.component'
 
 const IPV4_REGEX = /^(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)){3}$/
 const IPV6_REGEX =
@@ -43,10 +45,9 @@ interface IpAddress {
 
 @Component({
   selector: 'app-ip-lookup',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, HeroIconComponent],
+  imports: [ReactiveFormsModule, RouterLink, LucideIconComponent, CopyButtonComponent],
   templateUrl: './ip-lookup.component.html',
-  styleUrls: ['./ip-lookup.component.css'],
+  styleUrl: './ip-lookup.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class IPLookupComponent implements OnInit {
@@ -55,21 +56,15 @@ export class IPLookupComponent implements OnInit {
   readonly shareableUrl = signal('')
   readonly result = signal<IpAddress[] | null>(null)
   readonly errorMessage = signal<string | null>(null)
-  readonly copyStatus = signal<'idle' | 'copied' | 'failed'>('idle')
-  readonly isCopyIdle = computed(() => this.copyStatus() === 'idle')
-  readonly isCopySuccess = computed(() => this.copyStatus() === 'copied')
-  readonly isCopyError = computed(() => this.copyStatus() === 'failed')
   readonly hasResult = computed(() => (this.result() ?? []).length > 0)
 
-  private copyResetTimeoutId: ReturnType<typeof setTimeout> | null = null
-  private isComponentDestroyed = false
-  private formBuilder = inject(FormBuilder)
-  private seoService = inject(SeoService)
-  private http = inject(HttpClient)
-  private route = inject(ActivatedRoute)
-  private router = inject(Router)
-  private destroyRef = inject(DestroyRef)
-  private platformId = inject(PLATFORM_ID)
+  private readonly formBuilder = inject(FormBuilder)
+  private readonly seoService = inject(SeoService)
+  private readonly http = inject(HttpClient)
+  private readonly route = inject(ActivatedRoute)
+  private readonly router = inject(Router)
+  private readonly destroyRef = inject(DestroyRef)
+  private readonly platformId = inject(PLATFORM_ID)
   private readonly ipOrDomainValidator: ValidatorFn = (
     control: AbstractControl
   ): ValidationErrors | null => {
@@ -93,11 +88,11 @@ export class IPLookupComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.initializeSeoProperties()
-    this.destroyRef.onDestroy(() => {
-      this.isComponentDestroyed = true
-      this.clearCopyStatusReset()
-    })
+    this.seoService.setMetaTitle('Azure IP Lookup')
+    this.seoService.setMetaDescription(
+      'Search for service tag and region information using an IP address or domain name.'
+    )
+    this.seoService.setCanonicalUrl('https://www.azurespeed.com/Azure/IPLookup')
 
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       const control = this.ipControl
@@ -141,14 +136,6 @@ export class IPLookupComponent implements OnInit {
     })
   }
 
-  private initializeSeoProperties(): void {
-    this.seoService.setMetaTitle('Azure IP Lookup')
-    this.seoService.setMetaDescription(
-      'Search for service tag and region information using an IP address or domain name.'
-    )
-    this.seoService.setCanonicalUrl('https://www.azurespeed.com/Azure/IPLookup')
-  }
-
   async submitForm(): Promise<void> {
     const control = this.ipControl
 
@@ -176,7 +163,6 @@ export class IPLookupComponent implements OnInit {
     this.isLoading.set(false)
     this.errorMessage.set(null)
     this.shareableUrl.set('')
-    this.setCopyStatus('idle')
   }
 
   private normalizeInput(value: unknown): string {
@@ -249,7 +235,6 @@ export class IPLookupComponent implements OnInit {
     this.currentSearchTerm.set(normalized)
     this.errorMessage.set(null)
     this.shareableUrl.set('')
-    this.setCopyStatus('idle')
 
     const url = `${API_ENDPOINT}/api/ipAddress?ipOrDomain=${encodeURIComponent(normalized)}`
 
@@ -260,18 +245,15 @@ export class IPLookupComponent implements OnInit {
         this.errorMessage.set(`"${normalized}" is not a valid IPv4, IPv6 address, or domain name.`)
         this.result.set(null)
         this.shareableUrl.set('')
-        this.setCopyStatus('idle')
         return
       }
 
       this.result.set(lookupResult)
       this.shareableUrl.set(lookupResult.length > 0 ? this.buildShareableUrl(normalized) : '')
-    } catch (error) {
-      console.error('Error:', error)
+    } catch {
       this.errorMessage.set('Unable to look up the provided IP address or domain right now.')
       this.result.set(null)
       this.shareableUrl.set('')
-      this.setCopyStatus('idle')
     } finally {
       this.isLoading.set(false)
     }
@@ -284,65 +266,5 @@ export class IPLookupComponent implements OnInit {
 
     const { origin } = window.location
     return `${origin}/Azure/IPLookup/${encodeURIComponent(value)}`
-  }
-
-  async copyShareableUrl(): Promise<void> {
-    const url = this.shareableUrl()
-    if (!url) {
-      return
-    }
-
-    try {
-      if (!navigator.clipboard?.writeText) {
-        throw new Error('Clipboard API unavailable')
-      }
-
-      await navigator.clipboard.writeText(url)
-      this.setCopyStatus('copied')
-    } catch (error) {
-      console.error('Failed to copy shareable link', error)
-      this.setCopyStatus('failed')
-      this.focusShareInput()
-    }
-  }
-
-  private setCopyStatus(status: 'idle' | 'copied' | 'failed'): void {
-    this.copyStatus.set(status)
-    this.clearCopyStatusReset()
-    if (status === 'idle') {
-      return
-    }
-    this.copyResetTimeoutId = setTimeout(() => {
-      this.copyResetTimeoutId = null
-      if (this.isComponentDestroyed) {
-        return
-      }
-      this.copyStatus.set('idle')
-    }, 3000)
-  }
-
-  private clearCopyStatusReset(): void {
-    if (this.copyResetTimeoutId !== null) {
-      clearTimeout(this.copyResetTimeoutId)
-      this.copyResetTimeoutId = null
-    }
-  }
-
-  private focusShareInput(): void {
-    if (!isPlatformBrowser(this.platformId)) {
-      return
-    }
-    const shareInput = document.getElementById('shareLink')
-    if (shareInput instanceof HTMLInputElement) {
-      shareInput.focus()
-      shareInput.select()
-    }
-  }
-
-  selectShareInput(event: FocusEvent): void {
-    const target = event.target
-    if (target instanceof HTMLInputElement) {
-      target.select()
-    }
   }
 }

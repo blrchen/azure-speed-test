@@ -1,3 +1,5 @@
+import { isPlatformBrowser } from '@angular/common'
+import { HttpClient } from '@angular/common/http'
 import {
   ChangeDetectionStrategy,
   Component,
@@ -5,24 +7,21 @@ import {
   DestroyRef,
   inject,
   OnInit,
-  PLATFORM_ID,
-  signal
+  PLATFORM_ID
 } from '@angular/core'
-import { CommonModule, isPlatformBrowser } from '@angular/common'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms'
-import { HttpClient, HttpErrorResponse } from '@angular/common/http'
-import { firstValueFrom } from 'rxjs'
-import { AssistantResponse } from '../../../../models'
-import { chatGPTConfig } from '../../chatgpt.config'
-import { SystemPrompts } from '../../system-prompts'
-import { API_ENDPOINT } from '../../../../shared/constants'
+import { startWith } from 'rxjs'
+
 import { SeoService } from '../../../../services'
+import { LucideIconComponent } from '../../../../shared/icons/lucide-icons.component'
 import { AssistantFooterComponent } from '../../assistant-footer/assistant-footer.component'
+import { createAssistantController } from '../../shared/assistant-controller'
+import { SystemPrompts } from '../../system-prompts'
 
 @Component({
   selector: 'app-text-translator',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, AssistantFooterComponent],
+  imports: [ReactiveFormsModule, AssistantFooterComponent, LucideIconComponent],
   templateUrl: './translate-text.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -60,29 +59,41 @@ export class TranslateTextComponent implements OnInit {
     userContent: ['', [Validators.required, Validators.maxLength(5000)]],
     responseLanguage: [this.getSavedLanguage(), Validators.required]
   })
-  readonly isLoading = signal(false)
-  readonly result = signal<string | null>(null)
-  readonly errorMessage = signal<string | null>(null)
-  readonly copyStatus = signal<'idle' | 'copied' | 'failed'>('idle')
+  private readonly assistant = createAssistantController<{
+    userContent: string
+    responseLanguage: string
+  }>(this.http, {
+    systemPromptId: this.systemPromptId,
+    buildPayload: (formValue) => ({
+      userContent: formValue.userContent,
+      responseLanguage: formValue.responseLanguage
+    })
+  })
+  readonly isLoading = this.assistant.isLoading
+  readonly result = this.assistant.result
+  readonly errorMessage = this.assistant.errorMessage
+  readonly copyStatus = this.assistant.copyStatus
   readonly hasResult = computed(() => this.result() !== null)
-  readonly isCopyIdle = computed(() => this.copyStatus() === 'idle')
-  readonly isCopySuccess = computed(() => this.copyStatus() === 'copied')
-  readonly isCopyError = computed(() => this.copyStatus() === 'failed')
+  readonly isCopyIdle = this.assistant.isCopyIdle
+  readonly isCopySuccess = this.assistant.isCopySuccess
+  readonly isCopyError = this.assistant.isCopyError
+  private readonly userContentValue = toSignal(
+    this.userContentForm.controls.userContent.valueChanges.pipe(
+      startWith(this.userContentForm.controls.userContent.value)
+    ),
+    { initialValue: this.userContentForm.controls.userContent.value }
+  )
+  readonly userContentLength = computed(() => this.userContentValue()?.length ?? 0)
 
-  private copyResetTimeoutId: number | null = null
   private readonly localStorageKey = 'selectedResponseLanguage'
 
   ngOnInit(): void {
-    this.initializeSeoProperties()
-    this.destroyRef.onDestroy(() => this.clearCopyStatusTimer())
-  }
-
-  private initializeSeoProperties(): void {
     this.seoService.setMetaTitle('ChatGPT Text Translator - Translate Text Instantly')
     this.seoService.setMetaDescription(
       'Use our ChatGPT-powered text translator to instantly translate text into over 20 languages.'
     )
     this.seoService.setCanonicalUrl('https://www.azurespeed.com/ChatGPT/TranslateText')
+    this.destroyRef.onDestroy(() => this.assistant.destroy())
   }
 
   async submitForm(): Promise<void> {
@@ -90,57 +101,11 @@ export class TranslateTextComponent implements OnInit {
       return
     }
 
-    this.isLoading.set(true)
-    this.result.set(null)
-    this.errorMessage.set(null)
-    this.copyStatus.set('idle')
-    this.clearCopyStatusTimer()
-
-    const { userContent, responseLanguage } = this.userContentForm.getRawValue()
-    const payload = {
-      accessToken: chatGPTConfig.accessToken,
-      systemPromptId: this.systemPromptId,
-      userContent,
-      responseLanguage
-    }
-
-    try {
-      const response = await firstValueFrom(
-        this.http.post<AssistantResponse>(
-          `${API_ENDPOINT}/api/10-free-calls-per-ip-each-day`,
-          payload
-        )
-      )
-      this.result.set(response?.choices[0]?.message?.content ?? null)
-    } catch (error) {
-      let message = 'An unexpected error occurred'
-      if (error instanceof HttpErrorResponse) {
-        const errorPayload = error.error as { message?: string } | undefined
-        message =
-          errorPayload?.message ?? (typeof error.error === 'string' ? error.error : error.message)
-      } else if (error instanceof Error) {
-        message = error.message
-      }
-      this.errorMessage.set(message)
-    } finally {
-      this.isLoading.set(false)
-    }
+    await this.assistant.submit(this.userContentForm.getRawValue())
   }
 
-  async copyToClipboard(text: string): Promise<void> {
-    if (!text) {
-      return
-    }
-
-    try {
-      await navigator.clipboard.writeText(text)
-      this.copyStatus.set('copied')
-    } catch (err) {
-      console.error('Failed to copy text: ', err)
-      this.copyStatus.set('failed')
-    }
-
-    this.scheduleCopyStatusReset()
+  async copyToClipboard(text: string | null | undefined): Promise<void> {
+    await this.assistant.copy(text)
   }
 
   resetForm(): void {
@@ -148,11 +113,7 @@ export class TranslateTextComponent implements OnInit {
       userContent: '',
       responseLanguage: this.getSavedLanguage()
     })
-    this.result.set(null)
-    this.errorMessage.set(null)
-    this.copyStatus.set('idle')
-    this.clearCopyStatusTimer()
-    this.isLoading.set(false)
+    this.assistant.reset()
   }
 
   onResponseLanguageChange(lang: string): void {
@@ -170,20 +131,5 @@ export class TranslateTextComponent implements OnInit {
       return localStorage.getItem(this.localStorageKey) || 'English'
     }
     return 'English' // Default value when not running in the browser
-  }
-
-  private scheduleCopyStatusReset(): void {
-    this.clearCopyStatusTimer()
-    this.copyResetTimeoutId = window.setTimeout(() => {
-      this.copyResetTimeoutId = null
-      this.copyStatus.set('idle')
-    }, 3000)
-  }
-
-  private clearCopyStatusTimer(): void {
-    if (this.copyResetTimeoutId !== null) {
-      window.clearTimeout(this.copyResetTimeoutId)
-      this.copyResetTimeoutId = null
-    }
   }
 }

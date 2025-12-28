@@ -1,120 +1,168 @@
-<div class="page-container py-3">
-  <header class="page-intro">
-    <h1 class="page-title page-intro__title">Azure Sovereign Clouds</h1>
-    <p class="page-intro__description">
+<article class="page-shell section-stack mx-auto max-w-5xl">
+  <header class="page-header">
+    <h1 class="page-title">Azure sovereign clouds</h1>
+    <p class="page-lead">
       Explore dedicated, isolated cloud environments designed for compliance, data residency, and
       regulatory requirements.
     </p>
   </header>
-  <div class="app-table__container">
-    <table class="app-table--bordered app-table--striped app-table--hover app-table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Official Site</th>
-          <th>Description</th>
-          <th>View Regions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>AzureCloud</td>
-          <td>
-            <a
-              href="https://azure.microsoft.com"
-              target="_blank"
-              rel="noopener"
-              class="sovereign-table__link sovereign-table__link--url"
-            >
-              azure.microsoft.com
-            </a>
-          </td>
-          <td>The global public AzureCloud offers extensive services worldwide.</td>
-          <td>
-            <a href="/Information/AzureRegions" class="sovereign-table__link sovereign-table__action">
-              View Regions
-            </a>
-          </td>
-        </tr>
-        <tr>
-          <td>AzureChinaCloud</td>
-          <td>
-            <a
-              href="https://www.azure.cn"
-              target="_blank"
-              rel="noopener"
-              class="sovereign-table__link sovereign-table__link--url"
-            >
-              www.azure.cn
-            </a>
-          </td>
-          <td>Runs on a dedicated instance in China, operated by 21Vianet.</td>
-          <td>
-            <a
-              href="/Information/AzureChinaRegions"
-              class="sovereign-table__link sovereign-table__action"
-            >
-              View Regions
-            </a>
-          </td>
-        </tr>
-        <tr>
-          <td>AzureUSGovernment</td>
-          <td>
-            <a
-              href="https://azure.microsoft.com/en-us/global-infrastructure/government/"
-              target="_blank"
-              rel="noopener"
-              class="sovereign-table__link sovereign-table__link--url"
-            >
-              azure.microsoft.com/en-us/global-infrastructure/government/
-            </a>
-          </td>
-          <td>Designed for U.S. government entities with strict compliance requirements.</td>
-          <td>
-            <a
-              href="/Information/AzureUSGovernmentRegions"
-              class="sovereign-table__link sovereign-table__action"
-            >
-              View Regions
-            </a>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  <section class="regions__section mt-5">
-    <header class="regions__section-header">
-      <h2 class="content-heading">Additional resources</h2>
-      <p>Further reading for sovereign cloud planning and deployment.</p>
-    </header>
-    <div class="regions-resources__grid">
-      <article class="resource-card">
-        <h3 class="resource-card__title">Azure Government</h3>
-        <p class="resource-card__body">
+
+  <section class="section-block" aria-labelledby="clouds-heading">
+    <h2 id="clouds-heading" class="sr-only">Sovereign clouds comparison</h2>
+    <div class="table-shell overflow-x-auto">
+      <table class="table-base">
+        <thead class="table-head">
+          <tr>
+            <th scope="col" class="px-4 py-3">Cloud &amp; Link</th>
+            <th scope="col" class="px-4 py-3">Description</th>
+            <th scope="col" class="px-4 py-3">Primary Market</th>
+            <th scope="col" class="px-4 py-3">Key Compliance / Isolation</th>
+            <th scope="col" class="px-4 py-3">View Regions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border-soft">
+          <tr class="table-row-hover align-top">
+            <td class="px-4 py-4">
+              <p class="text-sm font-semibold text-text-strong">Global Azure</p>
+              <a
+                href="https://azure.microsoft.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="link-primary inline-flex items-center gap-1 text-sm"
+                aria-label="azure.microsoft.com (opens in new tab)"
+              >
+                azure.microsoft.com
+                <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
+              </a>
+            </td>
+            <td class="px-4 py-4">
+              Worldwide commercial cloud with the largest service catalog and fastest feature
+              rollout.
+            </td>
+            <td class="px-4 py-4">Global businesses, NGOs, startups, and developers.</td>
+            <td class="px-4 py-4">
+              Multi-region deployment, global compliance (ISO, SOC, GDPR, HIPAA).
+            </td>
+            <td class="px-4 py-4">
+              <a
+                [routerLink]="['/Information/AzureRegions']"
+                class="link-primary inline-flex items-center gap-1"
+                aria-label="View Global Azure regions"
+              >
+                View Regions
+              </a>
+            </td>
+          </tr>
+          <tr class="table-row-hover align-top">
+            <td class="px-4 py-4">
+              <p class="text-sm font-semibold text-text-strong">Azure China (Mooncake)</p>
+              <a
+                href="https://azure.cn"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="link-primary inline-flex items-center gap-1 text-sm"
+                aria-label="azure.cn (opens in new tab)"
+              >
+                azure.cn
+                <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
+              </a>
+            </td>
+            <td class="px-4 py-4">
+              Operated by 21Vianet; meets China's data residency laws; fully isolated from global
+              Azure.
+            </td>
+            <td class="px-4 py-4">
+              Organizations operating in Mainland China under local regulatory requirements.
+            </td>
+            <td class="px-4 py-4">Data residency: China only; compliance with PRC cyber laws.</td>
+            <td class="px-4 py-4">
+              <a
+                [routerLink]="['/Information/AzureChinaRegions']"
+                class="link-primary inline-flex items-center gap-1"
+                aria-label="View Azure China regions"
+              >
+                View Regions
+              </a>
+            </td>
+          </tr>
+          <tr class="table-row-hover align-top">
+            <td class="px-4 py-4">
+              <p class="text-sm font-semibold text-text-strong">Azure Government (Fairfax)</p>
+              <a
+                href="https://azure.microsoft.com/en-us/global-infrastructure/government/"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="link-primary inline-flex items-center gap-1 text-sm"
+                aria-label="Azure Government Cloud (opens in new tab)"
+              >
+                Azure Govt Cloud
+                <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
+              </a>
+            </td>
+            <td class="px-4 py-4">
+              Secure, isolated cloud for U.S. government workloads; staffed by screened U.S.
+              persons.
+            </td>
+            <td class="px-4 py-4">
+              U.S. government agencies, state &amp; local governments, tribal governments, and
+              vetted contractors/partners.
+            </td>
+            <td class="px-4 py-4">
+              FedRAMP High, DoD IL4/5, CJIS, IRS 1075; data stays in U.S. gov datacenters.
+            </td>
+            <td class="px-4 py-4">
+              <a
+                [routerLink]="['/Information/AzureUSGovernmentRegions']"
+                class="link-primary inline-flex items-center gap-1"
+                aria-label="View Azure Government regions"
+              >
+                View Regions
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section-block" aria-labelledby="sov-resources-heading">
+    <h2 id="sov-resources-heading" class="section-title mb-4">Additional resources</h2>
+    <p class="mb-4 text-sm text-text-muted">
+      Further reading for sovereign cloud planning and deployment.
+    </p>
+    <div class="resource-grid">
+      <article class="card card-resource">
+        <h3 class="card-title">Azure Government</h3>
+        <p class="card-description">
           Comprehensive guide for developers working with Azure Government cloud.
         </p>
         <a
           href="https://docs.microsoft.com/en-us/azure/azure-government/documentation-government-developer-guide"
           target="_blank"
-          class="resource-card__link"
+          rel="noopener noreferrer"
+          class="card-cta"
+          aria-label="Learn more about Azure Government (opens in new tab)"
         >
           Learn more
+          <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
         </a>
       </article>
-      <article class="resource-card">
-        <h3 class="resource-card__title">Azure China</h3>
-        <p class="resource-card__body">
+      <article class="card card-resource">
+        <h3 class="card-title">Azure China</h3>
+        <p class="card-description">
           Development guidelines and best practices for Azure China cloud.
         </p>
         <a
           href="https://learn.microsoft.com/en-us/azure/china/resources-developer-guide"
           target="_blank"
-          class="resource-card__link"
+          rel="noopener noreferrer"
+          class="card-cta"
+          aria-label="Learn more about Azure China (opens in new tab)"
         >
           Learn more
+          <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
         </a>
       </article>
     </div>
   </section>
-</div>
+</article>

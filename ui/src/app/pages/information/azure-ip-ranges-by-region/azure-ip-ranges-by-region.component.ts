@@ -1,9 +1,9 @@
-import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core'
-import { RouterModule } from '@angular/router'
-import { RegionModel } from '../../../models'
-import { RegionService, SeoService } from '../../../services'
-import { HeroIconComponent } from '../../../shared/icons/hero-icons.imports'
+import { RouterLink } from '@angular/router'
+
+import { SeoService } from '../../../services'
+import { LucideIconComponent } from '../../../shared/icons/lucide-icons.component'
+import { REGION_IP_RANGE_DIRECTORY, RegionIpRangeEntry } from './region-ip-ranges.data'
 
 interface RegionCard {
   regionId: string
@@ -23,15 +23,16 @@ interface RegionGroupView {
 
 @Component({
   selector: 'app-azure-ip-ranges-by-region',
-  standalone: true,
-  imports: [CommonModule, RouterModule, HeroIconComponent],
+  imports: [RouterLink, LucideIconComponent],
   templateUrl: './azure-ip-ranges-by-region.component.html',
   styleUrl: './azure-ip-ranges-by-region.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(document:keydown.escape)': 'onEscape()'
+  }
 })
 export class AzureIpRangesByRegionComponent implements OnInit {
   private readonly seoService = inject(SeoService)
-  private readonly regionService = inject(RegionService)
 
   private readonly regions = signal<RegionCard[]>([])
   readonly searchTerm = signal('')
@@ -65,11 +66,12 @@ export class AzureIpRangesByRegionComponent implements OnInit {
     this.groupedRegions().reduce((total, group) => total + group.regions.length, 0)
   )
 
-  readonly trackByGroup = (_: number, group: RegionGroupView): string => group.key
-  readonly trackByRegion = (_: number, region: RegionCard): string => region.regionId
-
   ngOnInit(): void {
-    this.initializeSeoProperties()
+    this.seoService.setMetaTitle('Explore Azure IP Ranges by Region')
+    this.seoService.setMetaDescription(
+      "Discover the comprehensive list of Azure IP ranges by region to optimize your application's network performance. Understand regional IP ranges for better resource allocation and enhanced security measures."
+    )
+    this.seoService.setCanonicalUrl('https://www.azurespeed.com/Information/AzureIpRangesByRegion')
     this.loadRegions()
   }
 
@@ -82,6 +84,12 @@ export class AzureIpRangesByRegionComponent implements OnInit {
     this.searchTerm.set('')
   }
 
+  onEscape(): void {
+    if (this.searchTerm()) {
+      this.clearSearch()
+    }
+  }
+
   private filterRegions(query: string): RegionCard[] {
     if (!query) {
       return this.regions()
@@ -90,41 +98,34 @@ export class AzureIpRangesByRegionComponent implements OnInit {
   }
 
   private loadRegions(): void {
-    const cards = this.regionService
-      .getAllRegions()
-      .map((region) => this.mapToRegionCard(region))
-      .sort((a, b) => a.displayName.localeCompare(b.displayName))
+    const cards = REGION_IP_RANGE_DIRECTORY.map((region) => this.mapToRegionCard(region)).sort(
+      (a, b) => a.displayName.localeCompare(b.displayName)
+    )
     this.regions.set(cards)
   }
 
-  private mapToRegionCard(region: RegionModel): RegionCard {
+  private mapToRegionCard(region: RegionIpRangeEntry): RegionCard {
     const groupLabel = region.regionGroup?.trim() || 'Independent regions'
+    const location = region.datacenterLocation?.trim() ?? ''
     const fragments = [
       region.displayName,
       region.regionId,
       groupLabel,
       region.geography,
-      region.datacenterLocation
+      location,
+      region.serviceTagId
     ]
     return {
       regionId: region.regionId,
       displayName: region.displayName,
       regionGroup: groupLabel,
       geography: region.geography,
-      datacenterLocation: region.datacenterLocation,
-      serviceTagId: `AzureCloud.${region.regionId}`,
+      datacenterLocation: location,
+      serviceTagId: region.serviceTagId,
       searchText: fragments
         .filter((value): value is string => Boolean(value && value.trim()))
         .join(' ')
         .toLowerCase()
     }
-  }
-
-  private initializeSeoProperties(): void {
-    this.seoService.setMetaTitle('Explore Azure IP Ranges by Region')
-    this.seoService.setMetaDescription(
-      "Discover the comprehensive list of Azure IP ranges by region to optimize your application's network performance. Understand regional IP ranges for better resource allocation and enhanced security measures."
-    )
-    this.seoService.setCanonicalUrl('https://www.azurespeed.com/Information/AzureIpRangesByRegion')
   }
 }

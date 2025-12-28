@@ -1,0 +1,178 @@
+/* ==========================================================================
+   Base Button
+   ========================================================================== */
+.btn {
+  display: inline-flex;
+  height: 2rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.375rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+}
+.btn:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--color-surface-base),
+    0 0 0 4px var(--color-primary);
+}
+.btn:disabled,
+.btn.disabled {
+  border: 1px solid var(--color-border-disabled) !important;
+  background-color: var(--color-surface-disabled) !important;
+  color: var(--color-text-disabled) !important;
+  cursor: not-allowed;
+  pointer-events: none;
+  box-shadow: none !important;
+  opacity: 1;
+}
+
+/* ==========================================================================
+   Size Variants
+   ========================================================================== */
+.btn--sm {
+  height: 1.75rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  font-size: 0.6875rem;
+}
+.btn--lg {
+  height: 2.5rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  font-size: 0.875rem;
+}
+
+/* ==========================================================================
+   Style Variants
+   ========================================================================== */
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-primary-foreground);
+  box-shadow: var(--shadow-sm);
+}
+.btn-primary:hover {
+  background-color: color-mix(in srgb, var(--color-primary) 90%, var(--color-overlay));
+}
+
+.btn-secondary {
+  background-color: var(--color-surface-muted);
+  color: var(--color-text-body);
+  box-shadow: var(--shadow-xs);
+}
+.btn-secondary:hover {
+  background-color: var(--color-surface-raised);
+  color: var(--color-text-strong);
+}
+
+.btn-outline {
+  border: 1px solid var(--color-border-contrast);
+  background-color: var(--color-surface-base);
+  box-shadow: var(--shadow-xs);
+}
+.btn-outline:hover {
+  background-color: var(--color-accent);
+  color: var(--color-accent-foreground);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  border: 1px solid;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  /* Optimize for frequent state changes - improves INP */
+  contain: layout style;
+  transition:
+    border-color 0.1s ease-out,
+    background-color 0.1s ease-out,
+    color 0.1s ease-out,
+    box-shadow 0.1s ease-out;
+}
+
+.chip-active {
+  border-color: var(--color-brand);
+  background-color: var(--color-brand);
+  color: var(--color-primary-foreground);
+  box-shadow: var(--shadow-lg);
+}
+.chip-active:hover {
+  border-color: color-mix(in srgb, var(--color-brand) 40%, transparent);
+  background-color: var(--color-surface-raised);
+  color: var(--color-brand);
+}
+
+.chip-inactive {
+  border-color: color-mix(in srgb, var(--color-brand) 60%, transparent);
+  background-color: var(--color-surface-muted);
+  color: var(--color-text-body);
+}
+.chip-inactive:hover {
+  border-color: color-mix(in srgb, var(--color-brand) 80%, transparent);
+  background-color: var(--color-surface-raised);
+  color: var(--color-brand);
+}
+
+.chip:focus-within {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 35%, transparent);
+}
+
+.chip input:focus-visible + span {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+/* Icon-only button - intentionally larger (36px vs 32px base) for better touch targets */
+.icon-button {
+  display: inline-flex;
+  width: 2.25rem;
+  height: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.375rem;
+  color: var(--color-text-muted);
+  transition:
+    background-color 0.15s,
+    color 0.15s;
+}
+.icon-button:hover {
+  background-color: var(--color-surface-muted);
+  color: var(--color-text-body);
+}
+.icon-button:focus-visible {
+  box-shadow:
+    0 0 0 2px var(--color-primary),
+    0 0 0 4px color-mix(in srgb, var(--color-primary) 25%, transparent);
+}
+
+/* Ensure responsive hide utilities still win when combined with .icon-button */
+@media (min-width: 1024px) {
+  .icon-button.lg\:hidden {
+    display: none;
+  }
+}
+
+/* Fluid button variant for full-width, multi-line triggers */
+.btn--fluid {
+  height: auto;
+  min-height: 2.5rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  align-items: flex-start;
+}

@@ -1,16 +1,15 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core'
-import { CommonModule } from '@angular/common'
 import { RouterLink } from '@angular/router'
+
+import { LucideIconComponent } from '../icons/lucide-icons.component'
 
 @Component({
   selector: 'app-footer',
-  standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [RouterLink, LucideIconComponent],
   templateUrl: './footer.component.html',
+  styleUrl: './footer.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FooterComponent {
-  readonly currentYear = new Date().getFullYear()
   readonly startYear = 2013
-  readonly copyrightYears = `${this.startYear}-${this.currentYear}`
 }

@@ -1,13 +1,20 @@
 @for (group of groups(); track navGroupTrackBy($index, group); let last = $last) {
-  <div class="nav-section">
+  <div class="flex flex-col gap-2">
     @if (group.heading) {
-      <div class="nav-section__heading">{{ group.heading }}</div>
+      <div class="flex h-8 shrink-0 items-center px-2 text-xs font-medium text-text-muted">
+        {{ group.heading }}
+      </div>
     }
-    <ul class="nav-list">
+    <ul class="m-0 flex list-none flex-col gap-1 p-0">
       @for (item of group.items; track navItemTrackBy($index, item)) {
-        <li class="nav-item">
+        <li class="w-full">
           <a
-            class="nav-link"
+            class="group flex h-8 w-full items-center gap-2 overflow-hidden rounded-md px-2 text-sm transition-[background-color,color] outline-none hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-primary/60 active:bg-sidebar-accent active:text-sidebar-accent-foreground"
+            [class]="
+              rla.isActive
+                ? 'bg-primary font-medium text-primary-foreground hover:bg-primary/90 active:bg-primary/90'
+                : 'text-sidebar-foreground'
+            "
             [routerLink]="item.routerLink"
             routerLinkActive="active"
             [routerLinkActiveOptions]="{ exact: true }"
@@ -15,16 +22,14 @@
             [attr.aria-current]="rla.isActive ? 'page' : null"
             (click)="handleNavLinkClick()"
           >
-            <span class="nav-link__icon">
-              <app-hero-icon [name]="item.icon" class="h-5 w-5" aria-hidden="true" />
-            </span>
-            <span class="nav-link__label">{{ item.label }}</span>
+            <app-lucide-icon [name]="item.icon" class="size-4 shrink-0" aria-hidden="true" />
+            <span class="truncate">{{ item.label }}</span>
           </a>
         </li>
       }
     </ul>
   </div>
   @if (!last) {
-    <div class="nav-divider"></div>
+    <div class="my-2 h-px bg-border-soft"></div>
   }
 }

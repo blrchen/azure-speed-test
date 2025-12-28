@@ -1,87 +1,163 @@
+import { isPlatformBrowser } from '@angular/common'
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
+  computed,
+  effect,
+  EffectRef,
   inject,
   OnDestroy,
-  PLATFORM_ID
+  PLATFORM_ID,
+  signal,
+  ViewEncapsulation
 } from '@angular/core'
-import { CommonModule, isPlatformBrowser } from '@angular/common'
-import { ActivatedRoute, RouterModule } from '@angular/router'
-import { Subscription } from 'rxjs'
-import { Map as LeafletMap, Marker as LeafletMarker } from 'leaflet' // Corrected import for Map
-import azureGlobalCloudRegionsJson from '../../../../assets/data/regions.json'
+import { toSignal } from '@angular/core/rxjs-interop'
+import { ActivatedRoute, Router, RouterLink } from '@angular/router'
+import type { Map as LeafletMap, Marker as LeafletMarker } from 'leaflet'
+import { map } from 'rxjs'
+
 import chinaRegionsJson from '../../../../assets/data/regions-china.json'
 import govRegionsJson from '../../../../assets/data/regions-usgov.json'
+import azureGlobalCloudRegionsJson from '../../../../assets/data/regions.json'
 import { Region } from '../../../models'
 import { SeoService } from '../../../services'
+import { LucideIconComponent } from '../../../shared/icons/lucide-icons.component'
+import { buildRegionDetailRouterLink, toRegionNameNoSpace } from '../../../shared/utils'
 
 @Component({
   selector: 'app-azure-region-details',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [RouterLink, LucideIconComponent],
   templateUrl: './azure-region-details.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrl: './azure-region-details.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
+  host: { class: 'block' }
 })
 export class AzureRegionDetailsComponent implements AfterViewInit, OnDestroy {
-  regionData: Region | undefined
-  regionId = 'EastUS'
-  isLoading = false
-  private subscription: Subscription
-  private allRegions: Region[]
-  private map!: LeafletMap
-  private marker?: LeafletMarker
-  private viewInitialized = false
+  private readonly route = inject(ActivatedRoute)
+  private readonly router = inject(Router)
+  private readonly seoService = inject(SeoService)
+  private readonly platformId = inject(PLATFORM_ID)
+  private readonly isBrowser = isPlatformBrowser(this.platformId)
 
-  private route = inject(ActivatedRoute)
-  private seoService = inject(SeoService)
-  private platformId = inject(PLATFORM_ID)
+  private readonly viewInitialized = signal(false)
 
-  constructor() {
-    // Merge all region data
-    this.allRegions = [...azureGlobalCloudRegionsJson, ...chinaRegionsJson, ...govRegionsJson]
+  private readonly allRegions: Region[] = [
+    ...(azureGlobalCloudRegionsJson as Region[]),
+    ...(chinaRegionsJson as Region[]),
+    ...(govRegionsJson as Region[])
+  ]
 
-    this.subscription = this.route.paramMap.subscribe((params) => {
-      const paramRegionId = params.get('regionId')
-      this.regionId = paramRegionId ? paramRegionId : 'EastUS'
-      this.loadRegionData()
-      this.initializeSeoProperties()
-    })
-  }
+  private readonly requestedRegionId = toSignal(
+    this.route.paramMap.pipe(map((params) => params.get('regionId')?.trim() || 'EastUS')),
+    { initialValue: 'EastUS' }
+  )
 
-  ngAfterViewInit() {
-    this.viewInitialized = true
-    if (isPlatformBrowser(this.platformId)) {
-      void this.initMap()
+  readonly regionId = computed(() => this.requestedRegionId())
+  readonly regionIdLowercase = computed(() => this.regionId().toLowerCase())
+  readonly regionData = computed<Region | null>(() => {
+    const requestedId = this.regionIdLowercase()
+    return this.allRegions.find((region) => region.regionId.toLowerCase() === requestedId) ?? null
+  })
+  readonly breadcrumbLabel = computed(() => this.regionData()?.displayName ?? this.regionId())
+  readonly availabilityZoneStatus = computed(() =>
+    this.computeAvailabilityZoneStatus(this.regionData())
+  )
+  readonly regionDescription = computed(() => this.buildRegionDescription(this.regionData()))
+  readonly hasCoordinates = computed(() => {
+    const region = this.regionData()
+    return !!region?.latitude && !!region?.longitude
+  })
+  readonly regionCoordinatesHref = computed(() => {
+    const region = this.regionData()
+    if (!region?.latitude || !region?.longitude) {
+      return ''
     }
-  }
+    return `https://www.google.com/maps/search/${region.latitude},${region.longitude}`
+  })
+  readonly mapLoaded = signal(false)
+  readonly relatedRegions = computed(() => {
+    const current = this.regionData()
+    if (!current) return []
+    return this.allRegions
+      .filter(
+        (r) =>
+          r.regionId !== current.regionId &&
+          (r.geography === current.geography ||
+            r.pairedRegion === current.displayName ||
+            current.pairedRegion === r.displayName)
+      )
+      .slice(0, 6)
+  })
 
-  private loadRegionData(): void {
-    this.isLoading = true
-    this.regionData = this.allRegions.find(
-      (region) => region.regionId.toLowerCase() === this.regionId.toLowerCase()
-    )
-    this.isLoading = false
+  private map: LeafletMap | null = null
+  private marker: LeafletMarker | null = null
+  private navigatedToNotFound = false
 
-    if (this.viewInitialized && isPlatformBrowser(this.platformId)) {
-      void this.initMap()
+  private readonly notFoundEffect: EffectRef = effect(() => {
+    const region = this.regionData()
+    const regionId = this.regionId()
+    if (!region && regionId && !this.navigatedToNotFound) {
+      this.navigatedToNotFound = true
+      void this.router.navigate(['/Information'], { replaceUrl: true })
     }
-  }
+  })
 
-  private initializeSeoProperties(): void {
-    this.seoService.setMetaTitle(`Azure Region - ${this.regionData?.displayName}`)
-    this.seoService.setMetaDescription(this.regionDescription)
+  private readonly seoEffect: EffectRef = effect(() => {
+    const region = this.regionData()
+    if (!region) {
+      return
+    }
+
+    this.seoService.setMetaTitle(`Azure Region - ${region.displayName}`)
+    this.seoService.setMetaDescription(this.regionDescription())
     this.seoService.setCanonicalUrl(
-      `https://www.azurespeed.com/Information/AzureRegions/${this.regionId}`
+      `https://www.azurespeed.com/Information/AzureRegions/${toRegionNameNoSpace(
+        region.displayName
+      )}`
     )
+  })
+
+  private readonly mapEffect: EffectRef = effect(
+    () => {
+      if (!this.viewInitialized() || !this.isBrowser) {
+        return
+      }
+      const region = this.regionData()
+      void this.renderMap(region)
+    },
+    { allowSignalWrites: true }
+  )
+
+  ngAfterViewInit(): void {
+    this.viewInitialized.set(true)
+    if (this.isBrowser) {
+      void this.renderMap(this.regionData())
+    }
   }
 
-  get regionIdLowercase(): string {
-    return this.regionId.toLowerCase()
+  readonly buildRegionRouterLink = buildRegionDetailRouterLink
+
+  ngOnDestroy(): void {
+    this.mapEffect.destroy()
+    this.seoEffect.destroy()
+    this.notFoundEffect.destroy()
+    this.teardownMap()
   }
 
-  get regionDescription(): string {
-    const region = this.regionData
+  private computeAvailabilityZoneStatus(region: Region | null): string {
+    const count = region?.availabilityZoneCount
+    if (count === undefined || count === null) {
+      return 'Not specified'
+    }
+    if (count > 0) {
+      return `Supported (${count})`
+    }
+    return 'Not supported (0)'
+  }
+
+  private buildRegionDescription(region: Region | null): string {
     if (!region) {
       return 'Detailed information about this Azure region, including availability, location, and paired region guidance.'
     }
@@ -129,26 +205,23 @@ export class AzureRegionDetailsComponent implements AfterViewInit, OnDestroy {
     return [introSentence, detailSentence, residency].filter(Boolean).join(' ')
   }
 
-  get availabilityZoneStatus(): string {
-    const count = this.regionData?.availabilityZoneCount
-    if (count === undefined || count === null) {
-      return 'Not specified'
+  private async renderMap(region: Region | null): Promise<void> {
+    if (!this.isBrowser) {
+      return
     }
-    if (count > 0) {
-      return `Supported (${count})`
+    if (!this.viewInitialized()) {
+      return
     }
-    return 'Not supported (0)'
-  }
+    if (!region?.latitude || !region?.longitude) {
+      this.teardownMap()
+      return
+    }
 
-  private async initMap(): Promise<void> {
-    if (!this.viewInitialized) return
-    if (!isPlatformBrowser(this.platformId)) return
-    if (!this.regionData?.latitude || !this.regionData?.longitude) return
+    this.mapLoaded.set(false)
 
     try {
       const mapElement = document.getElementById('region-map')
       if (!mapElement) {
-        console.error('Map container not found')
         return
       }
 
@@ -156,48 +229,42 @@ export class AzureRegionDetailsComponent implements AfterViewInit, OnDestroy {
       const L = leafletModule.default ?? leafletModule
 
       if (!this.map) {
-        this.map = L.map(mapElement).setView(
-          [this.regionData.latitude, this.regionData.longitude],
-          6
-        )
+        this.map = L.map(mapElement).setView([region.latitude, region.longitude], 6)
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: 'Map data (c) OpenStreetMap contributors'
         }).addTo(this.map)
       } else {
-        this.map.setView([this.regionData.latitude, this.regionData.longitude], 6)
+        this.map.setView([region.latitude, region.longitude], 6)
       }
 
       if (this.marker) {
         this.marker.remove()
       }
 
-      this.marker = L.marker([this.regionData.latitude, this.regionData.longitude])
+      this.marker = L.marker([region.latitude, region.longitude])
         .addTo(this.map)
-        .bindPopup(this.regionData.displayName)
+        .bindPopup(region.displayName)
 
       this.marker.openPopup()
 
       requestAnimationFrame(() => {
-        this.map.invalidateSize()
+        this.map?.invalidateSize()
+        this.mapLoaded.set(true)
       })
-    } catch (error) {
-      console.error('Error in map initialization:', error)
+    } catch {
+      this.mapLoaded.set(true)
     }
   }
 
-  ngOnDestroy() {
-    if (this.subscription) {
-      this.subscription.unsubscribe()
+  private teardownMap(): void {
+    if (this.marker) {
+      this.marker.remove()
+      this.marker = null
     }
-    if (isPlatformBrowser(this.platformId)) {
-      if (this.marker) {
-        this.marker.remove()
-        this.marker = undefined
-      }
-      if (this.map) {
-        this.map.remove()
-      }
+    if (this.map) {
+      this.map.remove()
+      this.map = null
     }
   }
 }

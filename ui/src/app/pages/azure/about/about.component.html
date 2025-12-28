@@ -1,104 +1,97 @@
-<div class="page-container py-3">
-  <header class="page-intro">
-    <h1 class="page-title page-intro__title">About AzureSpeed</h1>
-    <p class="page-intro__description">
-      <a href="https://www.azurespeed.com" title="Azure Speed Test" class="font-semibold">
-        AzureSpeed.com
-      </a>
-      is a speed test tool that measures your network latency, download, and upload speeds across
-      multiple global Azure regions. Use it to find the best Azure region to get started.
-    </p>
-    <p class="page-intro__description">
-      This site is independently maintained by
-      <a href="https://github.com/blrchen" target="_blank" title="Blair Chen's Github Profile">
-        Blair Chen
-      </a>
-      and other GitHub volunteers since 2013. This website is not officially associated with
-      Microsoft. All data presented is sourced from publicly available APIs provided by Microsoft
-      Azure. For more technical details , visit the
-      <a
-        href="https://github.com/blrchen/azure-speed-test"
-        target="_blank"
-        title="AzureSpeed GitHub Repository"
-      >
-        AzureSpeed GitHub repository
-      </a>
-      .
-    </p>
-    <p class="page-intro__description">
-      <strong>Funding and ads:</strong>
-      <br />
-      AzureSpeed is maintained during spare time and personally funded; ads are displayed to help
-      cover operational costs.
+<article class="page-shell section-stack mx-auto max-w-5xl">
+  <header class="page-header">
+    <h1 class="page-title">About AzureSpeed</h1>
+    <p class="page-lead">
+      A speed test tool that measures network latency, download, and upload speeds across global
+      Azure regions. Use it to discover the closest Azure region for your workloads.
     </p>
   </header>
-  <section class="regions__section mt-12">
-    <header class="regions__section-header">
-      <h2 class="content-heading">Frequently asked questions</h2>
-    </header>
-    <div class="mt-6 space-y-4">
-      <details
-        class="group rounded-2xl border border-slate-200 bg-white/95 shadow-sm transition-colors duration-200 ease-out open:border-brand/40 open:shadow-brand-sm"
-      >
-        <summary
-          class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left text-base font-semibold text-slate-900 outline-none transition-colors hover:text-brand/90 focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white [&::-webkit-details-marker]:hidden"
+
+  <section class="section-block" aria-labelledby="project-heading">
+    <h2 id="project-heading" class="section-title">Project information</h2>
+    <div class="space-y-4 leading-relaxed">
+      <p>
+        AzureSpeed is an open source side project built and maintained by
+        <a
+          href="https://github.com/blrchen"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Blair Chen's Github Profile"
+          class="link-primary"
         >
-          <span class="flex-1 text-base font-semibold text-slate-900">
-            How can I provide feedback or report bugs?
-          </span>
-          <app-hero-icon
-            name="heroChevronDown"
-            class="h-4 w-4 text-slate-400 transition-transform duration-200 ease-in-out group-open:rotate-180 group-open:text-brand"
-            aria-hidden="true"
-          />
+          Blair Chen</a
+        >. This is not an official Microsoft product; all data comes from publicly available Azure
+        APIs.
+      </p>
+      <p>
+        The source code is available on
+        <a
+          href="https://github.com/blrchen/azure-speed-test"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="AzureSpeed GitHub Repository"
+          class="link-primary"
+        >
+          GitHub</a
+        >. Contributions, bug reports, and feature requests are welcome.
+      </p>
+    </div>
+  </section>
+
+  <section class="section-block" aria-labelledby="support-heading">
+    <h2 id="support-heading" class="section-title">Support this project</h2>
+    <div class="space-y-4 leading-relaxed">
+      <p>
+        We apologize for the ads, but they're needed to cover the cloud costs (~$300/month) to
+        continue providing this free service.
+      </p>
+      <p>
+        If you find AzureSpeed useful, please consider supporting us by linking to us on your
+        website or recommending us on social media.
+      </p>
+    </div>
+  </section>
+
+  <section class="section-block" aria-labelledby="faq-heading">
+    <h2 id="faq-heading" class="section-title">Frequently asked questions</h2>
+    <div class="faq-list">
+      <details class="faq-item group">
+        <summary class="faq-summary">
+          <span class="faq-question">How can I provide feedback or report bugs?</span>
+          <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
         </summary>
-        <div
-          class="space-y-3 border-t border-slate-100 px-6 py-5 text-sm leading-relaxed text-slate-600 [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:text-slate-800 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
-        >
-          <p>
-            If you encounter bugs or have feature suggestions, please create an issue on
-            <a
-              href="https://github.com/blrchen/azure-speed-test/issues"
-              target="_blank"
-              title="AzureSpeed GitHub Issues"
-            >
-              GitHub
-            </a>
-            .
-          </p>
+        <div class="faq-body">
+          If you encounter bugs or have feature suggestions, please create an issue on
+          <a
+            href="https://github.com/blrchen/azure-speed-test/issues"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="AzureSpeed GitHub Issues"
+            class="link-primary"
+          >
+            GitHub </a
+          >.
         </div>
       </details>
-      <details
-        class="group rounded-2xl border border-slate-200 bg-white/95 shadow-sm transition-colors duration-200 ease-out open:border-brand/40 open:shadow-brand-sm"
-      >
-        <summary
-          class="flex w-full cursor-pointer items-center justify-between gap-4 px-6 py-5 text-left text-base font-semibold text-slate-900 outline-none transition-colors hover:text-brand/90 focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white [&::-webkit-details-marker]:hidden"
-        >
-          <span class="flex-1 text-base font-semibold text-slate-900">
-            How can I contribute to the project?
-          </span>
-          <app-hero-icon
-            name="heroChevronDown"
-            class="h-4 w-4 text-slate-400 transition-transform duration-200 ease-in-out group-open:rotate-180 group-open:text-brand"
-            aria-hidden="true"
-          />
+      <details class="faq-item group">
+        <summary class="faq-summary">
+          <span class="faq-question">How can I contribute to the project?</span>
+          <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
         </summary>
-        <div
-          class="space-y-3 border-t border-slate-100 px-6 py-5 text-sm leading-relaxed text-slate-600 [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-4 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5 [&_strong]:text-slate-800 [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
-        >
-          <p>
-            Contributions are welcome and appreciated. To get involved, please fork the project on
-            <a
-              href="https://github.com/blrchen/azure-speed-test"
-              target="_blank"
-              title="AzureSpeed GitHub Repository"
-            >
-              GitHub
-            </a>
-            and submit a pull request.
-          </p>
+        <div class="faq-body">
+          Contributions are welcome and appreciated. To get involved, please fork the project on
+          <a
+            href="https://github.com/blrchen/azure-speed-test"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="AzureSpeed GitHub Repository"
+            class="link-primary"
+          >
+            GitHub
+          </a>
+          and submit a pull request.
         </div>
       </details>
     </div>
   </section>
-</div>
+</article>

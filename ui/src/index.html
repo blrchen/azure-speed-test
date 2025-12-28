@@ -6,6 +6,18 @@
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <!-- Critical inline CSS: prevent desktop sidebar from flashing on mobile before Tailwind loads -->
+    <style>
+      aside[data-desktop-nav] {
+        display: none;
+      }
+
+      @media (min-width: 1024px) {
+        aside[data-desktop-nav] {
+          display: flex;
+        }
+      }
+    </style>
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",

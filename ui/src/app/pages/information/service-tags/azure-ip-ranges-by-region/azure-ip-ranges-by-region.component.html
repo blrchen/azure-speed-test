@@ -1,0 +1,320 @@
+<article class="page-shell section-stack mx-auto max-w-5xl">
+  <header class="page-header">
+    <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+      <h1 class="page-title">Azure IP ranges by region</h1>
+      <nav class="flex flex-wrap gap-2" aria-label="Azure IP range directory views">
+        <span class="btn btn--sm btn-current min-h-11 md:min-h-9" aria-current="page">
+          By region
+        </span>
+        <a
+          class="btn btn-outline btn--sm min-h-11 md:min-h-9"
+          routerLink="/Information/AzureIpRangesByService"
+          [queryParams]="cloudQueryParams()"
+        >
+          By service
+        </a>
+      </nav>
+    </div>
+    <p class="page-lead">
+      Browse Microsoft Service Tag address prefixes by Azure region and cloud for firewall, proxy,
+      and routing configuration.
+    </p>
+  </header>
+
+  <aside class="rounded-lg bg-warning/10 p-4" aria-labelledby="service-tag-safety-heading">
+    <div class="flex items-start gap-3">
+      <app-lucide-icon
+        name="shield-check"
+        class="mt-0.5 size-5 shrink-0 text-warning-foreground dark:text-warning"
+        aria-hidden="true"
+      />
+      <div class="min-w-0 space-y-1 text-sm leading-relaxed text-text-muted">
+        <h2 id="service-tag-safety-heading" class="font-semibold text-text-strong">
+          Use service tags directly when supported
+        </h2>
+        <p>
+          Azure NSGs and Azure Firewall can track service-tag changes automatically. Raw IP prefixes
+          are useful for systems that cannot consume service tags, but they require regular updates
+          and do not establish data residency, traffic identity, or a complete security boundary.
+        </p>
+      </div>
+    </div>
+  </aside>
+
+  @if (directories(); as directoryData) {
+    @let directory = regionDirectory();
+
+    <section class="section-block" aria-labelledby="region-directory-heading">
+      <div>
+        <h2 id="region-directory-heading" class="section-title">Region directory</h2>
+        <p class="mt-2 text-text-muted">
+          The default view contains generally available Azure Public service-tag scopes. Select
+          another cloud or status to inspect sovereign, restricted, planned, preview, and unmapped
+          scopes.
+        </p>
+      </div>
+
+      <form
+        class="grid gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,1fr))]"
+        role="search"
+        (submit)="$event.preventDefault()"
+      >
+        <div class="flex min-w-0 flex-col gap-2">
+          <label for="ip-region-search" class="form-label">Search regions</label>
+          <div class="form-control-shell">
+            <app-lucide-icon
+              name="search"
+              class="form-control-shell__icon size-4"
+              aria-hidden="true"
+            />
+            <input
+              #regionSearchInput
+              id="ip-region-search"
+              type="search"
+              [formField]="filtersForm.search"
+              placeholder="East US, eastus, or AzureCloud.eastus..."
+              autocomplete="off"
+              spellcheck="false"
+              class="form-control form-control--icon-start form-control--action-end form-control-focus-ring min-h-11"
+              aria-describedby="ip-region-search-hint"
+            />
+            <span id="ip-region-search-hint" class="sr-only">
+              Search by region name, service tag identifier, geography, region group, or status.
+            </span>
+            @if (filtersModel().search) {
+              <button
+                type="button"
+                class="form-control-shell__action"
+                (click)="clearSearch(); regionSearchInput.focus()"
+                aria-label="Clear region search"
+              >
+                <app-lucide-icon name="x" class="size-4" aria-hidden="true" />
+              </button>
+            }
+          </div>
+        </div>
+
+        <div class="flex min-w-0 flex-col gap-2">
+          <label for="ip-region-cloud" class="form-label">Azure cloud</label>
+          <div class="form-select-wrapper">
+            <select
+              id="ip-region-cloud"
+              class="form-select min-h-11"
+              [formField]="filtersForm.cloud"
+              autocomplete="off"
+            >
+              @for (cloudOption of cloudOptions(); track cloudOption.id) {
+                <option [value]="cloudOption.id">
+                  {{ cloudOption.label }} ({{ cloudOption.regionCount }})
+                </option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="flex min-w-0 flex-col gap-2">
+          <label for="ip-region-status" class="form-label">Region status</label>
+          <div class="form-select-wrapper">
+            <select
+              id="ip-region-status"
+              class="form-select min-h-11"
+              [formField]="filtersForm.status"
+              autocomplete="off"
+            >
+              <option value="">All statuses</option>
+              @for (statusOption of statusOptions(); track statusOption.value) {
+                <option [value]="statusOption.value">
+                  {{ statusOption.label }} ({{ statusOption.count }})
+                </option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="flex min-w-0 flex-col gap-2">
+          <label for="ip-region-group" class="form-label">Region group</label>
+          <div class="form-select-wrapper">
+            <select
+              id="ip-region-group"
+              class="form-select min-h-11"
+              [formField]="filtersForm.regionGroup"
+              autocomplete="off"
+            >
+              <option value="">All region groups</option>
+              @for (groupOption of availableRegionGroups(); track groupOption.value) {
+                <option [value]="groupOption.value">
+                  {{ groupOption.label }} ({{ groupOption.count }})
+                </option>
+              }
+            </select>
+          </div>
+        </div>
+      </form>
+
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <p
+          id="ip-region-result-summary"
+          class="m-0 text-sm font-semibold text-text-body tabular-nums"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          {{ resultSummary() }}
+        </p>
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="tag tag-info">{{ selectedStatusLabel() }}</span>
+          @if (hasActiveFilters()) {
+            <button
+              type="button"
+              class="btn btn-outline btn--sm"
+              (click)="clearFilters(); regionSearchInput.focus()"
+            >
+              <app-lucide-icon name="x" class="size-3.5" aria-hidden="true" />
+              Clear filters
+            </button>
+          }
+        </div>
+      </div>
+
+      @if (directory.filteredRegionCount) {
+        @for (group of directory.groups; track group.label) {
+          <section
+            class="service-tag-directory-group flex flex-col gap-3 rounded-lg bg-surface-muted/40 p-3"
+            [attr.aria-labelledby]="group.headingId"
+          >
+            <header class="flex flex-wrap items-center justify-between gap-2">
+              <h3 [id]="group.headingId" class="text-lg font-semibold text-text-strong">
+                {{ group.label }}
+              </h3>
+              <span class="badge badge-brand min-w-8 justify-center">
+                {{ group.regions.length }}
+              </span>
+            </header>
+
+            <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              @for (region of group.regions; track region.cloud + '/' + region.regionId) {
+                <a
+                  class="group flex min-h-16 items-center gap-3 rounded-lg border border-border-soft bg-surface-raised p-3 hover:border-primary hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-none"
+                  [href]="regionHref(region)"
+                >
+                  <div class="min-w-0 flex-1">
+                    <p class="truncate text-sm font-semibold text-text-strong">
+                      {{ region.displayName }}
+                    </p>
+                    <p
+                      class="truncate font-mono text-xs text-text-muted"
+                      [title]="region.serviceTagId"
+                      translate="no"
+                    >
+                      {{ region.serviceTagId }}
+                    </p>
+                    @if (region.status !== 'available') {
+                      <span class="mt-1 inline-flex text-[0.6875rem] font-semibold text-text-muted">
+                        {{ statusLabel(region.status) }}
+                      </span>
+                    }
+                  </div>
+                  <app-lucide-icon
+                    name="chevron-right"
+                    class="size-4 shrink-0 text-text-subtle transition-transform group-hover:translate-x-0.5 group-hover:text-primary"
+                    aria-hidden="true"
+                  />
+                </a>
+              }
+            </div>
+          </section>
+        }
+      } @else {
+        <div
+          class="flex flex-col items-center gap-3 rounded-lg bg-surface-muted p-8 text-center text-sm text-text-muted"
+          role="status"
+        >
+          <app-lucide-icon name="search-x" class="size-10" aria-hidden="true" />
+          <p class="text-base font-semibold text-text-strong">No regions match your filters</p>
+          <p>Try a broader search, another cloud, or a different status.</p>
+          <button
+            type="button"
+            class="btn btn-secondary btn--sm"
+            (click)="clearFilters(); regionSearchInput.focus()"
+          >
+            Clear filters
+          </button>
+        </div>
+      }
+    </section>
+
+    <section class="section-block" aria-labelledby="region-source-heading">
+      <h2 id="region-source-heading" class="section-title">Source and updates</h2>
+      <p class="max-w-4xl leading-relaxed text-text-muted">
+        This directory uses Microsoft Azure Service Tags data. Microsoft normally publishes
+        downloadable service-tag files weekly, so automate updates if you copy raw prefixes into an
+        external firewall or proxy.
+      </p>
+      <div class="flex flex-wrap gap-2">
+        <a
+          class="btn btn-outline btn--sm"
+          href="https://learn.microsoft.com/en-us/azure/virtual-network/service-tags-overview"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Service tags overview
+          <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
+        </a>
+        @if (selectedCloud(); as cloudMetadata) {
+          <a
+            class="btn btn-outline btn--sm"
+            [href]="cloudMetadata.downloadUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Official {{ cloudMetadata.label }} download
+            <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
+          </a>
+        }
+      </div>
+    </section>
+  } @else {
+    <section
+      class="section-block items-center rounded-lg bg-surface-muted p-8 text-center"
+      aria-labelledby="directory-load-error-heading"
+    >
+      <app-lucide-icon name="alert-circle" class="size-10 text-danger" aria-hidden="true" />
+      <h2 id="directory-load-error-heading" class="section-title">
+        Service tag directory could not be loaded
+      </h2>
+      <p class="max-w-lg text-sm text-text-muted">
+        Check your connection and try again. You can also open Microsoft's official service-tag
+        documentation while the directory is unavailable.
+      </p>
+      <div class="flex flex-wrap justify-center gap-2">
+        <button
+          type="button"
+          class="btn btn-primary btn--sm"
+          [disabled]="loadState() === 'loading'"
+          (click)="retryLoad()"
+        >
+          @if (loadState() === 'loading') {
+            <app-lucide-icon name="loader-circle" class="size-4 animate-spin" aria-hidden="true" />
+            Retrying
+          } @else {
+            Retry
+          }
+        </button>
+        <a
+          class="btn btn-outline btn--sm"
+          href="https://learn.microsoft.com/en-us/azure/virtual-network/service-tags-overview"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Open Microsoft documentation
+          <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
+        </a>
+      </div>
+      @if (loadState() === 'error') {
+        <p class="text-sm font-semibold text-danger-dark dark:text-danger" role="alert">
+          The retry failed. Check your network and try again.
+        </p>
+      }
+    </section>
+  }
+</article>

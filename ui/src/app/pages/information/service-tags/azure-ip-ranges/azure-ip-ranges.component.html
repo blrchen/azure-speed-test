@@ -1,0 +1,441 @@
+<article class="page-shell section-stack mx-auto max-w-5xl">
+  @let currentServiceTag = serviceTagId();
+  @let data = pageData();
+  @let insights = tagInsights();
+  @let filteredRows = filteredPrefixRows();
+  @let filteredAddresses = filteredPartitionedAddresses();
+
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a class="breadcrumb-link" routerLink="/Azure/Latency">Home</a>
+    <span class="breadcrumb-separator">/</span>
+    @if (breadcrumbSource() === 'region') {
+      <a
+        class="breadcrumb-link"
+        routerLink="/Information/AzureIpRangesByRegion"
+        [queryParams]="directoryQueryParams()"
+        >Azure IP ranges by region</a
+      >
+    } @else {
+      <a
+        class="breadcrumb-link"
+        routerLink="/Information/AzureIpRangesByService"
+        [queryParams]="directoryQueryParams()"
+        >Azure IP ranges by service</a
+      >
+    }
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current" aria-current="page">
+      <span class="ip-identifier" translate="no">{{ currentServiceTag }}</span>
+    </span>
+  </nav>
+
+  <header class="page-header">
+    <div class="ip-title-stack">
+      <span class="eyebrow-brand">{{ cloudLabel() }} service tag address ranges</span>
+      <h1 class="page-title">
+        <span class="ip-identifier" translate="no">{{ currentServiceTag }}</span>
+      </h1>
+      <p class="page-lead">
+        {{ insights.metaDescription }}
+      </p>
+    </div>
+
+    @if (data) {
+      <section class="ip-summary-panel" aria-label="Service tag summary">
+        <dl class="ip-metric-grid">
+          @for (metric of summaryMetrics(); track metric.label) {
+            <div class="ip-metric">
+              <dt>{{ metric.label }}</dt>
+              <dd>{{ metric.value }}</dd>
+            </div>
+          }
+        </dl>
+
+        <dl class="ip-meta-grid">
+          <div>
+            <dt>Source</dt>
+            <dd>{{ cloudLabel() }} Service Tags</dd>
+          </div>
+          <div>
+            <dt>Scope</dt>
+            <dd>{{ insights.scopeLabel }}</dd>
+          </div>
+          <div>
+            <dt>Service</dt>
+            <dd translate="no">{{ insights.serviceLabel }}</dd>
+          </div>
+        </dl>
+
+        <div class="ip-action-strip" role="group" aria-label="Quick copy actions">
+          <app-copy-button
+            [text]="copyText()"
+            icon="copy"
+            [label]="copyAllLabel()"
+            [ariaLabel]="
+              allPrefixesLoaded()
+                ? 'Copy all IP address prefixes'
+                : 'Copy preview IP address prefixes'
+            "
+            [resetOn]="pageKey()"
+          />
+          <app-copy-button
+            [text]="ipv4CopyText()"
+            icon="copy"
+            label="Copy IPv4"
+            ariaLabel="Copy all IPv4 address prefixes"
+            [resetOn]="pageKey()"
+          />
+          <app-copy-button
+            [text]="ipv6CopyText()"
+            icon="copy"
+            label="Copy IPv6"
+            ariaLabel="Copy all IPv6 address prefixes"
+            [resetOn]="pageKey()"
+          />
+        </div>
+      </section>
+    }
+  </header>
+
+  @if (pageLoadError()) {
+    <section
+      class="section-block items-center rounded-lg bg-surface-muted p-8 text-center"
+      aria-labelledby="service-tag-load-error-heading"
+    >
+      <app-lucide-icon name="alert-circle" class="size-10 text-danger" aria-hidden="true" />
+      <h2 id="service-tag-load-error-heading" class="section-title">
+        Service tag data could not be loaded
+      </h2>
+      <p class="max-w-lg text-sm text-text-muted" role="alert">{{ pageLoadError() }}</p>
+      <button
+        type="button"
+        class="btn btn-primary btn--sm"
+        [disabled]="pageRetryState() === 'loading'"
+        (click)="retryLoadPageData()"
+      >
+        @if (pageRetryState() === 'loading') {
+          <app-lucide-icon name="loader-circle" class="size-4 animate-spin" aria-hidden="true" />
+          Retrying
+        } @else {
+          Retry
+        }
+      </button>
+    </section>
+  }
+
+  @if (!pageLoadError()) {
+    <section class="section-block" aria-labelledby="ip-ranges-heading">
+      <header class="flex flex-wrap items-center justify-between gap-3">
+        <div class="min-w-0">
+          <h2 id="ip-ranges-heading" class="section-title">Prefix workbench</h2>
+        </div>
+        <span class="badge" aria-live="polite"> {{ renderedResultLabel() }} </span>
+      </header>
+
+      <div class="ip-workbench">
+        <div class="ip-toolbar" role="search" aria-label="Filter IP address prefixes">
+          <div class="ip-search-control form-control-shell">
+            <label class="sr-only" for="ip-prefix-search">Search prefixes</label>
+            <app-lucide-icon
+              name="search"
+              class="form-control-shell__icon size-4"
+              aria-hidden="true"
+            />
+            <input
+              #prefixSearchInput
+              id="ip-prefix-search"
+              type="search"
+              [formField]="prefixSearchForm.search"
+              placeholder="Search all prefixes..."
+              autocomplete="off"
+              spellcheck="false"
+              class="form-control form-control--icon-start form-control--action-end form-control-focus-ring"
+            />
+            @if (prefixSearchModel().search) {
+              <button
+                type="button"
+                class="form-control-shell__action"
+                (click)="clearSearch(); prefixSearchInput.focus()"
+                aria-label="Clear prefix search"
+              >
+                <app-lucide-icon name="x" class="size-4" aria-hidden="true" />
+              </button>
+            }
+          </div>
+
+          <div class="ip-segment-group" role="group" aria-label="Address family filter">
+            @for (option of familyFilterOptions; track option.value) {
+              <button
+                type="button"
+                class="ip-segment-option"
+                [class.ip-segment-option-active]="familyFilter() === option.value"
+                [attr.aria-pressed]="familyFilter() === option.value"
+                (click)="setFamilyFilter(option.value)"
+              >
+                {{ option.label }}
+              </button>
+            }
+          </div>
+        </div>
+
+        @if (canLoadAllPrefixes()) {
+          <div
+            class="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border-soft bg-surface-muted p-3"
+            aria-live="polite"
+          >
+            <div class="min-w-0">
+              <span class="block text-xs font-extrabold text-text-muted uppercase"
+                >Search scope</span
+              >
+              <p class="mt-0.5 text-sm text-text-body">{{ prefixLoadStatusLabel() }}</p>
+              @if (allPrefixesDataState() === 'error') {
+                <p class="mt-0.5 text-sm font-bold text-danger-dark dark:text-danger">
+                  {{ allPrefixesDataError() }}
+                </p>
+              }
+            </div>
+
+            @if (allPrefixesDataState() === 'loaded') {
+              <span class="badge badge-brand">All prefixes loaded</span>
+            } @else {
+              <button
+                type="button"
+                class="btn btn-outline btn--sm"
+                [disabled]="allPrefixesDataState() === 'loading'"
+                (click)="loadAllPrefixes()"
+              >
+                @if (allPrefixesDataState() === 'loading') {
+                  <app-lucide-icon
+                    name="loader-circle"
+                    class="size-4 animate-spin"
+                    aria-hidden="true"
+                  />
+                  <span>Loading all prefixes</span>
+                } @else {
+                  <app-lucide-icon name="database" class="size-4" aria-hidden="true" />
+                  <span>Load all prefixes</span>
+                }
+              </button>
+            }
+          </div>
+        }
+
+        <div class="ip-export-strip">
+          <app-copy-button
+            [text]="visibleCopyText()"
+            icon="copy"
+            label="Copy Matches"
+            ariaLabel="Copy all matching IP address prefixes"
+            [resetOn]="visibleCopyText()"
+          />
+          <button
+            type="button"
+            class="btn btn-outline btn--sm group"
+            [disabled]="!visibleCopyText()"
+            (click)="downloadVisibleText()"
+          >
+            <app-lucide-icon
+              name="download"
+              class="size-4 transition-transform group-hover:scale-110"
+              aria-hidden="true"
+            />
+            <span>Download TXT</span>
+          </button>
+          <button
+            type="button"
+            class="btn btn-outline btn--sm group"
+            [disabled]="!visibleJsonText()"
+            (click)="downloadVisibleJson()"
+          >
+            <app-lucide-icon
+              name="braces"
+              class="size-4 transition-transform group-hover:scale-110"
+              aria-hidden="true"
+            />
+            <span>Download JSON</span>
+          </button>
+          <app-export-csv-button
+            [filename]="exportFilename()"
+            [headers]="['Prefix', 'Family', 'CIDR']"
+            [rows]="csvRows()"
+            label="Download CSV"
+            ariaLabel="Download matching prefixes as CSV"
+          />
+          @if (hasActiveFilter()) {
+            <button
+              type="button"
+              class="btn btn-secondary btn--sm"
+              (click)="resetFilters(); prefixSearchInput.focus()"
+            >
+              Reset Filters
+            </button>
+          }
+        </div>
+
+        @if (data?.ipAddressPrefixes?.length) {
+          @if (filteredRows.length) {
+            <div class="ip-prefix-groups">
+              @if (filteredAddresses.ipv4.length > 0) {
+                <section class="ip-prefix-group" aria-labelledby="ipv4-prefixes-heading">
+                  <header class="ip-prefix-group-header">
+                    <h3 id="ipv4-prefixes-heading">IPv4 prefixes</h3>
+                    <span>{{ filteredAddresses.ipv4.length }} matches</span>
+                  </header>
+                  <div
+                    class="ip-prefix-list scrollbar-thin"
+                    aria-label="IPv4 address prefixes"
+                    tabindex="0"
+                    role="region"
+                  >
+                    @for (row of filteredAddresses.ipv4; track row.prefix) {
+                      <span class="ip-prefix-list-item" translate="no">{{ row.prefix }}</span>
+                    }
+                  </div>
+                </section>
+              }
+
+              @if (filteredAddresses.ipv6.length > 0) {
+                <section class="ip-prefix-group" aria-labelledby="ipv6-prefixes-heading">
+                  <header class="ip-prefix-group-header">
+                    <h3 id="ipv6-prefixes-heading">IPv6 prefixes</h3>
+                    <span>{{ filteredAddresses.ipv6.length }} matches</span>
+                  </header>
+                  <div
+                    class="ip-prefix-list scrollbar-thin"
+                    aria-label="IPv6 address prefixes"
+                    tabindex="0"
+                    role="region"
+                  >
+                    @for (row of filteredAddresses.ipv6; track row.prefix) {
+                      <span class="ip-prefix-list-item" translate="no">{{ row.prefix }}</span>
+                    }
+                  </div>
+                </section>
+              }
+            </div>
+          } @else {
+            <div
+              class="grid justify-items-center gap-3 rounded-lg border border-dashed border-border-soft bg-surface-muted p-8 text-center text-text-muted"
+              aria-live="polite"
+            >
+              <app-lucide-icon name="search-x" class="size-10" aria-hidden="true" />
+              <h3 class="text-base font-bold text-text-strong">No prefixes match your filters</h3>
+              <p class="max-w-md text-sm">
+                Try a different prefix, CIDR length, or address family.
+              </p>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                (click)="resetFilters(); prefixSearchInput.focus()"
+              >
+                Reset Filters
+              </button>
+            </div>
+          }
+        } @else {
+          <div
+            class="grid justify-items-center gap-3 rounded-lg border border-dashed border-border-soft bg-surface-muted p-8 text-center text-text-muted"
+            aria-live="polite"
+          >
+            <app-lucide-icon name="alert-circle" class="size-10" aria-hidden="true" />
+            <h3 class="text-base font-bold text-text-strong">No prefixes returned</h3>
+            <p class="max-w-md text-sm">
+              This service tag did not return address prefixes in the current snapshot.
+            </p>
+          </div>
+        }
+      </div>
+    </section>
+
+    @if (data?.ipAddressPrefixes?.length) {
+      <section class="section-block" aria-labelledby="use-cases-heading">
+        <h2 id="use-cases-heading" class="section-title">Common use cases</h2>
+        <p class="text-text-muted">
+          This service tag often supports Azure networking tasks such as:
+        </p>
+        <ul class="list-disc space-y-2 pl-5 text-sm text-text-body">
+          @for (useCase of commonUseCases; track useCase) {
+            <li>{{ useCase }}</li>
+          }
+        </ul>
+      </section>
+    }
+  }
+
+  <section class="section-block" aria-labelledby="explore-heading">
+    <h2 id="explore-heading" class="section-title">Explore more IP data</h2>
+    <div class="flex flex-wrap gap-3">
+      <a
+        class="btn btn-outline btn--sm"
+        routerLink="/Information/AzureIpRangesByService"
+        [queryParams]="directoryQueryParams()"
+      >
+        IP ranges by service
+      </a>
+      <a
+        class="btn btn-outline btn--sm"
+        routerLink="/Information/AzureIpRangesByRegion"
+        [queryParams]="directoryQueryParams()"
+      >
+        IP ranges by region
+      </a>
+    </div>
+  </section>
+
+  <section class="section-block" aria-labelledby="resources-heading">
+    <h2 id="resources-heading" class="section-title">Additional resources</h2>
+    <p class="text-text-muted">
+      Stay current with Azure service tag updates and automation tooling.
+    </p>
+    <div class="resource-grid">
+      <article class="card card-resource">
+        <h3 class="card-title">Azure IP ranges downloads</h3>
+        <p class="card-description">
+          Access weekly updates for all Azure clouds to keep network rules current.
+        </p>
+        <a
+          href="https://www.microsoft.com/en-us/download/details.aspx?id=56519"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="card-cta"
+          aria-label="Download Azure IP ranges (opens in new tab)"
+        >
+          Download Azure IP ranges
+          <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
+        </a>
+      </article>
+      <article class="card card-resource">
+        <h3 class="card-title">Service tags overview</h3>
+        <p class="card-description">
+          Learn how service tags simplify network security management in Azure.
+        </p>
+        <a
+          href="https://learn.microsoft.com/azure/virtual-network/service-tags-overview"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="card-cta"
+          aria-label="Explore Azure service tags (opens in new tab)"
+        >
+          Explore Azure service tags
+          <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
+        </a>
+      </article>
+      <article class="card card-resource">
+        <h3 class="card-title">Programmatic access</h3>
+        <p class="card-description">
+          Use the Service Tag Discovery API to automate service tag updates in your tooling.
+        </p>
+        <a
+          href="https://learn.microsoft.com/rest/api/virtualnetwork/servicetags/list"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="card-cta"
+          aria-label="View the Service Tags API (opens in new tab)"
+        >
+          View the Service Tags API
+          <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
+        </a>
+      </article>
+    </div>
+  </section>
+</article>

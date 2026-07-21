@@ -1,7 +1,6 @@
-<footer class="w-full border-t border-border-soft bg-surface-base/95 backdrop-blur-sm">
-  <div class="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+<footer class="w-full border-t border-border-soft bg-surface-base">
+  <div class="mx-auto max-w-5xl px-4 py-8 sm:px-6">
     <div class="grid gap-8 sm:grid-cols-2 md:grid-cols-4">
-      <!-- Brand Section -->
       <div class="col-span-2 max-w-md space-y-4">
         <div class="flex items-center gap-2">
           <app-lucide-icon name="cloud" class="size-6 text-primary" aria-hidden="true" />
@@ -12,64 +11,62 @@
         </p>
       </div>
 
-      <!-- External Links -->
       <div class="space-y-4">
-        <p class="text-sm font-semibold text-text-strong">External Links</p>
+        <h2 class="text-sm font-semibold text-text-strong">External Links</h2>
         <ul class="space-y-2 text-sm">
           <li>
             <a
               href="https://awsspeedtest.com"
               target="_blank"
               rel="noopener noreferrer"
-              class="inline-flex items-center gap-1 text-text-muted no-underline transition-colors hover:text-text-body hover:underline"
+              class="link-footer inline-flex items-center gap-1"
             >
               AWS Speed Test
-              <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
+              <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://emailwritingai.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="link-footer inline-flex items-center gap-1"
+            >
+              Email Writing AI
+              <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
             </a>
           </li>
         </ul>
       </div>
 
-      <!-- Resources Links -->
       <div class="space-y-4">
-        <p class="text-sm font-semibold text-text-strong">Resources</p>
+        <h2 class="text-sm font-semibold text-text-strong">Resources</h2>
         <ul class="space-y-2 text-sm">
           <li>
-            <a
-              href="mailto:admin@azurespeed.com"
-              class="text-text-muted no-underline transition-colors hover:text-text-body hover:underline"
-            >
-              Contact
-            </a>
+            <a href="mailto:support@azurespeed.com" class="link-footer"> Contact </a>
           </li>
           <li>
             <a
               href="https://github.com/blrchen/azure-speed-test/issues"
               target="_blank"
               rel="noopener noreferrer"
-              class="inline-flex items-center gap-1 text-text-muted no-underline transition-colors hover:text-text-body hover:underline"
+              class="link-footer inline-flex items-center gap-1"
             >
               Feedback
-              <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
+              <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
             </a>
           </li>
         </ul>
       </div>
     </div>
 
-    <!-- Footer Bottom -->
     <div
       class="mt-8 flex flex-col items-center justify-between gap-4 border-t border-border-soft pt-6 sm:flex-row"
     >
       <p class="text-sm text-text-muted">
-        &copy; {{ startYear }}–present Azure Speed Test. All rights reserved.
+        &copy; 2013–present Azure Speed Test. All rights reserved.
       </p>
-      <a
-        routerLink="/Privacy"
-        class="text-sm text-text-muted no-underline transition-colors hover:text-text-body hover:underline"
-      >
-        Privacy Policy
-      </a>
+      <a routerLink="/Privacy" class="link-footer text-sm"> Privacy Policy </a>
     </div>
   </div>
 </footer>

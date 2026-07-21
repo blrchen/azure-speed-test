@@ -1,31 +1,29 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
+import { Component, inject, OnInit } from '@angular/core'
 import { RouterLink } from '@angular/router'
 
 import chinaRegionsJson from '../../../../assets/data/regions-china.json'
-import { Region } from '../../../models'
-import { SeoService } from '../../../services'
+import { SeoService } from '../../../services/seo.service'
 import { LucideIconComponent } from '../../../shared/icons/lucide-icons.component'
-import { buildRegionDetailRouterLink } from '../../../shared/utils'
+import { buildRegionDetailHref } from '../../../shared/utils'
 
 @Component({
   selector: 'app-azure-china-regions',
   imports: [RouterLink, LucideIconComponent],
   templateUrl: './azure-china-regions.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  host: { class: 'block' },
 })
 export class AzureChinaRegionsComponent implements OnInit {
-  readonly azureChinaRegions = signal<Region[]>([])
+  private readonly seoService = inject(SeoService)
 
-  private seoService = inject(SeoService)
+  readonly azureChinaRegions = chinaRegionsJson
+  protected readonly buildRegionDetailHref = buildRegionDetailHref
 
-  ngOnInit() {
-    this.seoService.setMetaTitle('Azure China Cloud Regions')
-    this.seoService.setMetaDescription(
-      'Explore Azure China Cloud regions operated by 21Vianet, including their geography, datacenter location, availability zones, and paired regions.'
-    )
-    this.seoService.setCanonicalUrl('https://www.azurespeed.com/Information/AzureChinaRegions')
-    this.azureChinaRegions.set(chinaRegionsJson as Region[])
+  ngOnInit(): void {
+    this.seoService.setPageMeta({
+      title: 'Azure China Cloud Regions',
+      description:
+        'Explore Azure China Cloud regions operated by 21Vianet, including their geography, datacenter location, availability zones, and paired regions.',
+      canonicalUrl: 'https://www.azurespeed.com/Information/AzureChinaRegions',
+    })
   }
-
-  protected readonly buildRegionRouterLink = buildRegionDetailRouterLink
 }

@@ -7,32 +7,40 @@ export const routes: Routes = [
     children: [
       {
         path: 'Azure',
-        loadChildren: () => import('./pages/azure/azure-routes').then((_) => _.AZURE_ROUTES)
+        loadChildren: () => import('./pages/azure/azure-routes').then((_) => _.AZURE_ROUTES),
       },
       {
-        path: 'ChatGPT',
-        loadChildren: () => import('./pages/chatgpt/chatgpt-routes').then((_) => _.CHATGPT_ROUTES)
+        path: 'AzureVmPricing',
+        loadChildren: () =>
+          import('./pages/azure-vm-pricing/azure-vm-pricing-routes').then(
+            (_) => _.AZURE_VM_PRICING_ROUTES
+          ),
       },
       {
         path: 'Information',
         loadChildren: () =>
-          import('./pages/information/information-routes').then((_) => _.INFORMATION_ROUTES)
+          import('./pages/information/information-routes').then((_) => _.INFORMATION_ROUTES),
       },
       {
         path: 'Privacy',
         loadComponent: () =>
-          import('./pages/privacy/privacy.component').then((_) => _.PrivacyComponent)
+          import('./pages/privacy/privacy.component').then((_) => _.PrivacyComponent),
       },
       {
         path: '',
         redirectTo: 'Azure',
-        pathMatch: 'full'
-      }
-    ]
+        pathMatch: 'full',
+      },
+    ],
+  },
+  {
+    path: 'not-found',
+    loadComponent: () =>
+      import('./pages/shared/not-found/not-found.component').then((_) => _.NotFoundComponent),
   },
   {
     path: '**',
-    redirectTo: 'Azure',
-    pathMatch: 'full'
-  }
+    loadComponent: () =>
+      import('./pages/shared/not-found/not-found.component').then((_) => _.NotFoundComponent),
+  },
 ]

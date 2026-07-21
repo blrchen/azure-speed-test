@@ -2,22 +2,44 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <meta name="theme-color" content="#ffffff" />
+    <script>
+      function applyInitialTheme() {
+        const storageKey = 'THEME_PREFERENCE'
+        const darkModeQuery = '(prefers-color-scheme: dark)'
+        const lightThemeColor = '#ffffff'
+        const darkThemeColor = '#171717'
+        let theme = null
+
+        try {
+          const storedTheme = localStorage.getItem(storageKey)
+          if (storedTheme === 'dark' || storedTheme === 'light') {
+            theme = storedTheme
+          }
+        } catch {
+          theme = null
+        }
+
+        const prefersDark = window.matchMedia ? window.matchMedia(darkModeQuery).matches : false
+        const shouldUseDarkTheme = theme ? theme === 'dark' : prefersDark
+        document.documentElement.classList.toggle('dark', shouldUseDarkTheme)
+
+        const themeColorMeta = document.querySelector('meta[name="theme-color"]')
+        if (themeColorMeta) {
+          themeColorMeta.setAttribute(
+            'content',
+            shouldUseDarkTheme ? darkThemeColor : lightThemeColor
+          )
+        }
+      }
+
+      applyInitialTheme()
+    </script>
     <title>Azure Speed Test</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
-    <!-- Critical inline CSS: prevent desktop sidebar from flashing on mobile before Tailwind loads -->
-    <style>
-      aside[data-desktop-nav] {
-        display: none;
-      }
-
-      @media (min-width: 1024px) {
-        aside[data-desktop-nav] {
-          display: flex;
-        }
-      }
-    </style>
+    <link rel="canonical" href="https://www.azurespeed.com/Azure/Latency" />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",

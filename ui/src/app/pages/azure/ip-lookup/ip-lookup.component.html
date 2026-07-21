@@ -1,254 +1,500 @@
 <article class="page-shell section-stack mx-auto max-w-5xl">
   <header class="page-header">
-    <h1 class="page-title">Azure IP lookup</h1>
+    <h1 class="page-title">Azure IP &amp; Service Tag Lookup</h1>
     <p class="page-lead">
-      Find Azure service tag, region, and network metadata for any IP address or domain. Share
-      results easily with a link to the same lookup.
+      Check whether an IPv4 address, IPv6 address, or resolved domain is covered by Microsoft Azure
+      Public Cloud service tags. View matching prefixes, regions, services, and network features.
     </p>
   </header>
 
   <section class="section-block" aria-labelledby="lookup-heading">
-    <h2 id="lookup-heading" class="sr-only">IP lookup</h2>
-    <form
-      class="flex flex-col gap-2"
-      [formGroup]="ipLookupForm"
-      (ngSubmit)="submitForm()"
-      novalidate
-    >
-      @let ipOrDomainControl = ipLookupForm.get('ipOrDomain');
-      <div class="flex items-center justify-between gap-3">
-        <label for="ipOrDomain" class="text-sm font-medium text-text-body"
-          >IP address or domain</label
-        >
-        <app-copy-button
-          [text]="shareableUrl()"
-          icon="share-2"
-          label="Share"
-          ariaLabel="Copy shareable link to clipboard"
-          [resetOn]="shareableUrl()"
-        />
-      </div>
-      <div class="flex flex-wrap items-center gap-3">
-        <div class="relative flex-1">
+    <h2 id="lookup-heading" class="sr-only">Look Up an IP Address or Domain</h2>
+    @let loading = isLoading();
+    @let completed = hasCompletedLookup();
+    @let searchTerm = currentSearchTerm();
+    @let error = errorMessage();
+    @let rows = resultRows();
+    @let shareUrl = shareableUrl();
+    @let resolvedAddresses = resolvedIpAddressesText();
+
+    <form class="flex flex-col gap-2" (submit)="submitForm($event)" novalidate>
+      @let ipOrDomainField = ipLookupForm.ipOrDomain();
+      @let showValidationError = ipOrDomainField.invalid() && ipOrDomainField.touched();
+      <label for="ipOrDomain" class="form-label">IP address, domain, or URL</label>
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div class="form-control-shell min-w-0 flex-1">
           <app-lucide-icon
             name="search"
-            class="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-text-muted"
+            class="form-control-shell__icon size-4"
             aria-hidden="true"
           />
           <input
             id="ipOrDomain"
-            class="h-9 w-full rounded-md border border-border-contrast bg-transparent pr-3 pl-9 text-sm text-text-body shadow-sm transition-colors placeholder:text-text-placeholder focus:ring-1 focus:ring-brand focus:outline-none"
-            name="ipOrDomain"
+            class="form-control form-control--icon-start form-control-focus-ring"
             type="search"
-            formControlName="ipOrDomain"
-            placeholder="e.g. 1.1.1.1 or www.azure.com"
-            required
-            minlength="3"
-            maxlength="253"
+            inputmode="url"
+            enterkeyhint="search"
+            [formField]="ipLookupForm.ipOrDomain"
+            placeholder="104.45.231.79 or www.azure.com..."
             autocapitalize="off"
             spellcheck="false"
             autocomplete="off"
-            [class.is-invalid]="ipOrDomainControl?.invalid && ipOrDomainControl?.touched"
+            [class.is-invalid]="showValidationError"
+            [attr.aria-invalid]="showValidationError ? 'true' : null"
+            [attr.aria-describedby]="
+              showValidationError ? 'ip-lookup-help ip-lookup-validation-error' : 'ip-lookup-help'
+            "
           />
         </div>
-        <button
-          class="btn btn-primary"
-          type="submit"
-          [disabled]="ipLookupForm.invalid || isLoading()"
-        >
-          @if (isLoading()) {
-            <span class="spinner-sm"></span>
-            Looking up...
+        <button class="btn btn-primary btn--lg w-full sm:w-auto" type="submit" [disabled]="loading">
+          @if (loading) {
+            <span class="spinner-sm" aria-hidden="true"></span>
+            Looking Up...
           } @else {
-            IP lookup
+            <app-lucide-icon name="search" class="size-4" aria-hidden="true" />
+            Look Up
           }
         </button>
       </div>
-      @if (ipOrDomainControl?.hasError('required') && ipOrDomainControl?.touched) {
-        <div class="text-sm text-danger-dark">An IP address or domain name is required.</div>
-      } @else if (ipOrDomainControl?.hasError('invalidIpOrDomain') && ipOrDomainControl?.touched) {
-        <div class="text-sm text-danger-dark">
-          Enter a valid IPv4, IPv6 address, or domain name.
+      <p id="ip-lookup-help" class="form-note">
+        Paste an address or a full HTTP/HTTPS URL. URLs are reduced to their hostname before lookup.
+      </p>
+      @if (ipOrDomainField.getError('required') && ipOrDomainField.touched()) {
+        <div
+          id="ip-lookup-validation-error"
+          class="text-sm text-danger-dark dark:text-danger"
+          role="alert"
+        >
+          Enter an IP address, domain name, or URL.
+        </div>
+      } @else if (ipOrDomainField.getError('maxLength') && ipOrDomainField.touched()) {
+        <div
+          id="ip-lookup-validation-error"
+          class="text-sm text-danger-dark dark:text-danger"
+          role="alert"
+        >
+          Enter 253 characters or fewer after removing the URL path.
+        </div>
+      } @else if (ipOrDomainField.getError('invalidIpOrDomain') && ipOrDomainField.touched()) {
+        <div
+          id="ip-lookup-validation-error"
+          class="text-sm text-danger-dark dark:text-danger"
+          role="alert"
+        >
+          Enter a valid IPv4 address, IPv6 address, hostname, or HTTP/HTTPS URL.
         </div>
       }
     </form>
 
-    @if (!isLoading() && errorMessage()) {
-      <div class="alert alert--error mt-3" role="alert" aria-live="polite">
-        <app-lucide-icon name="alert-circle" class="h-4 w-4" aria-hidden="true" />
-        {{ errorMessage() }}
-      </div>
-    }
+    <div class="flex flex-wrap items-center gap-2 text-sm">
+      <span class="text-text-muted">Try an example:</span>
+      @for (example of lookupExamples; track example.value) {
+        <button
+          type="button"
+          class="btn btn-outline btn--sm"
+          [attr.aria-label]="example.label + '. Look up example ' + example.value"
+          (click)="lookupExample(example.value)"
+        >
+          {{ example.label }}
+        </button>
+      }
+    </div>
 
-    @if (isLoading()) {
-      <div class="mt-4 flex justify-center py-4">
-        <div class="spinner text-brand">
-          <span class="sr-only">Loading...</span>
+    <p class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+      {{ lookupStatusMessage() }}
+    </p>
+
+    @if (!loading && error) {
+      <div class="alert alert--error" role="alert">
+        <app-lucide-icon name="alert-circle" class="mt-0.5 size-5 shrink-0" aria-hidden="true" />
+        <div
+          class="flex min-w-0 flex-1 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <p>{{ error }}</p>
+          <button type="button" class="btn btn-outline btn--sm shrink-0" (click)="retryLookup()">
+            Try Again
+          </button>
         </div>
       </div>
     }
 
-    @if (!isLoading() && !currentSearchTerm() && !errorMessage()) {
-      <div class="card min-h-[200px]">
-        <div class="card-body flex flex-col items-center justify-center gap-4 py-12 text-center">
-          <div
-            class="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-primary/15 to-primary/25"
-          >
-            <app-lucide-icon name="globe" class="h-8 w-8 text-brand" aria-hidden="true" />
+    @if (loading) {
+      <div class="rounded-lg bg-surface-muted px-4 py-8 text-center" aria-hidden="true">
+        <div class="flex items-center justify-center gap-3 text-text-body">
+          <div class="spinner text-brand"></div>
+          <span>Checking Azure Public Cloud service tags...</span>
+        </div>
+      </div>
+    }
+
+    @if (!loading && !completed && !error) {
+      <div class="rounded-lg bg-surface-muted p-5 sm:p-6">
+        <div class="flex items-start gap-4">
+          <div class="flex size-11 shrink-0 items-center justify-center rounded-lg bg-primary/15">
+            <app-lucide-icon name="info" class="size-5 text-primary" aria-hidden="true" />
           </div>
-          <div class="space-y-1">
-            <p class="text-sm text-text-muted">
-              Enter an IP address or domain to discover its Azure service tag.
+          <div class="min-w-0 space-y-2">
+            <h3 class="font-semibold text-text-strong">What This Tool Checks</h3>
+            <p class="text-sm leading-relaxed text-text-muted">
+              The lookup compares an address with Microsoft Azure Public Cloud service tag ranges.
+              It is not IP geolocation and cannot identify a tenant, subscription, resource owner,
+              or specific physical datacenter.
             </p>
           </div>
         </div>
       </div>
     }
 
-    @if (!isLoading() && hasResult()) {
-      <div class="card mb-4 shadow-sm">
-        <header class="card-header flex items-center gap-3">
-          <div class="flex h-8 w-8 items-center justify-center rounded-full bg-success/10">
-            <app-lucide-icon name="check-circle" class="h-4 w-4 text-success" aria-hidden="true" />
-          </div>
-          <div>
-            <span class="font-semibold">Matched Azure service tags for</span>
-            <code
-              class="ml-1 rounded bg-surface-muted px-2 py-0.5 font-mono text-sm text-text-strong"
+    @if (!loading && completed && !error) {
+      <section class="card space-y-5" aria-labelledby="lookup-results-heading">
+        <header class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div class="flex min-w-0 items-start gap-3">
+            <div
+              class="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full"
+              [class.bg-success]="rows.length > 0"
+              [class.bg-surface-muted]="rows.length === 0"
             >
-              {{ currentSearchTerm() }}
-            </code>
-          </div>
-        </header>
-        <div class="card-body">
-          <div class="hidden md:block">
-            <div class="table-shell">
-              <table class="table-base">
-                <thead class="table-head">
-                  <tr>
-                    <th scope="col" class="px-4 py-3 text-left">IP address</th>
-                    <th scope="col" class="px-4 py-3 text-left">Service tag ID</th>
-                    <th scope="col" class="px-4 py-3 text-left">Prefix</th>
-                    <th scope="col" class="px-4 py-3 text-left">Region</th>
-                    <th scope="col" class="px-4 py-3 text-left">System service</th>
-                    <th scope="col" class="px-4 py-3 text-left">Network features</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-border-soft">
-                  @for (r of result() ?? []; track r.serviceTagId) {
-                    <tr class="table-row-hover animate-fade-slide-in">
-                      <td class="px-4 py-3">
-                        <code class="text-sm break-all">{{ r.ipAddress }}</code>
-                      </td>
-                      <td class="px-4 py-3">
-                        <a
-                          class="link-primary font-semibold"
-                          [routerLink]="['/Information/AzureIpRanges', r.serviceTagId]"
-                          [state]="{ source: 'service' }"
-                        >
-                          {{ r.serviceTagId }}
-                        </a>
-                      </td>
-                      <td class="px-4 py-3">{{ r.ipAddressPrefix }}</td>
-                      <td class="px-4 py-3">{{ r.region }}</td>
-                      <td class="px-4 py-3">{{ r.systemService }}</td>
-                      <td class="px-4 py-3">{{ r.networkFeatures }}</td>
-                    </tr>
-                  }
-                </tbody>
-              </table>
+              <app-lucide-icon
+                [name]="rows.length > 0 ? 'check-circle' : 'search-x'"
+                [class]="
+                  rows.length > 0 ? 'size-5 text-success-foreground' : 'size-5 text-text-muted'
+                "
+                aria-hidden="true"
+              />
+            </div>
+            <div class="min-w-0 space-y-1">
+              <h2 id="lookup-results-heading" class="text-lg font-bold text-text-strong">
+                @if (rows.length > 0) {
+                  {{ rows.length }} Azure Service Tag {{ rows.length === 1 ? 'Match' : 'Matches' }}
+                } @else {
+                  No Azure Service Tag Matches
+                }
+              </h2>
+              <code
+                translate="no"
+                class="block max-w-full font-mono text-sm break-all text-text-body"
+                >{{ searchTerm }}</code
+              >
             </div>
           </div>
-          <div class="flex flex-col gap-3 md:hidden">
-            @for (r of result() ?? []; track r.serviceTagId) {
-              <article
-                class="animate-fade-slide-in rounded-2xl border border-brand/30 bg-surface-muted/90 p-4 shadow-sm"
-              >
-                <dl class="space-y-3 text-sm">
-                  <div class="flex flex-col gap-1">
-                    <dt class="eyebrow-xs">IP address</dt>
-                    <dd class="font-mono text-text-strong">{{ r.ipAddress }}</dd>
-                  </div>
-                  <div class="flex flex-col gap-1">
-                    <dt class="eyebrow-xs">Service tag ID</dt>
-                    <dd>
-                      <a
-                        class="link-primary font-semibold"
-                        [routerLink]="['/Information/AzureIpRanges', r.serviceTagId]"
-                        [state]="{ source: 'service' }"
-                      >
-                        {{ r.serviceTagId }}
-                      </a>
-                    </dd>
-                  </div>
-                  <div class="flex flex-col gap-1">
-                    <dt class="eyebrow-xs">Prefix</dt>
-                    <dd class="text-text-body">{{ r.ipAddressPrefix }}</dd>
-                  </div>
-                  <div class="flex flex-col gap-1">
-                    <dt class="eyebrow-xs">Region</dt>
-                    <dd class="text-text-body">{{ r.region }}</dd>
-                  </div>
-                  <div class="flex flex-col gap-1">
-                    <dt class="eyebrow-xs">System service</dt>
-                    <dd class="text-text-body">{{ r.systemService }}</dd>
-                  </div>
-                  <div class="flex flex-col gap-1">
-                    <dt class="eyebrow-xs">Network features</dt>
-                    <dd class="text-text-body">{{ r.networkFeatures }}</dd>
-                  </div>
-                </dl>
-              </article>
-            }
+          <app-copy-button
+            [text]="shareUrl"
+            icon="share-2"
+            label="Share Result"
+            successLabel="Link Copied"
+            ariaLabel="Copy shareable lookup result link"
+            [resetOn]="shareUrl"
+          />
+        </header>
+
+        @if (isDomainSearch()) {
+          <div class="alert alert--info">
+            <app-lucide-icon
+              name="globe"
+              class="mt-0.5 size-5 shrink-0 text-primary"
+              aria-hidden="true"
+            />
+            <p class="min-w-0">
+              @if (resolvedAddresses) {
+                The lookup service resolved
+                <code translate="no" class="font-mono break-all text-text-strong">{{
+                  searchTerm
+                }}</code>
+                to
+                <code translate="no" class="font-mono break-all text-text-strong">{{
+                  resolvedAddresses
+                }}</code>
+                for this request.
+              } @else {
+                Domain lookups use the address resolved by the lookup service for that request.
+              }
+              DNS answers can vary by location and time.
+            </p>
           </div>
+        }
+
+        @if (rows.length > 0) {
+          @let mostSpecific = mostSpecificMatch();
+          @if (mostSpecific) {
+            <article class="space-y-3 rounded-lg bg-primary/5 p-4">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <h3 class="font-semibold text-text-strong">Most Specific Match</h3>
+                <span
+                  class="rounded-full bg-primary/15 px-2.5 py-1 text-xs font-semibold text-text-strong"
+                >
+                  {{ mostSpecific.scopeLabel }}
+                </span>
+              </div>
+              <dl class="grid gap-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
+                <div class="min-w-0 space-y-1">
+                  <dt class="eyebrow-xs">Service tag</dt>
+                  <dd class="break-all">
+                    <a
+                      class="link-primary font-semibold"
+                      [href]="serviceTagHref(mostSpecific.serviceTagId)"
+                      translate="no"
+                    >
+                      {{ mostSpecific.serviceTagId }}
+                    </a>
+                  </dd>
+                </div>
+                <div class="min-w-0 space-y-1">
+                  <dt class="eyebrow-xs">Prefix</dt>
+                  <dd class="font-mono break-all text-text-strong" translate="no">
+                    {{ mostSpecific.ipAddressPrefix }}
+                  </dd>
+                </div>
+                <div class="min-w-0 space-y-1">
+                  <dt class="eyebrow-xs">Region</dt>
+                  <dd class="text-text-body">
+                    @if (mostSpecific.regionHref; as regionHref) {
+                      <a class="link-primary font-semibold" [href]="regionHref">
+                        {{ mostSpecific.regionDisplayName }}
+                      </a>
+                    } @else {
+                      {{ mostSpecific.regionDisplayName }}
+                    }
+                  </dd>
+                </div>
+                <div class="min-w-0 space-y-1">
+                  <dt class="eyebrow-xs">System service</dt>
+                  <dd class="break-words text-text-body">
+                    {{ mostSpecific.systemServiceDisplayName }}
+                  </dd>
+                </div>
+              </dl>
+            </article>
+          }
+
+          <div class="space-y-3">
+            <h3 class="font-semibold text-text-strong">All Matching Service Tags</h3>
+
+            <div class="hidden md:block">
+              <div class="table-shell">
+                <table class="table-base">
+                  <thead class="table-head">
+                    <tr>
+                      <th scope="col" class="px-4 py-3 text-left">IP address</th>
+                      <th scope="col" class="px-4 py-3 text-left">Service tag</th>
+                      <th scope="col" class="px-4 py-3 text-left">Prefix</th>
+                      <th scope="col" class="px-4 py-3 text-left">Scope &amp; region</th>
+                      <th scope="col" class="px-4 py-3 text-left">System service</th>
+                      <th scope="col" class="px-4 py-3 text-left">Network features</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-border-soft">
+                    @for (row of rows; track row.key) {
+                      <tr>
+                        <td class="px-4 py-3 align-top">
+                          <code translate="no" class="text-sm break-all">{{ row.ipAddress }}</code>
+                        </td>
+                        <td class="px-4 py-3 align-top">
+                          <a
+                            class="link-primary font-semibold break-all"
+                            [href]="serviceTagHref(row.serviceTagId)"
+                            translate="no"
+                          >
+                            {{ row.serviceTagId }}
+                          </a>
+                        </td>
+                        <td class="px-4 py-3 align-top font-mono text-sm break-all" translate="no">
+                          {{ row.ipAddressPrefix }}
+                        </td>
+                        <td class="px-4 py-3 align-top">
+                          <div class="flex flex-col gap-0.5">
+                            <span class="font-medium text-text-body">{{ row.scopeLabel }}</span>
+                            @if (row.scopeLabel === 'Regional') {
+                              @if (row.regionHref; as regionHref) {
+                                <a class="link-primary" [href]="regionHref">
+                                  {{ row.regionDisplayName }}
+                                </a>
+                              } @else {
+                                <span class="text-text-muted">{{ row.regionDisplayName }}</span>
+                              }
+                            }
+                          </div>
+                        </td>
+                        <td class="px-4 py-3 align-top text-text-body">
+                          {{ row.systemServiceDisplayName }}
+                        </td>
+                        <td class="px-4 py-3 align-top">
+                          @if (row.networkFeatureCodes.length) {
+                            <div class="flex flex-wrap gap-1.5">
+                              @for (feature of row.networkFeatureCodes; track feature) {
+                                <span
+                                  class="rounded bg-surface-muted px-1.5 py-0.5 font-mono text-xs text-text-body"
+                                  translate="no"
+                                  >{{ feature }}</span
+                                >
+                              }
+                            </div>
+                          } @else {
+                            <span class="text-text-muted">Not specified</span>
+                          }
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-3 md:hidden">
+              @for (row of rows; track row.key) {
+                <article class="min-w-0 overflow-hidden rounded-lg bg-surface-muted p-4">
+                  <div class="flex min-w-0 items-start justify-between gap-3">
+                    <div class="min-w-0 space-y-1">
+                      <div class="eyebrow-xs">Service tag</div>
+                      <a
+                        class="link-primary block font-semibold break-all"
+                        [href]="serviceTagHref(row.serviceTagId)"
+                        translate="no"
+                      >
+                        {{ row.serviceTagId }}
+                      </a>
+                    </div>
+                    <span
+                      class="shrink-0 rounded-full bg-primary/10 px-2 py-1 text-xs font-semibold text-text-strong"
+                    >
+                      {{ row.scopeLabel }}
+                    </span>
+                  </div>
+                  <dl class="mt-4 grid min-w-0 gap-3 text-sm sm:grid-cols-2">
+                    <div class="min-w-0 space-y-1">
+                      <dt class="eyebrow-xs">IP address</dt>
+                      <dd class="font-mono break-all text-text-strong" translate="no">
+                        {{ row.ipAddress }}
+                      </dd>
+                    </div>
+                    <div class="min-w-0 space-y-1">
+                      <dt class="eyebrow-xs">Prefix</dt>
+                      <dd class="font-mono break-all text-text-strong" translate="no">
+                        {{ row.ipAddressPrefix }}
+                      </dd>
+                    </div>
+                    <div class="min-w-0 space-y-1">
+                      <dt class="eyebrow-xs">Region</dt>
+                      <dd class="text-text-body">
+                        @if (row.regionHref; as regionHref) {
+                          <a class="link-primary font-semibold" [href]="regionHref">
+                            {{ row.regionDisplayName }}
+                          </a>
+                        } @else {
+                          {{ row.regionDisplayName }}
+                        }
+                      </dd>
+                    </div>
+                    <div class="min-w-0 space-y-1">
+                      <dt class="eyebrow-xs">System service</dt>
+                      <dd class="break-words text-text-body">{{ row.systemServiceDisplayName }}</dd>
+                    </div>
+                    <div class="min-w-0 space-y-1 sm:col-span-2">
+                      <dt class="eyebrow-xs">Network features</dt>
+                      <dd>
+                        @if (row.networkFeatureCodes.length) {
+                          <div class="flex flex-wrap gap-1.5">
+                            @for (feature of row.networkFeatureCodes; track feature) {
+                              <span
+                                class="rounded bg-surface-raised px-1.5 py-0.5 font-mono text-xs text-text-body"
+                                translate="no"
+                                >{{ feature }}</span
+                              >
+                            }
+                          </div>
+                        } @else {
+                          <span class="text-text-muted">Not specified</span>
+                        }
+                      </dd>
+                    </div>
+                  </dl>
+                </article>
+              }
+            </div>
+          </div>
+
+          <div class="rounded-lg bg-surface-muted p-4">
+            <h3 class="font-semibold text-text-strong">Network Feature Legend</h3>
+            <dl class="mt-3 grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
+              @for (feature of networkFeatureLegend; track feature.code) {
+                <div class="flex items-start gap-2">
+                  <dt
+                    class="min-w-9 rounded bg-surface-raised px-1.5 py-0.5 text-center font-mono text-xs font-semibold text-text-strong"
+                    translate="no"
+                  >
+                    {{ feature.code }}
+                  </dt>
+                  <dd class="text-text-muted">{{ feature.label }}</dd>
+                </div>
+              }
+            </dl>
+          </div>
+        } @else {
+          <div class="rounded-lg bg-surface-muted p-5 text-center">
+            <app-lucide-icon
+              name="search-x"
+              class="mx-auto size-8 text-text-muted"
+              aria-hidden="true"
+            />
+            <h3 class="mt-3 font-semibold text-text-strong">No Published Public Cloud Match</h3>
+            <p class="mt-1 text-sm leading-relaxed text-text-muted">
+              This address is not covered by the Azure Public Cloud service tags returned by the
+              lookup. A missing match does not prove that an address is unrelated to Microsoft or
+              Azure.
+            </p>
+          </div>
+        }
+
+        <div class="alert">
+          <app-lucide-icon
+            name="info"
+            class="mt-0.5 size-5 shrink-0 text-primary"
+            aria-hidden="true"
+          />
+          <p>
+            Service tags classify published Azure address ranges. Results do not reveal a tenant,
+            subscription, resource, customer, actor, exact facility, or geographic IP location.
+          </p>
         </div>
-      </div>
-    } @else if (
-      !isLoading() && currentSearchTerm() && (result()?.length ?? 0) === 0 && !errorMessage()
-    ) {
-      <div class="alert">
-        No Azure service tag entries were found for
-        <strong>{{ currentSearchTerm() }}</strong>
-      </div>
+      </section>
     }
   </section>
 
   <section class="section-block" aria-labelledby="use-cases-heading">
-    <h2 id="use-cases-heading" class="section-title">Common use cases</h2>
-    <div
-      class="divide-y divide-border-soft overflow-hidden rounded-xl border border-border-soft bg-surface-raised"
-    >
+    <h2 id="use-cases-heading" class="section-title">Common Use Cases</h2>
+    <div class="divide-y divide-border-soft overflow-hidden rounded-lg bg-surface-raised">
       <div class="flex items-start gap-4 p-4">
-        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-          <app-lucide-icon name="server" class="h-5 w-5 text-primary" aria-hidden="true" />
+        <div class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+          <app-lucide-icon name="server" class="size-5 text-primary" aria-hidden="true" />
         </div>
-        <div>
-          <h3 class="font-semibold text-text-strong">Azure VIP lookup</h3>
+        <div class="min-w-0">
+          <h3 class="font-semibold text-text-strong">Azure VIP Classification</h3>
           <p class="mt-0.5 text-sm text-text-muted">
-            Check if an IP is an Azure VIP and identify associated service tags and regions.
+            Check whether an address is covered by published Azure service tags and regional
+            prefixes.
           </p>
         </div>
       </div>
       <div class="flex items-start gap-4 p-4">
-        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-          <app-lucide-icon name="search" class="h-5 w-5 text-primary" aria-hidden="true" />
+        <div class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+          <app-lucide-icon name="search" class="size-5 text-primary" aria-hidden="true" />
         </div>
-        <div>
-          <h3 class="font-semibold text-text-strong">Traffic analysis</h3>
+        <div class="min-w-0">
+          <h3 class="font-semibold text-text-strong">Traffic Classification</h3>
           <p class="mt-0.5 text-sm text-text-muted">
-            Identify the source of unknown IPs found in client access logs, IIS logs, or Azure Log
-            Analytics.
+            Check whether addresses found in access logs are covered by published Azure service
+            tags.
           </p>
         </div>
       </div>
       <div class="flex items-start gap-4 p-4">
-        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-          <app-lucide-icon name="shield-check" class="h-5 w-5 text-primary" aria-hidden="true" />
+        <div class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+          <app-lucide-icon name="shield-check" class="size-5 text-primary" aria-hidden="true" />
         </div>
-        <div>
-          <h3 class="font-semibold text-text-strong">DDoS investigation</h3>
+        <div class="min-w-0">
+          <h3 class="font-semibold text-text-strong">DDoS Log Triage</h3>
           <p class="mt-0.5 text-sm text-text-muted">
-            Determine the origin of unfamiliar IPs appearing in DDoS mitigation logs.
+            Classify Azure-owned ranges in mitigation logs. Service tags do not identify the
+            customer, resource, or actor behind an address.
           </p>
         </div>
       </div>
@@ -256,30 +502,42 @@
   </section>
 
   <section class="section-block" aria-labelledby="faq-heading">
-    <h2 id="faq-heading" class="section-title">Frequently asked questions</h2>
+    <h2 id="faq-heading" class="section-title">Frequently Asked Questions</h2>
     <div class="faq-list">
       <details class="faq-item group">
         <summary class="faq-summary">
-          <span class="faq-question">What are Azure service tags?</span>
+          <span class="faq-question">What does Azure IP &amp; Service Tag Lookup identify?</span>
           <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
         </summary>
         <div class="faq-body">
-          Azure service tags group IP ranges for Azure services. Instead of maintaining IP
-          allowlists, you can reference a single service tag in your NSG or firewall rules. Each
-          service tag has an ID and network features that describe its usage.
+          The tool checks whether an address falls within prefixes published for Microsoft Azure
+          Public Cloud service tags. It does not identify a resource owner, subscription, tenant,
+          customer, physical datacenter, or geographic location.
         </div>
       </details>
 
       <details class="faq-item group">
         <summary class="faq-summary">
-          <span class="faq-question">How does the Azure IP Lookup tool work?</span>
+          <span class="faq-question">Why can one address match multiple service tags?</span>
           <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
         </summary>
         <div class="faq-body">
-          The lookup submits your IP address or domain to the Azure IP Lookup API. The API maps the
-          address to Azure service tags published by Microsoft and returns the matching service tag
-          ID, region, and network feature metadata. Results update weekly as Microsoft releases new
-          IP data.
+          Azure prefixes overlap by design. One address can match a service-specific tag, its
+          regional variant, a regional AzureCloud tag, and the global AzureCloud tag. The most
+          specific match uses the narrowest prefix and most specific regional scope returned by the
+          lookup.
+        </div>
+      </details>
+
+      <details class="faq-item group">
+        <summary class="faq-summary">
+          <span class="faq-question">How are domain names and URLs handled?</span>
+          <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
+        </summary>
+        <div class="faq-body">
+          A URL is reduced to its hostname. The lookup service resolves the hostname and checks the
+          resulting address against Azure Public Cloud service tags. DNS answers can change by
+          location and time, so repeating a domain lookup can produce different results.
         </div>
       </details>
 
@@ -289,18 +547,30 @@
           <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
         </summary>
         <div class="faq-body">
-          Yes. The tool accepts IPv4, IPv6, and domain names. IPv6 prefixes are returned exactly as
-          Microsoft publishes them in the weekly service tag downloads.
+          Yes. The tool accepts IPv4, IPv6, domain names, and HTTP/HTTPS URLs. IPv6 prefixes are
+          displayed in the notation returned by the lookup API.
         </div>
       </details>
 
       <details class="faq-item group">
         <summary class="faq-summary">
-          <span class="faq-question">How often does Azure update IP data?</span>
+          <span class="faq-question">What does no service tag match mean?</span>
           <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
         </summary>
         <div class="faq-body">
-          Microsoft publishes updated IP ranges weekly. Use the
+          It means the lookup did not find the address in the Azure Public Cloud service tag ranges
+          returned for that request. It does not prove that the address is unrelated to Microsoft,
+          Azure, a sovereign cloud, a CDN, or another service outside this dataset.
+        </div>
+      </details>
+
+      <details class="faq-item group">
+        <summary class="faq-summary">
+          <span class="faq-question">How often does Microsoft update Azure IP data?</span>
+          <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
+        </summary>
+        <div class="faq-body">
+          Microsoft publishes updated Azure IP ranges and service tags weekly. See the
           <a
             class="link-primary inline-flex items-center gap-1"
             href="https://www.microsoft.com/en-us/download/details.aspx?id=56519"
@@ -308,9 +578,9 @@
             rel="noopener noreferrer"
           >
             Azure IP Ranges and Service Tags - Public Cloud
-            <app-lucide-icon name="external-link" class="h-3 w-3" aria-hidden="true" />
+            <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
           </a>
-          download to stay current.
+          download for the source dataset.
         </div>
       </details>
 
@@ -319,86 +589,73 @@
           <span class="faq-question">Can I automate lookups?</span>
           <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
         </summary>
-        <div class="faq-body">
-          Yes. The Azure Speed IP Lookup API accepts a simple GET request at
-          <code>/api/ipAddress?ipOrDomain=&lt;ipAddressOrDomain&gt;</code>
-          . Supply either an IP address or domain name and the service returns the same payload you
-          see in the UI.
-          <div class="table-shell">
-            <table class="table-base">
-              <thead class="table-head">
-                <tr>
-                  <th scope="col" class="px-4 py-3">Lookup type</th>
-                  <th scope="col" class="px-4 py-3">Example URL</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-border-soft">
-                <tr class="table-row-hover">
-                  <td class="px-4 py-3">Domain name</td>
-                  <td class="px-4 py-3">
+        <div class="faq-body space-y-4">
+          <p>
+            Yes. Send a GET request to
+            <code translate="no">/api/ipAddress?ipOrDomain=&lt;ipAddressOrDomain&gt;</code>. Encode
+            the query value and handle rate limits, timeouts, and transient failures in automated
+            clients.
+          </p>
+          <div class="grid gap-3">
+            @for (example of apiExamples; track example.value) {
+              <article class="rounded-lg bg-surface-muted p-3">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <h3 class="text-sm font-semibold text-text-strong">{{ example.label }}</h3>
+                  <div class="flex flex-wrap gap-2">
+                    <app-copy-button
+                      [text]="example.url"
+                      label="Copy URL"
+                      successLabel="URL Copied"
+                      [ariaLabel]="'Copy ' + example.label + ' API example URL'"
+                    />
                     <a
-                      class="link-primary"
-                      href="https://www.azurespeed.com/api/ipAddress?ipOrDomain=www.azure.com"
+                      class="btn btn-outline btn--sm"
+                      [href]="example.url"
                       target="_blank"
                       rel="noopener noreferrer"
+                      [attr.aria-label]="'Open ' + example.label + ' API example in a new tab'"
                     >
-                      https://www.azurespeed.com/api/ipAddress?ipOrDomain=www.azure.com
+                      Open
+                      <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
                     </a>
-                  </td>
-                </tr>
-                <tr class="table-row-hover">
-                  <td class="px-4 py-3">IPv4 address</td>
-                  <td class="px-4 py-3">
-                    <a
-                      class="link-primary"
-                      href="https://www.azurespeed.com/api/ipAddress?ipOrDomain=104.45.231.79"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      https://www.azurespeed.com/api/ipAddress?ipOrDomain=104.45.231.79
-                    </a>
-                  </td>
-                </tr>
-                <tr class="table-row-hover">
-                  <td class="px-4 py-3">IPv6 address</td>
-                  <td class="px-4 py-3">
-                    <a
-                      class="link-primary"
-                      href="https://www.azurespeed.com/api/ipAddress?ipOrDomain=2603:1030:0800:0005:0000:0000:BFEE:A418"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      https://www.azurespeed.com/api/ipAddress?ipOrDomain=2603:1030:0800:0005:0000:0000:BFEE:A418
-                    </a>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                  </div>
+                </div>
+                <code
+                  class="mt-2 block font-mono text-xs break-all text-text-body"
+                  translate="no"
+                  >{{ example.url }}</code
+                >
+              </article>
+            }
           </div>
+          <p class="text-sm text-text-muted">
+            The JSON response includes the resolved IP address, matching service tag, prefix,
+            region, system service, and network feature codes.
+          </p>
         </div>
       </details>
     </div>
   </section>
 
   <section class="section-block" aria-labelledby="resources-heading">
-    <h2 id="resources-heading" class="section-title">Additional resources</h2>
+    <h2 id="resources-heading" class="section-title">Additional Resources</h2>
     <div class="resource-grid">
       <article class="card card-resource">
         <div class="flex items-center gap-3">
-          <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
-            <app-lucide-icon name="github" class="h-5 w-5 text-primary" aria-hidden="true" />
+          <div class="flex size-9 items-center justify-center rounded-lg bg-primary/10">
+            <app-lucide-icon name="github" class="size-5 text-primary" aria-hidden="true" />
           </div>
-          <h3 class="card-title">API source code</h3>
+          <h3 class="card-title">API Source Code</h3>
         </div>
         <p class="card-description">
-          Check out the open-source Azure IP Lookup API that powers this tool.
+          Review the open-source Azure IP Lookup API that powers this tool.
         </p>
         <a
           href="https://github.com/blrchen/azure-ip-lookup"
           target="_blank"
           rel="noopener noreferrer"
           class="card-cta"
-          aria-label="View API source code on GitHub (opens in new tab)"
+          aria-label="View on GitHub: API source code (opens in new tab)"
         >
           View on GitHub
           <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
@@ -406,10 +663,10 @@
       </article>
       <article class="card card-resource">
         <div class="flex items-center gap-3">
-          <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
-            <app-lucide-icon name="tag" class="h-5 w-5 text-primary" aria-hidden="true" />
+          <div class="flex size-9 items-center justify-center rounded-lg bg-primary/10">
+            <app-lucide-icon name="tag" class="size-5 text-primary" aria-hidden="true" />
           </div>
-          <h3 class="card-title">Service tags overview</h3>
+          <h3 class="card-title">Service Tags Overview</h3>
         </div>
         <p class="card-description">
           Learn how service tags simplify Azure network security management.
@@ -421,19 +678,19 @@
           class="card-cta"
           aria-label="Learn more about service tags overview (opens in new tab)"
         >
-          Learn more
+          Learn More
           <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
         </a>
       </article>
       <article class="card card-resource">
         <div class="flex items-center gap-3">
-          <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
-            <app-lucide-icon name="code" class="h-5 w-5 text-primary" aria-hidden="true" />
+          <div class="flex size-9 items-center justify-center rounded-lg bg-primary/10">
+            <app-lucide-icon name="code" class="size-5 text-primary" aria-hidden="true" />
           </div>
-          <h3 class="card-title">Service Tag API docs</h3>
+          <h3 class="card-title">Service Tag API Docs</h3>
         </div>
         <p class="card-description">
-          Use the REST API to automate service tag lookups and updates.
+          Use the Azure REST API to automate service tag retrieval and updates.
         </p>
         <a
           href="https://learn.microsoft.com/rest/api/virtualnetwork/servicetags/list"
@@ -442,19 +699,19 @@
           class="card-cta"
           aria-label="Learn more about Service Tag API docs (opens in new tab)"
         >
-          Learn more
+          Learn More
           <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
         </a>
       </article>
       <article class="card card-resource">
         <div class="flex items-center gap-3">
-          <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
-            <app-lucide-icon name="terminal" class="h-5 w-5 text-primary" aria-hidden="true" />
+          <div class="flex size-9 items-center justify-center rounded-lg bg-primary/10">
+            <app-lucide-icon name="terminal" class="size-5 text-primary" aria-hidden="true" />
           </div>
-          <h3 class="card-title">PowerShell tooling</h3>
+          <h3 class="card-title">PowerShell Tooling</h3>
         </div>
         <p class="card-description">
-          Manage service tags programmatically with the Azure PowerShell module.
+          Retrieve service tags programmatically with the Azure PowerShell module.
         </p>
         <a
           href="https://learn.microsoft.com/powershell/module/az.network/get-aznetworkservicetag"
@@ -463,7 +720,7 @@
           class="card-cta"
           aria-label="Learn more about PowerShell tooling (opens in new tab)"
         >
-          Learn more
+          Learn More
           <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
         </a>
       </article>

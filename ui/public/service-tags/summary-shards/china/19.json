@@ -1,0 +1,1 @@
+{"serviceTags":{"AzureCognitiveSearch.ChinaEast3":{"regionId":"chinaeast3","ipAddressPrefixes":["52.131.144.192/26","2406:e500:2402::480/121"],"totalPrefixCount":2,"ipv4PrefixCount":1},"AzureDigitalTwins.ChinaNorth2":{"regionId":"chinanorth2","ipAddressPrefixes":["52.131.66.104/29","52.131.66.128/27"],"totalPrefixCount":2,"ipv4PrefixCount":2}}}

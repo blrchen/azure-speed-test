@@ -1,213 +1,127 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  DestroyRef,
-  inject,
-  signal
-} from '@angular/core'
+import { DOCUMENT } from '@angular/common'
+import { Component, inject, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import {
-  NavigationCancel,
   NavigationEnd,
-  NavigationError,
-  NavigationStart,
-  RouteConfigLoadEnd,
-  RouteConfigLoadStart,
+  NavigationSkipped,
   Router,
   RouterLink,
-  RouterOutlet
+  RouterOutlet,
+  type ActivatedRouteSnapshot,
 } from '@angular/router'
+import { filter } from 'rxjs'
 
+import {
+  APP_BRAND_LABEL,
+  APP_GITHUB_ARIA_LABEL,
+  APP_GITHUB_URL,
+  APP_HOME_LINK,
+  APP_NAV_GROUPS,
+} from './app.navigation'
+import { ChunkLoadErrorPromptComponent } from './services/errors-handling/chunk-load-error-prompt.component'
 import { FooterComponent } from './shared/footer/footer.component'
 import { LucideIconComponent } from './shared/icons/lucide-icons.component'
-import { NavGroup, NavGroupsComponent } from './shared/nav-groups/nav-groups.component'
-import { ThemeToggleComponent } from './shared/theme'
+import {
+  MobileNavComponent,
+  type MobileNavCloseEvent,
+} from './shared/mobile-nav/mobile-nav.component'
+import { NavGroupsComponent } from './shared/nav-groups/nav-groups.component'
+import { RouteLoaderComponent } from './shared/route-loader/route-loader.component'
+import { RouteLoadingService } from './shared/route-loader/route-loading.service'
+import { ThemeToggleComponent } from './shared/theme/theme-toggle.component'
 
 @Component({
   selector: 'app-root',
   imports: [
     RouterOutlet,
     RouterLink,
+    ChunkLoadErrorPromptComponent,
     FooterComponent,
     NavGroupsComponent,
     LucideIconComponent,
-    ThemeToggleComponent
+    MobileNavComponent,
+    RouteLoaderComponent,
+    ThemeToggleComponent,
   ],
   host: {
-    '(document:keydown.escape)': 'handleEscapeKey()'
+    class: 'block',
   },
   templateUrl: './app.html',
   styleUrl: './app.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class App {
+  private readonly document = inject(DOCUMENT)
   private readonly router = inject(Router)
-  private readonly destroyRef = inject(DestroyRef)
+  private mobileNavTrigger: HTMLElement | null = null
 
   readonly mobileNavOpen = signal(false)
-  readonly isRouteLoading = signal(false)
-  private readonly hasCompletedInitialNavigation = signal(false)
-  readonly showRouteLoader = computed(
-    () => this.hasCompletedInitialNavigation() && this.isRouteLoading()
-  )
+  readonly fullWidthShell = signal(false)
+  readonly routeLoading = inject(RouteLoadingService)
 
-  readonly navGroups = signal<NavGroup[]>([
-    {
-      heading: 'Featured',
-      items: [
-        {
-          label: 'ChatGPT Coding Assistant',
-          icon: 'braces',
-          routerLink: '/ChatGPT/CodeAssistant'
-        },
-        {
-          label: 'ChatGPT Writing Assistant',
-          icon: 'pencil',
-          routerLink: '/ChatGPT/WritingAssistant'
-        }
-      ]
-    },
-    {
-      heading: 'Testing',
-      items: [
-        {
-          label: 'Azure Latency Test',
-          icon: 'zap',
-          routerLink: '/Azure/Latency'
-        },
-        {
-          label: 'Region to Region Latency',
-          icon: 'arrow-left-right',
-          routerLink: '/Azure/RegionToRegionLatency'
-        },
-        {
-          label: 'PsPing Network Latency Test',
-          icon: 'signal-high',
-          routerLink: '/Azure/PsPing'
-        },
-        {
-          label: 'Download Speed Test',
-          icon: 'download',
-          routerLink: '/Azure/Download'
-        },
-        {
-          label: 'Upload Speed Test',
-          icon: 'upload',
-          routerLink: '/Azure/Upload'
-        },
-        {
-          label: 'Large File Upload Speed Test',
-          icon: 'upload-cloud',
-          routerLink: '/Azure/UploadLargeFile'
-        }
-      ]
-    },
-    {
-      heading: 'Resources',
-      items: [
-        {
-          label: 'Azure Regions',
-          icon: 'globe-2',
-          routerLink: '/Information/AzureRegions'
-        },
-        {
-          label: 'Azure Availability Zones',
-          icon: 'server',
-          routerLink: '/Information/AzureAvailabilityZones'
-        },
-        {
-          label: 'Azure Geographies',
-          icon: 'globe',
-          routerLink: '/Information/AzureGeographies'
-        },
-        {
-          label: 'Azure Sovereign Clouds',
-          icon: 'cloud',
-          routerLink: '/Information/AzureSovereignClouds'
-        },
-        {
-          label: 'Azure Environments',
-          icon: 'cog',
-          routerLink: '/Information/AzureEnvironments'
-        }
-      ]
-    },
-    {
-      heading: 'IP Tools',
-      items: [
-        {
-          label: 'Azure IP Lookup',
-          icon: 'search',
-          routerLink: '/Azure/IPLookup'
-        },
-        {
-          label: 'Azure IP Ranges',
-          icon: 'map',
-          routerLink: '/Information/AzureIpRanges/AzureCloud'
-        },
-        {
-          label: 'Azure IP Ranges By Region',
-          icon: 'map-pin',
-          routerLink: '/Information/AzureIpRangesByRegion'
-        },
-        {
-          label: 'Azure IP Ranges By Service',
-          icon: 'bar-chart-3',
-          routerLink: '/Information/AzureIpRangesByService'
-        }
-      ]
-    },
-    {
-      heading: 'Info',
-      items: [
-        {
-          label: 'About',
-          icon: 'info',
-          routerLink: '/Azure/About'
-        }
-      ]
-    }
-  ])
+  readonly brandLabel = APP_BRAND_LABEL
+  readonly homeLink = APP_HOME_LINK
+  readonly githubUrl = APP_GITHUB_URL
+  readonly githubAriaLabel = APP_GITHUB_ARIA_LABEL
+  readonly navGroups = APP_NAV_GROUPS
 
   constructor() {
-    this.router.events.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((event) => {
-      if (event instanceof NavigationStart || event instanceof RouteConfigLoadStart) {
-        if (this.hasCompletedInitialNavigation()) {
-          this.isRouteLoading.set(true)
-        }
-        return
+    this.router.events
+      .pipe(
+        filter((event) => event instanceof NavigationEnd || event instanceof NavigationSkipped),
+        takeUntilDestroyed()
+      )
+      .subscribe(() => {
+        this.updateShellLayout()
+        this.closeMobileNav({ restoreFocus: false })
+      })
+
+    this.updateShellLayout()
+  }
+
+  toggleMobileNav(event?: Event): void {
+    const willOpen = !this.mobileNavOpen()
+    if (willOpen) {
+      if (event?.currentTarget instanceof HTMLElement) {
+        this.mobileNavTrigger = event.currentTarget
       }
-
-      if (
-        event instanceof RouteConfigLoadEnd ||
-        event instanceof NavigationEnd ||
-        event instanceof NavigationCancel ||
-        event instanceof NavigationError
-      ) {
-        this.isRouteLoading.set(false)
-        if (!this.hasCompletedInitialNavigation()) {
-          this.hasCompletedInitialNavigation.set(true)
-        }
-      }
-    })
-  }
-
-  toggleMobileNav(): void {
-    this.mobileNavOpen.update((open) => !open)
-  }
-
-  closeMobileNav(): void {
-    this.mobileNavOpen.set(false)
-  }
-
-  handleMobileNavigate(): void {
-    this.closeMobileNav()
-  }
-
-  handleEscapeKey(): void {
-    if (this.mobileNavOpen()) {
+      this.mobileNavOpen.set(true)
+    } else {
       this.closeMobileNav()
     }
+  }
+
+  closeMobileNav(event: MobileNavCloseEvent = { restoreFocus: true }): void {
+    const trigger = this.mobileNavTrigger
+    this.mobileNavOpen.set(false)
+    this.mobileNavTrigger = null
+    if (event.restoreFocus) trigger?.focus()
+  }
+
+  focusMainContent(): void {
+    const mainContent = this.document.getElementById('main-content')
+    if (mainContent) {
+      mainContent.setAttribute('tabindex', '-1')
+      mainContent.focus()
+      return
+    }
+
+    this.document.querySelector<HTMLHeadingElement>('h1')?.focus()
+  }
+
+  private updateShellLayout(): void {
+    let useFullWidthShell = false
+
+    for (
+      let route: ActivatedRouteSnapshot | null = this.router.routerState.snapshot.root;
+      route;
+      route = route.firstChild
+    ) {
+      if (route.data['shellWidth'] === 'full') {
+        useFullWidthShell = true
+        break
+      }
+    }
+
+    this.fullWidthShell.set(useFullWidthShell)
   }
 }

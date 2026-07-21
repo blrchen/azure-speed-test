@@ -1,0 +1,360 @@
+<article class="page-shell section-stack mx-auto max-w-7xl">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a class="breadcrumb-link" routerLink="/AzureVmPricing">Azure VM Sizes &amp; Pricing</a>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current" aria-current="page">Regions</span>
+  </nav>
+
+  <header class="page-header">
+    <div class="max-w-4xl space-y-3">
+      <div class="flex items-center gap-3">
+        <div class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+          <app-lucide-icon name="map-pin" class="size-6 text-primary" aria-hidden="true" />
+        </div>
+        <h1 class="page-title">Azure VM pricing by region</h1>
+      </div>
+      <p class="page-lead">
+        Compare Linux and Windows pay-as-you-go, 1-year reserved, 3-year reserved, and Spot Azure VM
+        prices within a specific region. Open a region to search VM sizes and sort its rates from
+        lowest to highest.
+      </p>
+    </div>
+
+    <dl class="vm-summary-ledger">
+      <div class="vm-summary-ledger__item">
+        <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">
+          Pricing regions
+        </dt>
+        <dd class="text-2xl font-bold text-text-strong tabular-nums">
+          {{ priceCounts().pricedRegionCount }}
+        </dd>
+      </div>
+      <div class="vm-summary-ledger__item">
+        <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">
+          Indexed regions
+        </dt>
+        <dd class="text-2xl font-bold text-text-strong tabular-nums">
+          {{ vmRegionDirectory().indexableRegionCount }}
+        </dd>
+      </div>
+      <div class="vm-summary-ledger__item">
+        <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">Priced sizes</dt>
+        <dd class="text-2xl font-bold text-text-strong tabular-nums">
+          {{ priceCounts().pricedSkuCount }}
+        </dd>
+      </div>
+      <div class="vm-summary-ledger__item">
+        <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">
+          Regional prices
+        </dt>
+        <dd class="text-2xl font-bold text-text-strong tabular-nums">
+          {{ formatNumber(priceCounts().regionalPriceCount) }}
+        </dd>
+      </div>
+    </dl>
+  </header>
+
+  <aside
+    class="flex items-start gap-3 rounded-lg border border-border-soft bg-surface-muted p-4 text-sm leading-relaxed text-text-muted"
+    aria-label="Region interpretation"
+  >
+    <app-lucide-icon name="info" class="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
+    <p>
+      Region pricing comes from the anonymous Azure Retail Prices API. ResourceSku.locations is
+      retained only as subscription-scoped catalog evidence and does not filter public prices.
+      Published pricing does not guarantee capacity, quota, or deployment eligibility.
+    </p>
+  </aside>
+
+  <section class="section-block" aria-labelledby="vm-region-directory-heading">
+    <div>
+      <h2 id="vm-region-directory-heading" class="section-title">Browse pricing regions</h2>
+      <p class="mt-2 text-sm text-text-muted">
+        Search by display name, ARM region name, geography, group, or metadata status.
+      </p>
+    </div>
+
+    <form
+      class="grid gap-4 lg:grid-cols-[minmax(16rem,2fr)_minmax(12rem,1fr)]"
+      role="search"
+      (submit)="$event.preventDefault()"
+    >
+      <div class="flex min-w-0 flex-col gap-2">
+        <label for="vm-region-search" class="form-label">Search regions</label>
+        <div class="form-control-shell">
+          <app-lucide-icon
+            name="search"
+            class="form-control-shell__icon size-4"
+            aria-hidden="true"
+          />
+          <input
+            #regionSearch
+            id="vm-region-search"
+            type="search"
+            class="form-control form-control--icon-start form-control--action-end form-control-focus-ring min-h-11 md:min-h-9"
+            placeholder="East US, europe, preview..."
+            autocomplete="off"
+            spellcheck="false"
+            [value]="query()"
+            (input)="query.set(regionSearch.value.slice(0, 120))"
+          />
+          @if (query()) {
+            <button
+              type="button"
+              class="form-control-shell__action"
+              aria-label="Clear region search"
+              (click)="query.set(''); regionSearch.focus()"
+            >
+              <app-lucide-icon name="x" class="size-4" aria-hidden="true" />
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="flex min-w-0 flex-col gap-2">
+        <label for="vm-region-status" class="form-label">Metadata status</label>
+        <div class="form-select-wrapper">
+          <select
+            #statusFilter
+            id="vm-region-status"
+            class="form-select min-h-11 md:min-h-9"
+            [value]="selectedStatus()"
+            (change)="updateStatus(statusFilter.value)"
+          >
+            <option value="">All statuses</option>
+            @for (option of statusOptions(); track option.status) {
+              <option [value]="option.status">
+                {{ statusLabel(option.status) }} ({{ option.count }})
+              </option>
+            }
+          </select>
+        </div>
+      </div>
+    </form>
+
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <p
+        id="vm-region-result-summary"
+        class="m-0 text-sm font-semibold text-text-body tabular-nums"
+        role="status"
+        aria-live="polite"
+      >
+        {{ resultSummary() }}
+      </p>
+      @if (query() || selectedStatus()) {
+        <button
+          type="button"
+          class="btn btn-outline btn--sm min-h-11 md:min-h-9"
+          (click)="clearFilters(); regionSearch.focus()"
+        >
+          <app-lucide-icon name="x" class="size-3.5" aria-hidden="true" />
+          Clear filters
+        </button>
+      }
+    </div>
+
+    <div class="flex flex-wrap items-end gap-x-6 gap-y-4">
+      <div class="flex flex-col items-start gap-2">
+        <span class="text-xs font-semibold tracking-wide text-text-muted uppercase">
+          Operating system
+        </span>
+        <app-vm-operating-system-toggle
+          [selected]="selectedOperatingSystem()"
+          (selectedChange)="updateOperatingSystem($event)"
+        />
+      </div>
+      <div class="flex max-w-full flex-col items-start gap-2">
+        <span class="text-xs font-semibold tracking-wide text-text-muted uppercase">
+          Pricing model
+        </span>
+        <app-vm-price-mode-toggle
+          [selected]="selectedPriceMode()"
+          (selectedChange)="updatePriceMode($event)"
+        />
+      </div>
+    </div>
+
+    @if (filteredRegions().length) {
+      <div class="table-shell" aria-describedby="vm-region-result-summary">
+        <table class="table-base">
+          <caption class="sr-only">
+            Azure regions with
+            {{
+              selectedOperatingSystem()
+            }}
+            {{
+              selectedPriceModeLabel()
+            }}
+            VM pricing, geography, metadata status, and priced VM size counts. Use a column heading
+            button to change the sort order.
+          </caption>
+          <thead class="table-head">
+            <tr>
+              <th scope="col" class="p-0" [attr.aria-sort]="sortAriaValue('name')">
+                <button type="button" class="table-sort-button" (click)="sortBy('name')">
+                  Region
+                  @if (isSortedBy('name')) {
+                    <app-lucide-icon
+                      name="chevron-down"
+                      class="table-sort-icon size-3.5"
+                      [class.table-sort-icon--ascending]="isSortAscending()"
+                      aria-hidden="true"
+                    />
+                  }
+                </button>
+              </th>
+              <th scope="col" class="p-0" [attr.aria-sort]="sortAriaValue('arm-region')">
+                <button type="button" class="table-sort-button" (click)="sortBy('arm-region')">
+                  ARM region name
+                  @if (isSortedBy('arm-region')) {
+                    <app-lucide-icon
+                      name="chevron-down"
+                      class="table-sort-icon size-3.5"
+                      [class.table-sort-icon--ascending]="isSortAscending()"
+                      aria-hidden="true"
+                    />
+                  }
+                </button>
+              </th>
+              <th scope="col" class="p-0" [attr.aria-sort]="sortAriaValue('geography')">
+                <button type="button" class="table-sort-button" (click)="sortBy('geography')">
+                  Geography
+                  @if (isSortedBy('geography')) {
+                    <app-lucide-icon
+                      name="chevron-down"
+                      class="table-sort-icon size-3.5"
+                      [class.table-sort-icon--ascending]="isSortAscending()"
+                      aria-hidden="true"
+                    />
+                  }
+                </button>
+              </th>
+              <th scope="col" class="p-0" [attr.aria-sort]="sortAriaValue('region-group')">
+                <button type="button" class="table-sort-button" (click)="sortBy('region-group')">
+                  Region group
+                  @if (isSortedBy('region-group')) {
+                    <app-lucide-icon
+                      name="chevron-down"
+                      class="table-sort-icon size-3.5"
+                      [class.table-sort-icon--ascending]="isSortAscending()"
+                      aria-hidden="true"
+                    />
+                  }
+                </button>
+              </th>
+              <th scope="col" class="p-0" [attr.aria-sort]="sortAriaValue('status')">
+                <button type="button" class="table-sort-button" (click)="sortBy('status')">
+                  Status
+                  @if (isSortedBy('status')) {
+                    <app-lucide-icon
+                      name="chevron-down"
+                      class="table-sort-icon size-3.5"
+                      [class.table-sort-icon--ascending]="isSortAscending()"
+                      aria-hidden="true"
+                    />
+                  }
+                </button>
+              </th>
+              <th scope="col" class="p-0" [attr.aria-sort]="sortAriaValue('sku-count')">
+                <button
+                  type="button"
+                  class="table-sort-button justify-end text-right"
+                  (click)="sortBy('sku-count')"
+                >
+                  Priced VM sizes
+                  @if (isSortedBy('sku-count')) {
+                    <app-lucide-icon
+                      name="chevron-down"
+                      class="table-sort-icon size-3.5"
+                      [class.table-sort-icon--ascending]="isSortAscending()"
+                      aria-hidden="true"
+                    />
+                  }
+                </button>
+              </th>
+              <th scope="col" class="px-4 py-3"><span class="sr-only">Links</span></th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border-soft">
+            @for (region of filteredRegions(); track region.armRegionName) {
+              <tr class="table-row-hover align-middle">
+                <th scope="row" class="px-4 py-3 text-left font-normal">
+                  <a
+                    class="link-primary font-semibold whitespace-nowrap"
+                    [href]="buildVmRegionHref(region.armRegionName)"
+                  >
+                    {{ region.displayName }}
+                  </a>
+                  @if (!region.indexable) {
+                    <span class="mt-1 block text-xs text-text-muted">Not indexed</span>
+                  }
+                </th>
+                <td
+                  class="px-4 py-3 font-mono text-xs whitespace-nowrap text-text-muted"
+                  translate="no"
+                >
+                  {{ region.armRegionName }}
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  {{ region.geography || 'Not mapped' }}
+                </td>
+                <td class="px-4 py-3">{{ region.regionGroup || 'Not mapped' }}</td>
+                <td class="px-4 py-3">
+                  <span
+                    class="badge whitespace-nowrap"
+                    [class.badge-success]="region.status === 'available'"
+                    [class.badge-brand]="region.status === 'preview'"
+                    [class.badge-neutral]="
+                      region.status !== 'available' && region.status !== 'preview'
+                    "
+                  >
+                    {{ statusLabel(region.status) }}
+                  </span>
+                </td>
+                <td class="px-4 py-3 text-right font-semibold tabular-nums">
+                  {{ formatNumber(pricedSkuCount(region)) }}
+                </td>
+                <td class="px-4 py-3">
+                  <div class="flex items-center justify-end gap-3 whitespace-nowrap">
+                    <a
+                      class="link-primary inline-flex items-center gap-1 text-xs font-semibold"
+                      [href]="buildVmRegionHref(region.armRegionName)"
+                      [attr.aria-label]="'View prices for ' + region.displayName + ' VM sizes'"
+                    >
+                      View prices
+                      <app-lucide-icon name="chevron-right" class="size-3.5" aria-hidden="true" />
+                    </a>
+                    @if (region.regionDetailPath) {
+                      <a
+                        class="link-primary text-xs font-semibold"
+                        [href]="region.regionDetailPath"
+                        [attr.aria-label]="
+                          'View the Azure region profile for ' + region.displayName
+                        "
+                      >
+                        Profile
+                      </a>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <div class="card flex flex-col items-center gap-3 py-10 text-center">
+        <app-lucide-icon name="search-x" class="size-10 text-text-muted" aria-hidden="true" />
+        <h3 class="font-semibold text-text-strong">No pricing regions match</h3>
+        <p class="text-sm text-text-muted">Try another name or remove the status filter.</p>
+        <button
+          type="button"
+          class="btn btn-outline min-h-11"
+          (click)="clearFilters(); regionSearch.focus()"
+        >
+          Clear filters
+        </button>
+      </div>
+    }
+  </section>
+</article>

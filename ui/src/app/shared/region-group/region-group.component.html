@@ -1,0 +1,263 @@
+<div
+  class="region-selector flex min-w-0 flex-col gap-3"
+  [class.region-selector--collapsed]="isCollapsed()"
+  [attr.aria-busy]="disabled()"
+>
+  @if (!isCollapsed()) {
+    <form
+      class="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 @min-[44rem]:grid-cols-[minmax(18rem,1fr)_auto_auto]"
+      role="search"
+      (submit)="$event.preventDefault()"
+    >
+      <div class="relative col-span-full min-w-0 @min-[44rem]:col-span-1">
+        <label for="region-selector-search" class="sr-only">Search regions</label>
+        <app-lucide-icon
+          name="search"
+          class="pointer-events-none absolute top-1/2 left-3 z-1 size-4 -translate-y-1/2 text-text-muted"
+          aria-hidden="true"
+        />
+        <input
+          #regionSearchInput
+          id="region-selector-search"
+          type="search"
+          class="h-9 min-h-11 w-full rounded-md border border-border-strong bg-transparent pr-15 pl-9 text-sm text-text-body shadow-xs placeholder:text-text-placeholder focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-none @min-[44rem]:min-h-9"
+          placeholder="Search name, location, or ID..."
+          autocomplete="off"
+          spellcheck="false"
+          aria-describedby="region-selector-search-hint"
+          [value]="searchQuery()"
+          (input)="onSearchInput($event)"
+        />
+        <span id="region-selector-search-hint" class="sr-only">
+          Search by region name, region ID, datacenter location, geography, or region group.
+        </span>
+        @if (hasSearchQuery()) {
+          <button
+            type="button"
+            class="absolute top-1/2 right-1.5 min-h-8 min-w-12 -translate-y-1/2 rounded-md text-xs font-semibold text-text-muted hover:bg-surface-muted hover:text-text-strong focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-none"
+            (click)="clearSearchAndFocus()"
+          >
+            Clear
+          </button>
+        }
+      </div>
+
+      <p
+        class="m-0 min-w-0 text-xs text-text-muted"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        [class.invisible]="resultsTargetId() !== null && selectedRegionCount() > 0"
+        [attr.aria-hidden]="resultsTargetId() !== null && selectedRegionCount() > 0 ? 'true' : null"
+      >
+        <span class="font-semibold text-text-strong tabular-nums">
+          {{ selectedRegionCount() }} / {{ totalRegionCount() }}
+        </span>
+        selected
+        @if (hasSearchQuery()) {
+          <span class="ml-1 whitespace-nowrap">
+            <span aria-hidden="true">|</span>
+            {{ filteredRegionCount() }}
+            {{ filteredRegionCount() === 1 ? 'match' : 'matches' }}
+          </span>
+        }
+      </p>
+
+      @if (!resultsTargetId()) {
+        <div class="flex items-center justify-end gap-2">
+          <button
+            type="button"
+            class="btn btn-outline btn--sm min-h-11 @min-[44rem]:min-h-9"
+            (click)="clearSelection()"
+            [disabled]="!isInteractive() || disabled() || selectedRegionCount() === 0"
+          >
+            Clear All
+          </button>
+        </div>
+      }
+    </form>
+  }
+
+  @if (resultsTargetId()) {
+    <div
+      #selectorStatusBar
+      class="region-selector__status-bar top-[calc(env(safe-area-inset-top)+4rem)] z-30 flex min-h-13 min-w-0 flex-wrap items-center justify-between gap-x-4 gap-y-2.5 rounded-lg border border-border-strong bg-surface-raised p-2 shadow-xs outline-none"
+      [class.sticky]="!isCollapsed()"
+      [class.static]="isCollapsed()"
+      tabindex="-1"
+      role="region"
+      aria-label="Region selection and test results"
+    >
+      <div class="min-w-[min(100%,12rem)] flex-[1_1_12rem]">
+        <p class="m-0 text-xs text-text-muted">
+          <span class="font-semibold text-text-strong tabular-nums">
+            {{ selectedRegionCount() }}
+          </span>
+          {{ selectedRegionCount() === 1 ? 'region selected' : 'regions selected' }}
+          @if (hasSearchQuery()) {
+            <span class="ml-1 whitespace-nowrap">
+              <span aria-hidden="true">|</span>
+              {{ filteredRegionCount() }}
+              {{ filteredRegionCount() === 1 ? 'match' : 'matches' }}
+            </span>
+          }
+        </p>
+        <p
+          class="mt-0.5 mb-0 min-h-10 text-xs leading-5 text-text-body @min-[44rem]:min-h-5"
+          [class.invisible]="!resultsAvailable() || !resultsStatus()"
+          [attr.aria-hidden]="!resultsAvailable() || !resultsStatus() ? 'true' : null"
+        >
+          {{ resultsStatus() || 'Results are not available yet.' }}
+        </p>
+      </div>
+
+      <div class="flex shrink-0 items-center justify-end gap-2 @max-[30rem]:w-full">
+        <button
+          type="button"
+          class="btn btn-outline btn--sm min-h-11 @max-[30rem]:flex-1 @min-[44rem]:min-h-9"
+          [disabled]="
+            !isInteractive() || disabled() || (!isCollapsed() && selectedRegionCount() === 0)
+          "
+          (click)="handleSelectionAction()"
+        >
+          {{ isCollapsed() ? 'Change Regions' : 'Clear All' }}
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary btn--sm min-h-11 @max-[30rem]:flex-1 @min-[44rem]:min-h-9"
+          [disabled]="!isInteractive() || !canViewResults()"
+          (click)="viewResults()"
+        >
+          {{ resultsLabel() }}
+        </button>
+      </div>
+    </div>
+  }
+
+  @if (!isCollapsed()) {
+    @if (filteredRegionGroups().length > 0) {
+      <div class="border-y border-border-soft">
+        @for (visibleGroup of filteredRegionGroups(); track visibleGroup.group.regionGroup) {
+          @let group = visibleGroup.group;
+          @let groupExpanded = isGroupExpanded(group);
+          @let groupToggleDisabled = isGroupToggleDisabled();
+          <section
+            class="region-group min-w-0 border-b border-border-soft last:border-b-0 @min-[44rem]:grid @min-[44rem]:grid-cols-[minmax(10.5rem,11.5rem)_minmax(0,1fr)] @min-[44rem]:gap-x-3 @min-[44rem]:py-3"
+            [attr.aria-label]="group.regionGroup"
+          >
+            <header
+              class="grid min-w-0 grid-cols-[2.75rem_minmax(0,1fr)] items-center py-1 @min-[44rem]:grid-cols-[2.25rem_minmax(0,1fr)] @min-[44rem]:self-start @min-[44rem]:p-0"
+            >
+              <label
+                class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-primary has-[:focus-visible]:ring-offset-2 has-[:focus-visible]:ring-offset-surface-base @min-[44rem]:min-h-9 @min-[44rem]:min-w-9"
+                [class]="
+                  groupToggleDisabled
+                    ? 'cursor-not-allowed opacity-50'
+                    : 'cursor-pointer hover:bg-surface-muted'
+                "
+              >
+                <input
+                  type="checkbox"
+                  name="selectedRegionGroups"
+                  class="m-0 size-[1.125rem] shrink-0 [cursor:inherit] accent-brand focus-visible:outline-none"
+                  [id]="getGroupCheckboxId(group)"
+                  [checked]="isGroupChecked(group)"
+                  [indeterminate]="isGroupIndeterminate(group)"
+                  [disabled]="groupToggleDisabled"
+                  [attr.aria-label]="getGroupActionAriaLabel(group)"
+                  (click)="$event.preventDefault(); toggleGroup(group)"
+                />
+              </label>
+
+              <div class="hidden min-w-0 py-1 pr-1 @min-[44rem]:block">
+                <h3 class="m-0 text-sm leading-5 font-bold text-balance text-text-strong">
+                  {{ group.regionGroup }}
+                </h3>
+                <span
+                  class="mt-0.5 block text-[0.6875rem] font-medium whitespace-nowrap text-text-muted tabular-nums"
+                >
+                  {{ getGroupSelectedCount(group) }} / {{ group.regions.length }} selected
+                </span>
+              </div>
+
+              <h3 class="m-0 min-w-0 @min-[44rem]:hidden">
+                <button
+                  type="button"
+                  class="flex min-h-11 w-full min-w-0 items-center justify-between gap-3 rounded-md px-2 py-1 text-left hover:bg-surface-muted focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-none disabled:cursor-default disabled:hover:bg-transparent"
+                  [attr.aria-expanded]="groupExpanded"
+                  [attr.aria-controls]="getGroupPanelId(group)"
+                  [disabled]="hasSearchQuery()"
+                  (click)="toggleGroupExpanded(group)"
+                >
+                  <span class="flex min-w-0 flex-1 items-baseline justify-between gap-3">
+                    <span class="min-w-0 text-sm leading-5 font-bold text-balance text-text-strong">
+                      {{ group.regionGroup }}
+                    </span>
+                    <span
+                      class="shrink-0 text-[0.6875rem] font-medium whitespace-nowrap text-text-muted tabular-nums"
+                    >
+                      {{ getGroupSelectedCount(group) }} / {{ group.regions.length }} selected
+                    </span>
+                  </span>
+                  <app-lucide-icon
+                    name="chevron-down"
+                    class="size-3 shrink-0 text-text-muted transition-transform"
+                    [class.rotate-180]="groupExpanded"
+                    aria-hidden="true"
+                  />
+                </button>
+              </h3>
+            </header>
+
+            <div
+              class="hidden min-w-0 grid-cols-[repeat(auto-fit,minmax(min(100%,9rem),1fr))] gap-x-2 gap-y-1 px-1 pb-3 data-[expanded=true]:grid @min-[44rem]:grid @min-[44rem]:self-start @min-[44rem]:p-0"
+              [id]="getGroupPanelId(group)"
+              [attr.data-expanded]="groupExpanded"
+              role="group"
+              [attr.aria-label]="group.regionGroup + ' regions'"
+            >
+              @for (region of visibleGroup.visibleRegions; track region.regionId) {
+                @let isActive = isRegionChecked(region.regionId);
+                @let regionDisabled = isRegionDisabled();
+                <label
+                  class="region-option flex min-h-11 min-w-0 items-center gap-2 rounded-md px-2 py-1.5 text-xs leading-5 font-medium has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-primary has-[:focus-visible]:ring-offset-2 has-[:focus-visible]:ring-offset-surface-base @min-[44rem]:min-h-9 @min-[44rem]:py-1"
+                  [class]="
+                    isActive
+                      ? regionDisabled
+                        ? 'cursor-not-allowed bg-brand/10 text-text-strong opacity-80'
+                        : 'cursor-pointer bg-brand/10 text-text-strong hover:bg-brand/15'
+                      : regionDisabled
+                        ? 'cursor-not-allowed text-text-disabled opacity-60'
+                        : 'cursor-pointer text-text-body hover:bg-surface-muted'
+                  "
+                >
+                  <input
+                    type="checkbox"
+                    name="selectedRegions"
+                    class="m-0 size-4 shrink-0 [cursor:inherit] accent-brand focus-visible:outline-none"
+                    [id]="getRegionCheckboxId(region.regionId)"
+                    [checked]="isActive"
+                    [disabled]="regionDisabled"
+                    (change)="toggleRegion(region)"
+                  />
+                  <span class="min-w-0 [overflow-wrap:anywhere]">{{ region.displayName }}</span>
+                </label>
+              }
+            </div>
+          </section>
+        }
+      </div>
+    } @else {
+      <div
+        class="flex min-h-40 flex-col items-center justify-center gap-2 border-y border-border-soft px-4 py-8 text-center text-sm text-text-muted"
+        role="status"
+      >
+        <p class="m-0 font-semibold text-text-strong">No regions match your search</p>
+        <p class="m-0">Try a region name, region ID, datacenter location, or geography.</p>
+        <button type="button" class="btn btn-outline btn--sm" (click)="clearSearchAndFocus()">
+          Clear Search
+        </button>
+      </div>
+    }
+  }
+</div>

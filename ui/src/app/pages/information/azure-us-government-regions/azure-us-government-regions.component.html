@@ -1,47 +1,69 @@
 <article class="page-shell section-stack mx-auto max-w-5xl">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a class="breadcrumb-link" routerLink="/Azure/Latency">Home</a>
+    <span class="breadcrumb-separator">/</span>
+    <a class="breadcrumb-link" [routerLink]="['/Information/AzureRegions']">Azure regions</a>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current" aria-current="page">Azure US government cloud regions</span>
+  </nav>
+
   <header class="page-header">
     <h1 class="page-title">Azure US government cloud regions</h1>
+    <nav class="flex flex-wrap gap-2" aria-label="Region types">
+      <a class="btn btn-outline btn--sm" [routerLink]="['/Information/AzureRegions']">
+        Global regions
+      </a>
+      <span class="btn btn--sm btn-current" aria-current="page">US Gov regions</span>
+      <a class="btn btn-outline btn--sm" [routerLink]="['/Information/AzureChinaRegions']">
+        China regions
+      </a>
+      <a class="btn btn-outline btn--sm" [routerLink]="['/Information/AzureRestrictedRegions']">
+        Restricted regions
+      </a>
+      <a class="btn btn-outline btn--sm" [routerLink]="['/Information/AzureUpcomingRegions']">
+        Upcoming regions
+      </a>
+    </nav>
     <p class="page-lead">
-      These regions are designed for US government entities and their partners, meeting security and
-      compliance requirements.
+      Azure regions are sets of datacenters inside a latency-defined perimeter, connected through a
+      dedicated regional network.
     </p>
   </header>
 
   <section class="section-block" aria-labelledby="regions-heading">
-    <h2 id="regions-heading" class="section-title">Available regions</h2>
+    <h2 id="regions-heading" class="section-title">Azure US Government cloud regions</h2>
+    <p class="text-text-muted">
+      These regions are designed for US government entities and their partners, meeting security and
+      compliance requirements.
+    </p>
     <div class="table-shell">
       <table class="table-base">
         <thead class="table-head">
           <tr>
-            <th class="px-4 py-3">Region</th>
-            <th class="px-4 py-3">Datacenter</th>
-            <th class="px-4 py-3 text-right">Availability zones</th>
-            <th class="px-4 py-3">Paired region</th>
-            <th class="px-4 py-3">Available to</th>
+            <th scope="col" class="px-4 py-3">Region</th>
+            <th scope="col" class="px-4 py-3">Datacenter</th>
+            <th scope="col" class="px-4 py-3 text-right">Availability zones</th>
+            <th scope="col" class="px-4 py-3">Paired region</th>
+            <th scope="col" class="px-4 py-3">Available to</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-border-soft">
-          @for (r of azureGovernmentRegions(); track r.displayName) {
+          @for (r of azureGovernmentRegions; track r.displayName) {
             <tr class="table-row-hover">
-              <td class="px-4 py-3">
-                <div class="space-y-1 text-left">
-                  <a
-                    class="link-primary font-semibold"
-                    [routerLink]="buildRegionRouterLink(r.displayName)"
-                  >
-                    {{ r.displayName }}
-                    <span aria-hidden="true" class="text-text-muted">></span>
-                  </a>
-                  <div class="text-xs font-semibold tracking-wide text-text-subtle uppercase">
-                    {{ r.regionId }}
-                  </div>
-                </div>
+              <td class="px-4 py-3 whitespace-nowrap">
+                <a
+                  class="link-primary font-semibold"
+                  [href]="buildRegionDetailHref(r.displayName, 'usgov')"
+                >
+                  {{ r.displayName }}
+                  <span aria-hidden="true" class="text-text-muted">></span>
+                </a>
               </td>
               <td class="px-4 py-3 text-text-muted">{{ r.datacenterLocation }}</td>
               <td class="px-4 py-3 text-right">
                 @if (r.availabilityZoneCount) {
                   <span
-                    class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-success text-sm font-semibold text-success-foreground tabular-nums"
+                    class="inline-flex size-7 items-center justify-center rounded-full bg-success text-sm font-semibold text-success-foreground tabular-nums"
                   >
                     {{ r.availabilityZoneCount }}
                   </span>
@@ -58,127 +80,123 @@
         </tbody>
       </table>
     </div>
+  </section>
 
-    <!-- FAQ Section -->
-    <section class="section-block">
-      <header class="section-head">
-        <h2 class="section-title">Frequently asked questions</h2>
-      </header>
-      <div class="faq-list">
-        <details class="faq-item group">
-          <summary class="faq-summary">
-            <span class="faq-question">Who can use Azure US Government regions?</span>
-            <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
-          </summary>
-          <div class="faq-body">
-            <p>Azure US Government is available to:</p>
-            <ul>
-              <li>US federal, state, local, and tribal government agencies</li>
-              <li>Solution providers building solutions for government</li>
-              <li>Companies holding specific government data subject to regulations</li>
-              <li>Qualifying private enterprises with data subject to government regulations</li>
-            </ul>
-          </div>
-        </details>
-        <details class="faq-item group">
-          <summary class="faq-summary">
-            <span class="faq-question"
-              >What compliance standards does Azure US Government meet?</span
+  <section class="section-block" aria-labelledby="faq-heading">
+    <h2 id="faq-heading" class="section-title">Frequently asked questions</h2>
+    <div class="faq-list">
+      <details class="faq-item group">
+        <summary class="faq-summary">
+          <span class="faq-question">Who can use Azure US Government regions?</span>
+          <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
+        </summary>
+        <div class="faq-body">
+          <p>Azure US Government is available to:</p>
+          <ul>
+            <li>US federal, state, local, and tribal government agencies</li>
+            <li>Solution providers building solutions for government</li>
+            <li>Companies holding specific government data subject to regulations</li>
+            <li>Qualifying private enterprises with data subject to government regulations</li>
+          </ul>
+        </div>
+      </details>
+      <details class="faq-item group">
+        <summary class="faq-summary">
+          <span class="faq-question">What compliance standards does Azure US Government meet?</span>
+          <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
+        </summary>
+        <div class="faq-body">
+          <p>Azure US Government meets various compliance standards including:</p>
+          <ul>
+            <li>FedRAMP High</li>
+            <li>DOD Impact Level 5 (IL5)</li>
+            <li>CJIS</li>
+            <li>ITAR</li>
+            <li>IRS 1075</li>
+          </ul>
+          <p>
+            For the latest compliance information, visit the
+            <a
+              href="https://learn.microsoft.com/en-us/azure/azure-government/compliance"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="link-primary inline-flex items-center gap-1"
             >
-            <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
-          </summary>
-          <div class="faq-body">
-            <p>Azure US Government meets various compliance standards including:</p>
-            <ul>
-              <li>FedRAMP High</li>
-              <li>DOD Impact Level 5 (IL5)</li>
-              <li>CJIS</li>
-              <li>ITAR</li>
-              <li>IRS 1075</li>
-            </ul>
-            <p>
-              For the latest compliance information, visit the
-              <a
-                href="https://learn.microsoft.com/en-us/azure/azure-government/compliance"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Azure Government compliance documentation
-              </a>
-              .
-            </p>
-          </div>
-        </details>
-        <details class="faq-item group">
-          <summary class="faq-summary">
-            <span class="faq-question">How do I request access?</span>
-            <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
-          </summary>
-          <div class="faq-body">
-            <p>
-              Start the onboarding process by submitting the Azure Government request form and
-              completing the required validation steps with Microsoft.
-            </p>
-          </div>
-        </details>
-      </div>
-    </section>
+              Azure Government compliance documentation
+              <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" /> </a
+            >.
+          </p>
+        </div>
+      </details>
+      <details class="faq-item group">
+        <summary class="faq-summary">
+          <span class="faq-question">How do I request access?</span>
+          <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
+        </summary>
+        <div class="faq-body">
+          <p>
+            Start the onboarding process by submitting the Azure Government request form and
+            completing the required validation steps with Microsoft.
+          </p>
+        </div>
+      </details>
+    </div>
+  </section>
 
-    <section class="section-block">
-      <header class="section-head">
-        <h2 class="section-title">Additional resources</h2>
-        <p>Key references for deploying solutions in Azure Government environments.</p>
-      </header>
-      <div class="resource-grid">
-        <article class="card card-resource">
-          <h3 class="card-title">Azure Government documentation</h3>
-          <p class="card-description">
-            Learn about Azure Government cloud services, architecture, and security.
-          </p>
-          <a
-            href="https://learn.microsoft.com/en-us/azure/azure-government/"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="card-cta"
-            aria-label="Learn more about Azure Government documentation (opens in new tab)"
-          >
-            Learn more
-            <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
-          </a>
-        </article>
-        <article class="card card-resource">
-          <h3 class="card-title">Compliance programs</h3>
-          <p class="card-description">
-            Explore Azure Government compliance offerings and certifications.
-          </p>
-          <a
-            href="https://learn.microsoft.com/en-us/azure/azure-government/compliance"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="card-cta"
-            aria-label="Learn more about Azure Government compliance programs (opens in new tab)"
-          >
-            Learn more
-            <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
-          </a>
-        </article>
-        <article class="card card-resource">
-          <h3 class="card-title">Service availability</h3>
-          <p class="card-description">
-            View the latest service availability for Azure US Government regions.
-          </p>
-          <a
-            href="https://azure.microsoft.com/en-us/explore/global-infrastructure/government/products/"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="card-cta"
-            aria-label="Learn more about Azure Government service availability (opens in new tab)"
-          >
-            Learn more
-            <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
-          </a>
-        </article>
-      </div>
-    </section>
+  <section class="section-block" aria-labelledby="resources-heading">
+    <h2 id="resources-heading" class="section-title">Additional resources</h2>
+    <p class="text-text-muted">
+      Key references for deploying solutions in Azure Government environments.
+    </p>
+    <div class="resource-grid">
+      <article class="card card-resource">
+        <h3 class="card-title">Azure Government documentation</h3>
+        <p class="card-description">
+          Learn about Azure Government cloud services, architecture, and security.
+        </p>
+        <a
+          href="https://learn.microsoft.com/en-us/azure/azure-government/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="card-cta"
+          aria-label="Learn more about Azure Government documentation (opens in new tab)"
+        >
+          Learn more
+          <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
+        </a>
+      </article>
+      <article class="card card-resource">
+        <h3 class="card-title">Compliance programs</h3>
+        <p class="card-description">
+          Explore Azure Government compliance offerings and certifications.
+        </p>
+        <a
+          href="https://learn.microsoft.com/en-us/azure/azure-government/compliance"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="card-cta"
+          aria-label="Learn more about Azure Government compliance programs (opens in new tab)"
+        >
+          Learn more
+          <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
+        </a>
+      </article>
+      <article class="card card-resource">
+        <h3 class="card-title">Service availability</h3>
+        <p class="card-description">
+          View the latest service availability for Azure US Government regions.
+        </p>
+        <a
+          href="https://azure.microsoft.com/en-us/explore/global-infrastructure/government/products/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="card-cta"
+          aria-label="Learn more about Azure Government service availability (opens in new tab)"
+        >
+          Learn more
+          <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
+        </a>
+      </article>
+    </div>
   </section>
 </article>

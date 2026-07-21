@@ -4,80 +4,85 @@
     <p class="page-lead">
       Azure Speed Test respects your privacy. This page outlines the limited information we collect
       when you visit
-      <a href="https://www.azurespeed.com" class="link-primary">azurespeed.com</a>, how we use it,
-      and the choices you have.
+      <a
+        href="https://www.azurespeed.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="link-primary inline-flex items-center gap-1"
+      >
+        azurespeed.com
+        <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
+      </a>
+      , how we use it, and the choices you have.
     </p>
   </header>
 
-  <section class="section-block" aria-labelledby="policy-content">
-    <h2 id="policy-content" class="sr-only">Privacy policy details</h2>
-    <div class="space-y-6">
-      <p class="leading-relaxed">
-        We believe in transparency and simplicity. Our approach to data collection is minimal; we
-        only gather what's necessary to provide you with the best experience while respecting your
-        privacy.
-      </p>
+  <section class="section-block" aria-labelledby="intro-heading">
+    <h2 id="intro-heading" class="sr-only">Introduction</h2>
+    <p class="leading-relaxed">
+      We believe in transparency and simplicity. Our approach to data collection is minimal; we only
+      gather what's necessary to provide you with the best experience while respecting your privacy.
+    </p>
+  </section>
 
-      <h2 class="section-title">Information We Collect</h2>
+  <section class="section-block" aria-labelledby="information-heading">
+    <h2 id="information-heading" class="section-title">Information we collect</h2>
+    <p>
+      We do not require you to create an account or provide personal details. When you load the
+      site, we gather non-identifying analytics such as the pages visited, approximate location
+      derived from IP address, browser type, and device characteristics.
+    </p>
+    <p>
+      When you run a latency test, network requests are issued directly from your browser to Azure
+      regional endpoints; the results stay in your session and are not persisted on our servers.
+    </p>
+  </section>
 
-      <p>
-        We do not require you to create an account or provide personal details. When you load the
-        site, we gather non-identifying analytics such as the pages visited, approximate location
-        derived from IP address, browser type, and device characteristics.
-      </p>
+  <section class="section-block" aria-labelledby="cookies-heading">
+    <h2 id="cookies-heading" class="section-title">Cookies and local storage</h2>
+    <p>
+      We use cookies and local storage solely to remember your measurement preferences (selected
+      regions, units, and filters). These values remain in your browser and can be cleared at any
+      time through your browser settings.
+    </p>
+  </section>
 
-      <p>
-        When you run a latency test, network requests are issued directly from your browser to Azure
-        regional endpoints; the results stay in your session and are not persisted on our servers.
-      </p>
+  <section class="section-block" aria-labelledby="third-party-heading">
+    <h2 id="third-party-heading" class="section-title">Third-party services</h2>
+    <p>
+      We rely on trusted infrastructure providers to serve static assets and collect anonymous usage
+      analytics. These partners process data on our behalf under agreements that safeguard your
+      privacy.
+    </p>
+    <p>We do not sell or share your information for advertising purposes.</p>
+  </section>
 
-      <h2 class="section-title">Cookies &amp; Local Storage</h2>
+  <section class="section-block" aria-labelledby="choices-heading">
+    <h2 id="choices-heading" class="section-title">Your choices</h2>
+    <h3 class="text-xl font-semibold text-text-strong">You have control over your data</h3>
+    <ul class="space-y-2">
+      <li>Disable cookies in your browser settings</li>
+      <li>Block analytics scripts using browser extensions</li>
+      <li>Stop using the service at any time</li>
+      <li>Clear your browser data to remove stored preferences</li>
+    </ul>
+  </section>
 
-      <p>
-        We use cookies and local storage solely to remember your measurement preferences (selected
-        regions, units, and filters). These values remain in your browser and can be cleared at any
-        time through your browser settings.
-      </p>
-
-      <h2 class="section-title">Third-Party Services</h2>
-
-      <p>
-        We rely on trusted infrastructure providers to serve static assets and collect anonymous
-        usage analytics. These partners process data on our behalf under agreements that safeguard
-        your privacy.
-      </p>
-
-      <p>We do not sell or share your information for advertising purposes.</p>
-
-      <h2 class="section-title">Your Choices</h2>
-
-      <h3 class="mt-6 mb-3 text-xl font-semibold text-text-strong">
-        You have control over your data
-      </h3>
-
-      <ul class="my-4 space-y-2">
-        <li>Disable cookies in your browser settings</li>
-        <li>Block analytics scripts using browser extensions</li>
-        <li>Stop using the service at any time</li>
-        <li>Clear your browser data to remove stored preferences</li>
-      </ul>
-
-      <h2 class="section-title">Contact</h2>
-
-      <p>
-        For privacy-related questions, please open an issue on
-        <a
-          href="https://github.com/blrchen/azure-speed-test/issues"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="link-primary"
-        >
-          GitHub
-        </a>
-        or email the maintainer at
-        <a href="mailto:admin&#64;azurespeed.com" class="link-primary"> admin&#64;azurespeed.com </a
-        >.
-      </p>
-    </div>
+  <section class="section-block" aria-labelledby="contact-heading">
+    <h2 id="contact-heading" class="section-title">Contact</h2>
+    <p>
+      For privacy-related questions, please open an issue on
+      <a
+        href="https://github.com/blrchen/azure-speed-test/issues"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="link-primary inline-flex items-center gap-1"
+      >
+        GitHub
+        <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
+      </a>
+      or email the maintainer at
+      <a href="mailto:admin&#64;azurespeed.com" class="link-primary">admin&#64;azurespeed.com</a>.
+    </p>
   </section>
 </article>

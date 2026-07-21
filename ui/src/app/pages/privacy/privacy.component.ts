@@ -1,20 +1,23 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core'
+import { Component, inject, OnInit } from '@angular/core'
 
-import { SeoService } from '../../services'
+import { SeoService } from '../../services/seo.service'
+import { LucideIconComponent } from '../../shared/icons/lucide-icons.component'
 
 @Component({
   selector: 'app-privacy',
+  imports: [LucideIconComponent],
   templateUrl: './privacy.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  host: { class: 'block' },
 })
 export class PrivacyComponent implements OnInit {
   private readonly seoService = inject(SeoService)
 
   ngOnInit(): void {
-    this.seoService.setMetaTitle('Privacy Policy - Azure Speed Test')
-    this.seoService.setMetaDescription(
-      'Understand how Azure Speed Test handles analytics data and protects your information during latency measurements.'
-    )
-    this.seoService.setCanonicalUrl('https://www.azurespeed.com/Privacy')
+    this.seoService.setPageMeta({
+      title: 'Privacy Policy - Azure Speed Test',
+      description:
+        'Understand how Azure Speed Test handles analytics data and protects your information during latency measurements.',
+      canonicalUrl: 'https://www.azurespeed.com/Privacy',
+    })
   }
 }

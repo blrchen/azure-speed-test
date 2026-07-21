@@ -1,0 +1,58 @@
+@if (routeLoading.isLoading()) {
+  <div
+    class="absolute inset-0 z-30 overflow-y-auto bg-surface-base"
+    role="status"
+    aria-live="polite"
+    aria-label="Loading page"
+  >
+    <span class="sr-only">Loading page</span>
+    <article class="page-shell" aria-hidden="true">
+      <div class="section-stack">
+        <header class="page-header">
+          <div class="skeleton-block h-10 w-56 rounded-lg"></div>
+          <div class="space-y-2">
+            <div class="skeleton-block h-4 w-11/12 rounded-full"></div>
+            <div class="skeleton-block h-4 w-2/3 rounded-full"></div>
+          </div>
+        </header>
+
+        <hr class="w-full border-border-soft" />
+
+        <div class="card space-y-4 p-6">
+          <div class="flex flex-wrap items-center gap-3">
+            <div class="skeleton-block h-6 w-28 rounded-full"></div>
+            <div class="skeleton-block h-6 w-32 rounded-full"></div>
+            <div class="skeleton-block h-6 w-24 rounded-full"></div>
+          </div>
+          <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div class="skeleton-block h-12 rounded-lg"></div>
+            <div class="skeleton-block h-12 rounded-lg"></div>
+            <div class="skeleton-block h-12 rounded-lg"></div>
+            <div class="skeleton-block h-12 rounded-lg"></div>
+            <div class="skeleton-block h-12 rounded-lg"></div>
+            <div class="skeleton-block h-12 rounded-lg"></div>
+          </div>
+        </div>
+
+        <div class="card space-y-4 p-6">
+          <div class="skeleton-block h-6 w-40 rounded-lg"></div>
+          <div class="skeleton-block h-48 rounded-lg"></div>
+          <div class="skeleton-block h-14 rounded-lg"></div>
+        </div>
+
+        <div class="card space-y-4 p-6">
+          <div class="skeleton-block h-6 w-44 rounded-lg"></div>
+          <div class="grid gap-3 sm:grid-cols-2">
+            <div class="skeleton-block h-24 rounded-lg"></div>
+            <div class="skeleton-block h-24 rounded-lg"></div>
+          </div>
+          <div class="grid gap-3 sm:grid-cols-3">
+            <div class="skeleton-block h-12 rounded-lg"></div>
+            <div class="skeleton-block h-12 rounded-lg"></div>
+            <div class="skeleton-block h-12 rounded-lg"></div>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+}

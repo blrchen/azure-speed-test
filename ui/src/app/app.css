@@ -1,8 +1,5 @@
-:host {
-  display: block;
-}
-
 #main-content {
   /* Let content grow naturally - flex-1 in parent handles footer positioning */
   min-height: 50vh;
+  min-height: 50dvh;
 }

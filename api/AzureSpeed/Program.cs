@@ -1,11 +1,11 @@
 using Azure.Storage.Blobs;
 using Azure.Storage.Sas;
 using AzureSpeed.WebApp;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using System.Collections.Concurrent;
-using System.Text;
+using System.Net;
+using System.Text.Json;
 
+const string IpLookupBaseUrl = "https://azureiplookup-westus3.azurewebsites.net/api";
 var builder = WebApplication.CreateBuilder(args);
 ConfigureServices(builder);
 var app = builder.Build();
@@ -14,10 +14,6 @@ app.Run();
 
 void ConfigureServices(WebApplicationBuilder builder)
 {
-    builder.Services.Configure<ApiBehaviorOptions>(options =>
-    {
-        options.SuppressModelStateInvalidFilter = true;
-    });
     builder.Services.AddApplicationInsightsTelemetry(_ =>
     {
         _.EnableAdaptiveSampling = false;
@@ -27,18 +23,60 @@ void ConfigureServices(WebApplicationBuilder builder)
     {
         options.AddPolicy("AllowAll", _ => { _.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod(); });
     });
-    builder.Services.AddControllers();
     builder.Services.AddHttpClient();
-    builder.Services.AddSingleton<IChatGptClient, ChatGptClient>();
-    builder.Services.AddSingleton<IDictionary<string, StorageAccount>>(LoadStorageAccounts(builder.Environment));
+    builder.Services.AddSingleton(_ => new StorageAccountSelector(LoadStorageRegions(builder.Environment)));
 }
 
-IDictionary<string, StorageAccount> LoadStorageAccounts(IWebHostEnvironment environment)
+IReadOnlyDictionary<string, IReadOnlyList<StorageAccount>> LoadStorageRegions(IWebHostEnvironment environment)
 {
     string settingsFilePath = Path.Combine(environment.ContentRootPath, "Data", "settings.json");
     string settingsContent = File.ReadAllText(settingsFilePath);
-    var settings = JsonConvert.DeserializeObject<Settings>(settingsContent);
-    return settings.Accounts.ToDictionary(account => account.LocationId);
+    var settings = JsonSerializer.Deserialize<Settings>(settingsContent)
+        ?? throw new InvalidOperationException($"Unable to load storage settings from {settingsFilePath}.");
+    if (settings.Regions.Count == 0)
+    {
+        throw new InvalidOperationException($"Storage settings from {settingsFilePath} do not contain any regions.");
+    }
+
+    var regions = new Dictionary<string, IReadOnlyList<StorageAccount>>(StringComparer.OrdinalIgnoreCase);
+    foreach (var (regionName, accounts) in settings.Regions.OrderBy(region => region.Key, StringComparer.Ordinal))
+    {
+        if (accounts.Count == 0)
+        {
+            throw new InvalidOperationException($"Storage region {regionName} does not contain any accounts.");
+        }
+
+        var duplicatePrefixes = accounts
+            .GroupBy(account => account.Prefix, StringComparer.OrdinalIgnoreCase)
+            .Where(group => group.Count() > 1)
+            .Select(group => group.Key)
+            .ToArray();
+        if (duplicatePrefixes.Length > 0)
+        {
+            throw new InvalidOperationException(
+                $"Storage region {regionName} contains duplicate account prefixes: {string.Join(", ", duplicatePrefixes)}.");
+        }
+
+        var invalidTrafficWeightAccounts = accounts
+            .Where(account => account.TrafficWeight < 0)
+            .Select(account => account.Name)
+            .ToArray();
+        if (invalidTrafficWeightAccounts.Length > 0)
+        {
+            throw new InvalidOperationException(
+                $"Storage region {regionName} contains accounts with negative trafficWeight: {string.Join(", ", invalidTrafficWeightAccounts)}.");
+        }
+
+        if (accounts.Sum(account => (long)account.TrafficWeight) <= 0)
+        {
+            throw new InvalidOperationException(
+                $"Storage region {regionName} does not contain any accounts with positive trafficWeight.");
+        }
+
+        regions[regionName] = accounts.ToArray();
+    }
+
+    return regions;
 }
 
 void ConfigureApp(WebApplication app)
@@ -47,165 +85,145 @@ void ConfigureApp(WebApplication app)
     {
         app.UseHsts();
     }
+
     app.UseCors("AllowAll");
-    app.MapControllers();
+    MapApiEndpoints(app);
 }
 
-[Route("api")]
-[ApiController]
-public class ApiController : ControllerBase
+void MapApiEndpoints(WebApplication app)
 {
-    private readonly ILogger<ApiController> logger;
-    private readonly IWebHostEnvironment webHostEnvironment;
-    private readonly HttpClient httpClient;
-    private readonly IChatGptClient chatGptClient;
-    private readonly IDictionary<string, StorageAccount> storageAccounts;
+    var api = app.MapGroup("/api");
 
-    public ApiController(
-        ILogger<ApiController> logger,
-        IWebHostEnvironment webHostEnvironment,
-        HttpClient httpClient,
-        IChatGptClient chatGptClient,
-        IDictionary<string, StorageAccount> storageAccounts)
-    {
-        this.logger = logger;
-        this.webHostEnvironment = webHostEnvironment;
-        this.httpClient = httpClient;
-        this.chatGptClient = chatGptClient;
-        this.storageAccounts = storageAccounts;
-    }
-
-    [HttpGet("ipAddress")]
-    public async Task<IActionResult> GetAzureIpsAddress(string ipOrDomain)
-    {
-        if (string.IsNullOrWhiteSpace(ipOrDomain))
-        {
-            return BadRequest("Query string ipOrDomain can not be null");
-        }
-
-        string url = $"https://azureiplookup-westus3.azurewebsites.net/api/ipAddress?ipOrDomain={ipOrDomain}";
-        string result = await httpClient.GetStringAsync(url);
-
-        return Ok(result);
-    }
-
-    [HttpGet("serviceTags/{serviceTagId}")]
-    public async Task<IActionResult> GetServiceTag([FromRoute] string serviceTagId, [FromQuery] string cloudId)
-    {
-        if (string.IsNullOrWhiteSpace(serviceTagId))
-        {
-            return BadRequest("Parameter serviceTagId cannot be null or empty.");
-        }
-
-        try
-        {
-            string url = $"https://azureiplookup-westus3.azurewebsites.net/api/serviceTags/{serviceTagId}?cloudId={cloudId}";
-            string result = await httpClient.GetStringAsync(url);
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Failed to fetch service tag information.");
-            return StatusCode(500, "Failed to fetch data. Please try again later.");
-        }
-    }
-
-    [HttpGet("serviceTags/{serviceTagId}/ipAddressPrefixes")]
-    public async Task<IActionResult> GetIpAddressPrefixes([FromRoute] string serviceTagId, [FromQuery] string cloudId)
-    {
-        if (string.IsNullOrWhiteSpace(serviceTagId))
-        {
-            return BadRequest("Parameter serviceTagId cannot be null or empty.");
-        }
-
-        try
-        {
-            string url = $"https://azureiplookup-westus3.azurewebsites.net/api/serviceTags/{serviceTagId}/ipAddressPrefixes?cloudId={cloudId}";
-            string result = await httpClient.GetStringAsync(url);
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Failed to fetch IP address prefixes.");
-            return StatusCode(500, "Failed to fetch data. Please try again later.");
-        }
-    }
-
-    [HttpGet("sas")]
-    public IActionResult GetSasUrl(string regionName, string blobName, string operation)
-    {
-        if (string.IsNullOrWhiteSpace(regionName) || string.IsNullOrWhiteSpace(blobName) || string.IsNullOrWhiteSpace(operation))
-        {
-            return BadRequest("Query strings regionName, blobName, operation can not be null");
-        }
-
-        if (!storageAccounts.TryGetValue(regionName, out var storageAccount))
-        {
-            return BadRequest($"Region {regionName} is not supported");
-        }
-
-        var azureStorageClient = new AzureStorageClient(storageAccount);
-        string url = azureStorageClient.GetSasUrl(blobName, operation).ToString();
-        return Ok(new { Url = url });
-    }
-
-    [HttpPost("free-for-10-calls-per-ip-each-day")]
-    public async Task<IActionResult> GetChatCompletion([FromBody] ChatCompletionRequest request)
-    {
-        try
-        {
-            request.SystemPrompt = SystemPrompts.GetPromptById(request.SystemPromptId, webHostEnvironment.ContentRootPath);
-            request.SystemPrompt = request.SystemPrompt.Replace("{{question}}", request.UserContent);
-
-            if (!string.IsNullOrWhiteSpace(request.ResponseLanguage))
-            {
-                request.SystemPrompt = request.SystemPrompt.Replace("{{ResponseLanguage}}", request.ResponseLanguage);
-            }
-            if (!string.IsNullOrWhiteSpace(request.ProgramLanguage))
-            {
-                request.SystemPrompt = request.SystemPrompt.Replace("{{ProgramLanguage}}", request.ProgramLanguage);
-            }
-
-            var response = await chatGptClient.GetChatCompletion(request);
-            return Ok(response);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error occurred while processing chat completion.");
-            return StatusCode(500, new { message = "Server error. Please try again later. Refreshing with Ctrl+F5 may resolve the issue. If it continues, report the problem at https://github.com/blrchen/azure-speed-test/issues." });
-        }
-    }
+    api.MapGet("/ipAddress", GetAzureIpsAddress);
+    api.MapGet("/sas", GetSasUrl);
 }
 
-public static class SystemPrompts
+async Task<IResult> GetAzureIpsAddress(
+    string? ipOrDomain,
+    IHttpClientFactory httpClientFactory,
+    ILoggerFactory loggerFactory,
+    CancellationToken requestAborted)
 {
-    private static readonly ConcurrentDictionary<string, string> promptsCache = new ConcurrentDictionary<string, string>();
-
-    public static string GetPromptById(string id, string contentRootPath)
+    if (string.IsNullOrWhiteSpace(ipOrDomain))
     {
-        return promptsCache.GetOrAdd(id, _ => LoadPrompt(id, contentRootPath));
+        return Results.BadRequest(new { message = "Query string ipOrDomain is required." });
     }
 
-    private static string LoadPrompt(string id, string contentRootPath)
+    var logger = loggerFactory.CreateLogger("AzureSpeed.Api");
+    logger.LogInformation("GetAzureIpAddress {IPOrDomain}", ipOrDomain);
+
+    var httpClient = httpClientFactory.CreateClient();
+    string url = $"{IpLookupBaseUrl}/ipAddress?ipOrDomain={Uri.EscapeDataString(ipOrDomain)}";
+    using var timeout = CancellationTokenSource.CreateLinkedTokenSource(requestAborted);
+    timeout.CancelAfter(TimeSpan.FromSeconds(10));
+
+    try
     {
-        var promptFilePath = Path.Combine(contentRootPath, "Prompts", $"{id}.txt");
-        if (File.Exists(promptFilePath))
+        using var response = await httpClient.GetAsync(url, timeout.Token);
+        string result = await response.Content.ReadAsStringAsync(timeout.Token);
+
+        if (!response.IsSuccessStatusCode)
         {
-            return File.ReadAllText(promptFilePath);
+            logger.LogWarning(
+                "GetAzureIpAddress upstream returned {StatusCode} for {IPOrDomain}",
+                (int)response.StatusCode,
+                ipOrDomain);
+            return Results.Json(
+                new
+                {
+                    message = "Azure IP lookup service returned an error.",
+                    upstreamStatusCode = (int)response.StatusCode
+                },
+                statusCode: GetIpLookupErrorStatusCode(response.StatusCode));
         }
 
-        throw new ArgumentException($"No prompt with ID {id} found.", nameof(id));
+        return Results.Content(result, "application/json");
+    }
+    catch (OperationCanceledException) when (!requestAborted.IsCancellationRequested)
+    {
+        logger.LogWarning("GetAzureIpAddress upstream timed out for {IPOrDomain}", ipOrDomain);
+        return Results.Json(
+            new { message = "Azure IP lookup service timed out." },
+            statusCode: StatusCodes.Status504GatewayTimeout);
+    }
+    catch (HttpRequestException ex)
+    {
+        logger.LogWarning(ex, "GetAzureIpAddress upstream request failed for {IPOrDomain}", ipOrDomain);
+        return Results.Json(
+            new { message = "Azure IP lookup service is unavailable." },
+            statusCode: StatusCodes.Status502BadGateway);
     }
 }
 
-public interface IAzureStorageClient
+int GetIpLookupErrorStatusCode(HttpStatusCode upstreamStatusCode)
 {
-    Uri GetSasUrl(string blobName, string operation);
+    int statusCode = (int)upstreamStatusCode;
+    return statusCode >= StatusCodes.Status500InternalServerError
+        ? StatusCodes.Status502BadGateway
+        : statusCode;
 }
 
-public class AzureStorageClient : IAzureStorageClient
+IResult GetSasUrl(
+    string? regionName,
+    string? blobName,
+    string? operation,
+    StorageAccountSelector storageAccountSelector,
+    ILoggerFactory loggerFactory)
+{
+    if (string.IsNullOrWhiteSpace(regionName) ||
+        string.IsNullOrWhiteSpace(blobName) ||
+        string.IsNullOrWhiteSpace(operation))
+    {
+        return Results.BadRequest(new { message = "Query strings regionName, blobName, and operation are required." });
+    }
+
+    var logger = loggerFactory.CreateLogger("AzureSpeed.Api");
+    logger.LogInformation(
+        "GetSasUrl {Region} {BlobName} {Operation}",
+        regionName,
+        blobName,
+        operation);
+
+    if (!AzureStorageClient.IsSupportedOperation(operation))
+    {
+        return Results.BadRequest(new { message = $"Operation {operation} is not supported." });
+    }
+    if (!storageAccountSelector.TryGetNext(
+            regionName,
+            operation,
+            out var storageAccount,
+            out int poolSize,
+            out int weightUnits) ||
+        storageAccount is null)
+    {
+        return Results.BadRequest(new { message = $"Region {regionName} is not supported." });
+    }
+
+    logger.LogInformation(
+        "GetSasUrl selected {StorageAccount} ({StoragePrefix}, traffic weight {TrafficWeight}) for {Region} {Operation}; pool size {PoolSize}; weight units {WeightUnits}",
+        storageAccount.Name,
+        storageAccount.Prefix,
+        storageAccount.TrafficWeight,
+        regionName,
+        operation,
+        poolSize,
+        weightUnits);
+
+    var azureStorageClient = new AzureStorageClient(storageAccount);
+    string url = azureStorageClient.GetSasUrl(blobName, operation).ToString();
+    return Results.Ok(new { url });
+}
+
+
+public class AzureStorageClient
 {
     private readonly string connectionString;
+
+    public static bool IsSupportedOperation(string operation)
+    {
+        return operation.Equals("upload", StringComparison.OrdinalIgnoreCase) ||
+            operation.Equals("download", StringComparison.OrdinalIgnoreCase);
+    }
 
     public AzureStorageClient(StorageAccount account)
     {
@@ -215,17 +233,19 @@ public class AzureStorageClient : IAzureStorageClient
     public Uri GetSasUrl(string blobName, string operation)
     {
         string containerName = string.Empty;
-        var blobSasPermissions = BlobSasPermissions.List;
+        BlobSasPermissions blobSasPermissions;
         switch (operation.ToUpperInvariant())
         {
             case "UPLOAD":
-                blobSasPermissions |= BlobSasPermissions.Write | BlobSasPermissions.Create | BlobSasPermissions.Add;
+                blobSasPermissions = BlobSasPermissions.Write | BlobSasPermissions.Create;
                 containerName = "upload";
                 break;
             case "DOWNLOAD":
-                blobSasPermissions |= BlobSasPermissions.Read;
+                blobSasPermissions = BlobSasPermissions.Read;
                 containerName = "private";
                 break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(operation), operation, "Unsupported storage operation.");
         }
 
         var blobContainerClient = new BlobContainerClient(connectionString, containerName);
@@ -241,77 +261,110 @@ public class AzureStorageClient : IAzureStorageClient
         };
         sasBuilder.SetPermissions(blobSasPermissions);
 
-        Uri sasUri = blobClient.GenerateSasUri(sasBuilder);
-        return sasUri;
+        return blobClient.GenerateSasUri(sasBuilder);
     }
 }
 
-public interface IChatGptClient
+public sealed class StorageAccountSelector
 {
-    Task<ChatCompletionResponse> GetChatCompletion(ChatCompletionRequest request);
-}
+    private const int MaxWeightUnits = 10_000;
+    private readonly IReadOnlyDictionary<string, StorageAccountPool> storageAccountPoolsByRegion;
+    private readonly ConcurrentDictionary<string, long> counters = new(StringComparer.OrdinalIgnoreCase);
 
-public class ChatGptClient : IChatGptClient
-{
-    private readonly ILogger<ChatGptClient> logger;
-    private readonly HttpClient httpClient;
-    private readonly string chatGPT3Endpoint;
-
-    public ChatGptClient(
-        ILogger<ChatGptClient> logger,
-        HttpClient httpClient, IConfiguration configuration)
+    public StorageAccountSelector(IReadOnlyDictionary<string, IReadOnlyList<StorageAccount>> storageAccountsByRegion)
     {
-        this.logger = logger;
-        this.httpClient = httpClient;
-        this.chatGPT3Endpoint = configuration.GetValue<string>("ChatGPT3Endpoint");
+        storageAccountPoolsByRegion = storageAccountsByRegion.ToDictionary(
+            pair => pair.Key,
+            pair => new StorageAccountPool(pair.Value),
+            StringComparer.OrdinalIgnoreCase);
     }
 
-    public async Task<ChatCompletionResponse> GetChatCompletion(ChatCompletionRequest request)
+    public bool TryGetNext(
+        string regionName,
+        string operation,
+        out StorageAccount? storageAccount,
+        out int poolSize,
+        out int weightUnits)
     {
-        HttpResponseMessage response = null;
-        ChatCompletionResponse chatCompletionResponse = null;
-
-        response = await SendChatCompletionRequest(request.SystemPrompt, request.UserContent);
-        if (response.IsSuccessStatusCode)
+        storageAccount = null;
+        poolSize = 0;
+        weightUnits = 0;
+        if (!storageAccountPoolsByRegion.TryGetValue(regionName, out var pool) || pool.WeightedAccounts.Count == 0)
         {
-            var responseContent = await response.Content.ReadAsStringAsync();
-            chatCompletionResponse = JsonConvert.DeserializeObject<ChatCompletionResponse>(responseContent);
-        }
-        else
-        {
-            var errorContent = await response.Content.ReadAsStringAsync();
-            logger.LogError($"Error occurred while processing chat completion: {errorContent}");
-            throw new Exception("Server error, please try later. If this persists, please report the issue at https://github.com/blrchen/azure-speed-test/issues");
+            return false;
         }
 
-        return chatCompletionResponse;
+        poolSize = pool.Accounts.Count;
+        weightUnits = pool.WeightedAccounts.Count;
+        string counterKey = $"{regionName}:{operation.ToUpperInvariant()}";
+        long next = counters.AddOrUpdate(counterKey, 0, (_, current) => current == long.MaxValue ? 0 : current + 1);
+        storageAccount = pool.WeightedAccounts[(int)(next % pool.WeightedAccounts.Count)];
+        return true;
     }
 
-    private async Task<HttpResponseMessage> SendChatCompletionRequest(string systemPrompt, string userContent)
+    private sealed class StorageAccountPool
     {
-        var requestBody = new StringContent(
-            JsonConvert.SerializeObject(new
+        public StorageAccountPool(IReadOnlyList<StorageAccount> accounts)
+        {
+            Accounts = accounts;
+            WeightedAccounts = BuildWeightedAccounts(accounts);
+        }
+
+        public IReadOnlyList<StorageAccount> Accounts { get; }
+
+        public IReadOnlyList<StorageAccount> WeightedAccounts { get; }
+    }
+
+    private sealed class WeightedAccount
+    {
+        public WeightedAccount(StorageAccount account)
+        {
+            Account = account;
+        }
+
+        public StorageAccount Account { get; }
+
+        public long CurrentWeight { get; set; }
+    }
+
+    private static IReadOnlyList<StorageAccount> BuildWeightedAccounts(IReadOnlyList<StorageAccount> accounts)
+    {
+        var weightedAccounts = accounts
+            .Where(account => account.TrafficWeight > 0)
+            .Select(account => new WeightedAccount(account))
+            .ToArray();
+        long totalWeight = weightedAccounts.Sum(account => (long)account.Account.TrafficWeight);
+        if (totalWeight <= 0)
+        {
+            return [];
+        }
+        if (totalWeight > MaxWeightUnits)
+        {
+            throw new InvalidOperationException($"Storage account trafficWeight total is too large: {totalWeight}.");
+        }
+
+        var sequence = new List<StorageAccount>((int)totalWeight);
+        for (int i = 0; i < totalWeight; i++)
+        {
+            WeightedAccount? selected = null;
+            foreach (var account in weightedAccounts)
             {
-                max_tokens = 4000,
-                messages = new[]
+                account.CurrentWeight += account.Account.TrafficWeight;
+                if (selected is null || account.CurrentWeight > selected.CurrentWeight)
                 {
-                    new { role = "system", content = systemPrompt },
-                    //new { role = "user", content = userContent }
-                },
-                model = "gpt-3.5-turbo",
-                n = 1,
-                stop = "",
-                stream = false,
-                temperature = 1,
-                top_p = 1
-            }),
-            Encoding.UTF8,
-            "application/json"
-        );
-        using var request = new HttpRequestMessage(HttpMethod.Post, this.chatGPT3Endpoint)
-        {
-            Content = requestBody
-        };
-        return await httpClient.SendAsync(request);
+                    selected = account;
+                }
+            }
+
+            if (selected is null)
+            {
+                throw new InvalidOperationException("Unable to build weighted storage account pool.");
+            }
+
+            selected.CurrentWeight -= totalWeight;
+            sequence.Add(selected.Account);
+        }
+
+        return sequence;
     }
 }

@@ -12,7 +12,9 @@
     "pairedRegion": "China North",
     "availabilityZoneCount": 0,
     "restricted": false,
-    "availableTo": "Organizations with a business presence in China"
+    "availableTo": "Organizations with a business presence in China",
+    "dataResidency": "A sovereign offering: independent, dedicated network within China",
+    "launchYear": 2014
   },
   {
     "regionId": "chinaeast2",
@@ -27,7 +29,9 @@
     "pairedRegion": "China North 2",
     "availabilityZoneCount": 0,
     "restricted": false,
-    "availableTo": "Organizations with a business presence in China"
+    "availableTo": "Organizations with a business presence in China",
+    "dataResidency": "A sovereign offering: independent, dedicated network within China",
+    "launchYear": 2018
   },
   {
     "regionId": "chinaeast3",
@@ -42,7 +46,7 @@
     "pairedRegion": "China North 3",
     "availabilityZoneCount": 0,
     "restricted": false,
-    "availableTo": "Organizations with a business presence in China"
+    "availableTo": "Reserved for China North 3 customers requiring in-country disaster recovery"
   },
   {
     "regionId": "chinanorth",
@@ -57,7 +61,9 @@
     "pairedRegion": "China East",
     "availabilityZoneCount": 0,
     "restricted": false,
-    "availableTo": "Organizations with a business presence in China"
+    "availableTo": "Organizations with a business presence in China",
+    "dataResidency": "A sovereign offering: independent, dedicated network within China",
+    "launchYear": 2014
   },
   {
     "regionId": "chinanorth2",
@@ -72,7 +78,9 @@
     "pairedRegion": "China East 2",
     "availabilityZoneCount": 0,
     "restricted": false,
-    "availableTo": "Organizations with a business presence in China"
+    "availableTo": "Organizations with a business presence in China",
+    "dataResidency": "A sovereign offering: independent, dedicated network within China",
+    "launchYear": 2018
   },
   {
     "regionId": "chinanorth3",
@@ -87,6 +95,8 @@
     "pairedRegion": "China East 3",
     "availabilityZoneCount": 1,
     "restricted": false,
-    "availableTo": "Organizations with a business presence in China"
+    "availableTo": "Organizations with a business presence in China",
+    "dataResidency": "A sovereign offering: independent, dedicated network within China",
+    "launchYear": 2022
   }
 ]

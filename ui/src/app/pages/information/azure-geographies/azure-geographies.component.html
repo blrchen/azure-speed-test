@@ -1,17 +1,181 @@
 <article class="page-shell section-stack mx-auto max-w-5xl">
   <header class="page-header">
     <h1 class="page-title">Azure geographies</h1>
+
+    <nav class="flex flex-wrap gap-2" aria-label="Azure infrastructure directories">
+      <span class="btn btn--sm btn-current min-h-11 md:min-h-9" aria-current="page">
+        Geographies
+      </span>
+      <a class="btn btn-outline btn--sm min-h-11 md:min-h-9" routerLink="/Information/AzureRegions">
+        Global regions
+      </a>
+      <a
+        class="btn btn-outline btn--sm min-h-11 md:min-h-9"
+        routerLink="/Information/AzureUSGovernmentRegions"
+      >
+        US Gov regions
+      </a>
+      <a
+        class="btn btn-outline btn--sm min-h-11 md:min-h-9"
+        routerLink="/Information/AzureChinaRegions"
+      >
+        China regions
+      </a>
+      <a
+        class="btn btn-outline btn--sm min-h-11 md:min-h-9"
+        routerLink="/Information/AzureRestrictedRegions"
+      >
+        Restricted regions
+      </a>
+      <a
+        class="btn btn-outline btn--sm min-h-11 md:min-h-9"
+        routerLink="/Information/AzureUpcomingRegions"
+      >
+        Upcoming regions
+      </a>
+    </nav>
+
     <p class="page-lead">
-      Azure geographies are groups of one or more regions, organized to meet data residency and
-      compliance requirements.
+      Azure geographies group one or more regions into discrete markets that support data residency
+      and compliance requirements.
+    </p>
+    <p class="max-w-4xl text-sm leading-relaxed text-text-muted">
+      Geography boundaries do not guarantee that every service, feature, or workload configuration
+      meets a specific residency or compliance requirement. Confirm service availability and data
+      handling requirements before deployment.
     </p>
   </header>
 
   <section class="section-block" aria-labelledby="geographies-heading">
-    <h2 id="geographies-heading" class="section-title">Global geographic distribution</h2>
-    @defer (on viewport; prefetch on idle) {
+    <h2 id="geographies-heading" class="section-title">Regions by Azure geography</h2>
+    <p class="text-text-muted">{{ selectedScope().description }}</p>
+
+    <form
+      class="grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,1fr)]"
+      role="search"
+      (submit)="$event.preventDefault()"
+    >
+      <div class="flex min-w-0 flex-col gap-2">
+        <label for="geographySearchInput" class="form-label">Search geographies or regions</label>
+        <div class="form-control-shell">
+          <app-lucide-icon
+            name="search"
+            class="form-control-shell__icon size-4"
+            aria-hidden="true"
+          />
+          <input
+            #geographiesSearchInput
+            type="search"
+            id="geographySearchInput"
+            placeholder="Australia, East US, eastus, or Virginia..."
+            [formField]="filtersForm.search"
+            class="form-control form-control--icon-start form-control--action-end form-control-focus-ring min-h-11"
+            autocomplete="off"
+            spellcheck="false"
+            aria-describedby="geography-search-hint"
+          />
+          <span id="geography-search-hint" class="sr-only">
+            Search by geography, region name, region ID, location, availability, or data residency.
+          </span>
+          @if (filtersModel().search) {
+            <button
+              type="button"
+              class="form-control-shell__action"
+              aria-label="Clear geography and region search"
+              (click)="clearSearch(); geographiesSearchInput.focus()"
+            >
+              <app-lucide-icon name="x" class="size-4" aria-hidden="true" />
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="flex min-w-0 flex-col gap-2">
+        <label for="geographyScopeFilter" class="form-label">Filter by cloud or status</label>
+        <div class="form-select-wrapper">
+          <select
+            id="geographyScopeFilter"
+            [formField]="filtersForm.scope"
+            class="form-select min-h-11"
+            autocomplete="off"
+          >
+            @for (scopeOption of scopeOptions; track scopeOption.value) {
+              <option [value]="scopeOption.value">
+                {{ scopeOption.label }} ({{ scopeOption.count }})
+              </option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="flex min-w-0 flex-col gap-2">
+        <label for="geographyZoneFilter" class="form-label"> Filter by availability zones </label>
+        <div class="form-select-wrapper">
+          <select
+            id="geographyZoneFilter"
+            [formField]="filtersForm.zoneSupport"
+            class="form-select min-h-11"
+            autocomplete="off"
+          >
+            <option value="">All regions</option>
+            <option value="supported">AZ supported ({{ availabilityZoneRegionCount() }})</option>
+            <option value="unsupported">
+              AZ not listed ({{ scopeRegionCount() - availabilityZoneRegionCount() }})
+            </option>
+          </select>
+        </div>
+      </div>
+    </form>
+
+    @let geographies = filteredGeographies();
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <p
+        id="geography-results-summary"
+        class="m-0 text-sm font-semibold text-text-body tabular-nums"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {{ resultSummary() }}
+      </p>
+      @if (hasActiveFilters()) {
+        <button
+          type="button"
+          class="btn btn-outline btn--sm"
+          (click)="clearFilters(); geographiesSearchInput.focus()"
+        >
+          <app-lucide-icon name="x" class="size-3.5" aria-hidden="true" />
+          Clear filters
+        </button>
+      }
+    </div>
+
+    <div
+      id="geography-table-legend"
+      class="flex flex-wrap items-center gap-x-5 gap-y-2 rounded-md bg-surface-muted px-3 py-2 text-xs text-text-muted"
+    >
+      <span class="font-semibold text-text-body">Legend</span>
+      <span class="inline-flex items-center gap-1.5">
+        <span class="tag tag-success" aria-hidden="true">AZ</span>
+        Availability zones supported
+      </span>
+      <span class="inline-flex items-center gap-1.5">
+        <span class="tag tag-info" aria-hidden="true">Planned</span>
+        Announced, not generally available
+      </span>
+    </div>
+
+    @if (geographies.length) {
       <div class="table-shell overflow-x-auto">
-        <table class="table-base">
+        <table
+          class="table-base"
+          aria-describedby="geography-results-summary geography-table-legend"
+        >
+          <caption class="sr-only">
+            {{
+              tableCaption()
+            }}
+          </caption>
           <thead class="table-head">
             <tr>
               <th scope="col" class="px-4 py-3">Geography</th>
@@ -19,26 +183,50 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-border-soft">
-            @for (g of tableData(); track g.name) {
-              <tr class="table-row-hover align-top">
-                <td
-                  class="w-48 px-4 py-4 text-sm font-semibold tracking-wide text-text-muted uppercase"
+            @for (geography of geographies; track geography.name) {
+              <tr class="table-row-hover align-top" [id]="geographyAnchor(geography.name)">
+                <th
+                  scope="row"
+                  class="w-48 px-4 py-4 text-left text-sm font-semibold tracking-wide text-text-muted uppercase"
                 >
-                  {{ g.name }}
-                </td>
+                  {{ geography.name }}
+                </th>
                 <td class="px-4 py-4">
                   <ul class="grid gap-x-6 gap-y-3 sm:grid-cols-2 xl:grid-cols-3" role="list">
-                    @for (r of g.regions; track r.regionId) {
-                      <li class="flex min-w-[12rem] flex-col gap-1">
-                        <a
-                          class="link-primary font-semibold"
-                          [routerLink]="buildRegionRouterLink(r.displayName)"
-                        >
-                          {{ r.displayName }}
-                        </a>
-                        <div class="text-xs font-medium tracking-wide text-text-muted uppercase">
-                          {{ r.datacenterLocation }}
-                        </div>
+                    @for (region of geography.regions; track region.regionId) {
+                      <li class="min-w-[12rem]">
+                        <span class="inline-flex items-center gap-1.5 whitespace-nowrap">
+                          @if (region.planned && region.announcementLink) {
+                            <a
+                              class="link-primary inline-flex items-center gap-1 font-semibold"
+                              [href]="region.announcementLink"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {{ region.displayName }}
+                              <app-lucide-icon
+                                name="external-link"
+                                class="size-3"
+                                aria-hidden="true"
+                              />
+                              <span class="sr-only">(opens in new tab)</span>
+                            </a>
+                            <span class="tag tag-info">Planned</span>
+                          } @else {
+                            <a
+                              class="link-primary font-semibold"
+                              [href]="
+                                buildRegionDetailHref(region.displayName, region.detailSource)
+                              "
+                            >
+                              {{ region.displayName }}
+                            </a>
+                            @if (region.availabilityZoneCount) {
+                              <span class="tag tag-success" aria-hidden="true">AZ</span>
+                              <span class="sr-only">Availability zones supported</span>
+                            }
+                          }
+                        </span>
                       </li>
                     }
                   </ul>
@@ -48,57 +236,161 @@
           </tbody>
         </table>
       </div>
-    } @placeholder {
+    } @else {
       <div
-        class="min-h-[420px] rounded-2xl border border-border-soft bg-surface-raised px-4 py-5 shadow-sm"
-        role="status"
-        aria-label="Loading geographies"
+        class="flex flex-col items-center justify-center gap-3 rounded-lg bg-surface-raised px-4 py-8 text-center text-sm text-text-muted shadow-sm"
       >
-        <div class="skeleton-shimmer mb-3 h-6 w-36 rounded"></div>
-        <div class="skeleton-shimmer mb-2 h-10 w-full rounded"></div>
-        <div class="skeleton-shimmer mb-2 h-10 w-full rounded"></div>
-        <div class="skeleton-shimmer mb-2 h-10 w-full rounded"></div>
-        <div class="skeleton-shimmer mb-2 h-10 w-full rounded"></div>
-        <div class="skeleton-shimmer h-10 w-full rounded"></div>
+        <app-lucide-icon name="search-x" class="size-8 text-text-muted" aria-hidden="true" />
+        <div class="space-y-1">
+          <p class="font-semibold text-text-strong">No regions match your filters</p>
+          <p>Try a broader search, another scope, or a different AZ filter.</p>
+        </div>
+        @if (hasActiveFilters()) {
+          <button
+            type="button"
+            class="btn btn-outline btn--sm"
+            (click)="clearFilters(); geographiesSearchInput.focus()"
+          >
+            <app-lucide-icon name="x" class="size-3.5" aria-hidden="true" />
+            Clear filters
+          </button>
+        }
       </div>
     }
   </section>
 
-  <section class="section-block" aria-labelledby="geo-resources-heading">
-    <h2 id="geo-resources-heading" class="section-title mb-4">Additional resources</h2>
-    <p class="mb-4 text-sm text-text-muted">
-      Helpful context for understanding Azure geography boundaries and planning.
+  <section class="section-block" aria-labelledby="geography-definition-heading">
+    <h2 id="geography-definition-heading" class="section-title">What is an Azure geography?</h2>
+    <div class="max-w-4xl space-y-3 leading-relaxed text-text-muted">
+      <p>
+        An Azure geography is a discrete market that contains one or more Azure regions. Geography
+        boundaries help Microsoft offer regional data residency, compliance, and service
+        availability options, but the guarantees available to a workload remain service-specific.
+      </p>
+      <p>
+        Confirm where each Azure service stores and processes data, which features are available in
+        a region, and whether your configuration meets the required compliance standard. See the
+        official
+        <a
+          class="link-primary inline-flex items-center gap-1"
+          href="https://azure.microsoft.com/en-us/explore/global-infrastructure/data-residency/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Azure data residency guidance
+          <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
+          <span class="sr-only">(opens in new tab)</span> </a
+        >.
+      </p>
+    </div>
+  </section>
+
+  <section class="section-block" aria-labelledby="geography-comparison-heading">
+    <h2 id="geography-comparison-heading" class="section-title">Azure geography vs. region</h2>
+    <p class="max-w-4xl leading-relaxed text-text-muted">
+      These infrastructure terms describe different levels of Azure location and resiliency.
     </p>
+    <dl class="grid gap-4 md:grid-cols-2">
+      <div class="rounded-lg bg-surface-muted p-4">
+        <dt class="font-semibold text-text-strong">Geography</dt>
+        <dd class="mt-1 text-sm leading-relaxed text-text-muted">
+          A market and data-residency boundary containing one or more regions.
+        </dd>
+      </div>
+      <div class="rounded-lg bg-surface-muted p-4">
+        <dt class="font-semibold text-text-strong">Region</dt>
+        <dd class="mt-1 text-sm leading-relaxed text-text-muted">
+          A latency-defined deployment location made up of datacenters connected by a regional
+          network.
+        </dd>
+      </div>
+      <div class="rounded-lg bg-surface-muted p-4">
+        <dt class="font-semibold text-text-strong">Availability zone</dt>
+        <dd class="mt-1 text-sm leading-relaxed text-text-muted">
+          A physically separated group of datacenters within a region, where supported.
+        </dd>
+      </div>
+      <div class="rounded-lg bg-surface-muted p-4">
+        <dt class="font-semibold text-text-strong">Region pair</dt>
+        <dd class="mt-1 text-sm leading-relaxed text-text-muted">
+          A documented relationship used by some Azure services for replication or recovery
+          sequencing.
+        </dd>
+      </div>
+    </dl>
+    <p class="max-w-4xl text-sm leading-relaxed text-text-muted">
+      Compare individual
+      <a class="link-primary" routerLink="/Information/AzureRegions">Azure regions</a>, explore the
+      <a class="link-primary" routerLink="/Information/AzureRegionMap">region map</a>, or review
+      <a class="link-primary" routerLink="/Information/AzureAvailabilityZones"
+        >availability zone support</a
+      >.
+    </p>
+  </section>
+
+  <section class="section-block" aria-labelledby="geo-resources-heading">
+    <h2 id="geo-resources-heading" class="section-title">Additional resources</h2>
+    <p class="text-text-muted">
+      Explore related Azure infrastructure directories and official planning guidance.
+    </p>
+
+    <nav class="flex flex-wrap gap-2" aria-label="Related Azure infrastructure pages">
+      <a class="btn btn-outline btn--sm" routerLink="/Information/AzureRegions">Azure regions</a>
+      <a class="btn btn-outline btn--sm" routerLink="/Information/AzureRegionMap"> Region map </a>
+      <a class="btn btn-outline btn--sm" routerLink="/Information/AzureAvailabilityZones">
+        Availability zones
+      </a>
+      <a class="btn btn-outline btn--sm" routerLink="/Information/AzureSovereignClouds">
+        Sovereign clouds
+      </a>
+    </nav>
+
     <div class="resource-grid">
       <article class="card card-resource">
-        <h3 class="card-title">Global Infrastructure</h3>
+        <h3 class="card-title">Azure geography documentation</h3>
         <p class="card-description">
-          Learn about Azure's geographic organization and data residency boundaries.
+          Learn how Microsoft organizes Azure regions into geographic markets.
         </p>
         <a
           href="https://azure.microsoft.com/en-us/explore/global-infrastructure/geographies"
           target="_blank"
           rel="noopener noreferrer"
           class="card-cta"
-          aria-label="Learn more about Global Infrastructure (opens in new tab)"
+          aria-label="Explore Azure geographies in official Microsoft documentation (opens in new tab)"
         >
-          Learn more
+          Explore Azure geographies
           <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
         </a>
       </article>
       <article class="card card-resource">
-        <h3 class="card-title">Business continuity</h3>
+        <h3 class="card-title">Azure data residency</h3>
         <p class="card-description">
-          Guidance on business continuity and disaster recovery with Azure paired regions.
+          Review how Azure services store and process customer data by geography.
         </p>
         <a
-          href="https://docs.microsoft.com/en-us/azure/best-practices-availability-paired-regions"
+          href="https://azure.microsoft.com/en-us/explore/global-infrastructure/data-residency/"
           target="_blank"
           rel="noopener noreferrer"
           class="card-cta"
-          aria-label="Learn more about Business continuity (opens in new tab)"
+          aria-label="Review data residency guidance from Microsoft (opens in new tab)"
         >
-          Learn more
+          Review data residency
+          <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
+        </a>
+      </article>
+      <article class="card card-resource">
+        <h3 class="card-title">Azure region pairs</h3>
+        <p class="card-description">
+          Understand paired and nonpaired regions for service-specific resiliency planning.
+        </p>
+        <a
+          href="https://learn.microsoft.com/en-us/azure/reliability/regions-paired"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="card-cta"
+          aria-label="Read region-pair guidance from Microsoft (opens in new tab)"
+        >
+          Read region-pair guidance
           <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
         </a>
       </article>

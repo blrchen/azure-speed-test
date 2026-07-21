@@ -1,0 +1,358 @@
+<article class="page-shell azure-region-map-page mx-auto">
+  <header class="azure-map-header">
+    <div class="azure-map-header__copy">
+      <h1 class="page-title">Azure region map</h1>
+      <p class="azure-map-lead">
+        Explore unrestricted global Azure cloud regions, inspect regional metadata, and continue
+        directly into latency testing.
+      </p>
+    </div>
+    <nav class="azure-map-header__actions" aria-label="Region views">
+      <a class="btn btn-outline btn--sm" routerLink="/Information/AzureRegions"> Table view </a>
+      <span class="btn btn--sm btn-current" aria-current="page">
+        <app-lucide-icon name="map" class="size-4" aria-hidden="true" />
+        Map view
+      </span>
+    </nav>
+  </header>
+
+  <section class="azure-map-explorer" aria-labelledby="region-map-heading">
+    <h2 id="region-map-heading" class="sr-only">Browse regions by map</h2>
+    <p class="sr-only" aria-live="polite" aria-atomic="true">
+      {{ selectedRegionAnnouncement() }}
+    </p>
+
+    <div class="azure-map-control-strip" role="group" aria-label="Map filters and controls">
+      <div class="azure-map-control-strip__header">
+        <form
+          class="azure-map-search"
+          role="search"
+          aria-label="Search Azure regions"
+          (submit)="$event.preventDefault()"
+        >
+          <label class="sr-only" for="azure-map-search">Search regions or locations</label>
+          <div class="azure-map-search__field">
+            <app-lucide-icon
+              name="search"
+              class="azure-map-search__icon size-4"
+              aria-hidden="true"
+            />
+            <input
+              #mapSearchInput
+              id="azure-map-search"
+              class="azure-map-search__input"
+              type="search"
+              inputmode="search"
+              placeholder="Search regions or locations..."
+              autocomplete="off"
+              spellcheck="false"
+              [formField]="filtersForm.search"
+            />
+            @if (hasSearchQuery()) {
+              <button
+                type="button"
+                class="azure-map-search__clear"
+                aria-label="Clear region search"
+                (click)="clearSearch()"
+              >
+                <app-lucide-icon name="x" class="size-4" aria-hidden="true" />
+              </button>
+            }
+          </div>
+        </form>
+        <p class="azure-map-control-strip__summary" aria-live="polite">
+          {{ regionCountLabel() }}
+        </p>
+      </div>
+
+      <div class="azure-map-control-strip__controls">
+        <div class="azure-map-geography-select">
+          <label class="azure-map-panel-label" for="azure-map-geography-select">Geography</label>
+          <select
+            id="azure-map-geography-select"
+            class="azure-map-geography-select__control"
+            autocomplete="off"
+            [value]="selectedGroup()"
+            (change)="selectGroupFromControl($event)"
+          >
+            @for (group of regionGroups(); track group.id) {
+              <option [value]="group.id">
+                {{ group.id === 'all' ? 'All geographic groups' : group.id }} ({{ group.count }})
+              </option>
+            }
+          </select>
+        </div>
+
+        <fieldset class="azure-map-geography-group">
+          <legend class="azure-map-panel-label">Geography</legend>
+          <div id="azure-map-geography" class="azure-map-geography-inline">
+            @for (group of regionGroups(); track group.id) {
+              <button
+                type="button"
+                class="azure-map-filter-chip"
+                [class.azure-map-filter-chip--active]="selectedGroup() === group.id"
+                [attr.aria-label]="
+                  group.label +
+                  ' ' +
+                  group.count +
+                  '. ' +
+                  (group.id === 'all' ? 'All geographic groups' : group.id) +
+                  ', ' +
+                  group.count +
+                  ' regions'
+                "
+                [attr.aria-pressed]="selectedGroup() === group.id"
+                (click)="selectGroup(group.id)"
+              >
+                <span>{{ group.label }}</span>
+                <span class="azure-map-filter-chip__count">{{ group.count }}</span>
+              </button>
+            }
+          </div>
+        </fieldset>
+
+        <button
+          #legendTrigger
+          type="button"
+          class="azure-map-tool-button azure-map-tool-button--legend"
+          [class.azure-map-tool-button--active]="activeToolbarPanel() === 'legend'"
+          [attr.aria-expanded]="activeToolbarPanel() === 'legend'"
+          [attr.aria-controls]="activeToolbarPanel() === 'legend' ? 'azure-map-legend' : null"
+          (click)="toggleToolbarPanel('legend')"
+        >
+          <app-lucide-icon name="info" class="size-4" aria-hidden="true" />
+          <span>Legend</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="azure-map-layout">
+      <div class="azure-map-canvas-panel">
+        <div class="azure-map-canvas">
+          @if (activeToolbarPanel() === 'legend') {
+            <div
+              id="azure-map-legend"
+              class="azure-map-overlay-panel azure-map-overlay-panel--legend"
+              role="region"
+              aria-labelledby="azure-map-legend-title"
+            >
+              <div class="azure-map-overlay-panel__header">
+                <div>
+                  <p class="azure-map-panel-label">Legend</p>
+                  <h3 id="azure-map-legend-title" class="azure-map-overlay-title">
+                    Region marker meaning
+                  </h3>
+                </div>
+                <button
+                  type="button"
+                  class="azure-map-overlay-close"
+                  aria-label="Close legend"
+                  (click)="closeToolbarPanel()"
+                >
+                  <app-lucide-icon name="x" class="size-4" aria-hidden="true" />
+                </button>
+              </div>
+
+              <dl class="azure-map-legend-list">
+                @for (item of legendItems(); track item.tone) {
+                  <div class="azure-map-legend-item">
+                    <dt>
+                      <span
+                        [class]="'azure-map-legend-swatch azure-map-legend-swatch--' + item.tone"
+                        aria-hidden="true"
+                      ></span>
+                      <span>{{ item.label }}</span>
+                    </dt>
+                    <dd>{{ item.countLabel }}</dd>
+                  </div>
+                }
+              </dl>
+            </div>
+          }
+
+          <app-azure-region-map-view
+            [regions]="filteredRegions()"
+            [selectedRegionId]="selectedRegionId()"
+            [activeRegionId]="activeRegionId()"
+            [fitToRegions]="shouldFitMap()"
+            (regionSelected)="selectRegion($event)"
+            (regionPreviewed)="activateRegion($event)"
+            (regionPreviewCleared)="clearActiveRegion()"
+          />
+
+          @if (!filteredRegions().length) {
+            <div class="azure-map-empty" role="status">
+              <app-lucide-icon name="search-x" class="size-8" aria-hidden="true" />
+              <p>No regions match the current filters.</p>
+              <button
+                type="button"
+                class="btn btn-outline btn--sm"
+                (click)="clearFilters(); mapSearchInput.focus()"
+              >
+                Clear filters
+              </button>
+            </div>
+          }
+
+          @if (previewRegion(); as mapRegion) {
+            <div class="azure-map-current-region">
+              <div class="azure-map-current-region__copy">
+                <p class="azure-map-panel-label">
+                  {{ isPreviewingRegion() ? 'Preview' : 'Selected' }}
+                </p>
+                <h3>{{ mapRegion.displayName }}</h3>
+                <p>{{ mapRegion.datacenterLocation }} - {{ mapRegion.regionGroup }}</p>
+              </div>
+              @if (!isPreviewingRegion() && selectedRegion()) {
+                <a
+                  class="azure-map-current-region__action"
+                  routerLink="/Azure/Latency"
+                  [queryParams]="selectedLatencyQueryParams()"
+                  [attr.aria-label]="'Test latency for ' + mapRegion.displayName"
+                >
+                  <app-lucide-icon name="activity" class="size-4" aria-hidden="true" />
+                  <span>Test</span>
+                </a>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="azure-map-side-panel">
+        <section class="azure-map-selected-panel" aria-labelledby="selected-region-heading">
+          @if (selectedRegion(); as region) {
+            <div class="azure-map-selected-panel__summary">
+              <div class="azure-map-selected-panel__icon" aria-hidden="true">
+                <app-lucide-icon name="server" class="size-5" />
+              </div>
+              <div class="min-w-0">
+                <p class="azure-map-panel-label">Selected region</p>
+                <h3 id="selected-region-heading" class="azure-map-selected-panel__title">
+                  {{ region.displayName }}
+                </h3>
+                <p class="azure-map-selected-panel__details">
+                  {{ region.datacenterLocation }} - {{ region.regionGroup }}
+                </p>
+                <p class="azure-map-selected-panel__status">
+                  {{ regionStatusLabel(region) }} - {{ formatCoordinates(region) }}
+                </p>
+              </div>
+            </div>
+            <div class="azure-map-selected-panel__actions">
+              <a
+                class="btn btn-primary"
+                [href]="selectedRegionDetailHref()"
+                [attr.aria-label]="'View details for ' + region.displayName"
+              >
+                <app-lucide-icon name="map-pin" class="size-4" aria-hidden="true" />
+                View details
+              </a>
+              <a
+                class="btn btn-secondary"
+                routerLink="/Azure/Latency"
+                [queryParams]="selectedLatencyQueryParams()"
+                [attr.aria-label]="'Test latency for ' + region.displayName"
+              >
+                <app-lucide-icon name="activity" class="size-4" aria-hidden="true" />
+                Test latency
+              </a>
+            </div>
+          } @else {
+            <div class="azure-map-selected-panel__empty">
+              <div class="azure-map-selected-panel__icon" aria-hidden="true">
+                <app-lucide-icon name="map-pin" class="size-5" />
+              </div>
+              <div>
+                <p class="azure-map-panel-label">Selected region</p>
+                <h3 id="selected-region-heading" class="azure-map-selected-panel__title">
+                  Select a region
+                </h3>
+                <p class="azure-map-selected-panel__details">
+                  Choose a map marker or a region from the list to view details and test latency.
+                </p>
+              </div>
+            </div>
+          }
+        </section>
+
+        <section class="azure-map-list-panel" aria-labelledby="region-list-heading">
+          <div class="azure-map-list-panel__header">
+            <div>
+              <p class="azure-map-panel-label">Regions</p>
+              <h3 id="region-list-heading" class="azure-map-panel-title">
+                {{ regionCountLabel() }}
+              </h3>
+            </div>
+            <app-lucide-icon name="map-pin" class="size-5 text-primary" aria-hidden="true" />
+          </div>
+
+          @if (filteredRegions().length) {
+            <ul class="azure-map-region-list">
+              @for (region of filteredRegions(); track region.regionId) {
+                <li>
+                  <button
+                    type="button"
+                    class="azure-map-region-item"
+                    [class.azure-map-region-item--active]="isPreviewRegion(region)"
+                    [class.azure-map-region-item--selected]="isSelectedRegion(region)"
+                    [attr.aria-pressed]="isSelectedRegion(region)"
+                    [attr.data-region-list-id]="region.regionId"
+                    [attr.tabindex]="isListTabStop(region) ? 0 : -1"
+                    (click)="selectRegion(region)"
+                    (mouseenter)="activateRegion(region)"
+                    (mouseleave)="clearActiveRegion()"
+                    (focus)="focusListRegion(region)"
+                    (blur)="clearActiveRegion()"
+                    (keydown)="handleListKeydown($event, region)"
+                  >
+                    <span class="azure-map-region-item__main">
+                      <span class="azure-map-region-item__name">{{ region.displayName }}</span>
+                      <span class="azure-map-region-item__location">
+                        {{ region.datacenterLocation }}
+                      </span>
+                    </span>
+                    <span class="azure-map-region-item__meta">
+                      {{ regionStatusLabel(region) }}
+                    </span>
+                  </button>
+                </li>
+              }
+            </ul>
+          } @else {
+            <div class="azure-map-list-empty" role="status">
+              <app-lucide-icon name="search-x" class="size-8" aria-hidden="true" />
+              <p>No regions match the current filters.</p>
+              <button
+                type="button"
+                class="btn btn-outline btn--sm"
+                (click)="clearFilters(); mapSearchInput.focus()"
+              >
+                Clear filters
+              </button>
+            </div>
+          }
+        </section>
+      </div>
+    </div>
+  </section>
+
+  <section class="azure-map-note" aria-labelledby="map-note-heading">
+    <app-lucide-icon name="info" class="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+    <div>
+      <h2 id="map-note-heading" class="azure-map-note__title">Map coverage and accuracy</h2>
+      <p>
+        This map shows {{ regions.length }} unrestricted regions in the global Azure cloud dataset.
+        See separate lists for
+        <a routerLink="/Information/AzureUSGovernmentRegions">US Government</a>,
+        <a routerLink="/Information/AzureChinaRegions">China</a>,
+        <a routerLink="/Information/AzureRestrictedRegions">restricted</a>, and
+        <a routerLink="/Information/AzureUpcomingRegions">upcoming</a> regions.
+      </p>
+      <p>
+        Map points use Azure region-level location data, not exact physical datacenter facility
+        addresses.
+      </p>
+    </div>
+  </section>
+</article>

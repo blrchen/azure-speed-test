@@ -11,21 +11,19 @@
   font-weight: 600;
   color: var(--color-link-primary);
   text-decoration: none;
-  transition:
-    color 0.15s ease,
-    text-decoration-color 0.15s ease;
 }
 
-.breadcrumb-link:hover {
+.breadcrumb-link:hover,
+.breadcrumb-link:focus-visible {
   color: var(--color-link-hover);
   text-decoration: underline;
 }
 
 .breadcrumb-link:focus-visible {
-  color: var(--color-link-hover);
-  text-decoration: underline;
   outline: none;
-  box-shadow: 0 0 0 2px var(--color-ring);
+  box-shadow:
+    0 0 0 2px var(--color-surface-base),
+    0 0 0 4px var(--color-primary);
   border-radius: 0.25rem;
 }
 

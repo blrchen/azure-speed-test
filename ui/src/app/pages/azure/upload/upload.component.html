@@ -1,236 +1,358 @@
 <article class="page-shell section-stack mx-auto max-w-5xl">
   <header class="page-header">
-    <h1 class="page-title">Azure storage upload speed test</h1>
+    <h1 class="page-title">Azure Multi-Region Upload Speed Test</h1>
     <p class="page-lead">
-      Benchmark multi-region upload performance to pick the fastest Azure Storage endpoint.
+      Generate synthetic test data in your browser and compare sequential upload throughput across
+      selected Azure Blob Storage regions.
     </p>
   </header>
 
-  <section class="section-block" aria-labelledby="upload-test-heading">
-    <h2 id="upload-test-heading" class="sr-only">Upload speed test</h2>
-    <div>
-      <div class="section-stack">
-        <div
-          class="mb-4 rounded-xl bg-gradient-to-r from-primary/5 via-transparent to-primary/5 p-4"
-        >
-          <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
-              <span class="text-xs font-bold tracking-widest text-primary uppercase"
-                >Test Steps</span
-              >
-              <div class="flex flex-wrap items-center gap-4 text-sm">
-                <span class="flex items-center gap-2.5">
-                  <span class="step-number" aria-hidden="true">1</span>
-                  <span class="text-text-body">Select regions</span>
-                </span>
-                <span class="hidden text-border-contrast sm:inline">|</span>
-                <span class="flex items-center gap-2.5">
-                  <span class="step-number" aria-hidden="true">2</span>
-                  <span class="text-text-body">Pick size & upload</span>
-                </span>
-                <span class="hidden text-border-contrast sm:inline">|</span>
-                <span class="flex items-center gap-2.5">
-                  <span class="step-number" aria-hidden="true">3</span>
-                  <span class="text-text-body">Compare results</span>
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
+  @let selectedSize = selectedUploadSizeMiB();
+  @let regions = selectedRegions();
+  @let results = displayResults();
+  @let current = currentResult();
+  @let error = runError();
+  @let unit = speedUnit();
 
-        <app-region-group></app-region-group>
+  <p class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+    {{ runStatusMessage() }}
+  </p>
 
-        <div class="flex flex-col gap-4">
-          <fieldset class="m-0 flex flex-col border-none p-0">
-            <legend class="mb-3 text-sm font-semibold text-text-body">Upload data size</legend>
-            <div
-              class="flex flex-wrap gap-2"
-              role="radiogroup"
-              aria-label="Upload data size options"
-            >
-              @for (uploadSizeMB of uploadSizeMBOptions; track uploadSizeMB) {
-                <label
-                  class="chip cursor-pointer"
-                  [class.chip-active]="isSelected(uploadSizeMB)"
-                  [class.chip-inactive]="!isSelected(uploadSizeMB)"
-                >
-                  <input
-                    type="radio"
-                    name="uploadSize"
-                    [value]="uploadSizeMB"
-                    [checked]="isSelected(uploadSizeMB)"
-                    (click)="selectUploadSize(uploadSizeMB)"
-                    class="sr-only"
-                  />
-                  <span>{{ uploadSizeMB }} MB</span>
-                </label>
-              }
-            </div>
-          </fieldset>
+  <section class="section-block" aria-labelledby="region-selection-heading">
+    <header class="mb-5">
+      <h2
+        #regionSelectionHeading
+        id="region-selection-heading"
+        class="section-title focus-visible:outline-none"
+        tabindex="-1"
+      >
+        Select Azure Regions
+      </h2>
+      <p class="mt-2 text-sm text-text-muted">
+        Tests run one region at a time so concurrent transfers do not compete for your local
+        bandwidth.
+      </p>
+    </header>
 
-          <div
-            class="mt-4 flex flex-col gap-3 rounded-lg border border-border-soft bg-surface-muted p-4 sm:flex-row sm:items-center sm:justify-between"
-          >
-            <div class="text-sm text-text-muted">
-              Ready to upload
-              <span class="font-semibold text-text-strong">{{ selectedUploadSizeMB() }} MB</span>
-              to
-              <span class="font-semibold text-text-strong">{{ selectedRegions().length }}</span>
-              region(s)
-            </div>
-            <button
-              type="button"
-              class="btn btn-primary btn--lg group"
-              [disabled]="selectedRegions().length === 0"
-              (click)="onSubmit()"
-            >
-              <app-lucide-icon
-                name="upload"
-                class="h-4 w-4 transition-transform group-hover:-translate-y-0.5"
-                aria-hidden="true"
-              />
-              Start Upload Test
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    @if (testResults().length === 0) {
-      <div class="card min-h-[200px]">
-        <div class="card-body flex flex-col items-center justify-center gap-4 py-12 text-center">
-          <div
-            class="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-primary/10 to-primary/20"
-          >
-            <app-lucide-icon name="upload-cloud" class="h-7 w-7 text-primary" aria-hidden="true" />
-          </div>
-          <div class="space-y-2">
-            <div class="text-lg font-bold text-text-strong">No upload tests yet</div>
-            <p class="text-sm text-text-muted">
-              Select regions above, choose a file size, and start the test.
-            </p>
-          </div>
-        </div>
+    @if (selectionError() && regions.length === 0) {
+      <div class="alert alert--error mb-4" role="alert">
+        <app-lucide-icon name="alert-circle" class="size-5 shrink-0" aria-hidden="true" />
+        <span class="text-text-strong">{{ selectionError() }}</span>
       </div>
     }
+
+    <app-region-group
+      #regionSelector
+      resultsTargetId="upload-results-heading"
+      [disabled]="isRunning()"
+      [excludedRegionIds]="excludedRegionIds"
+      [resultsAvailable]="results.length > 0"
+      [resultsLabel]="isRunning() ? 'View Live Results' : 'View Results'"
+      [resultsStatus]="resultsNavigationStatus()"
+    />
+
+    <form class="mt-6" (submit)="onSubmit($event)">
+      <fieldset class="m-0 border-none p-0">
+        <legend class="form-label mb-2">Upload Data Size per Region</legend>
+        <p class="mb-3 text-sm text-text-muted">
+          Start with 50 or 100 MiB. Larger payloads provide steadier results but consume more data
+          and take longer.
+        </p>
+        <div class="flex flex-wrap gap-2" role="radiogroup" aria-label="Upload data size options">
+          @for (uploadSizeMiB of uploadSizeMiBOptions; track uploadSizeMiB) {
+            @let isActive = selectedSize === uploadSizeMiB;
+            <label
+              class="chip min-h-11 cursor-pointer"
+              [class.chip-active]="isActive"
+              [class.chip-inactive]="!isActive"
+            >
+              <input
+                type="radio"
+                value="{{ uploadSizeMiB }}"
+                [formField]="uploadSizeForm.uploadSizeMiB"
+                class="sr-only"
+              />
+              <span>{{ uploadSizeMiB }} MiB</span>
+            </label>
+          }
+        </div>
+      </fieldset>
+
+      <div
+        class="mt-5 flex flex-col gap-4 rounded-lg bg-primary/5 p-4 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <div class="text-sm text-text-muted">
+          @if (regions.length > 0) {
+            Ready to upload
+            <span class="font-semibold text-text-strong">{{ selectedSize }} MiB</span>
+            to
+            <span class="font-semibold text-text-strong">{{ regions.length }}</span>
+            {{ regions.length === 1 ? 'region' : 'regions' }} sequentially.
+            <span class="mt-1 block">
+              Planned transfer: up to
+              <span class="font-semibold text-text-strong">
+                {{ selectedSize * regions.length }} MiB
+              </span>
+              plus protocol overhead.
+            </span>
+          } @else {
+            Select one or more regions to configure the test.
+          }
+        </div>
+        <button
+          type="submit"
+          class="btn btn-primary btn--lg group w-full shrink-0 sm:w-auto"
+          [disabled]="isRunning()"
+        >
+          @if (isRunning()) {
+            <span class="spinner-sm" aria-hidden="true"></span>
+            Test in Progress...
+          } @else {
+            <app-lucide-icon
+              name="upload"
+              class="size-4 transition-transform group-hover:-translate-y-0.5"
+              aria-hidden="true"
+            />
+            Start Upload Test
+          }
+        </button>
+      </div>
+    </form>
   </section>
 
-  @if (testResults().length > 0) {
+  @if (error) {
+    <div class="alert alert--error" role="alert">
+      <app-lucide-icon name="alert-circle" class="size-5 shrink-0" aria-hidden="true" />
+      <div class="min-w-0 flex-1">
+        <p class="font-semibold text-text-strong">The Test Could Not Start</p>
+        <p class="text-sm text-text-strong">{{ error }}</p>
+      </div>
+      <button type="button" class="btn btn-ghost btn--sm ml-auto" (click)="dismissRunError()">
+        Dismiss
+      </button>
+    </div>
+  }
+
+  @if (results.length > 0) {
     <section class="section-block" aria-labelledby="upload-results-heading">
-      <header class="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div class="flex items-center gap-3">
-          <h2 id="upload-results-heading" class="section-title">Upload speed test results</h2>
-          <app-export-csv-button
-            filename="azure-upload-results"
-            [headers]="csvHeaders"
-            [rows]="csvRows()"
-          />
+      <header class="mb-4 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <h2
+            id="upload-results-heading"
+            class="section-title scroll-mt-[calc(env(safe-area-inset-top)+5rem)]"
+            tabindex="-1"
+          >
+            Upload Test Results
+          </h2>
+          <p class="mt-1 min-h-10 text-sm text-text-muted lg:min-h-0">
+            @if (isRunning()) {
+              {{ finishedRegionCount() }} of {{ results.length }} regions finished.
+              @if (current) {
+                Currently testing {{ current.region.displayName }}.
+              }
+            } @else {
+              Average browser-to-Azure throughput for this test run.
+            }
+          </p>
         </div>
-        <div class="flex flex-wrap gap-4 text-xs text-text-muted">
-          <span>
-            <span class="font-semibold text-text-body">Upload time</span>
-            – total duration per region
-          </span>
-          <span>
-            <span class="font-semibold text-text-body">Upload speed</span>
-            – average throughput (MB/s)
-          </span>
+        <div class="flex min-h-16 flex-wrap gap-2 lg:min-h-0">
+          @if (isRunning()) {
+            <button
+              type="button"
+              class="btn btn-outline btn--sm"
+              [disabled]="isCancelling()"
+              (click)="cancelTest()"
+            >
+              <app-lucide-icon name="x" class="size-4" aria-hidden="true" />
+              {{ isCancelling() ? 'Cancelling...' : 'Cancel Test' }}
+            </button>
+          } @else {
+            <button
+              type="button"
+              class="btn btn-outline btn--sm"
+              (click)="regionSelector.showSelection()"
+            >
+              Change Regions
+            </button>
+            @if (failedRegionCount() > 0) {
+              <button type="button" class="btn btn-outline btn--sm" (click)="retryFailedRegions()">
+                Retry Failed Regions
+              </button>
+            }
+            <button type="button" class="btn btn-outline btn--sm" (click)="runTestAgain()">
+              Run Test Again
+            </button>
+            <app-export-csv-button
+              filename="azure-upload-results"
+              [headers]="csvHeaders"
+              [rows]="csvRows()"
+            />
+            <button type="button" class="btn btn-outline btn--sm" (click)="clearResults()">
+              Clear Results
+            </button>
+          }
         </div>
       </header>
-      <div class="table-shell">
+
+      <div class="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <p id="upload-speed-unit-help" class="text-xs text-text-muted">
+          Mbps matches typical internet plan speeds. MiB/s shows file transfer throughput. CSV
+          exports include both.
+        </p>
+        <div
+          class="speed-unit-toggle shrink-0"
+          role="group"
+          aria-label="Speed display unit"
+          aria-describedby="upload-speed-unit-help"
+        >
+          <button
+            type="button"
+            class="btn btn--sm speed-unit-toggle__option"
+            [class.speed-unit-toggle__option--active]="unit === 'mbps'"
+            [attr.aria-pressed]="unit === 'mbps'"
+            aria-label="Display speeds in megabits per second"
+            (click)="speedUnit.set('mbps')"
+          >
+            Mbps
+          </button>
+          <button
+            type="button"
+            class="btn btn--sm speed-unit-toggle__option"
+            [class.speed-unit-toggle__option--active]="unit === 'mibps'"
+            [attr.aria-pressed]="unit === 'mibps'"
+            aria-label="Display speeds in mebibytes per second"
+            (click)="speedUnit.set('mibps')"
+          >
+            MiB/s
+          </button>
+        </div>
+      </div>
+
+      <div class="mb-5 rounded-lg bg-surface-muted p-4">
+        <div class="mb-2 flex items-center justify-between gap-3 text-sm">
+          <span class="font-semibold text-text-strong">
+            {{ isRunning() ? 'Overall Progress' : 'Run Finished' }}
+          </span>
+          <span class="min-w-8 text-right font-mono font-bold tabular-nums">
+            {{ overallProgressPercentage() }}%
+          </span>
+        </div>
+        <div
+          class="h-3 w-full overflow-hidden rounded-full bg-surface-disabled"
+          role="progressbar"
+          aria-label="Overall upload test progress"
+          [attr.aria-valuenow]="overallProgressPercentage()"
+          aria-valuemin="0"
+          aria-valuemax="100"
+        >
+          <div
+            class="h-full rounded-full bg-brand motion-reduce:animate-none"
+            [class.animate-pulse]="isRunning()"
+            [appWidthPercent]="overallProgressPercentage()"
+          ></div>
+        </div>
+      </div>
+
+      <div class="table-shell hidden lg:block">
         <table class="table-base">
           <thead class="table-head">
             <tr>
-              <th class="px-4 py-3">Region</th>
-              <th class="px-4 py-3">Datacenter</th>
-              <th class="px-4 py-3">Progress</th>
-              <th class="px-4 py-3 text-right">Upload time</th>
-              <th class="px-4 py-3 text-right">Upload speed</th>
+              <th scope="col" class="px-4 py-3">Region</th>
+              <th scope="col" class="px-4 py-3">Datacenter</th>
+              <th scope="col" class="px-4 py-3">Status & Progress</th>
+              <th scope="col" class="px-4 py-3 text-right">Upload Time</th>
+              <th scope="col" class="px-4 py-3 text-right">Average Speed</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-border-soft">
-            @for (result of testResults(); track result.displayName; let idx = $index) {
-              @let isBestResult =
-                idx === 0 && result.uploadProgressPercentage === 100 && !result.error;
-              <tr class="table-row-hover animate-fade-slide-in" [class.best-row]="isBestResult">
-                <td class="px-4 py-3">
-                  <div class="space-y-1 text-left">
-                    <div class="flex items-center gap-2">
-                      <a
-                        class="link-primary font-semibold"
-                        [routerLink]="buildRegionRouterLink(result.displayName)"
-                      >
-                        {{ result.displayName }}
-                        <span aria-hidden="true" class="text-text-muted">›</span>
-                      </a>
-                      @if (isBestResult) {
-                        <span class="best-badge" aria-label="Best upload speed">Best</span>
-                      }
-                    </div>
-                    <div class="text-xs font-semibold tracking-wide text-text-subtle uppercase">
-                      {{ result.regionId }}
-                    </div>
+            @for (result of results; track $index) {
+              @let isBest = isBestResult(result);
+              <tr class="table-row-hover animate-fade-slide-in" [class.best-row]="isBest">
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <div class="flex items-center gap-2">
+                    <a
+                      class="link-primary font-semibold"
+                      [href]="buildRegionDetailHref(result.region.displayName)"
+                    >
+                      {{ result.region.displayName }}
+                    </a>
+                    <span
+                      class="best-badge"
+                      [class.invisible]="!isBest"
+                      [attr.aria-hidden]="isBest ? null : 'true'"
+                    >
+                      <span aria-hidden="true">Best</span>
+                      <span class="sr-only">Best upload speed</span>
+                    </span>
                   </div>
                 </td>
                 <td class="px-4 py-3 text-text-muted">
-                  {{ result.datacenterLocation }}
+                  {{ result.region.datacenterLocation }}
                 </td>
-                <td class="px-4 py-3">
-                  @if (result.error) {
-                    <span class="inline-flex items-center gap-2 text-danger-dark" role="alert">
-                      <app-lucide-icon name="alert-circle" class="h-4 w-4" aria-hidden="true" />
-                      {{ result.error }}
-                    </span>
-                  } @else {
-                    <div class="flex items-center gap-3">
-                      <div
-                        class="relative h-3 w-full overflow-hidden rounded-full bg-surface-disabled"
-                        role="progressbar"
-                        [attr.aria-valuenow]="result.uploadProgressPercentage"
-                        aria-valuemin="0"
-                        aria-valuemax="100"
+                <td class="h-20 min-w-56 px-4 py-3">
+                  @switch (result.status) {
+                    @case ('queued') {
+                      <span class="badge">Queued</span>
+                    }
+                    @case ('preparing') {
+                      <span
+                        class="inline-flex items-center gap-2 text-sm text-text-muted"
+                        role="status"
                       >
-                        <div
-                          class="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-success to-success/80 transition-[width] duration-300"
-                          [class.animate-pulse]="
-                            result.uploadProgressPercentage < 100 &&
-                            result.uploadProgressPercentage > 0
-                          "
-                          [style.width.%]="result.uploadProgressPercentage"
-                        ></div>
-                      </div>
-                      <span class="min-w-[3rem] font-mono text-sm font-bold tabular-nums">
-                        {{ result.uploadProgressPercentage }}%
+                        <span class="spinner-sm" aria-hidden="true"></span>
+                        Preparing...
                       </span>
-                    </div>
+                    }
+                    @case ('failed') {
+                      <div class="flex min-h-12 flex-col justify-center gap-1">
+                        <span class="badge badge-danger">Failed</span>
+                        <p class="max-w-sm text-xs text-text-muted">{{ result.error }}</p>
+                      </div>
+                    }
+                    @case ('cancelled') {
+                      <span class="badge">Cancelled</span>
+                    }
+                    @default {
+                      <div class="flex items-center gap-3">
+                        <div
+                          class="relative h-3 w-full overflow-hidden rounded-full bg-surface-disabled"
+                          role="progressbar"
+                          [attr.aria-label]="'Upload progress for ' + result.region.displayName"
+                          [attr.aria-valuenow]="result.uploadProgressPercentage"
+                          aria-valuemin="0"
+                          aria-valuemax="100"
+                        >
+                          <div
+                            class="absolute inset-y-0 left-0 rounded-full bg-success motion-reduce:animate-none"
+                            [class.animate-pulse]="result.status === 'uploading'"
+                            [appWidthPercent]="result.uploadProgressPercentage"
+                          ></div>
+                        </div>
+                        <span class="min-w-12 font-mono text-sm font-bold tabular-nums">
+                          {{ result.uploadProgressPercentage }}%
+                        </span>
+                      </div>
+                    }
                   }
                 </td>
-                <td class="px-4 py-3 text-right text-text-body">
-                  @if (result.error) {
-                    <span class="text-text-muted">—</span>
-                  } @else if (!result.uploadTimeSeconds) {
-                    <span class="inline-flex items-center gap-1.5 text-text-muted">
-                      <span class="spinner-sm"></span>
-                    </span>
+                <td class="px-4 py-3 text-right whitespace-nowrap tabular-nums">
+                  @if (result.uploadTimeSeconds > 0) {
+                    {{ formatDuration(result.uploadTimeSeconds) }}
                   } @else {
-                    {{ result.uploadTimeSeconds | number: '1.1-1' }} s
+                    <span class="text-text-muted">—</span>
                   }
                 </td>
-                <td class="px-4 py-3 text-right">
-                  @if (result.error) {
-                    <span class="text-text-muted">—</span>
-                  } @else if (!result.uploadSpeedMbps) {
-                    <span class="inline-flex items-center gap-1.5 text-text-muted">
-                      <span class="spinner-sm"></span>
+                <td class="px-4 py-3 text-right whitespace-nowrap">
+                  @if (result.uploadSpeedMbps > 0) {
+                    <span class="font-mono font-bold text-text-strong tabular-nums">
+                      @if (unit === 'mbps') {
+                        {{ result.uploadSpeedMbps | number: '1.2-2' }} Mbps
+                      } @else {
+                        {{ result.uploadSpeedMiBps | number: '1.2-2' }} MiB/s
+                      }
                     </span>
                   } @else {
-                    <span
-                      class="font-mono font-bold tabular-nums"
-                      [class.text-success]="isBestResult"
-                      [class.text-text-body]="!isBestResult"
-                    >
-                      {{ result.uploadSpeedMbps | number: '1.2-2' }} MB/s
-                    </span>
+                    <span class="text-text-muted">—</span>
                   }
                 </td>
               </tr>
@@ -238,94 +360,253 @@
           </tbody>
         </table>
       </div>
+
+      <div class="space-y-3 lg:hidden">
+        @for (result of results; track $index) {
+          @let isBest = isBestResult(result);
+          <article class="card animate-fade-slide-in">
+            <div class="card-body flex flex-col gap-4">
+              <div class="flex min-w-0 items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <a
+                    class="link-primary font-semibold"
+                    [href]="buildRegionDetailHref(result.region.displayName)"
+                  >
+                    {{ result.region.displayName }}
+                  </a>
+                  <p class="mt-1 text-sm text-text-muted">
+                    {{ result.region.datacenterLocation }}
+                  </p>
+                </div>
+                @if (isBest) {
+                  <span class="badge badge-success min-w-31! shrink-0">Best</span>
+                } @else {
+                  <span
+                    class="badge min-w-31! shrink-0"
+                    [class.badge-danger]="result.status === 'failed'"
+                  >
+                    {{ getStatusLabel(result.status) }}
+                  </span>
+                }
+              </div>
+
+              <div class="min-h-16">
+                @if (result.status === 'preparing') {
+                  <div class="flex items-center gap-2 text-sm text-text-muted" role="status">
+                    <span class="spinner-sm" aria-hidden="true"></span>
+                    Preparing secure upload URL...
+                  </div>
+                } @else if (result.status === 'uploading' || result.status === 'completed') {
+                  <div>
+                    <div class="mb-2 flex items-center justify-between gap-3 text-sm">
+                      <span class="text-text-muted">
+                        {{ formatDataSize(result.uploadedBytes) }} of {{ result.uploadSizeMiB }} MiB
+                      </span>
+                      <span class="min-w-8 text-right font-mono font-bold tabular-nums">
+                        {{ result.uploadProgressPercentage }}%
+                      </span>
+                    </div>
+                    <div
+                      class="h-3 w-full overflow-hidden rounded-full bg-surface-disabled"
+                      role="progressbar"
+                      [attr.aria-label]="'Upload progress for ' + result.region.displayName"
+                      [attr.aria-valuenow]="result.uploadProgressPercentage"
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                    >
+                      <div
+                        class="h-full rounded-full bg-success motion-reduce:animate-none"
+                        [class.animate-pulse]="result.status === 'uploading'"
+                        [appWidthPercent]="result.uploadProgressPercentage"
+                      ></div>
+                    </div>
+                  </div>
+                } @else if (result.error) {
+                  <p class="rounded-lg bg-danger/10 p-3 text-sm text-text-strong">
+                    {{ result.error }}
+                  </p>
+                }
+              </div>
+
+              <dl class="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <dt class="text-text-muted">Upload Time</dt>
+                  <dd class="mt-1 font-semibold text-text-strong tabular-nums">
+                    {{
+                      result.uploadTimeSeconds > 0 ? formatDuration(result.uploadTimeSeconds) : '—'
+                    }}
+                  </dd>
+                </div>
+                <div>
+                  <dt class="text-text-muted">Average Speed</dt>
+                  <dd class="mt-1 font-semibold text-text-strong tabular-nums">
+                    @if (result.uploadSpeedMbps > 0) {
+                      @if (unit === 'mbps') {
+                        {{ result.uploadSpeedMbps | number: '1.2-2' }} Mbps
+                      } @else {
+                        {{ result.uploadSpeedMiBps | number: '1.2-2' }} MiB/s
+                      }
+                    } @else {
+                      —
+                    }
+                  </dd>
+                </div>
+              </dl>
+
+              <p
+                class="min-h-5 text-xs text-text-muted"
+                [class.invisible]="!result.completedAt"
+                [attr.aria-hidden]="result.completedAt ? null : 'true'"
+              >
+                @if (result.completedAt; as completedAt) {
+                  Finished {{ formatTestTime(completedAt) }}
+                } @else {
+                  Awaiting completion
+                }
+              </p>
+            </div>
+          </article>
+        }
+      </div>
+    </section>
+  } @else {
+    <section class="section-block" aria-labelledby="upload-empty-heading">
+      <div class="rounded-lg bg-surface-muted p-6 text-center">
+        <div class="mx-auto flex size-12 items-center justify-center rounded-full bg-primary/15">
+          <app-lucide-icon name="upload-cloud" class="size-6 text-primary" aria-hidden="true" />
+        </div>
+        <h2 id="upload-empty-heading" class="mt-3 text-lg font-bold text-text-strong">
+          No Upload Tests Yet
+        </h2>
+        <p class="mt-1 text-sm text-text-muted">
+          Select regions and a payload size, then start the upload test.
+        </p>
+      </div>
     </section>
   }
 
   <section class="section-block" aria-labelledby="upload-alternatives-heading">
-    <header class="mb-4">
-      <h2 id="upload-alternatives-heading" class="section-title">Alternatives for benchmarking</h2>
-    </header>
-    <div class="space-y-4">
-      <div class="flex items-start gap-3">
-        <div
-          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary/10 to-primary/20"
-        >
-          <app-lucide-icon name="terminal" class="h-5 w-5 text-primary" aria-hidden="true" />
-        </div>
-        <div class="space-y-1">
-          <h3 class="font-semibold text-text-strong">AzCopy Bench</h3>
-          <p class="text-sm text-text-muted">
-            Microsoft's official CLI tool for Azure Storage performance benchmarking. Ideal for
-            automated testing, CI/CD pipelines, and high-throughput scenarios where you need precise
-            control over test parameters.
-          </p>
-        </div>
-      </div>
-
-      <div class="grid gap-3 sm:grid-cols-2">
-        <div
-          class="flex items-start gap-2.5 rounded-lg border border-border-soft bg-surface-muted p-3"
-        >
-          <app-lucide-icon name="zap" class="mt-0.5 h-4 w-4 text-warning" aria-hidden="true" />
-          <div class="text-sm">
-            <span class="font-medium text-text-body">Auto-tuning</span>
-            <p class="text-text-muted">
-              Automatically optimizes parallel TCP connections for maximum throughput
-            </p>
-          </div>
-        </div>
-        <div
-          class="flex items-start gap-2.5 rounded-lg border border-border-soft bg-surface-muted p-3"
-        >
-          <app-lucide-icon name="server" class="mt-0.5 h-4 w-4 text-info" aria-hidden="true" />
-          <div class="text-sm">
-            <span class="font-medium text-text-body">In-memory test data</span>
-            <p class="text-text-muted">Generates test files entirely in memory, no disk usage</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="space-y-3">
-        <div class="flex items-center gap-2 text-sm font-medium text-text-body">
-          <app-lucide-icon name="code" class="h-4 w-4" aria-hidden="true" />
-          Upload benchmark examples
-        </div>
-        <div class="space-y-2">
-          <p class="text-xs font-medium text-text-muted">Basic upload benchmark:</p>
-          <div class="code-block">
-            <pre><code>azcopy bench "https://[account].blob.core.windows.net/[container]?[SAS]"</code></pre>
-          </div>
-        </div>
-        <div class="space-y-2">
-          <p class="text-xs font-medium text-text-muted">
-            High-throughput test (100 files × 2 GB each):
-          </p>
-          <div class="code-block">
-            <pre><code>azcopy bench "https://[account].blob.core.windows.net/[container]?[SAS]" \
-  --file-count 100 --size-per-file 2G</code></pre>
-          </div>
-        </div>
-        <p class="text-xs text-text-muted">
-          Test data is automatically deleted after the benchmark completes. Use
-          <code class="rounded bg-surface-muted px-1.5 py-0.5 font-mono text-xs"
-            >--delete-test-data=false</code
-          >
-          to preserve files.
+    <h2 id="upload-alternatives-heading" class="section-title">Choose the Right Transfer Test</h2>
+    <div class="mt-4 grid gap-4 md:grid-cols-3">
+      <a
+        routerLink="/Azure/UploadLargeFile"
+        class="group rounded-lg bg-surface-muted p-4 text-inherit hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-none"
+      >
+        <app-lucide-icon name="file-text" class="size-5 text-primary" aria-hidden="true" />
+        <h3 class="mt-3 font-semibold text-text-strong group-hover:text-primary">
+          Large File Upload Test
+        </h3>
+        <p class="mt-1 text-sm text-text-muted">
+          Upload your own generated, non-sensitive file to one Azure region with advanced settings.
         </p>
-      </div>
-
-      <div class="flex items-center justify-between border-t border-border-soft pt-4">
-        <a
-          href="https://learn.microsoft.com/azure/storage/common/storage-ref-azcopy-bench"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="link-primary inline-flex items-center gap-1.5 text-sm font-medium"
+      </a>
+      <a
+        routerLink="/Azure/Download"
+        class="group rounded-lg bg-surface-muted p-4 text-inherit hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-none"
+      >
+        <app-lucide-icon name="download" class="size-5 text-primary" aria-hidden="true" />
+        <h3 class="mt-3 font-semibold text-text-strong group-hover:text-primary">
+          Azure Download Test
+        </h3>
+        <p class="mt-1 text-sm text-text-muted">
+          Measure download throughput from Azure Storage to your current network.
+        </p>
+      </a>
+      <a
+        href="https://learn.microsoft.com/azure/storage/common/storage-ref-azcopy-bench"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="group rounded-lg bg-surface-muted p-4 text-inherit hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-none"
+      >
+        <app-lucide-icon name="terminal" class="size-5 text-primary" aria-hidden="true" />
+        <h3
+          class="mt-3 flex items-center gap-1 font-semibold text-text-strong group-hover:text-primary"
         >
-          <span>View documentation</span>
-          <app-lucide-icon name="external-link" class="h-3.5 w-3.5" aria-hidden="true" />
-        </a>
-        <span class="text-xs text-text-subtle">Requires AzCopy v10+</span>
-      </div>
+          AzCopy Bench
+          <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
+        </h3>
+        <p class="mt-1 text-sm text-text-muted">
+          Use Microsoft's CLI benchmark for servers, automation, and production-scale testing.
+        </p>
+      </a>
+    </div>
+  </section>
+
+  <section class="section-block" aria-labelledby="upload-faq-heading">
+    <h2 id="upload-faq-heading" class="section-title">Frequently Asked Questions</h2>
+    <div class="faq-list">
+      <details class="faq-item group">
+        <summary class="faq-summary">
+          <span class="faq-question">How does this upload speed test work?</span>
+          <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
+        </summary>
+        <div class="faq-body">
+          <p>
+            Your browser creates a synthetic zero-filled payload and uploads it directly to Azure
+            Blob Storage in each selected region. No local file is selected, read, or uploaded.
+          </p>
+          <p>
+            The payload uses memory-efficient shared chunks instead of allocating the full selected
+            size as one JavaScript array.
+          </p>
+        </div>
+      </details>
+
+      <details class="faq-item group">
+        <summary class="faq-summary">
+          <span class="faq-question">Why are regions tested one at a time?</span>
+          <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
+        </summary>
+        <div class="faq-body">
+          <p>
+            Parallel uploads would divide your local connection among several regions and make each
+            result artificially slower. Sequential tests give each region the same opportunity to
+            use the available bandwidth.
+          </p>
+        </div>
+      </details>
+
+      <details class="faq-item group">
+        <summary class="faq-summary">
+          <span class="faq-question">Which upload size should I choose?</span>
+          <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
+        </summary>
+        <div class="faq-body">
+          <p>
+            Use 50 MiB for a quick check and 100 MiB for a general comparison. Use 250 or 500 MiB
+            only when you need a longer sustained-throughput sample and have sufficient data and
+            time.
+          </p>
+        </div>
+      </details>
+
+      <details class="faq-item group">
+        <summary class="faq-summary">
+          <span class="faq-question">What do Mbps and MiB/s mean?</span>
+          <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
+        </summary>
+        <div class="faq-body">
+          <p>
+            Mbps means megabits per second and is comparable to typical internet plan speeds. MiB/s
+            means mebibytes per second and uses binary units. Use the results control to switch
+            units; both views come from the same measured transfer.
+          </p>
+        </div>
+      </details>
+
+      <details class="faq-item group">
+        <summary class="faq-summary">
+          <span class="faq-question">Why do results vary between runs?</span>
+          <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
+        </summary>
+        <div class="faq-body">
+          <p>
+            Internet routing, Wi-Fi quality, VPNs, local resource pressure, regional congestion, and
+            competing traffic can change throughput. Run several tests with the same size and
+            regions before making a placement decision.
+          </p>
+        </div>
+      </details>
     </div>
   </section>
 </article>

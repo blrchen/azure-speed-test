@@ -1,0 +1,84 @@
+<article class="page-shell section-stack mx-auto max-w-5xl">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a class="breadcrumb-link" routerLink="/Azure/Latency">Home</a>
+    <span class="breadcrumb-separator">/</span>
+    <a class="breadcrumb-link" [routerLink]="['/Information/AzureRegions']">Azure regions</a>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current" aria-current="page">Access restricted regions</span>
+  </nav>
+
+  <header class="page-header">
+    <h1 class="page-title">Access restricted Azure regions</h1>
+    <nav class="flex flex-wrap gap-2" aria-label="Region types">
+      <a class="btn btn-outline btn--sm" [routerLink]="['/Information/AzureRegions']">
+        Global regions
+      </a>
+      <a class="btn btn-outline btn--sm" [routerLink]="['/Information/AzureUSGovernmentRegions']">
+        US Gov regions
+      </a>
+      <a class="btn btn-outline btn--sm" [routerLink]="['/Information/AzureChinaRegions']">
+        China regions
+      </a>
+      <span class="btn btn--sm btn-current" aria-current="page">Restricted regions</span>
+      <a class="btn btn-outline btn--sm" [routerLink]="['/Information/AzureUpcomingRegions']">
+        Upcoming regions
+      </a>
+    </nav>
+    <p class="page-lead">
+      Azure regions are sets of datacenters inside a latency-defined perimeter, connected through a
+      dedicated regional network.
+    </p>
+  </header>
+
+  <section class="section-block" aria-labelledby="restricted-regions-heading">
+    <h2 id="restricted-regions-heading" class="section-title">Access restricted Azure regions</h2>
+    <p class="text-text-muted">
+      These regions require special onboarding or are reserved for specific customer scenarios such
+      as in-country disaster recovery. Contact Microsoft support or your account team for access.
+    </p>
+    <div class="table-shell">
+      <table class="table-base">
+        <thead class="table-head">
+          <tr>
+            <th scope="col" class="px-4 py-3">Region</th>
+            <th scope="col" class="px-4 py-3">Geography</th>
+            <th scope="col" class="px-4 py-3">Datacenter</th>
+            <th scope="col" class="px-4 py-3">Available to</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border-soft">
+          @for (region of accessRestrictedRegions; track region.regionId) {
+            <tr class="table-row-hover">
+              <td class="px-4 py-3 whitespace-nowrap">
+                <a
+                  class="link-primary font-semibold"
+                  [href]="buildRegionDetailHref(region.displayName, 'restricted')"
+                >
+                  {{ region.displayName }}
+                  <span aria-hidden="true" class="text-text-muted">></span>
+                </a>
+              </td>
+              <td class="px-4 py-3 text-text-muted">
+                {{ region.geography }}
+              </td>
+              <td class="px-4 py-3 text-text-muted">
+                {{ region.datacenterLocation }}
+              </td>
+              <td class="px-4 py-3 text-text-body">
+                {{ region.availableTo || 'Limited availability' }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      @if (!accessRestrictedRegions.length) {
+        <div
+          class="flex flex-col items-center justify-center gap-3 px-4 py-6 text-center text-sm text-text-muted"
+        >
+          <app-lucide-icon name="search" class="size-8 text-text-muted" aria-hidden="true" />
+          <p>No restricted regions are listed right now.</p>
+        </div>
+      }
+    </div>
+  </section>
+</article>

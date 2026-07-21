@@ -1,77 +1,150 @@
 import { isPlatformBrowser } from '@angular/common'
 import {
   afterNextRender,
+  DestroyRef,
   DOCUMENT,
   effect,
   inject,
-  Injectable,
   Injector,
   PLATFORM_ID,
   runInInjectionContext,
+  Service,
   signal,
-  WritableSignal
 } from '@angular/core'
 
-import { ThemeMode } from '../models/theme'
+const STORAGE_KEY_THEME_PREFERENCE = 'THEME_PREFERENCE'
+const LEGACY_STORAGE_KEY_THEME = 'THEME'
+const DARK_MODE_MEDIA_QUERY = '(prefers-color-scheme: dark)'
+const LIGHT_THEME_COLOR = '#ffffff'
+const DARK_THEME_COLOR = '#171717'
 
-const STORAGE_KEY_THEME = 'THEME'
+type ThemeMode = 'light' | 'dark'
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ThemeService {
   private readonly injector = inject(Injector)
   private readonly document = inject(DOCUMENT)
   private readonly platformId = inject(PLATFORM_ID)
   private initialized = false
+  private systemThemeMediaQuery?: MediaQueryList
 
-  readonly themeMode: WritableSignal<ThemeMode> = signal<ThemeMode>('light')
+  private readonly themeModeState = signal<ThemeMode>(this.getInitialThemeMode())
+  readonly themeMode = this.themeModeState.asReadonly()
 
   constructor() {
+    inject(DestroyRef).onDestroy(() => this.stopFollowingSystemTheme())
     afterNextRender(() => this.ensureInitialized())
   }
 
   private ensureInitialized(): void {
-    if (this.initialized || !isPlatformBrowser(this.platformId)) {
-      return
-    }
+    if (this.initialized || !isPlatformBrowser(this.platformId)) return
 
     this.initialized = true
-    this.initializeFromStorage()
+    this.discardLegacyStoredTheme()
+    this.initializeTheme()
     this.setupEffects()
   }
 
-  private initializeFromStorage(): void {
-    const storedTheme = localStorage.getItem(STORAGE_KEY_THEME)
-    if (storedTheme === 'dark' || storedTheme === 'light') {
-      this.themeMode.set(storedTheme)
+  private initializeTheme(): void {
+    const storedTheme = this.readStoredTheme()
+    this.themeModeState.set(storedTheme ?? this.getSystemThemeMode())
+
+    if (!storedTheme) {
+      this.startFollowingSystemTheme()
     }
+
     this.applyTheme()
   }
 
   private setupEffects(): void {
     runInInjectionContext(this.injector, () => {
-      effect(() => {
-        const mode = this.themeMode()
-        localStorage.setItem(STORAGE_KEY_THEME, mode)
-        this.applyTheme()
-      })
+      effect(() => this.applyTheme())
     })
   }
 
+  private getInitialThemeMode(): ThemeMode {
+    if (!isPlatformBrowser(this.platformId)) return 'light'
+
+    const storedTheme = this.readStoredTheme()
+    if (storedTheme) return storedTheme
+
+    return this.getSystemThemeMode()
+  }
+
+  private readStoredTheme(): ThemeMode | null {
+    try {
+      const storedTheme = this.document.defaultView?.localStorage.getItem(
+        STORAGE_KEY_THEME_PREFERENCE
+      )
+      return storedTheme === 'dark' || storedTheme === 'light' ? storedTheme : null
+    } catch {
+      return null
+    }
+  }
+
+  private getSystemThemeMode(): ThemeMode {
+    return this.document.defaultView?.matchMedia(DARK_MODE_MEDIA_QUERY).matches ? 'dark' : 'light'
+  }
+
+  private startFollowingSystemTheme(): void {
+    const mediaQuery = this.document.defaultView?.matchMedia(DARK_MODE_MEDIA_QUERY)
+    if (!mediaQuery) return
+
+    this.systemThemeMediaQuery = mediaQuery
+    mediaQuery.addEventListener('change', this.handleSystemThemeChange)
+  }
+
+  private stopFollowingSystemTheme(): void {
+    this.systemThemeMediaQuery?.removeEventListener('change', this.handleSystemThemeChange)
+    this.systemThemeMediaQuery = undefined
+  }
+
+  private readonly handleSystemThemeChange = (event: MediaQueryListEvent): void => {
+    this.themeModeState.set(event.matches ? 'dark' : 'light')
+  }
+
+  private discardLegacyStoredTheme(): void {
+    try {
+      this.document.defaultView?.localStorage.removeItem(LEGACY_STORAGE_KEY_THEME)
+    } catch {
+      // localStorage can be unavailable; the system preference still applies.
+    }
+  }
+
+  private persistTheme(mode: ThemeMode): void {
+    try {
+      this.document.defaultView?.localStorage.setItem(STORAGE_KEY_THEME_PREFERENCE, mode)
+    } catch {
+      // localStorage can be unavailable; the DOM class still applies.
+    }
+  }
+
   private applyTheme(): void {
-    const html = this.document?.documentElement
-    if (!html) {
-      return
+    const html = this.document.documentElement
+    const isDark = this.themeMode() === 'dark'
+    html.classList.toggle('dark', isDark)
+    this.syncThemeColorMeta(isDark)
+  }
+
+  private syncThemeColorMeta(isDark: boolean): void {
+    const head = this.document.head
+
+    let themeColorMeta = this.document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')
+    if (!themeColorMeta) {
+      themeColorMeta = this.document.createElement('meta')
+      themeColorMeta.name = 'theme-color'
+      head.appendChild(themeColorMeta)
     }
-    const mode = this.themeMode()
-    if (mode === 'dark') {
-      html.classList.add('dark')
-    } else {
-      html.classList.remove('dark')
-    }
+
+    themeColorMeta.content = isDark ? DARK_THEME_COLOR : LIGHT_THEME_COLOR
   }
 
   toggleTheme(): void {
     this.ensureInitialized()
-    this.themeMode.update((current) => (current === 'dark' ? 'light' : 'dark'))
+    this.stopFollowingSystemTheme()
+
+    const nextMode = this.themeMode() === 'dark' ? 'light' : 'dark'
+    this.themeModeState.set(nextMode)
+    this.persistTheme(nextMode)
   }
 }

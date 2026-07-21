@@ -1,0 +1,107 @@
+.azure-region-map-page {
+  width: 100%;
+  max-width: 100rem;
+  gap: 1.5rem;
+  --azure-map-shell-bg: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--color-surface-raised) 92%, var(--color-brand) 8%),
+    color-mix(in srgb, var(--color-surface-muted) 94%, var(--color-brand) 6%)
+  );
+  --azure-map-shell-border: color-mix(in srgb, var(--color-border-soft) 70%, var(--color-brand));
+  --azure-map-section-bg: color-mix(in srgb, var(--color-surface-raised) 88%, transparent);
+  --azure-map-panel-bg: color-mix(in srgb, var(--color-surface-muted) 78%, transparent);
+  --azure-map-panel-border: color-mix(in srgb, var(--color-border-soft) 58%, transparent);
+  --azure-map-toolbar-bg: color-mix(in srgb, var(--color-surface-raised) 86%, transparent);
+  --azure-map-toolbar-border: color-mix(in srgb, var(--color-border-soft) 72%, var(--color-brand));
+  --azure-map-canvas-bg: color-mix(in srgb, var(--color-surface-base) 78%, var(--color-brand) 22%);
+  --azure-map-ocean: color-mix(in srgb, var(--color-surface-base) 88%, var(--color-brand) 12%);
+  --azure-map-grid: color-mix(in srgb, var(--color-border-soft) 38%, transparent);
+  --azure-map-land: color-mix(in srgb, var(--color-surface-raised) 72%, var(--color-brand) 28%);
+  --azure-map-land-stroke: color-mix(in srgb, var(--color-brand) 36%, var(--color-border-soft));
+  --azure-map-country-border: color-mix(
+    in srgb,
+    var(--color-border-soft) 94%,
+    var(--color-brand) 6%
+  );
+  --azure-map-marker: var(--color-brand);
+  --azure-map-marker-selected: var(--color-primary-foreground);
+  --azure-map-marker-ring: color-mix(in srgb, var(--color-brand) 62%, transparent);
+  --azure-map-marker-text-stroke: var(--color-surface-base);
+  --azure-map-marker-label: var(--color-text-strong);
+  --azure-map-shadow: var(--shadow-card);
+}
+
+:host-context(.dark) .azure-region-map-page {
+  --azure-map-shell-bg: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--color-surface-raised) 88%, var(--color-brand) 12%),
+    color-mix(in srgb, var(--color-surface-base) 92%, var(--color-brand) 8%)
+  );
+  --azure-map-section-bg: color-mix(in srgb, var(--color-surface-raised) 84%, transparent);
+  --azure-map-panel-bg: color-mix(in srgb, var(--color-surface-base) 76%, transparent);
+  --azure-map-toolbar-bg: color-mix(in srgb, var(--color-surface-raised) 78%, transparent);
+  --azure-map-toolbar-border: color-mix(in srgb, var(--color-border-soft) 52%, var(--color-brand));
+  --azure-map-canvas-bg: color-mix(in srgb, var(--color-surface-base) 88%, var(--color-brand) 12%);
+  --azure-map-ocean: color-mix(in srgb, var(--color-surface-base) 82%, var(--color-brand) 18%);
+  --azure-map-grid: color-mix(in srgb, var(--color-border-soft) 24%, transparent);
+  --azure-map-land: color-mix(in srgb, var(--color-surface-raised) 84%, var(--color-brand) 16%);
+  --azure-map-land-stroke: color-mix(in srgb, var(--color-brand) 24%, var(--color-border-soft));
+  --azure-map-country-border: color-mix(in srgb, var(--color-border-soft) 34%, transparent);
+  --azure-map-marker-label: var(--color-text-strong);
+  --azure-map-shadow: var(--shadow-card-strong);
+}
+
+.azure-map-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .azure-map-header {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+}
+
+.azure-map-header__copy {
+  max-width: 48rem;
+}
+
+.azure-map-panel-label {
+  margin: 0;
+  color: var(--color-brand);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.azure-map-lead {
+  margin: 0.75rem 0 0;
+  max-width: 42rem;
+  color: var(--color-text-muted);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.azure-map-header__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.azure-map-header__actions .btn {
+  min-height: 2.75rem;
+  touch-action: manipulation;
+}
+
+.azure-map-explorer {
+  overflow: hidden;
+  border: 1px solid var(--azure-map-shell-border);
+  border-radius: var(--radius-xl);
+  background: var(--azure-map-shell-bg);
+  color: var(--color-text-body);
+  box-shadow: var(--azure-map-shadow);
+}

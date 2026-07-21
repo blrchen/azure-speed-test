@@ -1,0 +1,165 @@
+.azure-map-overlay-panel {
+  position: absolute;
+  z-index: 5;
+  top: 0.75rem;
+  right: 0.75rem;
+  left: 0.75rem;
+  max-width: 24rem;
+  border: 1px solid var(--azure-map-toolbar-border);
+  border-radius: 0.75rem;
+  background: var(--azure-map-toolbar-bg);
+  padding: 0.85rem;
+  box-shadow: var(--azure-map-shadow);
+  backdrop-filter: blur(18px);
+}
+
+.azure-map-overlay-panel__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.azure-map-overlay-title {
+  margin: 0.18rem 0 0;
+  color: var(--color-text-strong);
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.azure-map-overlay-close {
+  display: inline-flex;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--azure-map-panel-border);
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--color-surface-muted) 82%, transparent);
+  color: var(--color-text-muted);
+  touch-action: manipulation;
+}
+
+.azure-map-overlay-close:hover {
+  color: var(--color-text-strong);
+}
+
+.azure-map-legend-list {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0.8rem 0 0;
+}
+
+.azure-map-legend-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  color: var(--color-text-body);
+  font-size: 0.8125rem;
+}
+
+.azure-map-legend-item dt {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+}
+
+.azure-map-legend-item dd {
+  overflow: hidden;
+  max-width: 11rem;
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.azure-map-legend-swatch {
+  display: inline-flex;
+  width: 0.75rem;
+  height: 0.75rem;
+  flex: 0 0 auto;
+  border: 2px solid var(--color-primary-foreground);
+  border-radius: 999px;
+  box-shadow: 0 0 0 2px color-mix(in srgb, currentColor 18%, transparent);
+}
+
+.azure-map-legend-swatch--region {
+  color: var(--azure-map-marker);
+  background: var(--azure-map-marker);
+}
+
+.azure-map-legend-swatch--selected {
+  width: 0.95rem;
+  height: 0.95rem;
+  color: var(--azure-map-marker);
+  background: var(--azure-map-marker-selected);
+  box-shadow:
+    0 0 0 2px var(--azure-map-marker),
+    0 0 0 5px color-mix(in srgb, var(--azure-map-marker) 22%, transparent);
+}
+
+.azure-map-filter-chip {
+  display: inline-flex;
+  flex: 0 0 auto;
+  min-height: 2.75rem;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid var(--azure-map-panel-border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-surface-muted) 80%, transparent);
+  padding: 0.5rem 0.7rem;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 800;
+  touch-action: manipulation;
+}
+
+.azure-map-filter-chip:hover {
+  border-color: color-mix(in srgb, var(--color-brand) 54%, var(--color-border-soft));
+  color: var(--color-text-strong);
+}
+
+.azure-map-filter-chip--active {
+  border-color: var(--color-brand);
+  background: var(--color-brand);
+  color: var(--color-primary-foreground);
+}
+
+.azure-map-filter-chip__count {
+  min-width: 1.3rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, currentColor 16%, transparent);
+  padding: 0.05rem 0.35rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.azure-map-filter-chip--active .azure-map-filter-chip__count {
+  background: rgb(0 0 0 / 28%);
+}
+
+:host-context(.dark) .azure-map-filter-chip--active .azure-map-filter-chip__count {
+  background: rgb(255 255 255 / 24%);
+}
+
+.azure-map-selected-panel__actions .btn,
+.azure-map-list-empty .btn {
+  min-height: 2.75rem;
+  touch-action: manipulation;
+}
+
+@media (min-width: 768px) {
+  .azure-map-overlay-panel {
+    top: 1rem;
+    right: 1rem;
+    left: auto;
+  }
+}

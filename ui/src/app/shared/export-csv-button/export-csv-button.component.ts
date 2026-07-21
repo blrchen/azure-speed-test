@@ -1,5 +1,5 @@
-import { isPlatformBrowser } from '@angular/common'
-import { ChangeDetectionStrategy, Component, inject, input, PLATFORM_ID } from '@angular/core'
+import { DOCUMENT, isPlatformBrowser } from '@angular/common'
+import { Component, computed, inject, input, PLATFORM_ID } from '@angular/core'
 
 import { LucideIconComponent } from '../icons/lucide-icons.component'
 
@@ -11,7 +11,7 @@ import { LucideIconComponent } from '../icons/lucide-icons.component'
       type="button"
       class="btn btn-outline btn--sm group"
       [disabled]="!rows()?.length"
-      [attr.aria-label]="ariaLabel()"
+      [attr.aria-label]="accessibleLabel()"
       (click)="export()"
     >
       <app-lucide-icon
@@ -22,11 +22,10 @@ import { LucideIconComponent } from '../icons/lucide-icons.component'
       <span>{{ label() }}</span>
     </button>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ExportCsvButtonComponent {
-  private readonly platformId = inject(PLATFORM_ID)
-  private readonly isBrowser = isPlatformBrowser(this.platformId)
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID))
+  private readonly document = inject(DOCUMENT)
 
   /** CSV filename (without extension) */
   readonly filename = input.required<string>()
@@ -42,6 +41,16 @@ export class ExportCsvButtonComponent {
 
   /** Aria label */
   readonly ariaLabel = input<string>('Export results to CSV')
+
+  protected readonly accessibleLabel = computed((): string => {
+    const label = this.label()
+    const ariaLabel = this.ariaLabel().trim()
+    if (!ariaLabel) return label
+
+    return ariaLabel.toLowerCase().includes(label.toLowerCase())
+      ? ariaLabel
+      : `${label}. ${ariaLabel}`
+  })
 
   export(): void {
     if (!this.isBrowser) return
@@ -60,20 +69,24 @@ export class ExportCsvButtonComponent {
     return field
   }
 
+  private formatCsvRow(row: string[]): string {
+    return row.map((field) => this.escapeCsvField(field)).join(',')
+  }
+
   private downloadCsv(filename: string, headers: string[], rows: string[][]): void {
-    const escapeRow = (row: string[]): string =>
-      row.map((field) => this.escapeCsvField(field)).join(',')
-    const csvContent = [escapeRow(headers), ...rows.map(escapeRow)].join('\n')
+    const csvContent = [headers, ...rows].map((row) => this.formatCsvRow(row)).join('\n')
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
     const url = URL.createObjectURL(blob)
 
-    const link = document.createElement('a')
-    link.setAttribute('href', url)
-    link.setAttribute('download', filename)
+    const link = this.document.createElement('a')
+    link.href = url
+    link.download = filename
     link.style.visibility = 'hidden'
-    document.body.appendChild(link)
+
+    const body = this.document.body
+    body.appendChild(link)
     link.click()
-    document.body.removeChild(link)
+    body.removeChild(link)
     URL.revokeObjectURL(url)
   }
 }

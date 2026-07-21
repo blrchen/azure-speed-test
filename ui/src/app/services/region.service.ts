@@ -1,77 +1,70 @@
-import { Injectable, Signal, signal } from '@angular/core'
+import { Service, signal } from '@angular/core'
 
 import azureGlobalCloudRegionsJson from '../../assets/data/regions.json'
 import { RegionModel } from '../models'
+import { REGION_NAME_COLLATOR } from '../shared/utils'
 
 export interface RegionGroup {
-  regionGroup: string
-  regions: RegionModel[]
+  readonly regionGroup: string
+  readonly regions: readonly RegionModel[]
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Service()
 export class RegionService {
-  private readonly selectedRegionsState = signal<RegionModel[]>([])
-  readonly selectedRegions: Signal<RegionModel[]> = this.selectedRegionsState.asReadonly()
+  private readonly selectedRegionsState = signal<readonly RegionModel[]>([])
+  readonly selectedRegions = this.selectedRegionsState.asReadonly()
 
-  // Memoization cache
-  private cachedRegions: RegionModel[] | null = null
-  private cachedRegionGroups: RegionGroup[] | null = null
-  private readonly regionCollator = new Intl.Collator('en', { sensitivity: 'base' })
-  private readonly storagePrefixes = ['s3', 's8', 'q9']
+  private cachedRegions: readonly RegionModel[] | null = null
+  private cachedRegionGroups: readonly RegionGroup[] | null = null
+  private readonly regionCollator = REGION_NAME_COLLATOR
+  private readonly storagePrefix = 's8'
 
-  updateSelectedRegions(regions: RegionModel[]): void {
-    this.selectedRegionsState.set(regions)
+  updateSelectedRegions(regions: readonly RegionModel[]): void {
+    this.selectedRegionsState.set([...regions])
   }
 
-  getAllRegions(): RegionModel[] {
-    if (this.cachedRegions) {
-      return this.cachedRegions
-    }
+  getAllRegions(): readonly RegionModel[] {
+    if (this.cachedRegions) return [...this.cachedRegions]
 
-    let prefixIndex = 0
-    this.cachedRegions = azureGlobalCloudRegionsJson
-      .filter((region) => !region.restricted)
-      .map((regionData) => {
-        const prefix = this.storagePrefixes[prefixIndex % this.storagePrefixes.length]
-        prefixIndex += 1
-        return {
-          ...regionData,
-          storageAccountName: `${prefix}${regionData.regionId}`
-        }
-      })
+    this.cachedRegions = Object.freeze(
+      azureGlobalCloudRegionsJson
+        .filter((region) => !region.restricted)
+        .map((regionData) =>
+          Object.freeze({
+            ...regionData,
+            storageAccountName: `${this.storagePrefix}${regionData.regionId}`,
+          })
+        )
+    )
 
-    return this.cachedRegions
+    return [...this.cachedRegions]
   }
 
-  getRegionGroups(): RegionGroup[] {
-    if (this.cachedRegionGroups) {
-      return this.cachedRegionGroups
-    }
+  getRegionGroups(): readonly RegionGroup[] {
+    if (this.cachedRegionGroups) return [...this.cachedRegionGroups]
 
-    const groupsByName = new Map<string, RegionModel[]>()
-
+    const groups = new Map<string, RegionModel[]>()
     for (const region of this.getAllRegions()) {
       const key = region.regionGroup
       if (!key) continue
-
-      const group = groupsByName.get(key)
-      if (group) {
-        group.push(region)
-      } else {
-        groupsByName.set(key, [region])
-      }
+      const existing = groups.get(key)
+      if (existing) existing.push(region)
+      else groups.set(key, [region])
     }
 
-    const collator = this.regionCollator
-    this.cachedRegionGroups = Array.from(groupsByName.entries())
-      .map(([regionGroup, groupedRegions]) => ({
-        regionGroup,
-        regions: [...groupedRegions].sort((a, b) => collator.compare(a.displayName, b.displayName))
-      }))
-      .sort((a, b) => b.regions.length - a.regions.length)
+    this.cachedRegionGroups = Object.freeze(
+      [...groups.entries()]
+        .map(([regionGroup, regions]) =>
+          Object.freeze({
+            regionGroup,
+            regions: Object.freeze(
+              [...regions].sort((a, b) => this.regionCollator.compare(a.displayName, b.displayName))
+            ),
+          })
+        )
+        .sort((a, b) => b.regions.length - a.regions.length)
+    )
 
-    return this.cachedRegionGroups
+    return [...this.cachedRegionGroups]
   }
 }

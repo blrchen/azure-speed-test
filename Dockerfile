@@ -1,41 +1,39 @@
-# Use the official Microsoft ASP.NET Core image to build the backend
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-backend
+# Stage 1: Build the .NET backend
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build-backend
 WORKDIR /src
 COPY ["api/AzureSpeed/AzureSpeed.csproj", "backend/"]
 RUN dotnet restore "backend/AzureSpeed.csproj"
 COPY api/AzureSpeed/ backend/
 WORKDIR "/src/backend"
-RUN dotnet publish "AzureSpeed.csproj" -c Release -o /app/publish
+RUN dotnet publish "AzureSpeed.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
-# Use the official node image to build the Angular app
+# Stage 2: Build the Angular app (static prerender)
 FROM node:22-alpine AS build-frontend
 WORKDIR /app
 COPY ["ui/package.json", "ui/package-lock.json*", "./"]
-RUN npm install
+RUN npm ci --no-audit --fund=false
 COPY ui/ .
 RUN npm run build
 
-# Use a .NET runtime image with Node.js for SSR
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+# Stage 3: Final runtime - nginx serves static files and proxies API to .NET
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 
-# Install Node.js 22.x
-RUN apt-get update && \
-    apt-get install -y curl && \
-    curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
-    apt-get install -y nodejs && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends nginx \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -f /etc/nginx/sites-enabled/default /etc/nginx/conf.d/default.conf
 
-# Copy Angular SSR build (includes both browser and server bundles)
-COPY --from=build-frontend /app/dist/azure-speed-test /app/frontend
+ENV ASPNETCORE_URLS=http://127.0.0.1:5000 \
+    Kestrel__Endpoints__Http__Url=http://127.0.0.1:5000
 
 # Copy .NET backend
-COPY --from=build-backend /app/publish /app/backend
+COPY --from=build-backend /app/publish .
 
-# Expose port 80 for the application
-EXPOSE 80
+# Copy Angular browser build (prerendered HTML + hashed assets) into nginx web root
+COPY --from=build-frontend /app/dist/azure-speed-test/browser /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/azure-speed-test.conf
 
-# Start Node.js SSR server and .NET API backend
-# Node.js listens on PORT (default 80), .NET listens on 8080
-# Run .NET from backend directory so ContentRootPath resolves Data/settings.json correctly
-CMD ["sh", "-c", "(cd /app/backend && dotnet AzureSpeed.dll) & PORT=80 node /app/frontend/server/server.mjs"]
+EXPOSE 8080
+
+CMD ["sh", "-c", "dotnet /app/AzureSpeed.dll & exec nginx -g 'daemon off;'"]

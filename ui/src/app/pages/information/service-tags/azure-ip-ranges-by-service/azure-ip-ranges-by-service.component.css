@@ -1,0 +1,12 @@
+.service-directory-item,
+.service-tag-scope-group {
+  content-visibility: auto;
+}
+
+.service-directory-item {
+  contain-intrinsic-size: auto 3rem;
+}
+
+.service-tag-scope-group {
+  contain-intrinsic-size: auto 12rem;
+}

@@ -6,238 +6,225 @@
 
   <section class="section-block" aria-labelledby="environments-heading">
     <h2 id="environments-heading" class="sr-only">Environment comparison</h2>
-    @defer (on viewport; prefetch on idle) {
-      <div class="table-shell">
-        <table class="table-base">
-          <thead class="table-head">
-            <tr>
-              <th scope="col" class="px-4 py-3">Property</th>
-              <th scope="col" class="px-4 py-3">AzureCloud</th>
-              <th scope="col" class="px-4 py-3">AzureUSGovernment</th>
-              <th scope="col" class="px-4 py-3">AzureChinaCloud</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-border-soft">
-            <tr>
-              <td class="px-4 py-3"><strong>ActiveDirectoryAuthority</strong></td>
-              <td class="px-4 py-3">https://login.microsoftonline.com</td>
-              <td class="px-4 py-3">https://login.microsoftonline.us/</td>
-              <td class="px-4 py-3">https://login.chinacloudapi.cn/</td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3"><strong>ActiveDirectoryServiceEndpointResourceId</strong></td>
-              <td class="px-4 py-3">https://management.core.windows.net/</td>
-              <td class="px-4 py-3">https://management.core.usgovcloudapi.net/</td>
-              <td class="px-4 py-3">https://management.core.chinacloudapi.cn/</td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3"><strong>AdTenant</strong></td>
-              <td class="px-4 py-3">common</td>
-              <td class="px-4 py-3">Common</td>
-              <td class="px-4 py-3">Common</td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3"><strong>AnalysisServicesEndpointResourceId</strong></td>
-              <td class="px-4 py-3">https://region.asazure.windows.net</td>
-              <td class="px-4 py-3">https://region.asazure.usgovcloudapi.net</td>
-              <td class="px-4 py-3">https://region.asazure.chinacloudapi.cn</td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3"><strong>AzureAnalysisServicesEndpointSuffix</strong></td>
-              <td class="px-4 py-3">asazure.windows.net</td>
-              <td class="px-4 py-3">asazure.usgovcloudapi.net</td>
-              <td class="px-4 py-3">asazure.chinacloudapi.cn</td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3"><strong>AzureAttestationServiceEndpointResourceId</strong></td>
-              <td class="px-4 py-3">https://attest.azure.net</td>
-              <td class="px-4 py-3"></td>
-              <td class="px-4 py-3"></td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3"><strong>AzureAttestationServiceEndpointSuffix</strong></td>
-              <td class="px-4 py-3">attest.azure.net</td>
-              <td class="px-4 py-3"></td>
-              <td class="px-4 py-3"></td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3">
-                <strong>AzureDataLakeAnalyticsCatalogAndJobEndpointSuffix</strong>
-              </td>
-              <td class="px-4 py-3">azuredatalakeanalytics.net</td>
-              <td class="px-4 py-3"></td>
-              <td class="px-4 py-3"></td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3"><strong>AzureDataLakeStoreFileSystemEndpointSuffix</strong></td>
-              <td class="px-4 py-3">azuredatalakestore.net</td>
-              <td class="px-4 py-3"></td>
-              <td class="px-4 py-3"></td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3"><strong>AzureKeyVaultDnsSuffix</strong></td>
-              <td class="px-4 py-3">vault.azure.net</td>
-              <td class="px-4 py-3">vault.usgovcloudapi.net</td>
-              <td class="px-4 py-3">vault.azure.cn</td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3"><strong>AzureKeyVaultServiceEndpointResourceId</strong></td>
-              <td class="px-4 py-3">https://vault.azure.net</td>
-              <td class="px-4 py-3">https://vault.usgovcloudapi.net</td>
-              <td class="px-4 py-3">https://vault.azure.cn</td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3"><strong>AzureOperationalInsightsEndpoint</strong></td>
-              <td class="px-4 py-3">https://api.loganalytics.io/v1</td>
-              <td class="px-4 py-3">https://api.loganalytics.us/v1</td>
-              <td class="px-4 py-3">https://api.loganalytics.azure.cn/v1</td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3"><strong>AzureOperationalInsightsEndpointResourceId</strong></td>
-              <td class="px-4 py-3">https://api.loganalytics.io</td>
-              <td class="px-4 py-3">https://api.loganalytics.us</td>
-              <td class="px-4 py-3">https://api.loganalytics.azure.cn</td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3"><strong>AzureSynapseAnalyticsEndpointResourceId</strong></td>
-              <td class="px-4 py-3">https://dev.azuresynapse.net</td>
-              <td class="px-4 py-3">https://dev.azuresynapse.usgovcloudapi.net</td>
-              <td class="px-4 py-3">https://dev.azuresynapse.azure.cn</td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3"><strong>AzureSynapseAnalyticsEndpointSuffix</strong></td>
-              <td class="px-4 py-3">dev.azuresynapse.net</td>
-              <td class="px-4 py-3">dev.azuresynapse.usgovcloudapi.net</td>
-              <td class="px-4 py-3">dev.azuresynapse.azure.cn</td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3"><strong>BatchEndpointResourceId</strong></td>
-              <td class="px-4 py-3">https://batch.core.windows.net/</td>
-              <td class="px-4 py-3">https://batch.core.usgovcloudapi.net/</td>
-              <td class="px-4 py-3">https://batch.chinacloudapi.cn/</td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3"><strong>ContainerRegistryEndpointSuffix</strong></td>
-              <td class="px-4 py-3">azurecr.io</td>
-              <td class="px-4 py-3">azurecr.us</td>
-              <td class="px-4 py-3">azurecr.cn</td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3"><strong>DataLakeEndpointResourceId</strong></td>
-              <td class="px-4 py-3">https://datalake.azure.net/</td>
-              <td class="px-4 py-3"></td>
-              <td class="px-4 py-3"></td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3"><strong>EnableAdfsAuthentication</strong></td>
-              <td class="px-4 py-3">False</td>
-              <td class="px-4 py-3">False</td>
-              <td class="px-4 py-3">False</td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3"><strong>GalleryUrl</strong></td>
-              <td class="px-4 py-3"></td>
-              <td class="px-4 py-3">https://gallery.azure.com/</td>
-              <td class="px-4 py-3">https://gallery.azure.com/</td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3"><strong>GraphEndpointResourceId</strong></td>
-              <td class="px-4 py-3">https://graph.windows.net/</td>
-              <td class="px-4 py-3">https://graph.windows.net/</td>
-              <td class="px-4 py-3">https://graph.chinacloudapi.cn/</td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3"><strong>GraphUrl</strong></td>
-              <td class="px-4 py-3">https://graph.windows.net/</td>
-              <td class="px-4 py-3">https://graph.windows.net/</td>
-              <td class="px-4 py-3">https://graph.chinacloudapi.cn/</td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3"><strong>ManagementPortalUrl</strong></td>
-              <td class="px-4 py-3">https://portal.azure.com</td>
-              <td class="px-4 py-3">https://portal.azure.us/</td>
-              <td class="px-4 py-3">https://portal.azure.cn/</td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3"><strong>Name</strong></td>
-              <td class="px-4 py-3">AzureCloud</td>
-              <td class="px-4 py-3">AzureUSGovernment</td>
-              <td class="px-4 py-3">AzureChinaCloud</td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3"><strong>OnPremise</strong></td>
-              <td class="px-4 py-3">False</td>
-              <td class="px-4 py-3">False</td>
-              <td class="px-4 py-3">False</td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3"><strong>PublishSettingsFileUrl</strong></td>
-              <td class="px-4 py-3">https://go.microsoft.com/fwlink/?LinkID=301775</td>
-              <td class="px-4 py-3">https://manage.windowsazure.us/publishsettings/index</td>
-              <td class="px-4 py-3">https://go.microsoft.com/fwlink/?LinkID=301776</td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3"><strong>ResourceManagerUrl</strong></td>
-              <td class="px-4 py-3">https://management.azure.com/</td>
-              <td class="px-4 py-3">https://management.usgovcloudapi.net/</td>
-              <td class="px-4 py-3">https://management.chinacloudapi.cn/</td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3"><strong>ServiceManagementUrl</strong></td>
-              <td class="px-4 py-3">https://management.core.windows.net/</td>
-              <td class="px-4 py-3">https://management.core.usgovcloudapi.net/</td>
-              <td class="px-4 py-3">https://management.core.chinacloudapi.cn/</td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3"><strong>SqlDatabaseDnsSuffix</strong></td>
-              <td class="px-4 py-3">.database.windows.net</td>
-              <td class="px-4 py-3">.database.usgovcloudapi.net</td>
-              <td class="px-4 py-3">.database.chinacloudapi.cn</td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3"><strong>StorageEndpointSuffix</strong></td>
-              <td class="px-4 py-3">core.windows.net</td>
-              <td class="px-4 py-3">core.usgovcloudapi.net</td>
-              <td class="px-4 py-3">core.chinacloudapi.cn</td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3"><strong>TrafficManagerDnsSuffix</strong></td>
-              <td class="px-4 py-3">trafficmanager.net</td>
-              <td class="px-4 py-3">usgovtrafficmanager.net</td>
-              <td class="px-4 py-3">trafficmanager.cn</td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3"><strong>Type</strong></td>
-              <td class="px-4 py-3">Discovered</td>
-              <td class="px-4 py-3">Built-in</td>
-              <td class="px-4 py-3">Built-in</td>
-            </tr>
-            <tr>
-              <td class="px-4 py-3"><strong>VersionProfiles</strong></td>
-              <td class="px-4 py-3"></td>
-              <td class="px-4 py-3"></td>
-              <td class="px-4 py-3"></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    } @placeholder {
-      <div
-        class="rounded-2xl border border-border-soft bg-surface-raised px-4 py-5 shadow-sm"
-        role="status"
-        aria-label="Loading environment comparison table"
-      >
-        <div class="skeleton-shimmer mb-3 h-6 w-48 rounded"></div>
-        <div class="skeleton-shimmer mb-2 h-10 w-full rounded"></div>
-        <div class="skeleton-shimmer mb-2 h-10 w-full rounded"></div>
-        <div class="skeleton-shimmer h-10 w-full rounded"></div>
-      </div>
-    }
+    <div class="table-shell">
+      <table class="table-base">
+        <thead class="table-head">
+          <tr>
+            <th scope="col" class="px-4 py-3">Property</th>
+            <th scope="col" class="px-4 py-3">AzureCloud</th>
+            <th scope="col" class="px-4 py-3">AzureUSGovernment</th>
+            <th scope="col" class="px-4 py-3">AzureChinaCloud</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border-soft">
+          <tr>
+            <td class="px-4 py-3"><strong>ActiveDirectoryAuthority</strong></td>
+            <td class="px-4 py-3">https://login.microsoftonline.com</td>
+            <td class="px-4 py-3">https://login.microsoftonline.us/</td>
+            <td class="px-4 py-3">https://login.chinacloudapi.cn/</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3"><strong>ActiveDirectoryServiceEndpointResourceId</strong></td>
+            <td class="px-4 py-3">https://management.core.windows.net/</td>
+            <td class="px-4 py-3">https://management.core.usgovcloudapi.net/</td>
+            <td class="px-4 py-3">https://management.core.chinacloudapi.cn/</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3"><strong>AdTenant</strong></td>
+            <td class="px-4 py-3">common</td>
+            <td class="px-4 py-3">Common</td>
+            <td class="px-4 py-3">Common</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3"><strong>AnalysisServicesEndpointResourceId</strong></td>
+            <td class="px-4 py-3">https://region.asazure.windows.net</td>
+            <td class="px-4 py-3">https://region.asazure.usgovcloudapi.net</td>
+            <td class="px-4 py-3">https://region.asazure.chinacloudapi.cn</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3"><strong>AzureAnalysisServicesEndpointSuffix</strong></td>
+            <td class="px-4 py-3">asazure.windows.net</td>
+            <td class="px-4 py-3">asazure.usgovcloudapi.net</td>
+            <td class="px-4 py-3">asazure.chinacloudapi.cn</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3"><strong>AzureAttestationServiceEndpointResourceId</strong></td>
+            <td class="px-4 py-3">https://attest.azure.net</td>
+            <td class="px-4 py-3"></td>
+            <td class="px-4 py-3"></td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3"><strong>AzureAttestationServiceEndpointSuffix</strong></td>
+            <td class="px-4 py-3">attest.azure.net</td>
+            <td class="px-4 py-3"></td>
+            <td class="px-4 py-3"></td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3">
+              <strong>AzureDataLakeAnalyticsCatalogAndJobEndpointSuffix</strong>
+            </td>
+            <td class="px-4 py-3">azuredatalakeanalytics.net</td>
+            <td class="px-4 py-3"></td>
+            <td class="px-4 py-3"></td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3"><strong>AzureDataLakeStoreFileSystemEndpointSuffix</strong></td>
+            <td class="px-4 py-3">azuredatalakestore.net</td>
+            <td class="px-4 py-3"></td>
+            <td class="px-4 py-3"></td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3"><strong>AzureKeyVaultDnsSuffix</strong></td>
+            <td class="px-4 py-3">vault.azure.net</td>
+            <td class="px-4 py-3">vault.usgovcloudapi.net</td>
+            <td class="px-4 py-3">vault.azure.cn</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3"><strong>AzureKeyVaultServiceEndpointResourceId</strong></td>
+            <td class="px-4 py-3">https://vault.azure.net</td>
+            <td class="px-4 py-3">https://vault.usgovcloudapi.net</td>
+            <td class="px-4 py-3">https://vault.azure.cn</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3"><strong>AzureOperationalInsightsEndpoint</strong></td>
+            <td class="px-4 py-3">https://api.loganalytics.io/v1</td>
+            <td class="px-4 py-3">https://api.loganalytics.us/v1</td>
+            <td class="px-4 py-3">https://api.loganalytics.azure.cn/v1</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3"><strong>AzureOperationalInsightsEndpointResourceId</strong></td>
+            <td class="px-4 py-3">https://api.loganalytics.io</td>
+            <td class="px-4 py-3">https://api.loganalytics.us</td>
+            <td class="px-4 py-3">https://api.loganalytics.azure.cn</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3"><strong>AzureSynapseAnalyticsEndpointResourceId</strong></td>
+            <td class="px-4 py-3">https://dev.azuresynapse.net</td>
+            <td class="px-4 py-3">https://dev.azuresynapse.usgovcloudapi.net</td>
+            <td class="px-4 py-3">https://dev.azuresynapse.azure.cn</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3"><strong>AzureSynapseAnalyticsEndpointSuffix</strong></td>
+            <td class="px-4 py-3">dev.azuresynapse.net</td>
+            <td class="px-4 py-3">dev.azuresynapse.usgovcloudapi.net</td>
+            <td class="px-4 py-3">dev.azuresynapse.azure.cn</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3"><strong>BatchEndpointResourceId</strong></td>
+            <td class="px-4 py-3">https://batch.core.windows.net/</td>
+            <td class="px-4 py-3">https://batch.core.usgovcloudapi.net/</td>
+            <td class="px-4 py-3">https://batch.chinacloudapi.cn/</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3"><strong>ContainerRegistryEndpointSuffix</strong></td>
+            <td class="px-4 py-3">azurecr.io</td>
+            <td class="px-4 py-3">azurecr.us</td>
+            <td class="px-4 py-3">azurecr.cn</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3"><strong>DataLakeEndpointResourceId</strong></td>
+            <td class="px-4 py-3">https://datalake.azure.net/</td>
+            <td class="px-4 py-3"></td>
+            <td class="px-4 py-3"></td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3"><strong>EnableAdfsAuthentication</strong></td>
+            <td class="px-4 py-3">False</td>
+            <td class="px-4 py-3">False</td>
+            <td class="px-4 py-3">False</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3"><strong>GalleryUrl</strong></td>
+            <td class="px-4 py-3"></td>
+            <td class="px-4 py-3">https://gallery.azure.com/</td>
+            <td class="px-4 py-3">https://gallery.azure.com/</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3"><strong>GraphEndpointResourceId</strong></td>
+            <td class="px-4 py-3">https://graph.windows.net/</td>
+            <td class="px-4 py-3">https://graph.windows.net/</td>
+            <td class="px-4 py-3">https://graph.chinacloudapi.cn/</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3"><strong>GraphUrl</strong></td>
+            <td class="px-4 py-3">https://graph.windows.net/</td>
+            <td class="px-4 py-3">https://graph.windows.net/</td>
+            <td class="px-4 py-3">https://graph.chinacloudapi.cn/</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3"><strong>ManagementPortalUrl</strong></td>
+            <td class="px-4 py-3">https://portal.azure.com</td>
+            <td class="px-4 py-3">https://portal.azure.us/</td>
+            <td class="px-4 py-3">https://portal.azure.cn/</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3"><strong>Name</strong></td>
+            <td class="px-4 py-3">AzureCloud</td>
+            <td class="px-4 py-3">AzureUSGovernment</td>
+            <td class="px-4 py-3">AzureChinaCloud</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3"><strong>OnPremise</strong></td>
+            <td class="px-4 py-3">False</td>
+            <td class="px-4 py-3">False</td>
+            <td class="px-4 py-3">False</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3"><strong>PublishSettingsFileUrl</strong></td>
+            <td class="px-4 py-3">https://go.microsoft.com/fwlink/?LinkID=301775</td>
+            <td class="px-4 py-3">https://manage.windowsazure.us/publishsettings/index</td>
+            <td class="px-4 py-3">https://go.microsoft.com/fwlink/?LinkID=301776</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3"><strong>ResourceManagerUrl</strong></td>
+            <td class="px-4 py-3">https://management.azure.com/</td>
+            <td class="px-4 py-3">https://management.usgovcloudapi.net/</td>
+            <td class="px-4 py-3">https://management.chinacloudapi.cn/</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3"><strong>ServiceManagementUrl</strong></td>
+            <td class="px-4 py-3">https://management.core.windows.net/</td>
+            <td class="px-4 py-3">https://management.core.usgovcloudapi.net/</td>
+            <td class="px-4 py-3">https://management.core.chinacloudapi.cn/</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3"><strong>SqlDatabaseDnsSuffix</strong></td>
+            <td class="px-4 py-3">.database.windows.net</td>
+            <td class="px-4 py-3">.database.usgovcloudapi.net</td>
+            <td class="px-4 py-3">.database.chinacloudapi.cn</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3"><strong>StorageEndpointSuffix</strong></td>
+            <td class="px-4 py-3">core.windows.net</td>
+            <td class="px-4 py-3">core.usgovcloudapi.net</td>
+            <td class="px-4 py-3">core.chinacloudapi.cn</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3"><strong>TrafficManagerDnsSuffix</strong></td>
+            <td class="px-4 py-3">trafficmanager.net</td>
+            <td class="px-4 py-3">usgovtrafficmanager.net</td>
+            <td class="px-4 py-3">trafficmanager.cn</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3"><strong>Type</strong></td>
+            <td class="px-4 py-3">Discovered</td>
+            <td class="px-4 py-3">Built-in</td>
+            <td class="px-4 py-3">Built-in</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3"><strong>VersionProfiles</strong></td>
+            <td class="px-4 py-3"></td>
+            <td class="px-4 py-3"></td>
+            <td class="px-4 py-3"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </section>
 
   <section class="section-block" aria-labelledby="env-resources-heading">
-    <h2 id="env-resources-heading" class="section-title mb-4">Additional resources</h2>
-    <p class="mb-4 text-sm text-text-muted">
+    <h2 id="env-resources-heading" class="section-title">Additional resources</h2>
+    <p class="text-text-muted">
       Helpful guidance for navigating Azure sovereign clouds and automation tooling.
     </p>
     <div class="resource-grid">
@@ -254,7 +241,7 @@
           aria-label="Learn more about PowerShell reference (opens in new tab)"
         >
           Learn more
-          <app-lucide-icon name="external-link" class="h-3.5 w-3.5" aria-hidden="true" />
+          <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
         </a>
       </article>
       <article class="card card-resource">
@@ -270,7 +257,7 @@
           aria-label="Learn more about Azure US Government (opens in new tab)"
         >
           Learn more
-          <app-lucide-icon name="external-link" class="h-3.5 w-3.5" aria-hidden="true" />
+          <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
         </a>
       </article>
       <article class="card card-resource">
@@ -286,7 +273,7 @@
           aria-label="Learn more about Azure China (opens in new tab)"
         >
           Learn more
-          <app-lucide-icon name="external-link" class="h-3.5 w-3.5" aria-hidden="true" />
+          <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
         </a>
       </article>
     </div>

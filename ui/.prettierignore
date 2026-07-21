@@ -4,7 +4,10 @@ node_modules/
 
 *.md
 *.json
-package.json
-package-lock.json
-tsconfig.json
+*.d.ts
+
+.env*
 src/styles/theme.css
+
+# Generated from Angular official docs. Validate with npm run check:angular-context.
+docs/ai/angular-*

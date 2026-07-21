@@ -16,19 +16,19 @@
     <h2 id="zones-stats-heading" class="sr-only">Availability zones statistics</h2>
     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       <article
-        class="flex flex-col gap-2 rounded-2xl border border-brand/40 bg-surface-raised px-5 py-4 shadow-sm"
+        class="flex flex-col gap-2 rounded-lg border border-brand/40 bg-surface-raised px-5 py-4 shadow-sm"
       >
         <span class="eyebrow">Regions with zones</span>
-        <span class="text-3xl font-bold text-brand-dark">{{ tableData().length }}</span>
+        <span class="text-3xl font-bold text-brand-dark">{{ tableData.length }}</span>
       </article>
       <article
-        class="flex flex-col gap-2 rounded-2xl border border-brand/40 bg-surface-raised px-5 py-4 shadow-sm"
+        class="flex flex-col gap-2 rounded-lg border border-brand/40 bg-surface-raised px-5 py-4 shadow-sm"
       >
         <span class="eyebrow">VM SLA across zones</span>
         <span class="text-3xl font-bold text-brand-dark">99.99%</span>
       </article>
       <article
-        class="flex flex-col gap-2 rounded-2xl border border-brand/40 bg-surface-raised px-5 py-4 shadow-sm"
+        class="flex flex-col gap-2 rounded-lg border border-brand/40 bg-surface-raised px-5 py-4 shadow-sm"
       >
         <span class="eyebrow">Typical zone latency</span>
         <span class="text-3xl font-bold text-brand-dark">&lt; 2&nbsp;ms</span>
@@ -37,78 +37,53 @@
   </section>
 
   <section class="section-block" aria-labelledby="regions-zones-heading">
-    <h2 id="regions-zones-heading" class="section-title mb-4">
+    <h2 id="regions-zones-heading" class="section-title">
       Azure regions with availability zone support
     </h2>
-    @defer (on viewport; prefetch on idle) {
-      <div class="table-shell">
-        <table class="table-base">
-          <thead class="table-head">
-            <tr>
-              <th class="px-4 py-3">Region</th>
-              <th class="px-4 py-3">Geography</th>
-              <th class="px-4 py-3">Datacenter</th>
-              <th class="px-4 py-3 text-right">Availability zones</th>
+    <div class="table-shell">
+      <table class="table-base">
+        <thead class="table-head">
+          <tr>
+            <th scope="col" class="px-4 py-3">Region</th>
+            <th scope="col" class="px-4 py-3">Geography</th>
+            <th scope="col" class="px-4 py-3">Datacenter</th>
+            <th scope="col" class="px-4 py-3 text-right">Availability zones</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border-soft">
+          @for (r of tableData; track r.regionId) {
+            <tr class="table-row-hover">
+              <td class="px-4 py-3 whitespace-nowrap">
+                <a class="link-primary font-semibold" [href]="buildRegionDetailHref(r.displayName)">
+                  {{ r.displayName }}
+                  <span aria-hidden="true" class="text-text-muted">></span>
+                </a>
+              </td>
+              <td class="px-4 py-3 text-text-muted">{{ r.geography }}</td>
+              <td class="px-4 py-3 text-text-muted">{{ r.datacenterLocation }}</td>
+              <td class="px-4 py-3 text-right">
+                <span
+                  class="inline-flex size-7 items-center justify-center rounded-full bg-success text-sm font-semibold text-success-foreground tabular-nums"
+                >
+                  {{ r.availabilityZoneCount }}
+                </span>
+              </td>
             </tr>
-          </thead>
-          <tbody class="divide-y divide-border-soft">
-            @for (r of tableData(); track r.regionId) {
-              <tr class="table-row-hover">
-                <td class="px-4 py-3">
-                  <div class="space-y-1 text-left">
-                    <a
-                      class="link-primary font-semibold"
-                      [routerLink]="buildRegionRouterLink(r.displayName)"
-                    >
-                      {{ r.displayName }}
-                      <span aria-hidden="true" class="text-text-muted">></span>
-                    </a>
-                    <div class="text-xs font-semibold tracking-wide text-text-subtle uppercase">
-                      {{ r.regionId }}
-                    </div>
-                  </div>
-                </td>
-                <td class="px-4 py-3 text-text-muted">{{ r.geography }}</td>
-                <td class="px-4 py-3 text-text-muted">{{ r.datacenterLocation }}</td>
-                <td class="px-4 py-3 text-right">
-                  @if (r.availabilityZoneCount) {
-                    <span
-                      class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-success text-sm font-semibold text-success-foreground tabular-nums"
-                    >
-                      {{ r.availabilityZoneCount }}
-                    </span>
-                  } @else {
-                    <span class="text-text-muted">-</span>
-                  }
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-        @if (!tableData().length) {
-          <div class="flex flex-col items-center justify-center gap-3 px-5 py-8 text-center">
-            <app-lucide-icon name="server" class="h-8 w-8 text-text-muted/70" aria-hidden="true" />
-            <p class="text-sm text-text-muted">No regions with Availability Zones were found.</p>
-          </div>
-        }
-      </div>
-    } @placeholder {
-      <div
-        class="rounded-2xl border border-border-soft bg-surface-raised px-4 py-5 shadow-sm"
-        role="status"
-        aria-label="Loading Availability Zones table"
-      >
-        <div class="skeleton-shimmer mb-3 h-6 w-40 rounded"></div>
-        <div class="skeleton-shimmer mb-2 h-10 w-full rounded"></div>
-        <div class="skeleton-shimmer mb-2 h-10 w-full rounded"></div>
-        <div class="skeleton-shimmer h-10 w-full rounded"></div>
-      </div>
-    }
+          }
+        </tbody>
+      </table>
+      @if (!tableData.length) {
+        <div class="flex flex-col items-center justify-center gap-3 px-5 py-8 text-center">
+          <app-lucide-icon name="server" class="size-8 text-text-muted/70" aria-hidden="true" />
+          <p class="text-sm text-text-muted">No regions with Availability Zones were found.</p>
+        </div>
+      }
+    </div>
   </section>
 
   <section class="section-block" aria-labelledby="az-resources-heading">
-    <h2 id="az-resources-heading" class="section-title mb-4">Additional resources</h2>
-    <p class="mb-4 text-sm text-text-muted">
+    <h2 id="az-resources-heading" class="section-title">Additional resources</h2>
+    <p class="text-text-muted">
       Use these references to plan resilient architectures with Availability Zones.
     </p>
     <div class="resource-grid">
@@ -126,7 +101,7 @@
           aria-label="Learn more about Availability Zones overview (opens in new tab)"
         >
           Learn more
-          <app-lucide-icon name="external-link" class="h-3.5 w-3.5" aria-hidden="true" />
+          <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
         </a>
       </article>
       <article class="card card-resource">
@@ -143,7 +118,7 @@
           aria-label="Learn more about regional support (opens in new tab)"
         >
           Learn more
-          <app-lucide-icon name="external-link" class="h-3.5 w-3.5" aria-hidden="true" />
+          <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
         </a>
       </article>
       <article class="card card-resource">
@@ -160,14 +135,14 @@
           aria-label="Learn more about service zone support (opens in new tab)"
         >
           Learn more
-          <app-lucide-icon name="external-link" class="h-3.5 w-3.5" aria-hidden="true" />
+          <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
         </a>
       </article>
     </div>
   </section>
 
   <section class="section-block" aria-labelledby="az-faq-heading">
-    <h2 id="az-faq-heading" class="section-title mb-4">Frequently asked questions</h2>
+    <h2 id="az-faq-heading" class="section-title">Frequently asked questions</h2>
     <div class="faq-list">
       <details class="faq-item group">
         <summary class="faq-summary">
@@ -193,7 +168,7 @@
             rel="noopener noreferrer"
           >
             Azure products by region
-            <app-lucide-icon name="external-link" class="h-3 w-3" aria-hidden="true" />
+            <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
           </a>
           page to confirm support for your workloads.
         </div>

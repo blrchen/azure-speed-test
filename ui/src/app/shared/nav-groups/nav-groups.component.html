@@ -1,4 +1,4 @@
-@for (group of groups(); track navGroupTrackBy($index, group); let last = $last) {
+@for (group of navGroups(); track group.id; let last = $last) {
   <div class="flex flex-col gap-2">
     @if (group.heading) {
       <div class="flex h-8 shrink-0 items-center px-2 text-xs font-medium text-text-muted">
@@ -6,30 +6,40 @@
       </div>
     }
     <ul class="m-0 flex list-none flex-col gap-1 p-0">
-      @for (item of group.items; track navItemTrackBy($index, item)) {
+      @for (item of group.items; track item.routerLink) {
         <li class="w-full">
-          <a
-            class="group flex h-8 w-full items-center gap-2 overflow-hidden rounded-md px-2 text-sm transition-[background-color,color] outline-none hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-primary/60 active:bg-sidebar-accent active:text-sidebar-accent-foreground"
-            [class]="
-              rla.isActive
-                ? 'bg-primary font-medium text-primary-foreground hover:bg-primary/90 active:bg-primary/90'
-                : 'text-sidebar-foreground'
-            "
-            [routerLink]="item.routerLink"
-            routerLinkActive="active"
-            [routerLinkActiveOptions]="{ exact: true }"
-            #rla="routerLinkActive"
-            [attr.aria-current]="rla.isActive ? 'page' : null"
-            (click)="handleNavLinkClick()"
-          >
-            <app-lucide-icon [name]="item.icon" class="size-4 shrink-0" aria-hidden="true" />
-            <span class="truncate">{{ item.label }}</span>
-          </a>
+          @if (item.documentNavigation) {
+            <a
+              class="group flex h-8 w-full items-center gap-2 rounded-md px-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              [class]="isNavItemActive(item) ? activeLinkClasses : inactiveLinkClasses"
+              [href]="item.routerLink"
+              [attr.title]="item.label"
+              [attr.aria-current]="isNavItemActive(item) ? 'page' : null"
+            >
+              <app-lucide-icon [name]="item.icon" class="size-4 shrink-0" aria-hidden="true" />
+              <span class="min-w-0 truncate">{{ item.label }}</span>
+            </a>
+          } @else {
+            <a
+              #linkActive="routerLinkActive"
+              class="group flex h-8 w-full items-center gap-2 rounded-md px-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              [class]="linkActive.isActive ? activeLinkClasses : inactiveLinkClasses"
+              [routerLink]="item.routerLink"
+              [routerLinkActive]="[]"
+              [routerLinkActiveOptions]="item.activeMatchOptions ?? exactMatchOptions"
+              [attr.title]="item.label"
+              ariaCurrentWhenActive="page"
+              (click)="handleNavLinkClick($event)"
+            >
+              <app-lucide-icon [name]="item.icon" class="size-4 shrink-0" aria-hidden="true" />
+              <span class="min-w-0 truncate">{{ item.label }}</span>
+            </a>
+          }
         </li>
       }
     </ul>
   </div>
   @if (!last) {
-    <div class="my-2 h-px bg-border-soft"></div>
+    <div class="mx-2 my-2 h-px bg-border-soft"></div>
   }
 }

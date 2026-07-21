@@ -1,5 +1,5 @@
 import { isPlatformBrowser } from '@angular/common'
-import { computed, inject, Injectable, PLATFORM_ID, signal } from '@angular/core'
+import { computed, DestroyRef, inject, PLATFORM_ID, Service, signal } from '@angular/core'
 
 export interface CloudflareMetaResponse {
   clientIp: string
@@ -10,68 +10,41 @@ export interface CloudflareMetaResponse {
   country?: string
 }
 
-@Injectable({ providedIn: 'root' })
+@Service({ autoProvided: false })
 export class CloudflareMetaStore {
-  private readonly platformId = inject(PLATFORM_ID)
-  private readonly isBrowser = isPlatformBrowser(this.platformId)
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID))
   private readonly meta = signal<CloudflareMetaResponse | null>(null)
-  private readonly errorState = signal<string | null>(null)
-  private readonly loading = signal(true)
-  private readonly visible = signal(true)
+  private readonly loading = signal(false)
+  private readonly visible = signal(false)
   private metaFetchAbortController: AbortController | null = null
+  private hasLoaded = false
 
-  public readonly isLoading = this.loading.asReadonly()
-  public readonly error = this.errorState.asReadonly()
-  public readonly isVisible = this.visible.asReadonly()
-  public readonly viewerNetworkLabel = computed(() => {
+  readonly isLoading = this.loading.asReadonly()
+  readonly isVisible = this.visible.asReadonly()
+  readonly viewerNetworkLabel = computed(() => {
     const meta = this.meta()
-    if (!meta) {
-      return null
-    }
+    if (!meta) return null
 
-    const organization = meta.asOrganization?.trim()
-    const asn = meta.asn && meta.asn > 0 ? Math.trunc(meta.asn) : null
-
-    if (organization && asn) {
-      return `${organization} (AS${asn})`
-    }
-
-    if (organization) {
-      return organization
-    }
-
-    if (asn) {
-      return `AS${asn}`
-    }
-
-    return null
+    const { asOrganization, asn } = meta
+    const asnLabel = asn ? `AS${asn}` : null
+    if (asOrganization && asnLabel) return `${asOrganization} (${asnLabel})`
+    return asOrganization ?? asnLabel
   })
-  public readonly viewerIpLabel = computed(() => this.meta()?.clientIp ?? null)
-  public readonly viewerLocationLabel = computed(() => {
+  readonly viewerIpLabel = computed(() => this.meta()?.clientIp ?? null)
+  readonly viewerLocationLabel = computed(() => {
     const meta = this.meta()
-    if (!meta) {
-      return null
-    }
+    if (!meta) return null
 
-    const parts: string[] = []
-
-    if (meta.city) {
-      parts.push(meta.city)
-    }
-
-    if (meta.country) {
-      parts.push(meta.country)
-    }
-
-    if (meta.colo) {
-      parts.push(`(${meta.colo})`)
-    }
-
-    return parts.length > 0 ? parts.join(', ') : null
+    const parts = [meta.city, meta.country, meta.colo ? `(${meta.colo})` : null].filter(Boolean)
+    return parts.join(', ') || null
   })
+
+  constructor() {
+    inject(DestroyRef).onDestroy(() => this.abortOngoingRequest())
+  }
 
   async load(): Promise<void> {
-    if (!this.isBrowser) {
+    if (!this.isBrowser || this.hasLoaded || this.loading()) {
       return
     }
 
@@ -80,12 +53,11 @@ export class CloudflareMetaStore {
     const controller = new AbortController()
     this.metaFetchAbortController = controller
     this.loading.set(true)
-    this.errorState.set(null)
 
     try {
       const response = await fetch('https://speed.cloudflare.com/meta', {
         cache: 'no-store',
-        signal: controller.signal
+        signal: controller.signal,
       })
 
       if (!response.ok) {
@@ -99,19 +71,26 @@ export class CloudflareMetaStore {
         throw new Error('Unexpected response shape')
       }
 
-      this.meta.set(parsed)
+      if (this.isActiveRequest(controller)) {
+        this.meta.set(parsed)
+        this.hasLoaded = true
+      }
     } catch (error) {
-      if (this.isAbortError(error)) {
+      if (this.isAbortError(error) || !this.isActiveRequest(controller)) {
         return
       }
-
       this.meta.set(null)
-      this.errorState.set('Unable to determine your network details.')
     } finally {
-      if (this.metaFetchAbortController === controller) {
+      const isLatestRequest = this.isActiveRequest(controller)
+      const hasNewerRequest = !isLatestRequest
+
+      if (isLatestRequest) {
         this.metaFetchAbortController = null
       }
-      this.loading.set(false)
+
+      if (!hasNewerRequest) {
+        this.loading.set(false)
+      }
     }
   }
 
@@ -119,67 +98,46 @@ export class CloudflareMetaStore {
     this.visible.update((current) => !current)
   }
 
-  destroy(): void {
-    this.abortOngoingRequest()
-  }
-
   private abortOngoingRequest(): void {
-    if (this.metaFetchAbortController) {
-      this.metaFetchAbortController.abort()
-      this.metaFetchAbortController = null
-    }
+    this.metaFetchAbortController?.abort()
+    this.metaFetchAbortController = null
   }
 
   private parse(raw: unknown): CloudflareMetaResponse | null {
-    if (!raw || typeof raw !== 'object') {
+    const data = raw as Record<string, unknown> | null
+    if (!data || typeof data !== 'object') {
       return null
     }
 
-    const record = raw as Record<string, unknown>
-
-    const clientIpValue = record['clientIp']
-    const clientIp = typeof clientIpValue === 'string' ? clientIpValue.trim() : ''
+    const clientIp = typeof data['clientIp'] === 'string' ? data['clientIp'].trim() : ''
     if (!clientIp) {
       return null
     }
 
-    const organizationValue = record['asOrganization']
-    const organization =
-      typeof organizationValue === 'string' && organizationValue.trim().length
-        ? organizationValue.trim()
-        : null
-
-    const asnValue = record['asn']
-    let asn: number | null = null
-    if (typeof asnValue === 'number' && Number.isFinite(asnValue)) {
-      asn = Math.trunc(Math.abs(asnValue))
-    } else if (typeof asnValue === 'string') {
-      const parsed = Number.parseInt(asnValue, 10)
-      if (Number.isFinite(parsed)) {
-        asn = Math.trunc(Math.abs(parsed))
-      }
-    }
-
-    const city = typeof record['city'] === 'string' ? record['city'] : undefined
-    const colo = typeof record['colo'] === 'string' ? record['colo'] : undefined
-    const country = typeof record['country'] === 'string' ? record['country'] : undefined
+    const orgValue = data['asOrganization']
+    const asOrganization = typeof orgValue === 'string' && orgValue.trim() ? orgValue.trim() : null
 
     return {
       clientIp,
-      asn: asn && asn > 0 ? asn : null,
-      asOrganization: organization,
-      city,
-      colo,
-      country
+      asn: this.parseAsn(data['asn']),
+      asOrganization,
+      city: typeof data['city'] === 'string' ? data['city'] : undefined,
+      colo: typeof data['colo'] === 'string' ? data['colo'] : undefined,
+      country: typeof data['country'] === 'string' ? data['country'] : undefined,
     }
   }
 
-  private isAbortError(error: unknown): boolean {
-    if (!error || typeof error !== 'object') {
-      return false
-    }
+  private parseAsn(value: unknown): number | null {
+    if (typeof value !== 'number' && typeof value !== 'string') return null
+    const num = typeof value === 'number' ? value : parseInt(value, 10)
+    return Number.isFinite(num) && num > 0 ? Math.trunc(num) : null
+  }
 
-    const maybeError = error as { name?: unknown }
-    return typeof maybeError.name === 'string' && maybeError.name === 'AbortError'
+  private isActiveRequest(controller: AbortController): boolean {
+    return this.metaFetchAbortController === controller
+  }
+
+  private isAbortError(error: unknown): boolean {
+    return error instanceof Error && error.name === 'AbortError'
   }
 }

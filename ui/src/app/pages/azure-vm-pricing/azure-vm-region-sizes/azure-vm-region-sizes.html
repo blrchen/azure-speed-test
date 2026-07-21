@@ -1,0 +1,441 @@
+<article class="page-shell section-stack mx-auto max-w-7xl">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a class="breadcrumb-link" routerLink="/AzureVmPricing">Azure VM Sizes &amp; Pricing</a>
+    <span class="breadcrumb-separator">/</span>
+    <a class="breadcrumb-link" routerLink="/AzureVmPricing/Regions">Regions</a>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current" aria-current="page">{{ region().displayName }}</span>
+  </nav>
+
+  <header class="page-header">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+      <div class="max-w-4xl space-y-3">
+        <div class="flex items-center gap-3">
+          <div class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+            <app-lucide-icon name="map-pin" class="size-6 text-primary" aria-hidden="true" />
+          </div>
+          <div class="min-w-0">
+            <p class="mb-1 font-mono text-sm font-semibold text-text-muted" translate="no">
+              {{ region().armRegionName }}
+            </p>
+            <h1 class="page-title">Azure VM pricing in {{ region().displayName }}</h1>
+          </div>
+        </div>
+        <p class="page-lead">
+          Compare Linux and Windows pay-as-you-go, 1-year reserved, 3-year reserved, and Spot VM
+          prices for this Azure region. Sort by hourly price or filter by VM size, series, family,
+          CPU, memory, and architecture.
+        </p>
+      </div>
+
+      <div class="flex shrink-0 flex-col items-start gap-3 lg:items-end">
+        <span
+          class="badge"
+          [class.badge-success]="region().status === 'available'"
+          [class.badge-brand]="region().status === 'preview'"
+          [class.badge-neutral]="region().status !== 'available' && region().status !== 'preview'"
+        >
+          {{ statusLabel(region().status) }}
+        </span>
+      </div>
+    </div>
+
+    <dl class="vm-summary-ledger">
+      <div class="vm-summary-ledger__item">
+        <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">
+          Priced VM sizes
+        </dt>
+        <dd class="text-2xl font-bold text-text-strong tabular-nums">
+          {{ formatNumber(pricedSkuCount()) }}
+        </dd>
+      </div>
+      <div class="vm-summary-ledger__item">
+        <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">Lowest hourly</dt>
+        <dd class="text-2xl font-bold text-text-strong tabular-nums">
+          @if (lowestHourlyPrice(); as price) {
+            {{ formatHourlyPrice(price) }}
+          } @else {
+            Not available
+          }
+        </dd>
+      </div>
+      <div class="vm-summary-ledger__item">
+        <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">VM series</dt>
+        <dd class="text-2xl font-bold text-text-strong tabular-nums">
+          {{ formatNumber(seriesCount()) }}
+        </dd>
+      </div>
+      <div class="vm-summary-ledger__item">
+        <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">Geography</dt>
+        <dd class="text-lg font-bold text-text-strong">
+          {{ region().geography || 'Not mapped' }}
+        </dd>
+      </div>
+    </dl>
+
+    <div class="flex flex-wrap gap-3">
+      @if (region().regionDetailPath) {
+        <a class="btn btn-secondary min-h-11" [href]="region().regionDetailPath">
+          <app-lucide-icon name="globe-2" class="size-4" aria-hidden="true" />
+          View {{ region().displayName }} region profile
+        </a>
+      }
+      <a class="btn btn-outline min-h-11" routerLink="/AzureVmPricing/Regions">
+        All pricing regions
+      </a>
+    </div>
+  </header>
+
+  <aside
+    class="flex items-start gap-3 rounded-lg border border-border-soft bg-surface-muted p-4 text-sm leading-relaxed text-text-muted"
+    aria-label="Pricing interpretation"
+  >
+    <app-lucide-icon name="info" class="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
+    <div class="space-y-1">
+      <p>
+        Prices come from the anonymous Azure Retail Prices API and represent
+        {{ selectedOperatingSystem() }} {{ selectedPriceModeLabel() }} public rates in
+        {{ vmRegionPageData().source.retailPrices.currencyCode }}.
+        {{ selectedPriceModeDescription() }} Windows reserved estimates combine the reserved compute
+        rate with the current Windows software surcharge and do not model Azure Hybrid Benefit.
+        Prices exclude savings plans, storage, taxes, and negotiated discounts.
+      </p>
+      @if (!region().indexable) {
+        <p class="font-semibold text-text-body">
+          This page is excluded from search indexing because it has no current qualifying VM prices,
+          lacks sufficient public region metadata, or represents a planned or internal region.
+        </p>
+      }
+    </div>
+  </aside>
+
+  <section class="section-block" aria-labelledby="regional-vm-pricing-heading">
+    <div>
+      <h2 id="regional-vm-pricing-heading" class="section-title">
+        VM prices in {{ region().displayName }}
+      </h2>
+      <p class="mt-2 text-sm text-text-muted">
+        Monthly estimates use 730 hours. Open a VM size to compare the same configuration across all
+        priced Azure regions.
+      </p>
+    </div>
+
+    <form class="space-y-4" role="search" (submit)="$event.preventDefault()">
+      <div class="flex min-w-0 flex-col gap-2">
+        <label for="regional-vm-search" class="form-label">Search VM prices</label>
+        <div class="form-control-shell">
+          <app-lucide-icon
+            name="search"
+            class="form-control-shell__icon size-4"
+            aria-hidden="true"
+          />
+          <input
+            #skuSearch
+            id="regional-vm-search"
+            type="search"
+            class="form-control form-control--icon-start form-control--action-end form-control-focus-ring min-h-11 md:min-h-9"
+            placeholder="D4s_v5, memory, Arm64, GPU..."
+            autocomplete="off"
+            spellcheck="false"
+            [value]="query()"
+            (input)="updateQuery(skuSearch.value)"
+          />
+          @if (query()) {
+            <button
+              type="button"
+              class="form-control-shell__action"
+              aria-label="Clear regional VM search"
+              (click)="updateQuery(''); skuSearch.focus()"
+            >
+              <app-lucide-icon name="x" class="size-4" aria-hidden="true" />
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div class="flex min-w-0 flex-col gap-2">
+          <label for="regional-vm-type" class="form-label">Type</label>
+          <div class="form-select-wrapper">
+            <select
+              #typeFilter
+              id="regional-vm-type"
+              class="form-select min-h-11 md:min-h-9"
+              [value]="selectedType()"
+              (change)="updateType(typeFilter.value)"
+            >
+              @for (option of typeOptions; track option.value) {
+                <option [value]="option.value">{{ option.label }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="flex min-w-0 flex-col gap-2">
+          <label for="regional-vm-family-group" class="form-label">VM family</label>
+          <div class="form-select-wrapper">
+            <select
+              #familyGroupFilter
+              id="regional-vm-family-group"
+              class="form-select min-h-11 md:min-h-9"
+              [value]="selectedFamilyGroup()"
+              (change)="updateFamilyGroup(familyGroupFilter.value)"
+            >
+              <option value="">All VM families</option>
+              @for (option of familyGroupOptions(); track option.familyGroup) {
+                <option [value]="option.familyGroup">
+                  {{ option.familyGroup }} ({{ option.count }})
+                </option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <app-vm-numeric-multi-filter
+          controlId="regional-vm-vcpus"
+          label="vCPUs"
+          allLabel="All vCPU counts"
+          singularUnit="vCPU"
+          pluralUnit="vCPUs"
+          [options]="vcpuOptions()"
+          [quickValues]="vcpuQuickValues"
+          [selectedValues]="selectedVcpus()"
+          [selectedRange]="selectedVcpuRange()"
+          (selectedValuesChange)="updateVcpus($event)"
+          (selectedRangeChange)="updateVcpuRange($event)"
+        />
+
+        <app-vm-numeric-multi-filter
+          controlId="regional-vm-memory"
+          label="Memory"
+          allLabel="All memory sizes"
+          singularUnit="GB"
+          pluralUnit="GB"
+          [options]="memoryOptions()"
+          [quickValues]="memoryQuickValues"
+          [selectedValues]="selectedMemoryGB()"
+          [selectedRange]="selectedMemoryRange()"
+          (selectedValuesChange)="updateMemory($event)"
+          (selectedRangeChange)="updateMemoryRange($event)"
+        />
+      </div>
+    </form>
+
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <p
+        class="m-0 text-sm font-semibold text-text-body tabular-nums"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {{ resultSummary() }}
+      </p>
+      @if (hasActiveFilters()) {
+        <button
+          type="button"
+          class="btn btn-outline btn--sm min-h-11 md:min-h-9"
+          (click)="clearFilters(); skuSearch.focus()"
+        >
+          <app-lucide-icon name="x" class="size-3.5" aria-hidden="true" />
+          Clear filters
+        </button>
+      }
+    </div>
+
+    <div class="flex flex-wrap items-end gap-x-6 gap-y-4">
+      <div class="flex flex-col items-start gap-2">
+        <span class="text-xs font-semibold tracking-wide text-text-muted uppercase">
+          Operating system
+        </span>
+        <app-vm-operating-system-toggle
+          [selected]="selectedOperatingSystem()"
+          (selectedChange)="updateOperatingSystem($event)"
+        />
+      </div>
+      <div class="flex max-w-full flex-col items-start gap-2">
+        <span class="text-xs font-semibold tracking-wide text-text-muted uppercase">
+          Pricing model
+        </span>
+        <app-vm-price-mode-toggle
+          [selected]="selectedPriceMode()"
+          (selectedChange)="updatePriceMode($event)"
+        />
+      </div>
+    </div>
+
+    @if (filteredPrices().length) {
+      <div class="table-shell" aria-describedby="regional-vm-pricing-heading">
+        <table class="table-base">
+          <caption class="sr-only">
+            {{
+              selectedOperatingSystem()
+            }}
+            {{
+              selectedPriceModeLabel()
+            }}
+            Azure VM prices in
+            {{
+              region().displayName
+            }}
+            matching the current filters. Use a column heading button to change the sort order.
+          </caption>
+          <thead class="table-head">
+            <tr>
+              <th scope="col" class="p-0" [attr.aria-sort]="sortAriaValue('sku')">
+                <button type="button" class="table-sort-button" (click)="sortBy('sku')">
+                  VM size
+                  @if (isSortedBy('sku')) {
+                    <app-lucide-icon
+                      name="chevron-down"
+                      class="table-sort-icon size-3.5"
+                      [class.table-sort-icon--ascending]="isSortAscending()"
+                      aria-hidden="true"
+                    />
+                  }
+                </button>
+              </th>
+              <th scope="col" class="p-0" [attr.aria-sort]="sortAriaValue('price')">
+                <button
+                  type="button"
+                  class="table-sort-button justify-end text-right"
+                  (click)="sortBy('price')"
+                >
+                  Hourly price
+                  @if (isSortedBy('price')) {
+                    <app-lucide-icon
+                      name="chevron-down"
+                      class="table-sort-icon size-3.5"
+                      [class.table-sort-icon--ascending]="isSortAscending()"
+                      aria-hidden="true"
+                    />
+                  }
+                </button>
+              </th>
+              <th scope="col" class="px-4 py-3 text-right">Est. monthly</th>
+              <th scope="col" class="p-0" [attr.aria-sort]="sortAriaValue('vcpus')">
+                <button
+                  type="button"
+                  class="table-sort-button justify-end text-right"
+                  (click)="sortBy('vcpus')"
+                >
+                  vCPUs
+                  @if (isSortedBy('vcpus')) {
+                    <app-lucide-icon
+                      name="chevron-down"
+                      class="table-sort-icon size-3.5"
+                      [class.table-sort-icon--ascending]="isSortAscending()"
+                      aria-hidden="true"
+                    />
+                  }
+                </button>
+              </th>
+              <th scope="col" class="p-0" [attr.aria-sort]="sortAriaValue('memory')">
+                <button
+                  type="button"
+                  class="table-sort-button justify-end text-right"
+                  (click)="sortBy('memory')"
+                >
+                  Memory
+                  @if (isSortedBy('memory')) {
+                    <app-lucide-icon
+                      name="chevron-down"
+                      class="table-sort-icon size-3.5"
+                      [class.table-sort-icon--ascending]="isSortAscending()"
+                      aria-hidden="true"
+                    />
+                  }
+                </button>
+              </th>
+              <th scope="col" class="px-4 py-3">Architecture</th>
+              <th scope="col" class="p-0" [attr.aria-sort]="sortAriaValue('series')">
+                <button type="button" class="table-sort-button" (click)="sortBy('series')">
+                  Series
+                  @if (isSortedBy('series')) {
+                    <app-lucide-icon
+                      name="chevron-down"
+                      class="table-sort-icon size-3.5"
+                      [class.table-sort-icon--ascending]="isSortAscending()"
+                      aria-hidden="true"
+                    />
+                  }
+                </button>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border-soft">
+            @for (view of filteredPrices(); track view.sku.skuKey) {
+              <tr class="table-row-hover align-middle">
+                <th scope="row" class="px-4 py-3 text-left font-normal">
+                  <a
+                    class="link-primary font-mono text-sm font-semibold whitespace-nowrap"
+                    [href]="buildVmSkuHref(view.sku.sku, region().armRegionName)"
+                    translate="no"
+                  >
+                    {{ view.sku.sku }}
+                  </a>
+                  <div class="mt-1 font-mono text-xs text-text-muted" translate="no">
+                    {{ view.sku.size }}
+                  </div>
+                </th>
+                <td class="px-4 py-3 text-right font-semibold whitespace-nowrap tabular-nums">
+                  {{ formatHourlyPrice(view.hourlyPrice) }}
+                </td>
+                <td class="px-4 py-3 text-right whitespace-nowrap tabular-nums">
+                  {{ formatMonthlyPrice(view.hourlyPrice) }}
+                </td>
+                <td class="px-4 py-3 text-right tabular-nums">
+                  {{ formatNumber(view.specs.vcpus) }}
+                </td>
+                <td class="px-4 py-3 text-right whitespace-nowrap tabular-nums">
+                  @if (view.specs.memoryGB === null) {
+                    Not listed
+                  } @else {
+                    {{ formatNumber(view.specs.memoryGB) }} GB
+                  }
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap" translate="no">
+                  {{ view.specs.architecture }}
+                </td>
+                <td class="max-w-52 px-4 py-3">
+                  <span class="block text-sm font-semibold text-text-body" translate="no">
+                    {{ view.sku.series }}
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <div class="card flex flex-col items-center gap-3 py-10 text-center">
+        <app-lucide-icon name="search-x" class="size-10 text-text-muted" aria-hidden="true" />
+        <h3 class="font-semibold text-text-strong">No VM prices match</h3>
+        <p class="text-sm text-text-muted">
+          Try fewer search terms or select fewer vCPU and memory values.
+        </p>
+        <button
+          type="button"
+          class="btn btn-outline min-h-11"
+          (click)="clearFilters(); skuSearch.focus()"
+        >
+          Clear filters
+        </button>
+      </div>
+    }
+  </section>
+
+  <section class="section-block" aria-labelledby="regional-vm-source-heading">
+    <h2 id="regional-vm-source-heading" class="section-title">Source and interpretation</h2>
+    <p class="text-sm leading-relaxed text-text-muted">
+      Prices: anonymous Azure Retail Prices API version
+      <span class="font-mono" translate="no">{{
+        vmRegionPageData().source.retailPrices.apiVersion
+      }}</span
+      >. Specifications: subscription-scoped Resource SKUs API version
+      <span class="font-mono" translate="no">{{
+        vmRegionPageData().source.resourceSkus.apiVersion
+      }}</span
+      >. A public price does not guarantee capacity, quota, or deployment eligibility.
+    </p>
+  </section>
+</article>

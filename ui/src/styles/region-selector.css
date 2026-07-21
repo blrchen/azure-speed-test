@@ -1,0 +1,4 @@
+/* Keep the native hidden state stronger than Tailwind display utilities during hydration. */
+.region-selector [hidden] {
+  display: none;
+}

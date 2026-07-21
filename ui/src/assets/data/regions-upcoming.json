@@ -1,0 +1,79 @@
+[
+  {
+    "regionId": "finlandcentral",
+    "displayName": "Finland Central",
+    "geography": "Finland",
+    "datacenterLocation": "Helsinki",
+    "latitude": 60.183027,
+    "longitude": 24.874774,
+    "announcementLink": "https://aka.ms/finlandintent",
+    "dataResidency": "Stored at rest in Finland",
+    "availableTo": "Available to all customers and partners"
+  },
+  {
+    "regionId": "greececentral",
+    "displayName": "Greece Central",
+    "geography": "Greece",
+    "datacenterLocation": "Athens",
+    "latitude": 37.9839412,
+    "longitude": 23.7283052,
+    "announcementLink": "https://news.microsoft.com/europe/2020/10/05/microsoft-announces-plans-for-first-datacenter-region-in-greece-as-part-of-gr-for-growth-digital-transformation-initiative/",
+    "dataResidency": "Stored at rest in Greece",
+    "availableTo": "Coming soon"
+  },
+  {
+    "regionId": "southcentralindia",
+    "displayName": "India South Central",
+    "geography": "India",
+    "datacenterLocation": "Hyderabad",
+    "latitude": 17.34,
+    "longitude": 78.5,
+    "announcementLink": "https://aka.ms/SouthCentralIndiaIntent",
+    "dataResidency": "Stored at rest in India",
+    "availableTo": "Available to all customers and partners"
+  },
+  {
+    "regionId": "saudiarabiaeast",
+    "displayName": "Saudi Arabia East",
+    "geography": "Saudi Arabia",
+    "datacenterLocation": "Dammam",
+    "latitude": 24.7136,
+    "longitude": 46.6753,
+    "announcementLink": "https://news.microsoft.com/en-xm/2024/12/04/microsoft-shares-strong-progress-on-datacenter-region-in-saudi-arabia-construction-complete-on-three-sites-with-availability-expected-in-2026/",
+    "dataResidency": "Stored at rest in Dammam",
+    "availableTo": "Coming 2026"
+  },
+  {
+    "regionId": "taiwannorth",
+    "displayName": "Taiwan North",
+    "geography": "Taiwan",
+    "datacenterLocation": "Taipei",
+    "latitude": 25.039666,
+    "longitude": 121.4139,
+    "announcementLink": "https://aka.ms/TaiwanIntent",
+    "dataResidency": "Stored at rest in Taiwan",
+    "availableTo": "Coming soon"
+  },
+  {
+    "regionId": "thailand-south",
+    "displayName": "Thailand South",
+    "geography": "Thailand",
+    "datacenterLocation": "Bangkok",
+    "latitude": 13.7563,
+    "longitude": 100.5018,
+    "announcementLink": "https://news.microsoft.com/source/asia/2025/11/18/microsoft-announces-landmark-strategic-commitment-to-accelerate-thailands-ai-powered-growth-and-inclusive-innovation/",
+    "dataResidency": "Stored at rest in Thailand ",
+    "availableTo": "Available to all customers and partners"
+  },
+  {
+    "regionId": "eastus3",
+    "displayName": "East US 3",
+    "geography": "United States",
+    "datacenterLocation": "Georgia",
+    "latitude": 32.840464,
+    "longitude": -83.716858,
+    "announcementLink": "https://azure.microsoft.com/en-us/blog/microsoft-will-establish-its-next-us-datacenter-region-in-georgia-s-fulton-and-douglas-counties/",
+    "dataResidency": "Stored at rest in the United States",
+    "availableTo": "Available to all customers and partners"
+  }
+]

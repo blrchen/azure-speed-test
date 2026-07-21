@@ -22,8 +22,10 @@
   font-size: 1.875rem;
   line-height: 1.1;
   font-weight: 700;
-  letter-spacing: -0.025em;
+  letter-spacing: 0;
   color: var(--color-text-strong);
+  text-wrap: balance;
+  scroll-margin-top: calc(env(safe-area-inset-top) + 5rem);
 }
 @media (min-width: 768px) {
   .page-title {
@@ -35,6 +37,7 @@
   font-size: 1rem;
   line-height: 1.625;
   color: var(--color-text-muted);
+  text-wrap: pretty;
 }
 
 .section-stack {
@@ -53,6 +56,8 @@
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--color-text-strong);
+  text-wrap: balance;
+  scroll-margin-top: calc(env(safe-area-inset-top) + 5rem);
 }
 
 /* Resource grid - responsive columns based on viewport */

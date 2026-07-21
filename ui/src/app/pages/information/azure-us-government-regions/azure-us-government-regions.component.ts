@@ -1,33 +1,29 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
+import { Component, inject, OnInit } from '@angular/core'
 import { RouterLink } from '@angular/router'
 
 import govRegionsJson from '../../../../assets/data/regions-usgov.json'
-import { Region } from '../../../models'
-import { SeoService } from '../../../services'
+import { SeoService } from '../../../services/seo.service'
 import { LucideIconComponent } from '../../../shared/icons/lucide-icons.component'
-import { buildRegionDetailRouterLink } from '../../../shared/utils'
+import { buildRegionDetailHref } from '../../../shared/utils'
 
 @Component({
   selector: 'app-azure-us-government-regions',
   imports: [RouterLink, LucideIconComponent],
   templateUrl: './azure-us-government-regions.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  host: { class: 'block' },
 })
 export class AzureUSGovernmentRegionsComponent implements OnInit {
-  readonly azureGovernmentRegions = signal<Region[]>([])
+  private readonly seoService = inject(SeoService)
 
-  private seoService = inject(SeoService)
+  readonly azureGovernmentRegions = govRegionsJson
+  protected readonly buildRegionDetailHref = buildRegionDetailHref
 
-  ngOnInit() {
-    this.seoService.setMetaTitle('Azure US Government Cloud Regions')
-    this.seoService.setMetaDescription(
-      'Explore Azure US Government Cloud regions designed for US government entities and their partners, meeting various US government security and compliance requirements.'
-    )
-    this.seoService.setCanonicalUrl(
-      'https://www.azurespeed.com/Information/AzureUSGovernmentRegions'
-    )
-    this.azureGovernmentRegions.set(govRegionsJson as Region[])
+  ngOnInit(): void {
+    this.seoService.setPageMeta({
+      title: 'Azure US Government Cloud Regions',
+      description:
+        'Explore Azure US Government Cloud regions designed for US government entities and their partners, meeting various US government security and compliance requirements.',
+      canonicalUrl: 'https://www.azurespeed.com/Information/AzureUSGovernmentRegions',
+    })
   }
-
-  protected readonly buildRegionRouterLink = buildRegionDetailRouterLink
 }

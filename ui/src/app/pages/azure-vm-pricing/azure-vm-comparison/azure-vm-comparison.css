@@ -1,0 +1,13 @@
+.vm-comparison-table {
+  min-width: 58rem;
+  table-layout: fixed;
+}
+
+.vm-comparison-table__attribute {
+  width: 14rem;
+  min-width: 14rem;
+}
+
+.vm-comparison-table__column {
+  min-width: 14rem;
+}

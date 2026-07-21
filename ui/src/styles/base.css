@@ -1,10 +1,11 @@
-* {
-  color-scheme: light dark;
-}
-
 html {
+  color-scheme: light;
   /* Prevent CLS from scrollbar appearance shifting centered content */
   scrollbar-gutter: stable;
+}
+
+html.dark {
+  color-scheme: dark;
 }
 
 body {
@@ -15,15 +16,56 @@ body {
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border-soft outline-ring/50;
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply bg-surface-base text-text-body antialiased;
+  }
+
+  a,
+  button,
+  select,
+  summary,
+  label[for],
+  input[type='button'],
+  input[type='submit'],
+  input[type='reset'],
+  input[type='checkbox'],
+  input[type='radio'],
+  input[type='file'],
+  [role='button'] {
+    -webkit-tap-highlight-color: color-mix(in srgb, var(--color-primary) 18%, transparent);
+    touch-action: manipulation;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
   }
 
   button:not(:disabled),
   [role='button']:not(:disabled) {
     cursor: pointer;
   }
+
+  :where(a[href], button:not(:disabled), summary, [role='button']):focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+/* CLS prevention: Ensure Angular component hosts have stable dimensions before hydration */
+app-root,
+app-footer {
+  display: block;
+  width: 100%;
 }

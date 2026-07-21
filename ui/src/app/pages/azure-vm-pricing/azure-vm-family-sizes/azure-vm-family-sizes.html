@@ -1,0 +1,205 @@
+<article class="page-shell section-stack mx-auto max-w-7xl">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a class="breadcrumb-link" routerLink="/AzureVmPricing">Azure VM Sizes &amp; Pricing</a>
+    <span class="breadcrumb-separator">/</span>
+    <a class="breadcrumb-link" routerLink="/AzureVmPricing/Series">Series</a>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current" aria-current="page" translate="no">
+      {{ seriesSummary().series }}
+    </span>
+  </nav>
+
+  <header class="page-header">
+    <div class="max-w-4xl space-y-3">
+      <div class="flex items-center gap-3">
+        <div class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+          <app-lucide-icon name="tag" class="size-6 text-primary" aria-hidden="true" />
+        </div>
+        <div class="min-w-0">
+          <p class="mb-1 text-sm font-semibold text-text-muted">Azure VM series</p>
+          <h1 class="page-title break-words">
+            <span translate="no">{{ seriesSummary().series }}</span> pricing and sizes
+          </h1>
+        </div>
+      </div>
+      <p class="page-lead">
+        Compare Linux and Windows pay-as-you-go, reserved, and Spot prices, specifications, and
+        pricing coverage for every VM size in this series.
+      </p>
+    </div>
+
+    <dl class="vm-summary-ledger vm-summary-ledger--three">
+      <div class="vm-summary-ledger__item">
+        <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">VM sizes</dt>
+        <dd class="text-2xl font-bold text-text-strong tabular-nums">
+          {{ vmSeriesPageData().counts.skuCount }}
+        </dd>
+      </div>
+      <div class="vm-summary-ledger__item">
+        <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">VM family</dt>
+        <dd class="text-base font-semibold text-text-strong" translate="no">
+          {{ seriesSummary().familyGroup ?? 'Not listed' }}
+        </dd>
+      </div>
+      <div class="vm-summary-ledger__item">
+        <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">Price profile</dt>
+        <dd class="text-base font-semibold text-text-strong">
+          {{ selectedOperatingSystem() }} {{ selectedPriceModeLabel() }}
+        </dd>
+      </div>
+    </dl>
+  </header>
+
+  <section class="section-block" aria-labelledby="vm-series-sizes-heading">
+    <div class="flex flex-wrap items-end justify-between gap-3">
+      <div>
+        <h2 id="vm-series-sizes-heading" class="section-title">Compare VM sizes</h2>
+        <p class="mt-2 text-sm text-text-muted">Monthly estimates use 730 hours.</p>
+      </div>
+      <a class="link-primary text-sm font-semibold" routerLink="/AzureVmPricing/Series">
+        Browse all series
+      </a>
+    </div>
+
+    <div class="flex flex-wrap items-end gap-x-6 gap-y-4">
+      <div class="flex flex-col items-start gap-2">
+        <span class="text-xs font-semibold tracking-wide text-text-muted uppercase">
+          Operating system
+        </span>
+        <app-vm-operating-system-toggle
+          [selected]="selectedOperatingSystem()"
+          (selectedChange)="updateOperatingSystem($event)"
+        />
+      </div>
+      <div class="flex max-w-full flex-col items-start gap-2">
+        <span class="text-xs font-semibold tracking-wide text-text-muted uppercase">
+          Pricing model
+        </span>
+        <app-vm-price-mode-toggle
+          [selected]="selectedPriceMode()"
+          (selectedChange)="updatePriceMode($event)"
+        />
+      </div>
+    </div>
+
+    <div class="table-shell">
+      <table class="table-base">
+        <caption class="sr-only">
+          Azure VM sizes in
+          {{
+            seriesSummary().series
+          }}, with
+          {{
+            selectedOperatingSystem()
+          }}
+          {{
+            selectedPriceModeLabel()
+          }}
+          price, CPU, memory, architecture, and priced region count. Use a column heading button to
+          change the sort order.
+        </caption>
+        <thead class="table-head">
+          <tr>
+            <th scope="col" class="p-0" [attr.aria-sort]="sortAriaValue('sku')">
+              <button type="button" class="table-sort-button" (click)="sortBy('sku')">
+                VM size
+                @if (isSortedBy('sku')) {
+                  <app-lucide-icon
+                    name="chevron-down"
+                    class="table-sort-icon size-3.5"
+                    [class.table-sort-icon--ascending]="isSortAscending()"
+                    aria-hidden="true"
+                  />
+                }
+              </button>
+            </th>
+            <th scope="col" class="p-0" [attr.aria-sort]="sortAriaValue('price')">
+              <button
+                type="button"
+                class="table-sort-button justify-end text-right"
+                (click)="sortBy('price')"
+              >
+                Lowest hourly
+                @if (isSortedBy('price')) {
+                  <app-lucide-icon
+                    name="chevron-down"
+                    class="table-sort-icon size-3.5"
+                    [class.table-sort-icon--ascending]="isSortAscending()"
+                    aria-hidden="true"
+                  />
+                }
+              </button>
+            </th>
+            <th scope="col" class="px-4 py-3 text-right">Est. monthly</th>
+            <th scope="col" class="p-0" [attr.aria-sort]="sortAriaValue('vcpus')">
+              <button
+                type="button"
+                class="table-sort-button justify-end text-right"
+                (click)="sortBy('vcpus')"
+              >
+                vCPUs
+                @if (isSortedBy('vcpus')) {
+                  <app-lucide-icon
+                    name="chevron-down"
+                    class="table-sort-icon size-3.5"
+                    [class.table-sort-icon--ascending]="isSortAscending()"
+                    aria-hidden="true"
+                  />
+                }
+              </button>
+            </th>
+            <th scope="col" class="p-0" [attr.aria-sort]="sortAriaValue('memory')">
+              <button
+                type="button"
+                class="table-sort-button justify-end text-right"
+                (click)="sortBy('memory')"
+              >
+                Memory
+                @if (isSortedBy('memory')) {
+                  <app-lucide-icon
+                    name="chevron-down"
+                    class="table-sort-icon size-3.5"
+                    [class.table-sort-icon--ascending]="isSortAscending()"
+                    aria-hidden="true"
+                  />
+                }
+              </button>
+            </th>
+            <th scope="col" class="px-4 py-3">Architecture</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border-soft">
+          @for (view of skuViews(); track view.sku.skuKey) {
+            <tr class="table-row-hover align-middle">
+              <th scope="row" class="px-4 py-3 text-left font-normal">
+                <a
+                  class="link-primary font-mono text-sm font-semibold"
+                  [href]="buildVmSkuHref(view.sku.sku)"
+                  translate="no"
+                >
+                  {{ view.sku.sku }}
+                </a>
+                <div class="mt-1 font-mono text-xs text-text-muted" translate="no">
+                  {{ view.sku.size }}
+                </div>
+              </th>
+              <td class="px-4 py-3 text-right font-semibold whitespace-nowrap tabular-nums">
+                {{ formatHourlyPrice(view.minHourlyPrice) }}
+              </td>
+              <td class="px-4 py-3 text-right whitespace-nowrap tabular-nums">
+                {{ formatMonthlyPrice(view.minHourlyPrice) }}
+              </td>
+              <td class="px-4 py-3 text-right tabular-nums">
+                {{ formatNumber(view.specs.vcpus) }}
+              </td>
+              <td class="px-4 py-3 text-right whitespace-nowrap tabular-nums">
+                {{ formatMemory(view.specs.memoryGB) }}
+              </td>
+              <td class="px-4 py-3" translate="no">{{ view.specs.architecture }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</article>

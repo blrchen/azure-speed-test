@@ -1,204 +1,388 @@
-﻿{
-  "accounts": [
-    {
-      "name": "asteastasia",
-      "key": "<REPLACE_ME>",
-      "locationId": "eastasia"
-    },
-    {
-      "name": "astsoutheastasia",
-      "key": "<REPLACE_ME>",
-      "locationId": "southeastasia"
-    },
-    {
-      "name": "astcentralus",
-      "key": "<REPLACE_ME>",
-      "locationId": "centralus"
-    },
-    {
-      "name": "asteastus",
-      "key": "<REPLACE_ME>",
-      "locationId": "eastus"
-    },
-    {
-      "name": "asteastus2",
-      "key": "<REPLACE_ME>",
-      "locationId": "eastus2"
-    },
-    {
-      "name": "astwestus",
-      "key": "<REPLACE_ME>",
-      "locationId": "westus"
-    },
-    {
-      "name": "astnorthcentralus",
-      "key": "<REPLACE_ME>",
-      "locationId": "northcentralus"
-    },
-    {
-      "name": "astsouthcentralus",
-      "key": "<REPLACE_ME>",
-      "locationId": "southcentralus"
-    },
-    {
-      "name": "astnortheurope",
-      "key": "<REPLACE_ME>",
-      "locationId": "northeurope"
-    },
-    {
-      "name": "astwesteurope",
-      "key": "<REPLACE_ME>",
-      "locationId": "westeurope"
-    },
-    {
-      "name": "astjapanwest",
-      "key": "<REPLACE_ME>",
-      "locationId": "japanwest"
-    },
-    {
-      "name": "astjapaneast",
-      "key": "<REPLACE_ME>",
-      "locationId": "japaneast"
-    },
-    {
-      "name": "astbrazilsouth",
-      "key": "<REPLACE_ME>",
-      "locationId": "brazilsouth"
-    },
-    {
-      "name": "astaustraliaeast",
-      "key": "<REPLACE_ME>",
-      "locationId": "australiaeast"
-    },
-    {
-      "name": "astaustraliasoutheast",
-      "key": "<REPLACE_ME>",
-      "locationId": "australiasoutheast"
-    },
-    {
-      "name": "astsouthindia",
-      "key": "<REPLACE_ME>",
-      "locationId": "southindia"
-    },
-    {
-      "name": "astcentralindia",
-      "key": "<REPLACE_ME>",
-      "locationId": "centralindia"
-    },
-    {
-      "name": "astwestindia",
-      "key": "<REPLACE_ME>",
-      "locationId": "westindia"
-    },
-    {
-      "name": "astcanadacentral",
-      "key": "<REPLACE_ME>",
-      "locationId": "canadacentral"
-    },
-    {
-      "name": "astcanadaeast",
-      "key": "<REPLACE_ME>",
-      "locationId": "canadaeast"
-    },
-    {
-      "name": "astuksouth",
-      "key": "<REPLACE_ME>",
-      "locationId": "uksouth"
-    },
-    {
-      "name": "astukwest",
-      "key": "<REPLACE_ME>",
-      "locationId": "ukwest"
-    },
-    {
-      "name": "astwestcentralus",
-      "key": "<REPLACE_ME>",
-      "locationId": "westcentralus"
-    },
-    {
-      "name": "astwestus2",
-      "key": "<REPLACE_ME>",
-      "locationId": "westus2"
-    },
-    {
-      "name": "astkoreacentral",
-      "key": "<REPLACE_ME>",
-      "locationId": "koreacentral"
-    },
-    {
-      "name": "astkoreasouth",
-      "key": "<REPLACE_ME>",
-      "locationId": "koreasouth"
-    },
-    {
-      "name": "astfrancecentral",
-      "key": "<REPLACE_ME>",
-      "locationId": "francecentral"
-    },
-    {
-      "name": "astaustraliacentral",
-      "key": "<REPLACE_ME>",
-      "locationId": "australiacentral"
-    },
-    {
-      "name": "astaustraliacentral2",
-      "key": "<REPLACE_ME>",
-      "locationId": "australiacentral2"
-    },
-    {
-      "name": "astuaecentral",
-      "key": "<REPLACE_ME>",
-      "locationId": "uaecentral"
-    },
-    {
-      "name": "astuaenorth",
-      "key": "<REPLACE_ME>",
-      "locationId": "uaenorth"
-    },
-    {
-      "name": "astsouthafricanorth",
-      "key": "<REPLACE_ME>",
-      "locationId": "southafricanorth"
-    },
-    {
-      "name": "astsouthafricawest",
-      "key": "<REPLACE_ME>",
-      "locationId": "southafricawest"
-    },
-    {
-      "name": "astswitzerlandnorth",
-      "key": "<REPLACE_ME>",
-      "locationId": "switzerlandnorth"
-    },
-    {
-      "name": "astswitzerlandwest",
-      "key": "<REPLACE_ME>",
-      "locationId": "switzerlandwest"
-    },
-    {
-      "name": "astgermanynorth",
-      "key": "<REPLACE_ME>",
-      "locationId": "germanynorth"
-    },
-    {
-      "name": "astgermanywestcentral",
-      "key": "<REPLACE_ME>",
-      "locationId": "germanywestcentral"
-    },
-    {
-      "name": "astnorwaywest",
-      "key": "<REPLACE_ME>",
-      "locationId": "norwaywest"
-    },
-    {
-      "name": "astnorwayeast",
-      "key": "<REPLACE_ME>",
-      "locationId": "norwayeast"
-    },
-    {
-      "name": "astbrazilsoutheast",
-      "key": "<REPLACE_ME>",
-      "locationId": "brazilsoutheast"
-    },
-  ]
+{
+  "regions": {
+    "australiacentral": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3australiacentral",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "australiaeast": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3australiaeast",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "australiasoutheast": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3australiasoutheast",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "austriaeast": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3austriaeast",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "belgiumcentral": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3belgiumcentral",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "brazilsouth": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3brazilsouth",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "canadacentral": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3canadacentral",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "canadaeast": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3canadaeast",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "centralindia": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3centralindia",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "centralus": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3centralus",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "chilecentral": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3chilecentral",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "denmarkeast": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3denmarkeast",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "eastasia": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3eastasia",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "eastus": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3eastus",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "eastus2": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3eastus2",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "francecentral": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3francecentral",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "germanywestcentral": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3germanywestcentral",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "indonesiacentral": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3indonesiacentral",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "israelcentral": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3israelcentral",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "italynorth": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3italynorth",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "japaneast": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3japaneast",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "japanwest": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3japanwest",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "koreacentral": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3koreacentral",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "koreasouth": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3koreasouth",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "malaysiawest": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3malaysiawest",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "mexicocentral": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3mexicocentral",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "newzealandnorth": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3newzealandnorth",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "northcentralus": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3northcentralus",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "northeurope": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3northeurope",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "norwayeast": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3norwayeast",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "polandcentral": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3polandcentral",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "qatarcentral": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3qatarcentral",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "southafricanorth": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3southafricanorth",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "southcentralus": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3southcentralus",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "southeastasia": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3southeastasia",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "southindia": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3southindia",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "spaincentral": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3spaincentral",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "swedencentral": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3swedencentral",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "switzerlandnorth": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3switzerlandnorth",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "uaenorth": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3uaenorth",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "uksouth": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3uksouth",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "ukwest": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3ukwest",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "westcentralus": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3westcentralus",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "westeurope": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3westeurope",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "westindia": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3westindia",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "westus": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3westus",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "westus2": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3westus2",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ],
+    "westus3": [
+      {
+        "prefix": "s3",
+        "trafficWeight": 0,
+        "name": "s3westus3",
+        "key": "<STORAGE_ACCOUNT_KEY>"
+      }
+    ]
+  }
 }

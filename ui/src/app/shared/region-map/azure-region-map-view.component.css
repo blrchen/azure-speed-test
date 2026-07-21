@@ -1,0 +1,164 @@
+:host {
+  --region-map-canvas-bg: var(
+    --azure-map-canvas-bg,
+    color-mix(in srgb, var(--color-surface-base) 78%, var(--color-brand) 22%)
+  );
+  --region-map-ocean: var(
+    --azure-map-ocean,
+    color-mix(in srgb, var(--color-surface-base) 88%, var(--color-brand) 12%)
+  );
+  --region-map-land: var(
+    --azure-map-land,
+    color-mix(in srgb, var(--color-surface-raised) 72%, var(--color-brand) 28%)
+  );
+  --region-map-land-stroke: var(
+    --azure-map-land-stroke,
+    color-mix(in srgb, var(--color-brand) 36%, var(--color-border-soft))
+  );
+  --region-map-country-border: var(
+    --azure-map-country-border,
+    color-mix(in srgb, var(--color-border-soft) 94%, var(--color-brand) 6%)
+  );
+  --region-map-marker: var(--azure-map-marker, var(--color-brand));
+  --region-map-marker-selected: var(--azure-map-marker-selected, var(--color-primary-foreground));
+  --region-map-marker-ring: var(
+    --azure-map-marker-ring,
+    color-mix(in srgb, var(--color-brand) 62%, transparent)
+  );
+  --region-map-marker-text-stroke: var(--azure-map-marker-text-stroke, var(--color-surface-base));
+  --region-map-marker-label: var(--azure-map-marker-label, var(--color-text-strong));
+}
+
+.azure-map-stage {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background: var(--region-map-canvas-bg);
+}
+
+.azure-map-world {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.azure-map-sphere {
+  fill: var(--region-map-ocean);
+  stroke: color-mix(in srgb, var(--color-brand) 14%, var(--color-border-soft));
+  stroke-width: 0.75px;
+  vector-effect: non-scaling-stroke;
+}
+
+.azure-map-land-shape {
+  fill: var(--region-map-land);
+  stroke: var(--region-map-land-stroke);
+  stroke-width: 0.55px;
+  vector-effect: non-scaling-stroke;
+}
+
+.azure-map-country-borders {
+  fill: none;
+  stroke: var(--region-map-country-border);
+  stroke-linejoin: round;
+  stroke-width: 0.32px;
+  vector-effect: non-scaling-stroke;
+}
+
+.azure-map-marker-node {
+  color: var(--region-map-marker);
+}
+
+.azure-map-marker--interactive {
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.azure-map-marker--static {
+  pointer-events: none;
+}
+
+.azure-map-marker--interactive:focus-visible {
+  outline: none;
+}
+
+.azure-map-marker--interactive:focus-visible .azure-map-marker__dot {
+  stroke: var(--color-primary);
+  stroke-width: 5px;
+}
+
+.azure-map-marker__hit-target {
+  fill: transparent;
+  stroke: transparent;
+  stroke-width: 32px;
+  pointer-events: all;
+  vector-effect: non-scaling-stroke;
+}
+
+.azure-map-marker__dot {
+  pointer-events: none;
+  fill: var(--region-map-marker);
+  stroke: var(--color-primary-foreground);
+  stroke-width: 2px;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    fill 160ms ease,
+    stroke-width 160ms ease,
+    transform 160ms ease;
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--color-brand) 72%, transparent));
+}
+
+.azure-map-marker__pulse {
+  pointer-events: none;
+  fill: transparent;
+  stroke: var(--region-map-marker-ring);
+  stroke-width: 1.4px;
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.azure-map-marker-node--active .azure-map-marker__dot,
+.azure-map-marker-node--selected .azure-map-marker__dot {
+  fill: var(--region-map-marker-selected);
+  stroke: var(--region-map-marker);
+  stroke-width: 3px;
+  transform: scale(1.22);
+}
+
+.azure-map-marker-node--active .azure-map-marker__pulse,
+.azure-map-marker-node--selected .azure-map-marker__pulse {
+  opacity: 1;
+}
+
+.azure-map-marker__label {
+  pointer-events: none;
+  fill: color-mix(in srgb, var(--region-map-marker-label) 84%, transparent);
+  stroke: var(--region-map-marker-text-stroke);
+  stroke-width: 3.2px;
+  font-weight: 800;
+  opacity: 0.9;
+  paint-order: stroke;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.azure-map-marker-node--active .azure-map-marker__label,
+.azure-map-marker-node--selected .azure-map-marker__label {
+  fill: var(--region-map-marker-label);
+  stroke-width: 3.8px;
+  opacity: 1;
+}
+
+@media (pointer: coarse) {
+  .azure-map-marker__hit-target {
+    stroke-width: 40px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .azure-map-marker__dot,
+  .azure-map-marker__pulse {
+    transition: none;
+  }
+}

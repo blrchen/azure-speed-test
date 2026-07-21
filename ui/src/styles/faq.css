@@ -5,7 +5,7 @@
 }
 
 .faq-item {
-  border-radius: 0.75rem;
+  border-radius: var(--radius-lg);
   border: 1px solid var(--color-border-soft);
   background-color: var(--color-surface-raised);
   box-shadow: var(--shadow-card);
@@ -24,7 +24,6 @@
   padding: 1rem 1.25rem;
   cursor: pointer;
   list-style: none;
-  transition: background-color 0.15s;
 }
 
 .faq-summary::-webkit-details-marker {
@@ -37,8 +36,10 @@
 
 .faq-summary:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px var(--color-ring);
-  border-radius: 0.75rem;
+  box-shadow:
+    0 0 0 2px var(--color-surface-base),
+    0 0 0 4px var(--color-primary);
+  border-radius: var(--radius-lg);
 }
 
 .faq-question {
@@ -53,11 +54,17 @@
   width: 1.25rem;
   height: 1.25rem;
   color: var(--color-text-muted);
-  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.2s ease-out;
 }
 
 .faq-item[open] .faq-icon {
   transform: rotate(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faq-icon {
+    transition: none;
+  }
 }
 
 .faq-body {
@@ -71,10 +78,6 @@
   margin-bottom: 0.75rem;
 }
 
-.faq-body p:last-child {
-  margin-bottom: 0;
-}
-
 .faq-body ul,
 .faq-body ol {
   margin: 0.75rem 0;
@@ -85,6 +88,7 @@
   margin-bottom: 0.5rem;
 }
 
+.faq-body p:last-child,
 .faq-body li:last-child {
   margin-bottom: 0;
 }
@@ -94,7 +98,6 @@
   color: var(--color-primary);
   text-decoration-line: underline;
   text-underline-offset: 3px;
-  transition: color 0.15s;
 }
 
 .faq-body a:hover {

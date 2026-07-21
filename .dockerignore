@@ -1,4 +1,5 @@
 **/.classpath
+**/.angular
 **/.dockerignore
 **/.env
 **/.git
@@ -11,14 +12,17 @@
 **/*.*proj.user
 **/*.dbmdl
 **/*.jfm
+**/.DS_Store
 **/azds.yaml
 **/bin
 **/charts
 **/docker-compose*
 **/Dockerfile*
+**/dist
 **/node_modules
 **/npm-debug.log
 **/obj
+**/out-tsc
 **/secrets.dev.yaml
 **/values.dev.yaml
 LICENSE

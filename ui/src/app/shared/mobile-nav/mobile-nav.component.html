@@ -1,0 +1,38 @@
+<button
+  type="button"
+  class="fixed inset-0 z-40 border-0 bg-overlay/60 p-0 lg:hidden"
+  (click)="requestClose()"
+  tabindex="-1"
+  aria-label="Close navigation"
+></button>
+<aside
+  #mobileNavPanel
+  id="mobile-nav"
+  class="fixed inset-y-0 left-0 z-50 w-72 max-w-full transform bg-surface-base shadow-card transition-transform duration-200 ease-out focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none lg:hidden"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Primary navigation"
+>
+  <div
+    class="flex scrollbar-thin h-full flex-col overflow-y-auto overscroll-contain pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]"
+  >
+    <div class="flex h-14 items-center justify-between border-b border-border-soft px-4">
+      <a [routerLink]="homeLink()" class="flex items-center gap-2 text-sm font-semibold">
+        <app-lucide-icon name="cloud" class="size-4 text-primary" aria-hidden="true" />
+        <span>{{ brandLabel() }}</span>
+      </a>
+      <button
+        #mobileNavCloseBtn
+        type="button"
+        class="icon-button"
+        aria-label="Close navigation"
+        (click)="requestClose()"
+      >
+        <app-lucide-icon name="x" class="size-5" aria-hidden="true" />
+      </button>
+    </div>
+    <nav class="flex-1 px-3 py-4" aria-label="Primary navigation">
+      <app-nav-groups [navGroups]="navGroups()" class="flex flex-col gap-6 text-sm" />
+    </nav>
+  </div>
+</aside>

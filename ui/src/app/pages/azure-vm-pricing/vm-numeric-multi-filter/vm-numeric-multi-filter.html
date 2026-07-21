@@ -1,0 +1,152 @@
+<fieldset class="vm-numeric-filter">
+  <legend class="form-label">{{ label() }}</legend>
+  <details #filterDetails class="vm-numeric-filter__details">
+    <summary
+      #filterTrigger
+      class="vm-numeric-filter__trigger min-h-11 md:min-h-9"
+      [attr.aria-label]="label() + ': ' + summary()"
+    >
+      <span class="truncate">{{ summary() }}</span>
+      <app-lucide-icon
+        name="chevron-down"
+        class="vm-numeric-filter__chevron size-4"
+        aria-hidden="true"
+      />
+    </summary>
+
+    <div class="vm-numeric-filter__panel">
+      <div class="vm-numeric-filter__panel-header">
+        <span class="text-xs font-semibold text-text-muted tabular-nums"> Common values </span>
+        @if (hasSelection()) {
+          <button type="button" class="link-primary text-xs font-semibold" (click)="clear()">
+            Clear
+          </button>
+        }
+      </div>
+
+      <div
+        class="vm-numeric-filter__options scrollbar-thin"
+        role="group"
+        [attr.aria-label]="label() + ' values'"
+      >
+        <label class="vm-numeric-filter__option">
+          <input
+            type="radio"
+            class="vm-numeric-filter__checkbox"
+            [attr.name]="controlId()"
+            [checked]="!hasSelection()"
+            (change)="clear()"
+          />
+          <span class="font-medium text-text-body">All</span>
+        </label>
+
+        @for (option of quickOptions(); track option.value) {
+          <label class="vm-numeric-filter__option">
+            <input
+              type="radio"
+              class="vm-numeric-filter__checkbox"
+              [attr.name]="controlId()"
+              [value]="option.value"
+              [checked]="isSelected(option.value)"
+              [disabled]="option.count === 0"
+              (change)="select(option.value)"
+            />
+            <span class="font-medium text-text-body" translate="no">
+              {{ optionLabel(option.value) }}
+            </span>
+            <span class="ml-auto text-xs text-text-muted tabular-nums">
+              {{ formatCount(option.count) }} SKUs
+            </span>
+          </label>
+        }
+      </div>
+
+      <div
+        class="vm-numeric-filter__range"
+        role="group"
+        [attr.aria-labelledby]="controlId() + '-range-label'"
+      >
+        <div>
+          <p [id]="controlId() + '-range-label'" class="text-sm font-semibold text-text-strong">
+            Custom
+          </p>
+          <p [id]="controlId() + '-range-hint'" class="mt-0.5 text-xs text-text-muted">
+            Include both endpoints, for example 4 to 8.
+          </p>
+        </div>
+
+        <div class="vm-numeric-filter__range-inputs">
+          <label class="vm-numeric-filter__range-field">
+            <span class="text-xs font-semibold text-text-muted">Minimum</span>
+            <input
+              #minimumInput
+              [id]="controlId() + '-range-minimum'"
+              type="number"
+              class="form-control form-control-focus-ring min-h-11 md:min-h-9"
+              min="0"
+              step="any"
+              inputmode="decimal"
+              [value]="selectedRange()?.minimum ?? ''"
+              [attr.aria-describedby]="controlId() + '-range-hint ' + controlId() + '-range-error'"
+              (input)="rangeError.set('')"
+            />
+          </label>
+          <span class="vm-numeric-filter__range-separator" aria-hidden="true">-</span>
+          <label class="vm-numeric-filter__range-field">
+            <span class="text-xs font-semibold text-text-muted">Maximum</span>
+            <input
+              #maximumInput
+              [id]="controlId() + '-range-maximum'"
+              type="number"
+              class="form-control form-control-focus-ring min-h-11 md:min-h-9"
+              min="0"
+              step="any"
+              inputmode="decimal"
+              [value]="selectedRange()?.maximum ?? ''"
+              [attr.aria-describedby]="controlId() + '-range-hint ' + controlId() + '-range-error'"
+              (input)="rangeError.set('')"
+              (keydown.enter)="
+                applyRange(
+                  minimumInput.value,
+                  maximumInput.value,
+                  minimumInput,
+                  maximumInput,
+                  filterDetails,
+                  filterTrigger
+                );
+                $event.preventDefault()
+              "
+            />
+          </label>
+        </div>
+
+        <div class="vm-numeric-filter__range-footer">
+          <p
+            [id]="controlId() + '-range-error'"
+            class="vm-numeric-filter__range-error text-xs"
+            role="alert"
+            aria-live="assertive"
+          >
+            {{ rangeError() }}
+          </p>
+          <button
+            type="button"
+            class="btn btn-primary btn--sm min-h-11 md:min-h-9"
+            (click)="
+              applyRange(
+                minimumInput.value,
+                maximumInput.value,
+                minimumInput,
+                maximumInput,
+                filterDetails,
+                filterTrigger
+              )
+            "
+          >
+            Apply range
+          </button>
+        </div>
+      </div>
+    </div>
+  </details>
+</fieldset>

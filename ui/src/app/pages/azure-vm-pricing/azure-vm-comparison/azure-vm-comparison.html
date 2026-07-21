@@ -1,0 +1,603 @@
+<article class="page-shell section-stack mx-auto max-w-7xl">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a class="breadcrumb-link" routerLink="/AzureVmPricing">Azure VM Sizes &amp; Pricing</a>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current" aria-current="page">Compare VM sizes</span>
+  </nav>
+
+  <header class="page-header">
+    <div class="max-w-4xl space-y-3">
+      <div class="flex items-center gap-3">
+        <div class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+          <app-lucide-icon name="arrow-left-right" class="size-6 text-primary" aria-hidden="true" />
+        </div>
+        <div>
+          <p class="mb-1 text-sm font-semibold text-text-muted">Cross-series comparison</p>
+          <h1 class="page-title">Compare Azure VM sizes</h1>
+        </div>
+      </div>
+      <p class="page-lead">
+        Select 2 or 3 VM sizes from any Azure VM series and compare specifications, PAYG, reserved,
+        or Spot pricing side by side. Choose a common region for a like-for-like price comparison.
+      </p>
+    </div>
+
+    <dl class="vm-summary-ledger">
+      <div class="vm-summary-ledger__item">
+        <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">Selected VMs</dt>
+        <dd class="text-2xl font-bold text-text-strong tabular-nums">
+          {{ vmComparisonPageData().skus.length }} / 3
+        </dd>
+      </div>
+      <div class="vm-summary-ledger__item">
+        <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">Series</dt>
+        <dd class="text-2xl font-bold text-text-strong tabular-nums">
+          {{ selectedSeriesCount() }}
+        </dd>
+      </div>
+      <div class="vm-summary-ledger__item">
+        <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">
+          Common pricing regions
+        </dt>
+        <dd class="text-2xl font-bold text-text-strong tabular-nums">
+          {{ commonRegions().length }}
+        </dd>
+      </div>
+      <div class="vm-summary-ledger__item">
+        <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">
+          Pricing profile
+        </dt>
+        <dd class="text-base font-semibold text-text-strong">
+          {{ selectedOperatingSystem() }} {{ selectedPriceModeLabel() }}
+        </dd>
+      </div>
+    </dl>
+  </header>
+
+  <section class="section-block" aria-labelledby="vm-comparison-picker-heading">
+    <div class="flex flex-wrap items-end justify-between gap-3">
+      <div>
+        <h2 id="vm-comparison-picker-heading" class="section-title">Choose 2-3 VM sizes</h2>
+        <p class="mt-2 text-sm text-text-muted">
+          Enter an exact ARM SKU name. Selected VMs can come from different series.
+        </p>
+      </div>
+      @if (vmComparisonPageData().skus.length) {
+        <button type="button" class="btn btn-outline btn--sm min-h-11" (click)="clearComparison()">
+          <app-lucide-icon name="x" class="size-3.5" aria-hidden="true" />
+          Clear comparison
+        </button>
+      }
+    </div>
+
+    <form (submit)="$event.preventDefault(); addSku()">
+      <label for="vm-comparison-sku-picker" class="form-label">Add a VM size</label>
+      <div class="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div class="form-control-shell min-w-0 flex-1">
+          <app-lucide-icon
+            name="search"
+            class="form-control-shell__icon size-4"
+            aria-hidden="true"
+          />
+          <input
+            #skuPicker
+            id="vm-comparison-sku-picker"
+            name="comparisonSku"
+            type="text"
+            class="form-control form-control--icon-start form-control-focus-ring min-h-11"
+            list="vm-comparison-sku-options"
+            placeholder="For example, Standard_D4s_v5"
+            autocomplete="off"
+            spellcheck="false"
+            [disabled]="!canAddSku()"
+            [value]="skuInput()"
+            aria-describedby="vm-comparison-sku-hint vm-comparison-picker-message"
+            (input)="updateSkuInput(skuPicker.value)"
+          />
+          <datalist id="vm-comparison-sku-options">
+            @for (skuName of skuOptions(); track skuName) {
+              <option [value]="skuName"></option>
+            }
+          </datalist>
+        </div>
+        <button type="submit" class="btn btn-primary min-h-11" [disabled]="!canAddSku()">
+          Add VM
+        </button>
+      </div>
+      <p id="vm-comparison-sku-hint" class="mt-2 text-xs text-text-muted">
+        @if (canAddSku()) {
+          {{ remainingSlotCount() }} comparison slot{{ remainingSlotCount() === 1 ? '' : 's' }}
+          remaining.
+        } @else {
+          Remove a VM before adding another.
+        }
+      </p>
+    </form>
+
+    <p
+      id="vm-comparison-picker-message"
+      class="min-h-5 text-sm font-semibold text-danger-dark dark:text-danger"
+      role="alert"
+      aria-live="assertive"
+    >
+      {{ pickerMessage() }}
+    </p>
+
+    @if (vmComparisonPageData().invalidSkuNames.length) {
+      <p class="rounded-lg border border-warning/40 bg-warning/5 p-3 text-sm text-text-body">
+        Unknown VM size{{ vmComparisonPageData().invalidSkuNames.length === 1 ? '' : 's' }} ignored:
+        <span class="font-mono" translate="no">
+          {{ vmComparisonPageData().invalidSkuNames.join(', ') }}
+        </span>
+      </p>
+    }
+    @if (vmComparisonPageData().omittedSkuNames.length) {
+      <p class="rounded-lg border border-warning/40 bg-warning/5 p-3 text-sm text-text-body">
+        A comparison is limited to 3 VM sizes. Omitted:
+        <span class="font-mono" translate="no">
+          {{ vmComparisonPageData().omittedSkuNames.join(', ') }}
+        </span>
+      </p>
+    }
+
+    <div class="flex flex-wrap items-center gap-3" aria-live="polite" aria-atomic="true">
+      <span class="text-sm font-semibold text-text-body">{{ selectionStatus() }}</span>
+      @for (detail of vmComparisonPageData().skus; track detail.sku.skuKey) {
+        <span
+          class="inline-flex min-h-9 items-center gap-2 rounded-full border border-border-soft bg-surface-raised py-1 pr-1 pl-3 shadow-sm"
+        >
+          <span class="font-mono text-xs font-semibold text-text-strong" translate="no">
+            {{ detail.sku.sku }}
+          </span>
+          <button
+            type="button"
+            class="inline-flex size-8 items-center justify-center rounded-full text-text-muted hover:bg-surface-muted hover:text-text-strong focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
+            [attr.aria-label]="'Remove ' + detail.sku.sku + ' from comparison'"
+            (click)="removeSku(detail.sku.sku)"
+          >
+            <app-lucide-icon name="x" class="size-3.5" aria-hidden="true" />
+          </button>
+        </span>
+      }
+    </div>
+  </section>
+
+  @if (comparisonReady()) {
+    <section class="section-block" aria-labelledby="vm-comparison-heading">
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <h2 id="vm-comparison-heading" class="section-title">Specifications and pricing</h2>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <p class="mt-2 max-w-3xl text-sm leading-relaxed text-text-muted">
+            {{ selectedPriceModeDescription() }} Monthly estimates use 730 hours and cover VM
+            compute only. Windows reserved estimates retain the Windows software surcharge and do
+            not model Azure Hybrid Benefit.
+          </p>
+        </div>
+
+        <div class="flex min-w-64 flex-col gap-2">
+          <label for="vm-comparison-region" class="form-label">Price comparison region</label>
+          <div class="form-select-wrapper">
+            <select
+              #regionSelect
+              id="vm-comparison-region"
+              name="comparisonRegion"
+              class="form-select min-h-11 md:min-h-9"
+              [value]="selectedRegion()"
+              (change)="updateRegion(regionSelect.value)"
+            >
+              <option value="">Each VM's global lowest price</option>
+              @for (region of commonRegions(); track region.armRegionName) {
+                <option [value]="region.armRegionName">
+                  {{ region.displayName }} ({{ region.armRegionName }})
+                </option>
+              }
+            </select>
+          </div>
+        </div>
+      </div>
+
+      @if (requestedRegionUnavailable()) {
+        <p class="rounded-lg border border-warning/40 bg-warning/5 p-3 text-sm text-text-body">
+          The requested region does not have {{ selectedOperatingSystem() }}
+          {{ selectedPriceModeLabel() }} pricing for every selected VM. Showing each VM's global
+          lowest price instead.
+        </p>
+      }
+
+      <aside
+        class="flex items-start gap-3 rounded-lg border border-border-soft bg-surface-muted p-4 text-sm leading-relaxed text-text-muted"
+        aria-label="Comparison pricing basis"
+      >
+        <app-lucide-icon
+          name="info"
+          class="mt-0.5 size-5 shrink-0 text-primary"
+          aria-hidden="true"
+        />
+        <p>
+          Pricing basis: <strong class="text-text-strong">{{ pricingBasisLabel() }}</strong
+          >.
+          @if (!selectedRegion()) {
+            Global lowest prices can come from different regions. Select one of the
+            {{ commonRegions().length }} common pricing regions for a like-for-like comparison.
+          } @else {
+            All hourly prices below use the same Azure region.
+            <a class="link-primary font-semibold" [href]="buildVmRegionHref(selectedRegion())">
+              View region pricing
+            </a>
+            .
+          }
+        </p>
+      </aside>
+
+      <div class="flex flex-wrap items-end gap-x-6 gap-y-4">
+        <div class="flex flex-col items-start gap-2">
+          <span class="text-xs font-semibold tracking-wide text-text-muted uppercase">
+            Operating system
+          </span>
+          <app-vm-operating-system-toggle
+            [selected]="selectedOperatingSystem()"
+            (selectedChange)="updateOperatingSystem($event)"
+          />
+        </div>
+        <div class="flex max-w-full flex-col items-start gap-2">
+          <span class="text-xs font-semibold tracking-wide text-text-muted uppercase">
+            Pricing model
+          </span>
+          <app-vm-price-mode-toggle
+            [selected]="selectedPriceMode()"
+            (selectedChange)="updatePriceMode($event)"
+          />
+        </div>
+      </div>
+
+      <div class="table-shell">
+        <table class="table-base vm-comparison-table">
+          <caption class="sr-only">
+            Side-by-side Azure VM specification and
+            {{
+              selectedOperatingSystem()
+            }}
+            {{
+              selectedPriceModeLabel()
+            }}
+            price comparison for
+            {{
+              selectedSkuNames().join(', ')
+            }}.
+          </caption>
+          <thead class="table-head">
+            <tr>
+              <th
+                scope="col"
+                class="vm-comparison-table__attribute sticky left-0 z-20 bg-surface-muted px-4 py-3 text-left"
+              >
+                Attribute
+              </th>
+              @for (column of columns(); track column.detail.sku.skuKey) {
+                <th scope="col" class="vm-comparison-table__column px-4 py-3 text-left align-top">
+                  <a
+                    class="link-primary font-mono text-sm font-bold break-words"
+                    [href]="buildVmSkuHref(column.detail.sku.sku)"
+                    translate="no"
+                  >
+                    {{ column.detail.sku.sku }}
+                  </a>
+                  <p class="mt-1 font-mono text-xs font-medium text-text-muted" translate="no">
+                    {{ column.detail.sku.series }}
+                  </p>
+                  <button
+                    type="button"
+                    class="mt-2 inline-flex min-h-9 items-center gap-1 text-xs font-semibold text-text-muted hover:text-danger-dark focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none dark:hover:text-danger"
+                    [attr.aria-label]="'Remove ' + column.detail.sku.sku + ' from comparison'"
+                    (click)="removeSku(column.detail.sku.sku)"
+                  >
+                    <app-lucide-icon name="x" class="size-3.5" aria-hidden="true" />
+                    Remove
+                  </button>
+                </th>
+              }
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border-soft">
+            <tr>
+              <th
+                scope="rowgroup"
+                class="bg-primary/5 px-4 py-2 text-left text-xs font-bold tracking-wide text-primary uppercase"
+                [attr.colspan]="columns().length + 1"
+              >
+                Identity
+              </th>
+            </tr>
+            <tr class="table-row-hover align-top">
+              <th
+                scope="row"
+                class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
+              >
+                Series
+              </th>
+              @for (column of columns(); track column.detail.sku.skuKey) {
+                <td class="px-4 py-3">
+                  <a
+                    class="link-primary font-semibold"
+                    [href]="buildVmSeriesHref(column.detail.familySummary.series)"
+                    translate="no"
+                  >
+                    {{ column.detail.sku.series }}
+                  </a>
+                </td>
+              }
+            </tr>
+          </tbody>
+
+          <tbody class="divide-y divide-border-soft">
+            <tr>
+              <th
+                scope="rowgroup"
+                class="bg-primary/5 px-4 py-2 text-left text-xs font-bold tracking-wide text-primary uppercase"
+                [attr.colspan]="columns().length + 1"
+              >
+                {{ selectedOperatingSystem() }} {{ selectedPriceModeLabel() }} pricing
+              </th>
+            </tr>
+            <tr class="table-row-hover align-top">
+              <th
+                scope="row"
+                class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
+              >
+                Hourly price
+              </th>
+              @for (column of columns(); track column.detail.sku.skuKey) {
+                <td class="px-4 py-3 font-bold whitespace-nowrap tabular-nums">
+                  {{ formatHourlyPrice(column.hourlyPrice) }}
+                  @if (column.isLowestPrice) {
+                    <span class="badge badge-success mt-1 block w-fit">Lowest</span>
+                  }
+                </td>
+              }
+            </tr>
+            <tr class="table-row-hover align-top">
+              <th
+                scope="row"
+                class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
+              >
+                Estimated monthly
+              </th>
+              @for (column of columns(); track column.detail.sku.skuKey) {
+                <td class="px-4 py-3 whitespace-nowrap tabular-nums">
+                  {{ formatMonthlyPrice(column.hourlyPrice) }}
+                </td>
+              }
+            </tr>
+            <tr class="table-row-hover align-top">
+              <th
+                scope="row"
+                class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
+              >
+                Difference vs. lowest
+              </th>
+              @for (column of columns(); track column.detail.sku.skuKey) {
+                <td class="px-4 py-3 font-semibold tabular-nums">
+                  {{ priceDifferenceLabel(column) }}
+                </td>
+              }
+            </tr>
+            <tr class="table-row-hover align-top">
+              <th
+                scope="row"
+                class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
+              >
+                Price region
+              </th>
+              @for (column of columns(); track column.detail.sku.skuKey) {
+                <td class="px-4 py-3 text-sm">{{ column.priceRegionLabel }}</td>
+              }
+            </tr>
+            <tr class="table-row-hover align-top">
+              <th
+                scope="row"
+                class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
+              >
+                Priced regions
+              </th>
+              @for (column of columns(); track column.detail.sku.skuKey) {
+                <td class="px-4 py-3 tabular-nums">{{ column.pricedRegionCount }}</td>
+              }
+            </tr>
+          </tbody>
+
+          <tbody class="divide-y divide-border-soft">
+            <tr>
+              <th
+                scope="rowgroup"
+                class="bg-primary/5 px-4 py-2 text-left text-xs font-bold tracking-wide text-primary uppercase"
+                [attr.colspan]="columns().length + 1"
+              >
+                Compute and memory
+              </th>
+            </tr>
+            <tr class="table-row-hover align-top">
+              <th
+                scope="row"
+                class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
+              >
+                vCPUs
+              </th>
+              @for (column of columns(); track column.detail.sku.skuKey) {
+                <td class="px-4 py-3 tabular-nums">{{ formatNumber(column.specs.vcpus) }}</td>
+              }
+            </tr>
+            <tr class="table-row-hover align-top">
+              <th
+                scope="row"
+                class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
+              >
+                Memory
+              </th>
+              @for (column of columns(); track column.detail.sku.skuKey) {
+                <td class="px-4 py-3 tabular-nums">
+                  {{ formatMemory(column.specs.memoryGB) }}
+                </td>
+              }
+            </tr>
+            <tr class="table-row-hover align-top">
+              <th
+                scope="row"
+                class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
+              >
+                Memory per vCPU
+              </th>
+              @for (column of columns(); track column.detail.sku.skuKey) {
+                <td class="px-4 py-3 tabular-nums">
+                  {{ formatMemoryPerVcpu(column.memoryPerVcpu) }}
+                </td>
+              }
+            </tr>
+            <tr class="table-row-hover align-top">
+              <th
+                scope="row"
+                class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
+              >
+                CPU architecture
+              </th>
+              @for (column of columns(); track column.detail.sku.skuKey) {
+                <td class="px-4 py-3" translate="no">{{ column.specs.architecture }}</td>
+              }
+            </tr>
+            <tr class="table-row-hover align-top">
+              <th
+                scope="row"
+                class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
+              >
+                GPUs
+              </th>
+              @for (column of columns(); track column.detail.sku.skuKey) {
+                <td class="px-4 py-3 tabular-nums">{{ formatNumber(column.specs.gpuCount) }}</td>
+              }
+            </tr>
+          </tbody>
+
+          <tbody class="divide-y divide-border-soft">
+            <tr>
+              <th
+                scope="rowgroup"
+                class="bg-primary/5 px-4 py-2 text-left text-xs font-bold tracking-wide text-primary uppercase"
+                [attr.colspan]="columns().length + 1"
+              >
+                Storage and networking
+              </th>
+            </tr>
+            <tr class="table-row-hover align-top">
+              <th
+                scope="row"
+                class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
+              >
+                Maximum data disks
+              </th>
+              @for (column of columns(); track column.detail.sku.skuKey) {
+                <td class="px-4 py-3 tabular-nums">
+                  {{ formatNumber(column.specs.maxDataDisks) }}
+                </td>
+              }
+            </tr>
+            <tr class="table-row-hover align-top">
+              <th
+                scope="row"
+                class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
+              >
+                Maximum network interfaces
+              </th>
+              @for (column of columns(); track column.detail.sku.skuKey) {
+                <td class="px-4 py-3 tabular-nums">
+                  {{ formatNumber(column.specs.maxNetworkInterfaces) }}
+                </td>
+              }
+            </tr>
+            <tr class="table-row-hover align-top">
+              <th
+                scope="row"
+                class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
+              >
+                Premium storage
+              </th>
+              @for (column of columns(); track column.detail.sku.skuKey) {
+                <td class="px-4 py-3">{{ formatBoolean(column.specs.premiumIO) }}</td>
+              }
+            </tr>
+            <tr class="table-row-hover align-top">
+              <th
+                scope="row"
+                class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
+              >
+                Accelerated networking
+              </th>
+              @for (column of columns(); track column.detail.sku.skuKey) {
+                <td class="px-4 py-3">
+                  {{ formatBoolean(column.specs.acceleratedNetworking) }}
+                </td>
+              }
+            </tr>
+            <tr class="table-row-hover align-top">
+              <th
+                scope="row"
+                class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
+              >
+                RDMA
+              </th>
+              @for (column of columns(); track column.detail.sku.skuKey) {
+                <td class="px-4 py-3">{{ formatBoolean(column.specs.rdma) }}</td>
+              }
+            </tr>
+            <tr class="table-row-hover align-top">
+              <th
+                scope="row"
+                class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
+              >
+                Observed regions
+              </th>
+              @for (column of columns(); track column.detail.sku.skuKey) {
+                <td class="px-4 py-3 tabular-nums">
+                  {{ column.detail.sku.observedLocations.length }}
+                </td>
+              }
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="text-xs leading-relaxed text-text-muted">
+        Prices come from the Azure Retail Prices API and specifications come from the Resource SKUs
+        API. A public price does not guarantee quota, capacity, zone support, or deployment
+        eligibility. Reservation values are full-term totals amortized to hourly equivalents. Spot
+        VMs can be evicted and prices can change.
+      </p>
+    </section>
+  } @else {
+    <section
+      class="flex flex-col items-center gap-4 rounded-xl border border-dashed border-border-soft bg-surface-muted px-6 py-12 text-center"
+      aria-labelledby="vm-comparison-empty-heading"
+    >
+      <div class="flex size-12 items-center justify-center rounded-xl bg-primary/10">
+        <app-lucide-icon name="arrow-left-right" class="size-6 text-primary" aria-hidden="true" />
+      </div>
+      <div class="max-w-xl space-y-2">
+        <h2 id="vm-comparison-empty-heading" class="section-title">
+          Add {{ vmComparisonPageData().skus.length === 0 ? '2 or 3' : 'at least 1 more' }} VM
+          {{ vmComparisonPageData().skus.length === 0 ? 'sizes' : 'size' }}
+        </h2>
+        <p class="text-sm leading-relaxed text-text-muted">
+          The comparison table appears after two VM sizes are selected. You can start here or select
+          VMs from the main pricing directory.
+        </p>
+      </div>
+      <a class="btn btn-outline min-h-11" routerLink="/AzureVmPricing">
+        Browse all VM sizes
+        <app-lucide-icon name="chevron-right" class="size-4" aria-hidden="true" />
+      </a>
+    </section>
+  }
+</article>

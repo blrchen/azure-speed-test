@@ -1,0 +1,66 @@
+<div class="azure-map-stage">
+  @if (renderMap()) {
+    <svg
+      class="azure-map-world"
+      [attr.role]="interactive() ? 'group' : 'img'"
+      [attr.aria-label]="ariaLabel()"
+      [attr.aria-describedby]="ariaDescribedBy()"
+      [attr.viewBox]="viewBox()"
+      [attr.focusable]="interactive() ? null : 'false'"
+    >
+      <path class="azure-map-sphere" [attr.d]="spherePath" aria-hidden="true" />
+      <path class="azure-map-land-shape" [attr.d]="landPath" aria-hidden="true" />
+      <path class="azure-map-country-borders" [attr.d]="countryBorderPath" aria-hidden="true" />
+
+      <g class="azure-map-markers">
+        @for (point of mapPoints(); track point.region.regionId) {
+          <g
+            [attr.transform]="point.transform"
+            class="azure-map-marker-node"
+            [class.azure-map-marker-node--active]="isPreviewRegion(point.region)"
+            [class.azure-map-marker-node--selected]="isSelectedRegion(point.region)"
+          >
+            <g
+              class="azure-map-marker"
+              [class.azure-map-marker--interactive]="interactive()"
+              [class.azure-map-marker--static]="!interactive()"
+              [attr.role]="interactive() ? 'button' : null"
+              [attr.transform]="'scale(' + markerScale().toFixed(4) + ')'"
+              [attr.aria-label]="
+                interactive()
+                  ? 'Select ' + point.region.displayName + ', ' + point.region.datacenterLocation
+                  : null
+              "
+              [attr.aria-hidden]="interactive() ? null : 'true'"
+              [attr.aria-pressed]="interactive() ? isSelectedRegion(point.region) : null"
+              [attr.data-map-region-id]="point.region.regionId"
+              [attr.tabindex]="interactive() ? (isMarkerTabStop(point.region) ? 0 : -1) : null"
+              (click)="selectRegion(point.region)"
+              (keydown)="handleMarkerKeydown($event, point.region)"
+              (mouseenter)="previewRegion(point.region)"
+              (mouseleave)="clearPreviewRegion()"
+              (focus)="focusRegion(point.region)"
+              (blur)="clearPreviewRegion()"
+            >
+              <circle class="azure-map-marker__hit-target" r="7" aria-hidden="true" />
+              <circle class="azure-map-marker__pulse" r="14" aria-hidden="true" />
+              <circle class="azure-map-marker__dot" r="6" aria-hidden="true" />
+            </g>
+            @if (isLabelVisible(point.region)) {
+              <text
+                class="azure-map-marker__label"
+                [attr.x]="scaledLabelX(point)"
+                [attr.y]="scaledLabelY(point)"
+                [attr.font-size]="scaledLabelFontSize(point.region)"
+                [attr.text-anchor]="point.labelAnchor"
+                aria-hidden="true"
+              >
+                {{ point.region.displayName }}
+              </text>
+            }
+          </g>
+        }
+      </g>
+    </svg>
+  }
+</div>

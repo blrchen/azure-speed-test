@@ -1,0 +1,601 @@
+<article class="page-shell section-stack mx-auto max-w-7xl">
+  <header class="page-header">
+    <nav class="flex items-center gap-2 text-sm text-text-muted" aria-label="Breadcrumb">
+      <a class="breadcrumb-link" routerLink="/Information/AzureRegions">Azure resources</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">Azure VM Sizes &amp; Pricing</span>
+    </nav>
+
+    <div class="max-w-4xl space-y-3">
+      <div class="flex items-center gap-3">
+        <div class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+          <app-lucide-icon name="database" class="size-6 text-primary" aria-hidden="true" />
+        </div>
+        <h1 class="page-title">Azure VM Sizes &amp; Pricing</h1>
+      </div>
+      <p class="page-lead">
+        Compare Azure VM sizes, hardware specifications, and Linux or Windows pay-as-you-go, 1-year
+        reserved, 3-year reserved, and Spot pricing. Find each size's lowest published hourly price
+        and estimated monthly cost.
+      </p>
+    </div>
+
+    @if (catalog(); as data) {
+      <dl class="vm-catalog-metrics">
+        <div class="vm-catalog-metric">
+          <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">VM sizes</dt>
+          <dd class="font-mono text-xl font-bold text-text-strong tabular-nums sm:text-2xl">
+            {{ data.counts.skuCount }}
+          </dd>
+        </div>
+        <div class="vm-catalog-metric">
+          <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">
+            Priced sizes
+          </dt>
+          <dd class="font-mono text-xl font-bold text-text-strong tabular-nums sm:text-2xl">
+            {{ priceCounts().pricedSkuCount }}
+          </dd>
+        </div>
+        <div class="vm-catalog-metric">
+          <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">
+            Pricing regions
+          </dt>
+          <dd class="font-mono text-xl font-bold text-text-strong tabular-nums sm:text-2xl">
+            {{ priceCounts().pricedRegionCount }}
+          </dd>
+        </div>
+        <div class="vm-catalog-metric">
+          <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">
+            Regional prices
+          </dt>
+          <dd class="font-mono text-xl font-bold text-text-strong tabular-nums sm:text-2xl">
+            {{ priceCounts().regionalPriceCount }}
+          </dd>
+        </div>
+      </dl>
+    }
+  </header>
+
+  @if (catalog(); as data) {
+    <section class="section-block" aria-labelledby="vm-directory-heading">
+      <div class="space-y-1">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h2 id="vm-directory-heading" class="section-title">Compare VM prices</h2>
+          <div class="flex flex-wrap items-center gap-4">
+            <a class="link-primary text-sm font-semibold" routerLink="/AzureVmPricing/Series">
+              Browse by series
+            </a>
+            <a class="link-primary text-sm font-semibold" routerLink="/AzureVmPricing/Regions">
+              Browse by region
+            </a>
+            <a class="link-primary text-sm font-semibold" [routerLink]="comparisonHref">
+              Compare VM sizes
+            </a>
+          </div>
+        </div>
+        <p class="text-sm text-text-muted">
+          Search terms are combined. Try a size such as D4s_v5, a series such as Dsv5, x64, Arm64,
+          GPU, or a priced ARM region such as eastus.
+        </p>
+      </div>
+
+      <form role="search" (submit)="$event.preventDefault()" class="space-y-4">
+        <div class="flex min-w-0 flex-col gap-2">
+          <label for="vm-size-search" class="form-label">Search VM prices</label>
+          <div class="form-control-shell">
+            <app-lucide-icon
+              name="search"
+              class="form-control-shell__icon size-4"
+              aria-hidden="true"
+            />
+            <input
+              #searchInput
+              id="vm-size-search"
+              type="search"
+              class="form-control form-control--icon-start form-control--action-end form-control-focus-ring min-h-11 md:min-h-9"
+              placeholder="SKU, size, series, capability..."
+              autocomplete="off"
+              spellcheck="false"
+              [value]="query()"
+              aria-describedby="vm-size-search-hint"
+              (input)="updateQuery(searchInput.value)"
+            />
+            <span id="vm-size-search-hint" class="sr-only">
+              Search by SKU, size, series, family, region, architecture, or capability value.
+              Multiple terms must all match.
+            </span>
+            @if (query()) {
+              <button
+                type="button"
+                class="form-control-shell__action"
+                aria-label="Clear VM size search"
+                (click)="updateQuery(''); searchInput.focus()"
+              >
+                <app-lucide-icon name="x" class="size-4" aria-hidden="true" />
+              </button>
+            }
+          </div>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div class="flex min-w-0 flex-col gap-2">
+            <label for="vm-region-filter" class="form-label">Price region</label>
+            <div class="form-select-wrapper">
+              <select
+                #regionFilter
+                id="vm-region-filter"
+                class="form-select min-h-11 md:min-h-9"
+                [value]="selectedRegion()"
+                (change)="updateRegion(regionFilter.value)"
+              >
+                <option value="">All regions</option>
+                @for (option of regionOptions(); track option.value) {
+                  <option [value]="option.value">{{ option.label }} ({{ option.count }})</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="flex min-w-0 flex-col gap-2">
+            <label for="vm-type-filter" class="form-label">Type</label>
+            <div class="form-select-wrapper">
+              <select
+                #typeFilter
+                id="vm-type-filter"
+                class="form-select min-h-11 md:min-h-9"
+                [value]="selectedType()"
+                (change)="updateType(typeFilter.value)"
+              >
+                @for (option of typeOptions; track option.value) {
+                  <option [value]="option.value">{{ option.label }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="flex min-w-0 flex-col gap-2">
+            <label for="vm-series-filter" class="form-label">Series</label>
+            <div class="form-select-wrapper">
+              <select
+                #seriesFilter
+                id="vm-series-filter"
+                class="form-select min-h-11 md:min-h-9"
+                [value]="selectedSeries()"
+                (change)="updateSeries(seriesFilter.value)"
+              >
+                <option value="">All series</option>
+                @for (option of seriesOptions(); track option.value) {
+                  <option [value]="option.value">{{ option.label }} ({{ option.count }})</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="flex min-w-0 flex-col gap-2">
+            <label for="vm-architecture-filter" class="form-label">Architecture</label>
+            <div class="form-select-wrapper">
+              <select
+                #architectureFilter
+                id="vm-architecture-filter"
+                class="form-select min-h-11 md:min-h-9"
+                [value]="selectedArchitecture()"
+                (change)="updateArchitecture(architectureFilter.value)"
+              >
+                <option value="">All architectures</option>
+                @for (option of architectureOptions(); track option.value) {
+                  <option [value]="option.value">{{ option.label }} ({{ option.count }})</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <app-vm-numeric-multi-filter
+            controlId="vm-vcpus-filter"
+            label="vCPUs"
+            allLabel="All vCPU counts"
+            singularUnit="vCPU"
+            pluralUnit="vCPUs"
+            [options]="vcpusOptions()"
+            [quickValues]="vcpuQuickValues"
+            [selectedValues]="selectedVcpus()"
+            [selectedRange]="selectedVcpuRange()"
+            (selectedValuesChange)="updateVcpus($event)"
+            (selectedRangeChange)="updateVcpuRange($event)"
+          />
+
+          <app-vm-numeric-multi-filter
+            controlId="vm-memory-filter"
+            label="Memory"
+            allLabel="All memory sizes"
+            singularUnit="GB"
+            pluralUnit="GB"
+            [options]="memoryOptions()"
+            [quickValues]="memoryQuickValues"
+            [selectedValues]="selectedMemoryGB()"
+            [selectedRange]="selectedMemoryRange()"
+            (selectedValuesChange)="updateMemory($event)"
+            (selectedRangeChange)="updateMemoryRange($event)"
+          />
+
+          <div class="flex min-w-0 flex-col gap-2">
+            <label for="vm-feature-filter" class="form-label">Feature</label>
+            <div class="form-select-wrapper">
+              <select
+                #featureFilter
+                id="vm-feature-filter"
+                class="form-select min-h-11 md:min-h-9"
+                [value]="selectedFeature()"
+                (change)="updateFeature(featureFilter.value)"
+              >
+                <option value="">All features</option>
+                @for (option of featureOptions; track option.value) {
+                  <option [value]="option.value">{{ option.label }}</option>
+                }
+              </select>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <p
+          id="vm-size-result-summary"
+          class="m-0 text-sm font-semibold text-text-body tabular-nums"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          {{ resultSummary() }}
+        </p>
+        @if (hasActiveFilters()) {
+          <button
+            type="button"
+            class="btn btn-outline btn--sm min-h-11 md:min-h-9"
+            (click)="clearFilters(); searchInput.focus()"
+          >
+            <app-lucide-icon name="x" class="size-3.5" aria-hidden="true" />
+            Clear filters
+          </button>
+        }
+      </div>
+
+      @if (selectedComparisonSkuNames().length) {
+        <aside
+          class="flex flex-col gap-4 rounded-xl border border-primary/30 bg-primary/5 p-4 lg:flex-row lg:items-center lg:justify-between"
+          aria-label="VM comparison selection"
+        >
+          <div class="min-w-0 space-y-3">
+            <div class="flex items-center gap-2">
+              <app-lucide-icon
+                name="arrow-left-right"
+                class="size-5 shrink-0 text-primary"
+                aria-hidden="true"
+              />
+              <p class="font-semibold text-text-strong" role="status" aria-live="polite">
+                {{ selectedComparisonSkuNames().length }} of 3 VM sizes selected
+              </p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              @for (skuName of selectedComparisonSkuNames(); track skuName) {
+                <span
+                  class="inline-flex min-h-9 items-center gap-2 rounded-full border border-border-soft bg-surface-raised py-1 pr-1 pl-3 shadow-sm"
+                >
+                  <span class="font-mono text-xs font-semibold text-text-strong" translate="no">
+                    {{ skuName }}
+                  </span>
+                  <button
+                    type="button"
+                    class="inline-flex size-8 items-center justify-center rounded-full text-text-muted hover:bg-surface-muted hover:text-text-strong focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
+                    [attr.aria-label]="'Remove ' + skuName + ' from comparison'"
+                    (click)="removeComparisonSku(skuName)"
+                  >
+                    <app-lucide-icon name="x" class="size-3.5" aria-hidden="true" />
+                  </button>
+                </span>
+              }
+            </div>
+          </div>
+
+          <div class="flex shrink-0 flex-wrap gap-3">
+            <button
+              type="button"
+              class="btn btn-outline btn--sm min-h-11"
+              (click)="clearComparisonSelection()"
+            >
+              Clear
+            </button>
+            @if (comparisonReady()) {
+              <a
+                class="btn btn-primary min-h-11"
+                [routerLink]="comparisonHref"
+                [queryParams]="comparisonQueryParams()"
+              >
+                Compare {{ selectedComparisonSkuNames().length }} VMs
+                <app-lucide-icon name="chevron-right" class="size-4" aria-hidden="true" />
+              </a>
+            } @else {
+              <button type="button" class="btn btn-primary min-h-11" disabled>
+                Select 1 more VM
+              </button>
+            }
+          </div>
+        </aside>
+      }
+
+      <div class="flex flex-wrap items-end gap-x-6 gap-y-4">
+        <div class="flex flex-col items-start gap-2">
+          <span class="text-xs font-semibold tracking-wide text-text-muted uppercase">
+            Operating system
+          </span>
+          <app-vm-operating-system-toggle
+            [selected]="selectedOperatingSystem()"
+            (selectedChange)="updateOperatingSystem($event)"
+          />
+        </div>
+        <div class="flex max-w-full flex-col items-start gap-2">
+          <span class="text-xs font-semibold tracking-wide text-text-muted uppercase">
+            Pricing model
+          </span>
+          <app-vm-price-mode-toggle
+            [selected]="selectedPriceMode()"
+            (selectedChange)="updatePriceMode($event)"
+          />
+        </div>
+        <div class="flex flex-col items-start gap-2">
+          <span class="text-xs font-semibold tracking-wide text-text-muted uppercase">
+            Price display
+          </span>
+          <app-vm-price-display-toggle
+            [selected]="selectedPriceDisplay()"
+            (selectedChange)="updatePriceDisplay($event)"
+          />
+        </div>
+      </div>
+
+      @if (filteredSkus().length) {
+        <div class="table-shell" aria-describedby="vm-size-result-summary">
+          <table class="table-base vm-size-table">
+            <caption class="sr-only">
+              Azure VM lowest
+              {{
+                selectedOperatingSystem()
+              }}
+              {{
+                selectedPriceModeLabel()
+              }}
+              prices across regions. Select 2 or 3 rows to compare VM specifications and prices. Use
+              a column heading button to change the sort order.
+            </caption>
+            <thead class="table-head">
+              <tr>
+                <th scope="col" class="px-2 py-3 text-center">
+                  <span class="sr-only">Select for comparison</span>
+                </th>
+                <th scope="col" class="p-0" [attr.aria-sort]="sortAriaValue('sku')">
+                  <button type="button" class="table-sort-button" (click)="sortBy('sku')">
+                    VM size
+                    @if (isSortedBy('sku')) {
+                      <app-lucide-icon
+                        name="chevron-down"
+                        class="table-sort-icon size-3.5"
+                        [class.table-sort-icon--ascending]="isSortAscending()"
+                        aria-hidden="true"
+                      />
+                    }
+                  </button>
+                </th>
+                <th scope="col" class="p-0" [attr.aria-sort]="sortAriaValue('price')">
+                  <button
+                    type="button"
+                    class="table-sort-button justify-end text-right"
+                    (click)="sortBy('price')"
+                  >
+                    @if (selectedPriceDisplay() === 'hourly') {
+                      Lowest hourly
+                    } @else {
+                      Est. monthly
+                    }
+                    @if (isSortedBy('price')) {
+                      <app-lucide-icon
+                        name="chevron-down"
+                        class="table-sort-icon size-3.5"
+                        [class.table-sort-icon--ascending]="isSortAscending()"
+                        aria-hidden="true"
+                      />
+                    }
+                  </button>
+                </th>
+                <th scope="col" class="px-4 py-3">Cheapest region</th>
+                <th scope="col" class="p-0" [attr.aria-sort]="sortAriaValue('vcpus')">
+                  <button
+                    type="button"
+                    class="table-sort-button justify-end text-right"
+                    (click)="sortBy('vcpus')"
+                  >
+                    vCPUs
+                    @if (isSortedBy('vcpus')) {
+                      <app-lucide-icon
+                        name="chevron-down"
+                        class="table-sort-icon size-3.5"
+                        [class.table-sort-icon--ascending]="isSortAscending()"
+                        aria-hidden="true"
+                      />
+                    }
+                  </button>
+                </th>
+                <th scope="col" class="p-0" [attr.aria-sort]="sortAriaValue('memory')">
+                  <button
+                    type="button"
+                    class="table-sort-button justify-end text-right"
+                    (click)="sortBy('memory')"
+                  >
+                    Memory
+                    @if (isSortedBy('memory')) {
+                      <app-lucide-icon
+                        name="chevron-down"
+                        class="table-sort-icon size-3.5"
+                        [class.table-sort-icon--ascending]="isSortAscending()"
+                        aria-hidden="true"
+                      />
+                    }
+                  </button>
+                </th>
+                <th scope="col" class="hidden px-4 py-3 xl:table-cell">Architecture</th>
+                <th scope="col" class="p-0" [attr.aria-sort]="sortAriaValue('series')">
+                  <button type="button" class="table-sort-button" (click)="sortBy('series')">
+                    Series
+                    @if (isSortedBy('series')) {
+                      <app-lucide-icon
+                        name="chevron-down"
+                        class="table-sort-icon size-3.5"
+                        [class.table-sort-icon--ascending]="isSortAscending()"
+                        aria-hidden="true"
+                      />
+                    }
+                  </button>
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border-soft">
+              @for (sku of filteredSkus(); track sku.entry.skuKey) {
+                <tr class="table-row-hover align-middle">
+                  <td class="px-2 py-1 text-center">
+                    <label
+                      class="inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-md focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2"
+                    >
+                      <input
+                        #comparisonCheckbox
+                        type="checkbox"
+                        class="size-4 accent-primary"
+                        [checked]="isComparisonSelected(sku.entry.sku)"
+                        [disabled]="comparisonFull() && !isComparisonSelected(sku.entry.sku)"
+                        [attr.aria-label]="'Select ' + sku.entry.sku + ' for comparison'"
+                        (change)="
+                          updateComparisonSelection(sku.entry.sku, comparisonCheckbox.checked)
+                        "
+                      />
+                    </label>
+                  </td>
+                  <th scope="row" class="px-4 py-3 text-left font-normal">
+                    <a
+                      class="link-primary font-mono text-sm font-semibold whitespace-nowrap"
+                      [href]="buildVmSkuHref(sku.entry.sku)"
+                      translate="no"
+                    >
+                      {{ sku.entry.sku }}
+                    </a>
+                    <div class="mt-1 font-mono text-xs text-text-muted" translate="no">
+                      {{ sku.entry.size }}
+                    </div>
+                  </th>
+                  <td class="px-4 py-3 text-right font-semibold whitespace-nowrap tabular-nums">
+                    @if (selectedPriceDisplay() === 'hourly') {
+                      {{ formatHourlyPrice(sku.minHourlyPrice) }}
+                    } @else {
+                      {{ formatMonthlyPrice(sku.minHourlyPrice) }}
+                    }
+                  </td>
+                  <td class="px-4 py-3 font-mono text-xs" translate="no">
+                    {{ cheapestRegionLabel(sku) }}
+                  </td>
+                  <td class="px-4 py-3 text-right tabular-nums">
+                    {{ formatNumber(sku.vcpus) }}
+                  </td>
+                  <td class="px-4 py-3 text-right whitespace-nowrap tabular-nums">
+                    @if (sku.memoryGB === null) {
+                      Not listed
+                    } @else {
+                      {{ formatNumber(sku.memoryGB) }} GB
+                    }
+                  </td>
+                  <td class="hidden px-4 py-3 whitespace-nowrap xl:table-cell" translate="no">
+                    {{ sku.architecture }}
+                  </td>
+                  <td class="px-4 py-3 whitespace-nowrap" translate="no">
+                    {{ sku.entry.series }}
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <div
+          class="flex flex-col items-center gap-3 rounded-lg border border-border-soft bg-surface-raised px-4 py-10 text-center text-sm text-text-muted shadow-sm"
+          role="status"
+        >
+          <app-lucide-icon name="search-x" class="size-10" aria-hidden="true" />
+          <p class="text-base font-semibold text-text-strong">No VM sizes match your filters</p>
+          <p>Try fewer search terms, another series, or a different region.</p>
+          <button
+            type="button"
+            class="btn btn-outline btn--sm min-h-11"
+            (click)="clearFilters(); searchInput.focus()"
+          >
+            Clear filters
+          </button>
+        </div>
+      }
+    </section>
+
+    <section class="section-block" aria-labelledby="vm-catalog-source-heading">
+      <h2 id="vm-catalog-source-heading" class="section-title">Source and interpretation</h2>
+      <div class="grid gap-4 lg:grid-cols-2">
+        <article class="card space-y-3">
+          <h3 class="font-semibold text-text-strong">How prices are selected</h3>
+          <p class="text-sm leading-relaxed text-text-muted">
+            The lowest value is the minimum current {{ selectedOperatingSystem() }}
+            {{ selectedPriceModeLabel() }} hourly rate published or derived for the VM size across
+            Azure regions. Reservation totals are amortized across their full term; Windows
+            reservation estimates retain the PAYG software surcharge and do not model Azure Hybrid
+            Benefit. Spot capacity can be evicted. Monthly cost is an estimate based on 730 hours.
+          </p>
+        </article>
+        <article class="card space-y-3">
+          <h3 class="font-semibold text-text-strong">Availability is separate</h3>
+          <p class="text-sm leading-relaxed text-text-muted">
+            A published price does not guarantee quota, capacity, zone support, or deployment
+            eligibility for a particular subscription. Subscription restrictions are intentionally
+            excluded.
+          </p>
+        </article>
+      </div>
+      <p class="text-sm text-text-muted">
+        Prices: Azure Retail Prices API version
+        <span class="font-mono" translate="no">{{ data.source.retailPrices.apiVersion }}</span
+        >. Specifications: Resource SKUs API version
+        <span class="font-mono" translate="no">{{ data.source.resourceSkus.apiVersion }}</span
+        >.
+      </p>
+      <div class="flex flex-wrap gap-3">
+        <a
+          class="btn btn-outline btn--sm min-h-11 md:min-h-9"
+          href="https://learn.microsoft.com/en-us/rest/api/cost-management/retail-prices/azure-retail-prices"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Retail Prices API documentation
+          <app-lucide-icon name="external-link" class="size-3.5" aria-hidden="true" />
+        </a>
+        <a
+          class="btn btn-outline btn--sm min-h-11 md:min-h-9"
+          href="https://learn.microsoft.com/en-us/azure/cost-management-billing/reservations/reserved-instance-windows-software-costs"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Windows reservation software costs
+          <app-lucide-icon name="external-link" class="size-3.5" aria-hidden="true" />
+        </a>
+        <a
+          class="btn btn-outline btn--sm min-h-11 md:min-h-9"
+          href="https://learn.microsoft.com/en-us/azure/virtual-machines/spot-vms"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Azure Spot VM behavior
+          <app-lucide-icon name="external-link" class="size-3.5" aria-hidden="true" />
+        </a>
+      </div>
+    </section>
+  }
+</article>

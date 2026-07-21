@@ -1,112 +1,353 @@
 <article class="page-shell section-stack mx-auto max-w-5xl">
   <header class="page-header">
-    <h1 class="page-title">Azure storage download speed test</h1>
+    <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+      <h1 class="page-title">Azure download speed test</h1>
+      <nav class="flex flex-wrap gap-2" aria-label="Azure download test modes">
+        <span class="btn btn--sm btn-current min-h-11 md:min-h-9" aria-current="page">
+          Browser speed test
+        </span>
+        <a
+          class="btn btn-outline btn--sm min-h-11 md:min-h-9"
+          routerLink="/Azure/DownloadTestFile"
+          queryParamsHandling="preserve"
+        >
+          Download test files
+        </a>
+      </nav>
+    </div>
     <p class="page-lead">
-      Measure download performance from Azure Storage across regions to find the datacenter that
-      best serves your users.
+      Download 100 MiB from each selected Azure Blob Storage region and measure live progress,
+      elapsed time, and sequential region comparisons. View speeds in Mbps or MiB/s.
     </p>
   </header>
 
-  <section class="section-block" aria-labelledby="download-test-heading">
-    <h2 id="download-test-heading" class="sr-only">Download speed test</h2>
-    <div>
-      <div class="mb-4 rounded-xl bg-gradient-to-r from-primary/5 via-transparent to-primary/5 p-4">
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
-            <span class="text-xs font-bold tracking-widest text-primary uppercase">Test Steps</span>
-            <div class="flex flex-wrap items-center gap-4 text-sm">
-              <span class="flex items-center gap-2.5">
-                <span class="step-number" aria-hidden="true">1</span>
-                <span class="text-text-body">Select regions</span>
-              </span>
-              <span class="hidden text-border-contrast sm:inline">|</span>
-              <span class="flex items-center gap-2.5">
-                <span class="step-number" aria-hidden="true">2</span>
-                <span class="text-text-body">Download 100 MB file</span>
-              </span>
-              <span class="hidden text-border-contrast sm:inline">|</span>
-              <span class="flex items-center gap-2.5">
-                <span class="step-number" aria-hidden="true">3</span>
-                <span class="text-text-body">Compare speeds</span>
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <app-region-group></app-region-group>
-    </div>
+  @let regions = selectedRegions();
+  @let results = displayResults();
+  @let current = currentResult();
+  @let error = runError();
+  @let unit = speedUnit();
 
-    @if (!tableData().length) {
-      <div class="card min-h-[200px]">
-        <div class="card-body flex flex-col items-center justify-center gap-4 py-12 text-center">
-          <div
-            class="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-primary/10 to-primary/20"
+  <p class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+    {{ runStatusMessage() }}
+  </p>
+
+  <section class="section-block" aria-labelledby="region-selection-heading">
+    <header class="mb-5">
+      <h2
+        #regionSelectionHeading
+        id="region-selection-heading"
+        class="section-title focus-visible:outline-none"
+        tabindex="-1"
+      >
+        Select Azure regions
+      </h2>
+      <p class="mt-2 text-sm text-text-muted">
+        Tests run one region at a time so concurrent downloads do not compete for your local
+        bandwidth.
+      </p>
+    </header>
+
+    @if (selectionError() && regions.length === 0) {
+      <div class="alert alert--error mb-4" role="alert">
+        <app-lucide-icon name="alert-circle" class="size-5 shrink-0" aria-hidden="true" />
+        <span class="text-text-strong">{{ selectionError() }}</span>
+      </div>
+    }
+
+    <app-region-group
+      #regionSelector
+      resultsTargetId="download-results-heading"
+      [disabled]="isRunning()"
+      [resultsAvailable]="results.length > 0"
+      [resultsLabel]="isRunning() ? 'View Live Results' : 'View Results'"
+      [resultsStatus]="resultsNavigationStatus()"
+    />
+
+    <form class="mt-6" (submit)="onSubmit($event)">
+      <div
+        class="flex flex-col gap-4 rounded-lg bg-primary/5 p-4 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <div class="text-sm text-text-muted">
+          @if (regions.length > 0) {
+            Ready to download
+            <span class="font-semibold text-text-strong">{{ downloadSizeMiB }} MiB</span>
+            from
+            <span class="font-semibold text-text-strong">{{ regions.length }}</span>
+            {{ regions.length === 1 ? 'region' : 'regions' }} sequentially.
+            <span class="mt-1 block">
+              Planned transfer: up to
+              <span class="font-semibold text-text-strong">
+                {{ downloadSizeMiB * regions.length }} MiB
+              </span>
+              plus protocol overhead.
+            </span>
+          } @else {
+            Each selected region downloads a fixed {{ downloadSizeMiB }} MiB. Select one or more
+            regions to begin.
+          }
+        </div>
+        <button
+          type="submit"
+          class="btn btn-primary btn--lg group w-full shrink-0 sm:w-auto"
+          [disabled]="isRunning()"
+        >
+          @if (isRunning()) {
+            <span class="spinner-sm" aria-hidden="true"></span>
+            Test in Progress...
+          } @else {
+            <app-lucide-icon
+              name="download"
+              class="size-4 transition-transform group-hover:translate-y-0.5"
+              aria-hidden="true"
+            />
+            Start Download Test
+          }
+        </button>
+      </div>
+    </form>
+  </section>
+
+  @if (error) {
+    <div class="alert alert--error" role="alert">
+      <app-lucide-icon name="alert-circle" class="size-5 shrink-0" aria-hidden="true" />
+      <div class="min-w-0 flex-1">
+        <p class="font-semibold text-text-strong">The test could not start</p>
+        <p class="text-sm text-text-strong">{{ error }}</p>
+      </div>
+      <button type="button" class="btn btn-ghost btn--sm ml-auto" (click)="dismissRunError()">
+        Dismiss
+      </button>
+    </div>
+  }
+
+  @if (results.length > 0) {
+    <section class="section-block" aria-labelledby="download-results-heading">
+      <header class="mb-4 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <h2
+            id="download-results-heading"
+            class="section-title scroll-mt-[calc(env(safe-area-inset-top)+5rem)]"
+            tabindex="-1"
           >
-            <app-lucide-icon name="download" class="h-7 w-7 text-primary" aria-hidden="true" />
-          </div>
-          <div class="space-y-2">
-            <div class="text-lg font-bold text-text-strong">No regions selected</div>
-            <p class="text-sm text-text-muted">Select regions above to generate download links.</p>
-          </div>
+            Download test results
+          </h2>
+          <p class="mt-1 min-h-10 text-sm text-text-muted lg:min-h-0">
+            @if (isRunning()) {
+              {{ finishedRegionCount() }} of {{ results.length }} regions finished.
+              @if (current) {
+                Currently testing {{ current.region.displayName }}.
+              }
+            } @else {
+              Average Azure-to-browser throughput for this test run, ranked fastest first.
+            }
+          </p>
+        </div>
+        <div class="flex min-h-16 flex-wrap gap-2 lg:min-h-0">
+          @if (isRunning()) {
+            <button
+              type="button"
+              class="btn btn-outline btn--sm"
+              [disabled]="isCancelling()"
+              (click)="cancelTest()"
+            >
+              <app-lucide-icon name="x" class="size-4" aria-hidden="true" />
+              {{ isCancelling() ? 'Cancelling...' : 'Cancel Test' }}
+            </button>
+          } @else {
+            <button
+              type="button"
+              class="btn btn-outline btn--sm"
+              (click)="regionSelector.showSelection()"
+            >
+              Change Regions
+            </button>
+            @if (failedRegionCount() > 0) {
+              <button type="button" class="btn btn-outline btn--sm" (click)="retryFailedRegions()">
+                Retry Failed Regions
+              </button>
+            }
+            <button type="button" class="btn btn-outline btn--sm" (click)="runTestAgain()">
+              Run Test Again
+            </button>
+            <app-export-csv-button
+              filename="azure-download-results"
+              [headers]="csvHeaders"
+              [rows]="csvRows()"
+            />
+            <button type="button" class="btn btn-outline btn--sm" (click)="clearResults()">
+              Clear Results
+            </button>
+          }
+        </div>
+      </header>
+
+      <div class="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <p id="download-speed-unit-help" class="text-xs text-text-muted">
+          Mbps matches typical internet plan speeds. MiB/s shows file transfer throughput. CSV
+          exports include both.
+        </p>
+        <div
+          class="speed-unit-toggle shrink-0"
+          role="group"
+          aria-label="Speed display unit"
+          aria-describedby="download-speed-unit-help"
+        >
+          <button
+            type="button"
+            class="btn btn--sm speed-unit-toggle__option"
+            [class.speed-unit-toggle__option--active]="unit === 'mbps'"
+            [attr.aria-pressed]="unit === 'mbps'"
+            aria-label="Display speeds in megabits per second"
+            (click)="speedUnit.set('mbps')"
+          >
+            Mbps
+          </button>
+          <button
+            type="button"
+            class="btn btn--sm speed-unit-toggle__option"
+            [class.speed-unit-toggle__option--active]="unit === 'mibps'"
+            [attr.aria-pressed]="unit === 'mibps'"
+            aria-label="Display speeds in mebibytes per second"
+            (click)="speedUnit.set('mibps')"
+          >
+            MiB/s
+          </button>
         </div>
       </div>
-    } @else {
-      <p class="mb-3 text-xs text-text-muted">
-        <strong>Tip:</strong> If the download does not start automatically, right-click the button
-        and choose <strong>Save link as</strong>.
-      </p>
-      <!-- Desktop table view -->
-      <div class="table-shell mb-4 hidden sm:block">
+
+      <div class="mb-5 rounded-lg bg-surface-muted p-4">
+        <div class="mb-2 flex items-center justify-between gap-3 text-sm">
+          <span class="font-semibold text-text-strong">
+            {{ isRunning() ? 'Overall Progress' : 'Run Finished' }}
+          </span>
+          <span class="min-w-8 text-right font-mono font-bold tabular-nums">
+            {{ overallProgressPercentage() }}%
+          </span>
+        </div>
+        <div
+          class="h-3 w-full overflow-hidden rounded-full bg-surface-disabled"
+          role="progressbar"
+          aria-label="Overall download test progress"
+          [attr.aria-valuenow]="overallProgressPercentage()"
+          aria-valuemin="0"
+          aria-valuemax="100"
+        >
+          <div
+            class="h-full rounded-full bg-brand motion-reduce:animate-none"
+            [class.animate-pulse]="isRunning()"
+            [appWidthPercent]="overallProgressPercentage()"
+          ></div>
+        </div>
+      </div>
+
+      <div class="table-shell hidden lg:block">
         <table class="table-base">
           <thead class="table-head">
             <tr>
-              <th class="px-4 py-3">Geography</th>
-              <th class="px-4 py-3">Region</th>
-              <th class="px-4 py-3">Datacenter</th>
-              <th class="px-4 py-3 text-right">Download test</th>
+              <th scope="col" class="px-4 py-3">Region</th>
+              <th scope="col" class="px-4 py-3">Datacenter</th>
+              <th scope="col" class="px-4 py-3">Status &amp; Progress</th>
+              <th scope="col" class="px-4 py-3 text-right">Data</th>
+              <th scope="col" class="px-4 py-3 text-right">Download Time</th>
+              <th scope="col" class="px-4 py-3 text-right">Average Speed</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-border-soft">
-            @for (item of tableData(); track item.regionId) {
-              <tr class="table-row-hover">
-                <td class="px-4 py-3 text-text-muted">{{ item.geography }}</td>
-                <td class="px-4 py-3">
-                  <div class="space-y-1 text-left">
+            @for (result of results; track $index) {
+              @let isBest = isBestResult(result);
+              <tr class="table-row-hover animate-fade-slide-in" [class.best-row]="isBest">
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <div class="flex items-center gap-2">
                     <a
                       class="link-primary font-semibold"
-                      [routerLink]="buildRegionRouterLink(item.displayName)"
+                      [href]="buildRegionDetailHref(result.region.displayName)"
                     >
-                      {{ item.displayName }}
-                      <span aria-hidden="true" class="text-text-muted">›</span>
+                      {{ result.region.displayName }}
                     </a>
-                    <div class="text-xs font-semibold tracking-wide text-text-subtle uppercase">
-                      {{ item.regionId }}
-                    </div>
+                    <span
+                      class="best-badge"
+                      [class.invisible]="!isBest"
+                      [attr.aria-hidden]="isBest ? null : 'true'"
+                    >
+                      <span aria-hidden="true">Best</span>
+                      <span class="sr-only">Best download speed</span>
+                    </span>
                   </div>
                 </td>
                 <td class="px-4 py-3 text-text-muted">
-                  {{ item.datacenterLocation }}
+                  {{ result.region.datacenterLocation }}
                 </td>
-                <td class="px-4 py-3 text-right">
-                  @if (item.url) {
-                    <a
-                      class="btn btn-primary btn--sm group"
-                      [href]="item.url"
-                      download
-                      [attr.aria-label]="'Download 100 MB from ' + item.displayName"
-                    >
-                      <app-lucide-icon
-                        name="download"
-                        class="h-4 w-4 transition-transform group-hover:translate-y-0.5"
-                        aria-hidden="true"
-                      />
-                      Download 100 MB
-                    </a>
+                <td class="h-20 min-w-56 px-4 py-3">
+                  @switch (result.status) {
+                    @case ('queued') {
+                      <span class="badge">Queued</span>
+                    }
+                    @case ('preparing') {
+                      <span
+                        class="inline-flex items-center gap-2 text-sm text-text-muted"
+                        role="status"
+                      >
+                        <span class="spinner-sm" aria-hidden="true"></span>
+                        Preparing...
+                      </span>
+                    }
+                    @case ('failed') {
+                      <div class="flex min-h-12 flex-col justify-center gap-1">
+                        <span class="badge badge-danger">Failed</span>
+                        <p class="max-w-sm text-xs text-text-muted">{{ result.error }}</p>
+                      </div>
+                    }
+                    @case ('cancelled') {
+                      <span class="badge">Cancelled</span>
+                    }
+                    @default {
+                      <div class="flex items-center gap-3">
+                        <div
+                          class="relative h-3 w-full overflow-hidden rounded-full bg-surface-disabled"
+                          role="progressbar"
+                          [attr.aria-label]="'Download progress for ' + result.region.displayName"
+                          [attr.aria-valuenow]="result.downloadProgressPercentage"
+                          aria-valuemin="0"
+                          aria-valuemax="100"
+                        >
+                          <div
+                            class="absolute inset-y-0 left-0 rounded-full bg-success motion-reduce:animate-none"
+                            [class.animate-pulse]="result.status === 'downloading'"
+                            [appWidthPercent]="result.downloadProgressPercentage"
+                          ></div>
+                        </div>
+                        <span class="min-w-12 font-mono text-sm font-bold tabular-nums">
+                          {{ result.downloadProgressPercentage }}%
+                        </span>
+                      </div>
+                    }
+                  }
+                </td>
+                <td class="px-4 py-3 text-right whitespace-nowrap tabular-nums">
+                  @if (result.downloadedBytes > 0) {
+                    {{ formatDataSize(result.downloadedBytes) }}
                   } @else {
-                    <span class="inline-flex items-center gap-2 text-sm text-text-muted">
-                      <span class="spinner-sm"></span>
-                      Preparing...
+                    <span class="text-text-muted">-</span>
+                  }
+                </td>
+                <td class="px-4 py-3 text-right whitespace-nowrap tabular-nums">
+                  @if (result.downloadTimeSeconds > 0) {
+                    {{ formatDuration(result.downloadTimeSeconds) }}
+                  } @else {
+                    <span class="text-text-muted">-</span>
+                  }
+                </td>
+                <td class="px-4 py-3 text-right whitespace-nowrap">
+                  @if (result.downloadSpeedMbps > 0) {
+                    <span class="font-mono font-bold text-text-strong tabular-nums">
+                      @if (unit === 'mbps') {
+                        {{ result.downloadSpeedMbps | number: '1.2-2' }} Mbps
+                      } @else {
+                        {{ result.downloadSpeedMiBps | number: '1.2-2' }} MiB/s
+                      }
                     </span>
+                  } @else {
+                    <span class="text-text-muted">-</span>
                   }
                 </td>
               </tr>
@@ -115,196 +356,250 @@
         </table>
       </div>
 
-      <!-- Mobile card view -->
-      <div class="mb-4 space-y-3 sm:hidden">
-        @for (item of tableData(); track item.regionId; let idx = $index) {
-          <article class="card animate-fade-slide-in space-y-4">
-            <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-              <span class="text-sm font-semibold text-text-strong">{{ item.geography }}</span>
-              <div class="flex items-center gap-1.5 text-sm text-text-muted">
-                <app-lucide-icon name="map-pin" class="h-3.5 w-3.5" aria-hidden="true" />
-                {{ item.datacenterLocation }}
+      <div class="space-y-3 lg:hidden">
+        @for (result of results; track $index) {
+          @let isBest = isBestResult(result);
+          <article class="card animate-fade-slide-in">
+            <div class="card-body flex flex-col gap-4">
+              <div class="flex min-w-0 items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <a
+                    class="link-primary font-semibold"
+                    [href]="buildRegionDetailHref(result.region.displayName)"
+                  >
+                    {{ result.region.displayName }}
+                  </a>
+                  <p class="mt-1 text-sm text-text-muted">
+                    {{ result.region.datacenterLocation }}
+                  </p>
+                </div>
+                @if (isBest) {
+                  <span class="badge badge-success min-w-31! shrink-0">Best</span>
+                } @else {
+                  <span
+                    class="badge min-w-31! shrink-0"
+                    [class.badge-danger]="result.status === 'failed'"
+                  >
+                    {{ getStatusLabel(result.status) }}
+                  </span>
+                }
               </div>
-            </div>
-            <a
-              class="group flex items-center justify-between gap-3 rounded-lg bg-surface-muted px-3 py-2.5 transition-colors hover:bg-surface-raised focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
-              [routerLink]="buildRegionRouterLink(item.displayName)"
-            >
-              <div class="min-w-0 flex-1">
-                <div
-                  class="font-semibold text-text-strong transition-colors group-hover:text-brand"
-                >
-                  {{ item.displayName }}
-                </div>
-                <div class="font-mono text-xs text-text-subtle uppercase">
-                  {{ item.regionId }}
-                </div>
+
+              <div class="min-h-16">
+                @if (result.status === 'preparing') {
+                  <div class="flex items-center gap-2 text-sm text-text-muted" role="status">
+                    <span class="spinner-sm" aria-hidden="true"></span>
+                    Preparing secure download URL...
+                  </div>
+                } @else if (result.status === 'downloading' || result.status === 'completed') {
+                  <div>
+                    <div class="mb-2 flex items-center justify-between gap-3 text-sm">
+                      <span class="text-text-muted">
+                        {{ formatDataSize(result.downloadedBytes) }} of
+                        {{ result.downloadSizeMiB }} MiB
+                      </span>
+                      <span class="min-w-8 text-right font-mono font-bold tabular-nums">
+                        {{ result.downloadProgressPercentage }}%
+                      </span>
+                    </div>
+                    <div
+                      class="h-3 w-full overflow-hidden rounded-full bg-surface-disabled"
+                      role="progressbar"
+                      [attr.aria-label]="'Download progress for ' + result.region.displayName"
+                      [attr.aria-valuenow]="result.downloadProgressPercentage"
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                    >
+                      <div
+                        class="h-full rounded-full bg-success motion-reduce:animate-none"
+                        [class.animate-pulse]="result.status === 'downloading'"
+                        [appWidthPercent]="result.downloadProgressPercentage"
+                      ></div>
+                    </div>
+                  </div>
+                } @else if (result.error) {
+                  <p class="rounded-lg bg-danger/10 p-3 text-sm text-text-strong">
+                    {{ result.error }}
+                  </p>
+                }
               </div>
-              <app-lucide-icon
-                name="chevron-right"
-                class="h-4 w-4 text-text-muted transition-transform group-hover:translate-x-1"
-                aria-hidden="true"
-              />
-            </a>
-            <div class="pt-1">
-              @if (item.url) {
-                <a
-                  class="btn btn-primary btn--sm group w-full justify-center"
-                  [href]="item.url"
-                  download
-                  [attr.aria-label]="'Download 100 MB from ' + item.displayName"
-                >
-                  <app-lucide-icon
-                    name="download"
-                    class="h-4 w-4 transition-transform group-hover:translate-y-0.5"
-                    aria-hidden="true"
-                  />
-                  Download 100 MB
-                </a>
-              } @else {
-                <div class="flex items-center justify-center gap-2 py-2 text-sm text-text-muted">
-                  <span class="spinner-sm"></span>
-                  Preparing download link...
+
+              <dl class="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <dt class="text-text-muted">Download Time</dt>
+                  <dd class="mt-1 font-semibold text-text-strong tabular-nums">
+                    {{
+                      result.downloadTimeSeconds > 0
+                        ? formatDuration(result.downloadTimeSeconds)
+                        : '-'
+                    }}
+                  </dd>
                 </div>
-              }
+                <div>
+                  <dt class="text-text-muted">Average Speed</dt>
+                  <dd class="mt-1 font-semibold text-text-strong tabular-nums">
+                    @if (result.downloadSpeedMbps > 0) {
+                      @if (unit === 'mbps') {
+                        {{ result.downloadSpeedMbps | number: '1.2-2' }} Mbps
+                      } @else {
+                        {{ result.downloadSpeedMiBps | number: '1.2-2' }} MiB/s
+                      }
+                    } @else {
+                      -
+                    }
+                  </dd>
+                </div>
+              </dl>
+
+              <p
+                class="min-h-5 text-xs text-text-muted"
+                [class.invisible]="!result.completedAt"
+                [attr.aria-hidden]="result.completedAt ? null : 'true'"
+              >
+                @if (result.completedAt; as completedAt) {
+                  Finished {{ formatTestTime(completedAt) }}
+                } @else {
+                  Awaiting completion
+                }
+              </p>
             </div>
           </article>
         }
       </div>
-    }
-  </section>
-
-  <section class="section-block" aria-labelledby="download-alternatives-heading">
-    <header class="mb-4">
-      <h2 id="download-alternatives-heading" class="section-title">
-        Alternatives for benchmarking
-      </h2>
-    </header>
-    <div class="space-y-4">
-      <div class="flex items-start gap-3">
-        <div
-          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary/10 to-primary/20"
-        >
-          <app-lucide-icon name="terminal" class="h-5 w-5 text-primary" aria-hidden="true" />
+    </section>
+  } @else {
+    <section class="section-block" aria-labelledby="download-empty-heading">
+      <div class="rounded-lg bg-surface-muted p-6 text-center">
+        <div class="mx-auto flex size-12 items-center justify-center rounded-full bg-primary/15">
+          <app-lucide-icon name="download" class="size-6 text-primary" aria-hidden="true" />
         </div>
-        <div class="space-y-1">
-          <h3 class="font-semibold text-text-strong">AzCopy Bench</h3>
-          <p class="text-sm text-text-muted">
-            Microsoft's official CLI tool for Azure Storage performance benchmarking. Ideal for
-            automated testing, CI/CD pipelines, and high-throughput scenarios where you need precise
-            control over test parameters.
-          </p>
-        </div>
-      </div>
-
-      <div class="grid gap-3 sm:grid-cols-2">
-        <div
-          class="flex items-start gap-2.5 rounded-lg border border-border-soft bg-surface-muted p-3"
-        >
-          <app-lucide-icon name="zap" class="mt-0.5 h-4 w-4 text-warning" aria-hidden="true" />
-          <div class="text-sm">
-            <span class="font-medium text-text-body">Auto-tuning</span>
-            <p class="text-text-muted">
-              Automatically optimizes parallel TCP connections for maximum throughput
-            </p>
-          </div>
-        </div>
-        <div
-          class="flex items-start gap-2.5 rounded-lg border border-border-soft bg-surface-muted p-3"
-        >
-          <app-lucide-icon
-            name="shield-check"
-            class="mt-0.5 h-4 w-4 text-success"
-            aria-hidden="true"
-          />
-          <div class="text-sm">
-            <span class="font-medium text-text-body">Zero disk writes</span>
-            <p class="text-text-muted">Downloaded data is discarded, never saved locally</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="space-y-3">
-        <div class="flex items-center gap-2 text-sm font-medium text-text-body">
-          <app-lucide-icon name="code" class="h-4 w-4" aria-hidden="true" />
-          Download benchmark examples
-        </div>
-        <div class="space-y-2">
-          <p class="text-xs font-medium text-text-muted">Basic download benchmark:</p>
-          <div class="code-block">
-            <pre><code>azcopy bench --mode=Download "https://[account].blob.core.windows.net/[container]?[SAS]"</code></pre>
-          </div>
-        </div>
-        <div class="space-y-2">
-          <p class="text-xs font-medium text-text-muted">Rate-limited download test (500 Mbps):</p>
-          <div class="code-block">
-            <pre><code>azcopy bench --mode=Download "https://[account].blob.core.windows.net/[container]?[SAS]" \
-  --cap-mbps 500</code></pre>
-          </div>
-        </div>
-        <p class="text-xs text-text-muted">
-          Download mode tests against existing files in your container. Data is streamed but never
-          written to disk.
+        <h2 id="download-empty-heading" class="mt-3 text-lg font-bold text-text-strong">
+          No download tests yet
+        </h2>
+        <p class="mt-1 text-sm text-text-muted">
+          Select regions and a transfer size, then start the download test.
         </p>
       </div>
+    </section>
+  }
 
-      <div class="flex items-center justify-between border-t border-border-soft pt-4">
-        <a
-          href="https://learn.microsoft.com/azure/storage/common/storage-ref-azcopy-bench"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="link-primary inline-flex items-center gap-1.5 text-sm font-medium"
+  <section class="section-block" aria-labelledby="download-alternatives-heading">
+    <h2 id="download-alternatives-heading" class="section-title">Choose the right download tool</h2>
+    <div class="mt-4 grid gap-4 md:grid-cols-3">
+      <a
+        routerLink="/Azure/DownloadTestFile"
+        [queryParams]="selectedRegionQueryParams()"
+        class="group rounded-lg bg-surface-muted p-4 text-inherit hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-none"
+      >
+        <app-lucide-icon name="file-text" class="size-5 text-primary" aria-hidden="true" />
+        <h3 class="mt-3 font-semibold text-text-strong group-hover:text-primary">
+          Download Test Files
+        </h3>
+        <p class="mt-1 text-sm text-text-muted">
+          Generate expiring file links for manual downloads, download managers, or external tools.
+        </p>
+      </a>
+      <a
+        routerLink="/Azure/Upload"
+        class="group rounded-lg bg-surface-muted p-4 text-inherit hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-none"
+      >
+        <app-lucide-icon name="upload" class="size-5 text-primary" aria-hidden="true" />
+        <h3 class="mt-3 font-semibold text-text-strong group-hover:text-primary">
+          Azure Upload Test
+        </h3>
+        <p class="mt-1 text-sm text-text-muted">
+          Generate synthetic data and measure sequential upload throughput to Azure regions.
+        </p>
+      </a>
+      <a
+        href="https://learn.microsoft.com/azure/storage/common/storage-ref-azcopy-bench"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="group rounded-lg bg-surface-muted p-4 text-inherit hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-none"
+      >
+        <app-lucide-icon name="terminal" class="size-5 text-primary" aria-hidden="true" />
+        <h3
+          class="mt-3 flex items-center gap-1 font-semibold text-text-strong group-hover:text-primary"
         >
-          <span>View documentation</span>
-          <app-lucide-icon name="external-link" class="h-3.5 w-3.5" aria-hidden="true" />
-        </a>
-        <span class="text-xs text-text-subtle">Requires AzCopy v10+</span>
-      </div>
+          AzCopy Bench
+          <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
+        </h3>
+        <p class="mt-1 text-sm text-text-muted">
+          Use Microsoft's CLI benchmark for servers, automation, and production-scale testing.
+        </p>
+      </a>
     </div>
   </section>
 
   <section class="section-block" aria-labelledby="download-faq-heading">
-    <h2 id="download-faq-heading" class="section-title mb-4">Frequently asked questions</h2>
+    <h2 id="download-faq-heading" class="section-title">Frequently asked questions</h2>
     <div class="faq-list">
       <details class="faq-item group">
         <summary class="faq-summary">
-          <span class="faq-question">What is Azure Storage Download Speed?</span>
+          <span class="faq-question">How does this download speed test work?</span>
           <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
         </summary>
         <div class="faq-body">
           <p>
-            Azure Storage Download Speed measures the rate at which data is transferred from Azure
-            Storage to your local system. It affects how quickly you can download large files,
-            update applications, or stream data. The speed is typically measured in kilobytes per
-            second (KB/s) or megabytes per second (MB/s).
+            The browser requests a short-lived read-only URL, downloads the full 100 MiB Azure Blob
+            Storage test file, measures transferred bytes and elapsed time, then discards every data
+            chunk without saving it.
           </p>
         </div>
       </details>
+
       <details class="faq-item group">
         <summary class="faq-summary">
-          <span class="faq-question">
-            What is the purpose of the Azure Storage Download Speed Test?
-          </span>
+          <span class="faq-question">Why are regions tested one at a time?</span>
           <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
         </summary>
         <div class="faq-body">
           <p>
-            The Azure Storage Download Speed Test measures the download speeds from various Azure
-            regions to help users determine the most suitable region for hosting their services
-            based on geographical proximity and network latency.
+            Parallel downloads would divide your local connection among several regions and make
+            every result artificially slower. Sequential runs give each region the same opportunity
+            to use the available bandwidth.
           </p>
         </div>
       </details>
+
       <details class="faq-item group">
         <summary class="faq-summary">
-          <span class="faq-question">How should I use the results from this test?</span>
+          <span class="faq-question">How much data does the test download?</span>
           <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
         </summary>
         <div class="faq-body">
           <p>
-            Use the results to compare download speeds from different Azure regions. This can guide
-            you in choosing a region that offers the best performance for users in specific
-            locations.
+            The test always downloads 100 MiB from each selected region. For example, selecting six
+            regions transfers up to 600 MiB plus protocol overhead because regions are tested one at
+            a time.
+          </p>
+        </div>
+      </details>
+
+      <details class="faq-item group">
+        <summary class="faq-summary">
+          <span class="faq-question">What do Mbps and MiB/s mean?</span>
+          <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
+        </summary>
+        <div class="faq-body">
+          <p>
+            Mbps means megabits per second and is comparable to typical internet plan speeds. MiB/s
+            means mebibytes per second and uses binary units. Use the results control to switch
+            units; both views come from the same measured transfer.
+          </p>
+        </div>
+      </details>
+
+      <details class="faq-item group">
+        <summary class="faq-summary">
+          <span class="faq-question">Why do results vary between runs?</span>
+          <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
+        </summary>
+        <div class="faq-body">
+          <p>
+            Internet routing, Wi-Fi quality, VPNs, local resource pressure, regional congestion,
+            browser scheduling, and competing traffic can change throughput. Repeat tests using the
+            same size and regions before making a placement decision.
           </p>
         </div>
       </details>

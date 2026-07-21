@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { Component } from '@angular/core'
 import { RouterLink } from '@angular/router'
 
 import { LucideIconComponent } from '../icons/lucide-icons.component'
@@ -7,9 +7,6 @@ import { LucideIconComponent } from '../icons/lucide-icons.component'
   selector: 'app-footer',
   imports: [RouterLink, LucideIconComponent],
   templateUrl: './footer.component.html',
-  styleUrl: './footer.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  host: { class: 'block' },
 })
-export class FooterComponent {
-  readonly startYear = 2013
-}
+export class FooterComponent {}

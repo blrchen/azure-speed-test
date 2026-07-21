@@ -1,44 +1,354 @@
 <article class="page-shell section-stack mx-auto max-w-5xl">
   <header class="page-header">
-    <h1 class="page-title">Azure Region to Region Latency</h1>
-    <p class="page-lead">
-      Discover average latency between Azure datacenters on the backbone network. Visit the
-      <a
-        href="https://docs.microsoft.com/en-us/azure/networking/azure-network-latency"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="link-primary inline-flex items-center gap-1"
-        aria-label="Azure Network Latency Documentation (opens in new tab)"
-      >
-        Azure Network Latency Documentation
-        <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
-      </a>
-      for the latest updates. The snapshot below illustrates latency as of December 2020.
-    </p>
+    <h1 class="page-title">{{ pageHeading() }}</h1>
+    <p class="page-lead">{{ pageLead() }}</p>
   </header>
 
+  <section class="section-block" aria-labelledby="interactive-heading">
+    <h2 id="interactive-heading" class="section-title">Compare Azure region latency</h2>
+    <p id="source-region-help" class="text-text-muted">
+      Choose a source region to compare its published round-trip times to other Azure regions.
+      Results are sorted from fastest to slowest.
+    </p>
+
+    @if (sourceRegions.length === 0) {
+      <div
+        class="flex flex-col items-center gap-3 rounded-lg bg-surface-muted/50 p-6 text-center"
+        role="status"
+      >
+        <app-lucide-icon name="alert-circle" class="size-10 text-text-muted" aria-hidden="true" />
+        <div class="space-y-1">
+          <div class="text-base font-semibold text-text-strong">Latency data unavailable</div>
+          <p class="text-sm text-text-muted">
+            Latency data is temporarily unavailable. Try again later.
+          </p>
+        </div>
+      </div>
+    } @else {
+      <div class="max-w-xl space-y-2">
+        <label class="form-label" for="source-region">Source region</label>
+        <div class="form-select-wrapper">
+          <select
+            id="source-region"
+            class="latency-control form-select"
+            autocomplete="off"
+            aria-describedby="source-region-help"
+            [formField]="sourceForm.sourceRegion"
+          >
+            <option value="" disabled>Select a source region</option>
+            @for (region of sourceRegions; track region) {
+              <option value="{{ region }}">{{ region }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      @let selectedSource = sourceModel().sourceRegion;
+
+      @if (!selectedSource) {
+        <div class="rounded-lg bg-surface-muted/50 p-6 text-center">
+          <div class="text-sm font-semibold text-text-strong">
+            Select a source region to view results
+          </div>
+          <div class="mt-1 text-sm text-text-muted">Pick a region from the list above.</div>
+        </div>
+      } @else if (sortedResults().length === 0) {
+        <div class="rounded-lg bg-surface-muted/50 p-6 text-center" role="status">
+          <div class="text-sm font-semibold text-text-strong">No latency data available</div>
+          <div class="mt-1 text-sm text-text-muted">
+            Microsoft does not publish latency values for this source region yet.
+          </div>
+        </div>
+      } @else {
+        @if (latencySummary(); as summary) {
+          <section class="flex min-w-0 flex-col gap-5" aria-labelledby="latency-results-heading">
+            <header class="flex min-w-0 flex-wrap items-start justify-between gap-3">
+              <div class="min-w-0">
+                <h3 id="latency-results-heading" class="text-xl font-semibold text-text-strong">
+                  Latency from {{ selectedSource }}
+                </h3>
+                <p class="mt-1 text-sm text-text-muted">
+                  {{ formatInteger(summary.count) }} published routes
+                </p>
+              </div>
+              <a
+                class="link-primary inline-flex min-h-11 shrink-0 touch-manipulation items-center gap-1 rounded-md px-2 text-sm font-semibold"
+                [href]="buildRegionDetailHref(selectedSource)"
+              >
+                View region details
+                <app-lucide-icon name="chevron-right" class="size-3.5" aria-hidden="true" />
+              </a>
+            </header>
+
+            <dl class="latency-summary-grid">
+              <div class="latency-summary-item min-w-0 p-4">
+                <dt class="text-xs font-semibold text-text-muted">Fastest route</dt>
+                <dd
+                  class="mt-1.5 flex min-w-0 items-baseline justify-between gap-3 text-text-strong"
+                >
+                  <a
+                    class="link-primary min-w-0 truncate font-semibold"
+                    [href]="buildRegionDetailHref(summary.fastest.destinationDisplayName)"
+                  >
+                    {{ summary.fastest.destinationDisplayName }}
+                  </a>
+                  <span class="shrink-0 font-bold tabular-nums">
+                    {{ formatLatency(summary.fastest.latencyMs) }}&nbsp;ms
+                  </span>
+                </dd>
+              </div>
+              <div class="latency-summary-item min-w-0 p-4">
+                <dt class="text-xs font-semibold text-text-muted">Median latency</dt>
+                <dd
+                  class="mt-1.5 flex min-w-0 items-baseline justify-between gap-3 text-text-strong"
+                >
+                  <span class="shrink-0 text-lg font-bold tabular-nums">
+                    {{ formatLatency(summary.medianMs) }}&nbsp;ms
+                  </span>
+                </dd>
+              </div>
+              <div class="latency-summary-item min-w-0 p-4">
+                <dt class="text-xs font-semibold text-text-muted">Slowest route</dt>
+                <dd
+                  class="mt-1.5 flex min-w-0 items-baseline justify-between gap-3 text-text-strong"
+                >
+                  <a
+                    class="link-primary min-w-0 truncate font-semibold"
+                    [href]="buildRegionDetailHref(summary.slowest.destinationDisplayName)"
+                  >
+                    {{ summary.slowest.destinationDisplayName }}
+                  </a>
+                  <span class="shrink-0 font-bold tabular-nums">
+                    {{ formatLatency(summary.slowest.latencyMs) }}&nbsp;ms
+                  </span>
+                </dd>
+              </div>
+            </dl>
+
+            <div class="latency-legend">
+              <ul class="flex flex-wrap items-center gap-x-4 gap-y-2">
+                <li class="inline-flex items-center gap-1.5">
+                  <span
+                    class="latency-legend-dot latency-legend-dot--fast"
+                    aria-hidden="true"
+                  ></span>
+                  <strong class="text-text-strong">Fast</strong> under 50&nbsp;ms
+                </li>
+                <li class="inline-flex items-center gap-1.5">
+                  <span
+                    class="latency-legend-dot latency-legend-dot--moderate"
+                    aria-hidden="true"
+                  ></span>
+                  <strong class="text-text-strong">Moderate</strong> 50-99&nbsp;ms
+                </li>
+                <li class="inline-flex items-center gap-1.5">
+                  <span
+                    class="latency-legend-dot latency-legend-dot--slow"
+                    aria-hidden="true"
+                  ></span>
+                  <strong class="text-text-strong">Slow</strong> 100&nbsp;ms or more
+                </li>
+              </ul>
+              <p>
+                Bars use the same 0-{{ formatInteger(maxPublishedLatency) }}&nbsp;ms scale for every
+                source region.
+              </p>
+            </div>
+
+            <div class="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div class="min-w-0 flex-1 space-y-2">
+                <label class="form-label" for="destination-search"
+                  >Search destination regions</label
+                >
+                <div class="form-control-shell max-w-xl">
+                  <app-lucide-icon
+                    name="search"
+                    class="form-control-shell__icon size-4"
+                    aria-hidden="true"
+                  />
+                  <input
+                    #destinationSearchInput
+                    id="destination-search"
+                    class="latency-control form-control form-control--icon-start form-control--action-end form-control-focus-ring"
+                    type="search"
+                    inputmode="search"
+                    placeholder="Search destination regions..."
+                    autocomplete="off"
+                    spellcheck="false"
+                    aria-controls="latency-results"
+                    [formField]="destinationFilterForm.search"
+                  />
+                  @if (destinationFilterModel().search) {
+                    <button
+                      type="button"
+                      class="form-control-shell__action"
+                      (click)="clearDestinationSearch(); destinationSearchInput.focus()"
+                      aria-label="Clear destination search"
+                    >
+                      <app-lucide-icon name="x" class="size-4" aria-hidden="true" />
+                    </button>
+                  }
+                </div>
+              </div>
+              <p
+                class="shrink-0 text-sm text-text-muted tabular-nums sm:pb-3"
+                aria-live="polite"
+                aria-atomic="true"
+              >
+                Showing {{ formatInteger(filteredResults().length) }} of
+                {{ formatInteger(summary.count) }} routes
+              </p>
+            </div>
+
+            <div id="latency-results">
+              @if (filteredResults().length === 0) {
+                <div class="rounded-lg bg-surface-muted/50 p-6 text-center" role="status">
+                  <p class="text-base font-semibold text-text-strong">
+                    No destination regions match this search
+                  </p>
+                  <p class="mt-1 text-sm text-text-muted">
+                    Try a different region name or clear the search.
+                  </p>
+                  <button
+                    type="button"
+                    class="btn btn-secondary btn--sm mt-4"
+                    (click)="clearDestinationSearch(); destinationSearchInput.focus()"
+                  >
+                    Clear search
+                  </button>
+                </div>
+              } @else {
+                <div class="latency-table-shell">
+                  <table id="latency-results-table" class="latency-table">
+                    <caption class="sr-only">
+                      Published round-trip latency from
+                      {{
+                        selectedSource
+                      }}
+                      to Azure destination regions, sorted from fastest to slowest.
+                    </caption>
+                    <thead>
+                      <tr>
+                        <th scope="col" class="latency-destination-column">Destination region</th>
+                        <th scope="col" class="latency-rtt-column">
+                          <abbr class="no-underline" title="Round-trip time">RTT</abbr>
+                        </th>
+                        <th scope="col" class="latency-rating-column">Rating</th>
+                        <th scope="col" class="latency-scale-column">Relative latency</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (item of filteredResults(); track item.destinationDisplayName) {
+                        @let tone = getLatencyTone(item.latencyMs);
+                        <tr>
+                          <td class="latency-destination-column">
+                            <a
+                              class="latency-destination-link link-primary"
+                              [href]="buildRegionDetailHref(item.destinationDisplayName)"
+                            >
+                              {{ item.destinationDisplayName }}
+                            </a>
+                          </td>
+                          <td class="latency-rtt-column">
+                            <span class="latency-rtt">
+                              {{ formatLatency(item.latencyMs) }}&nbsp;ms
+                            </span>
+                          </td>
+                          <td class="latency-rating-column">
+                            <span
+                              class="badge"
+                              [class.badge-success]="tone === 'fast'"
+                              [class.badge-warning]="tone === 'moderate'"
+                              [class.badge-danger]="tone === 'slow'"
+                            >
+                              {{ getLatencyRating(tone) }}
+                            </span>
+                          </td>
+                          <td class="latency-scale-column">
+                            <div class="flex items-center" aria-hidden="true">
+                              <div class="latency-bar-track">
+                                <span
+                                  class="latency-bar-fill animate-bar-grow"
+                                  [class.bar-color-fast]="tone === 'fast'"
+                                  [class.bar-color-moderate]="tone === 'moderate'"
+                                  [class.bar-color-slow]="tone === 'slow'"
+                                  [class.bar-color-default]="tone === 'unknown'"
+                                  [appWidthPercent]="getChartBarWidthPercent(item.latencyMs)"
+                                ></span>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              }
+            </div>
+          </section>
+        }
+      }
+
+      <details class="latency-data-details">
+        <summary>About this latency data</summary>
+        <div class="grid gap-2 px-4 pb-4">
+          <p>
+            Values come from the Microsoft Learn
+            <a
+              href="https://learn.microsoft.com/en-us/azure/networking/azure-network-latency"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="link-primary inline-flex items-center gap-1"
+              aria-label="Azure network round-trip latency statistics on Microsoft Learn (opens in new tab)"
+            >
+              Azure network round-trip latency statistics
+              <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
+            </a>
+            table. Region pairs without a published numeric value are omitted.
+          </p>
+          <p>
+            Published averages are a planning reference. Application latency varies with workload,
+            routing, network conditions, and VM configuration.
+          </p>
+        </div>
+      </details>
+    }
+  </section>
+
   <section class="section-block" aria-labelledby="latency-matrix-heading">
-    <h2 id="latency-matrix-heading" class="section-title">Latency matrix snapshot</h2>
+    <h2 id="latency-matrix-heading" class="section-title">Historical latency snapshot</h2>
     <div class="card">
       <div class="card-body">
-        <figure class="mb-3">
+        <figure>
           <img
             ngSrc="assets/images/azure-network-latency-2020-12.webp"
-            class="mx-auto block w-full max-w-3xl rounded-xl border border-border-card shadow-sm"
+            class="mx-auto block w-full max-w-3xl rounded-lg border border-border-card shadow-sm"
             alt="Azure network latency matrix showing round-trip times between regions, ranging from under 2ms within geography to over 200ms cross-continent, December 2020"
-            priority
-            width="720"
-            height="422"
+            loading="lazy"
+            width="2761"
+            height="1756"
             sizes="(min-width: 1280px) 55vw, (min-width: 768px) 70vw, 92vw"
           />
-          <figcaption class="mt-2 text-center text-xs text-text-muted">
-            Azure backbone latency matrix (December 2020 snapshot)
-          </figcaption>
+          <div class="mt-3 flex flex-wrap items-center justify-between gap-3">
+            <figcaption class="text-xs text-text-muted">
+              Azure backbone latency matrix (December 2020 snapshot)
+            </figcaption>
+            <a
+              href="/assets/images/azure-network-latency-2020-12.webp"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="link-primary inline-flex min-h-11 touch-manipulation items-center gap-1 rounded-md px-2 text-sm font-semibold"
+              aria-label="View full-size matrix for historical Azure latency (opens in new tab)"
+            >
+              View full-size matrix
+              <app-lucide-icon name="external-link" class="size-3.5" aria-hidden="true" />
+            </a>
+          </div>
         </figure>
-        <div class="text-sm text-text-muted">
-          Pair this historical snapshot with the live tests on Azure Speed Test to validate that
-          your chosen region pair still delivers the right experience.
-        </div>
+        <p class="mt-3 text-sm text-text-muted">
+          This archived image provides historical context. Use the interactive comparison above for
+          the currently published numeric routes included on this site.
+        </p>
       </div>
     </div>
   </section>
@@ -47,28 +357,12 @@
     <h2 id="resources-heading" class="section-title">Additional resources</h2>
     <div class="resource-grid">
       <article class="card card-resource">
-        <h3 class="card-title">Azure network round trip latency statistics</h3>
-        <p class="card-description">
-          Review the latest Microsoft-published tables that highlight average inter-region latency.
-        </p>
-        <a
-          href="https://docs.microsoft.com/en-us/azure/networking/azure-network-latency"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="card-cta"
-          aria-label="View latency statistics (opens in new tab)"
-        >
-          View latency statistics
-          <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
-        </a>
-      </article>
-      <article class="card card-resource">
         <h3 class="card-title">Test VM network latency</h3>
         <p class="card-description">
-          Learn how to benchmark VM-to-VM latency using Azure tools and recommended configurations.
+          Benchmark VM-to-VM latency using Azure tools and recommended configurations.
         </p>
         <a
-          href="https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-test-latency"
+          href="https://learn.microsoft.com/en-us/azure/virtual-network/virtual-network-test-latency"
           target="_blank"
           rel="noopener noreferrer"
           class="card-cta"
@@ -81,65 +375,16 @@
       <article class="card card-resource">
         <h3 class="card-title">View relative latency to Azure regions</h3>
         <p class="card-description">
-          Leverage Azure Network Watcher to monitor edge-to-region latency from specific locations.
+          Use Azure Network Watcher to monitor edge-to-region latency from specific locations.
         </p>
         <a
-          href="https://docs.microsoft.com/en-us/azure/network-watcher/view-relative-latencies"
+          href="https://learn.microsoft.com/en-us/azure/network-watcher/view-relative-latencies"
           target="_blank"
           rel="noopener noreferrer"
           class="card-cta"
-          aria-label="Network Watcher guide (opens in new tab)"
+          aria-label="Network Watcher guide for relative Azure latency (opens in new tab)"
         >
           Network Watcher guide
-          <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
-        </a>
-      </article>
-      <article class="card card-resource">
-        <h3 class="card-title">Troubleshooting network performance</h3>
-        <p class="card-description">
-          Follow a diagnostic checklist to resolve throughput or latency concerns on ExpressRoute.
-        </p>
-        <a
-          href="https://docs.microsoft.com/en-us/azure/expressroute/expressroute-troubleshooting-network-performance"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="card-cta"
-          aria-label="ExpressRoute troubleshooting (opens in new tab)"
-        >
-          ExpressRoute troubleshooting
-          <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
-        </a>
-      </article>
-      <article class="card card-resource">
-        <h3 class="card-title">Which cloud performs better, AWS, Azure or Google?</h3>
-        <p class="card-description">
-          Explore an industry comparison of backbone design choices across major cloud providers.
-        </p>
-        <a
-          href="https://www.networkworld.com/article/3319776/the-network-matters-for-public-cloud-performance.html"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="card-cta"
-          aria-label="Compare cloud providers (opens in new tab)"
-        >
-          Compare cloud providers
-          <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
-        </a>
-      </article>
-      <article class="card card-resource">
-        <h3 class="card-title">Round trip between Azure regions</h3>
-        <p class="card-description">
-          Dive into the Learn article for architectural best practices and historical latency
-          charts.
-        </p>
-        <a
-          href="https://learn.microsoft.com/en-us/azure/networking/azure-network-latency"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="card-cta"
-          aria-label="View best practices (opens in new tab)"
-        >
-          View best practices
           <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
         </a>
       </article>

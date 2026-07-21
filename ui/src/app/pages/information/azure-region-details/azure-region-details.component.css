@@ -1,1 +1,71 @@
-@import 'leaflet/dist/leaflet.css';
+.region-status {
+  color: var(--color-success-foreground);
+  background: color-mix(in srgb, var(--color-success) 18%, transparent);
+}
+
+:host-context(.dark) .region-status {
+  color: var(--color-success);
+}
+
+.region-status--restricted {
+  color: var(--color-warning-foreground);
+  background: color-mix(in srgb, var(--color-warning) 18%, transparent);
+}
+
+:host-context(.dark) .region-status--restricted {
+  color: var(--color-warning);
+}
+
+.region-context-map {
+  position: relative;
+  min-height: 18rem;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--color-surface-base) 78%, var(--color-brand) 22%);
+}
+
+.region-fact {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 1rem 1.25rem;
+  border-radius: 0.5rem;
+  background: var(--color-surface-muted);
+}
+
+.region-fact dt {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.region-fact dd {
+  margin: 0;
+  color: var(--color-text-strong);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.region-paired-tag {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 0.25rem;
+  padding: 0.125rem 0.375rem;
+  color: var(--color-accent-foreground);
+  background: color-mix(in srgb, var(--color-brand) 14%, transparent);
+  font-size: 0.625rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+@media (min-width: 960px) {
+  .region-context-map {
+    min-height: 20rem;
+  }
+}

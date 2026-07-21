@@ -1,20 +1,22 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core'
+import { Component, inject, OnInit } from '@angular/core'
 
-import { SeoService } from '../../../services'
+import { SeoService } from '../../../services/seo.service'
 import { LucideIconComponent } from '../../../shared/icons/lucide-icons.component'
 
 @Component({
   selector: 'app-azure-environments',
   imports: [LucideIconComponent],
   templateUrl: './azure-environments.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  host: { class: 'block' },
 })
 export class AzureEnvironmentsComponent implements OnInit {
   private readonly seoService = inject(SeoService)
 
   ngOnInit(): void {
-    this.seoService.setMetaTitle('Azure Environments')
-    this.seoService.setMetaDescription('Difference between Azure cloud and sovereign clouds')
-    this.seoService.setCanonicalUrl('https://www.azurespeed.com/Information/AzureEnvironments')
+    this.seoService.setPageMeta({
+      title: 'Azure Environments',
+      description: 'Difference between Azure cloud and sovereign clouds',
+      canonicalUrl: 'https://www.azurespeed.com/Information/AzureEnvironments',
+    })
   }
 }

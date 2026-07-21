@@ -1,3 +1,203 @@
-:host {
+.latency-control {
+  height: 2.75rem;
+  min-height: 2.75rem;
+  touch-action: manipulation;
+}
+
+.latency-summary-grid {
+  display: grid;
+  overflow: hidden;
+  border: 1px solid var(--color-border-soft);
+  border-radius: 0.5rem;
+  background-color: var(--color-surface-raised);
+}
+
+.latency-summary-item + .latency-summary-item {
+  border-top: 1px solid var(--color-border-soft);
+}
+
+.latency-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  background-color: var(--color-surface-muted);
+  padding: 0.75rem 1rem;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+}
+
+.latency-legend-dot {
+  width: 0.625rem;
+  height: 0.625rem;
+  flex-shrink: 0;
+  border-radius: 9999px;
+}
+
+.latency-legend-dot--fast {
+  background-color: var(--color-success-dark);
+}
+
+.latency-legend-dot--moderate {
+  background-color: var(--color-warning);
+}
+
+.latency-legend-dot--slow {
+  background-color: var(--color-danger-dark);
+}
+
+.latency-table-shell {
+  overflow: hidden;
+  border: 1px solid var(--color-border-soft);
+  border-radius: 0.5rem;
+  background-color: var(--color-surface-raised);
+}
+
+.latency-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+
+.latency-table th,
+.latency-table td {
+  padding: 0.75rem;
+  vertical-align: middle;
+}
+
+.latency-table th {
+  background-color: var(--color-surface-muted);
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: left;
+}
+
+.latency-table tbody tr {
+  border-top: 1px solid var(--color-border-soft);
+}
+
+.latency-table tbody tr:hover {
+  background-color: color-mix(in srgb, var(--color-secondary) 42%, transparent);
+}
+
+.latency-destination-link {
   display: block;
+  overflow: hidden;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.latency-rtt-column {
+  width: 5.75rem;
+  text-align: right !important;
+}
+
+.latency-rtt {
+  white-space: nowrap;
+  color: var(--color-text-strong);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+.latency-rating-column,
+.latency-scale-column {
+  display: none;
+}
+
+.latency-rating-column {
+  width: 7.75rem;
+  text-align: center !important;
+}
+
+.latency-rating-column .badge {
+  min-width: 6rem;
+}
+
+.latency-scale-column {
+  width: 13rem;
+}
+
+.latency-bar-track {
+  position: relative;
+  width: 100%;
+  height: 0.5rem;
+  overflow: hidden;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 9999px;
+  background-color: var(--color-surface-muted);
+}
+
+.latency-bar-fill {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  min-width: 2px;
+  border-radius: 9999px;
+}
+
+.latency-data-details {
+  border-radius: 0.5rem;
+  background-color: var(--color-surface-muted);
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+.latency-data-details summary {
+  display: flex;
+  min-height: 2.75rem;
+  cursor: pointer;
+  touch-action: manipulation;
+  align-items: center;
+  padding: 0.625rem 1rem;
+  color: var(--color-text-strong);
+  font-weight: 600;
+}
+
+.latency-data-details summary::after {
+  margin-left: auto;
+  content: '+';
+  font-size: 1.125rem;
+  line-height: 1;
+}
+
+.latency-data-details[open] summary::after {
+  content: '-';
+}
+
+.latency-data-details summary:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+@media (min-width: 640px) {
+  .latency-summary-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .latency-summary-item + .latency-summary-item {
+    border-top: 0;
+    border-left: 1px solid var(--color-border-soft);
+  }
+
+  .latency-rating-column {
+    display: table-cell;
+  }
+
+  .latency-rtt-column {
+    width: 7rem;
+  }
+}
+
+@media (min-width: 900px) {
+  .latency-scale-column {
+    display: table-cell;
+  }
 }

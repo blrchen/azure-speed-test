@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, effect, input, OnDestroy } from '@angular/core'
+import { Component, computed, DestroyRef, inject, input, linkedSignal } from '@angular/core'
 
 import { LucideIconComponent, LucideIconName } from '../icons/lucide-icons.component'
-import { createCopyToClipboard } from '../utils'
+import { createCopyToClipboard, type CopyStatus } from '../utils'
 
 @Component({
   selector: 'app-copy-button',
@@ -10,37 +10,35 @@ import { createCopyToClipboard } from '../utils'
     <button
       type="button"
       class="btn btn-outline btn--sm group"
-      [class.border-success]="isCopySuccess()"
-      [class.bg-success/10]="isCopySuccess()"
-      [class.text-success]="isCopySuccess()"
-      [class.border-danger]="isCopyError()"
-      [class.text-danger]="isCopyError()"
+      [class]="statusClasses()"
       [disabled]="!text()"
-      [attr.aria-label]="ariaLabel()"
+      [attr.aria-label]="accessibleLabel()"
       aria-live="polite"
+      aria-atomic="true"
       (click)="copy()"
     >
-      @if (isCopyIdle()) {
-        <app-lucide-icon
-          [name]="icon()"
-          class="size-4 transition-transform group-hover:scale-110"
-          aria-hidden="true"
-        />
-        <span>{{ label() }}</span>
-      }
-      @if (isCopySuccess()) {
-        <app-lucide-icon name="check" class="size-4" aria-hidden="true" />
-        <span>{{ successLabel() }}</span>
-      }
-      @if (isCopyError()) {
-        <app-lucide-icon name="x" class="size-4" aria-hidden="true" />
-        <span>Failed</span>
+      @switch (copyStatus()) {
+        @case ('idle') {
+          <app-lucide-icon
+            [name]="icon()"
+            class="size-4 transition-transform group-hover:scale-110"
+            aria-hidden="true"
+          />
+          <span>{{ label() }}</span>
+        }
+        @case ('copied') {
+          <app-lucide-icon name="check" class="size-4" aria-hidden="true" />
+          <span>{{ successLabel() }}</span>
+        }
+        @case ('failed') {
+          <app-lucide-icon name="x" class="size-4" aria-hidden="true" />
+          <span>Try Again</span>
+        }
       }
     </button>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CopyButtonComponent implements OnDestroy {
+export class CopyButtonComponent {
   /** Text to copy to clipboard */
   readonly text = input<string>('')
 
@@ -59,27 +57,42 @@ export class CopyButtonComponent implements OnDestroy {
   /** When this value changes, reset to idle state */
   readonly resetOn = input<unknown>(undefined)
 
-  private readonly clipboard = createCopyToClipboard()
-  readonly isCopyIdle = this.clipboard.isCopyIdle
-  readonly isCopySuccess = this.clipboard.isCopySuccess
-  readonly isCopyError = this.clipboard.isCopyError
+  readonly copyStatus = linkedSignal<CopyStatus>(() => {
+    this.resetOn()
+    return 'idle'
+  })
+  private readonly clipboard = createCopyToClipboard({ copyStatus: this.copyStatus })
+
+  protected readonly statusClasses = computed((): string => {
+    const status = this.copyStatus()
+    if (status === 'copied') {
+      return 'border-success-dark bg-success/10 text-success-foreground dark:border-success dark:text-success'
+    }
+    if (status === 'failed') {
+      return 'border-danger-dark text-danger-dark dark:border-danger dark:text-danger'
+    }
+    return ''
+  })
+
+  protected readonly accessibleLabel = computed((): string => {
+    const status = this.copyStatus()
+    if (status === 'copied') return this.successLabel()
+    if (status === 'failed') return 'Copy failed. Try again'
+
+    const label = this.label()
+    const ariaLabel = this.ariaLabel().trim()
+    if (!ariaLabel) return label
+
+    return ariaLabel.toLowerCase().includes(label.toLowerCase())
+      ? ariaLabel
+      : `${label}. ${ariaLabel}`
+  })
 
   constructor() {
-    // Reset status when resetOn changes
-    effect(() => {
-      this.resetOn() // track the signal
-      this.clipboard.setStatus('idle')
-    })
-  }
-
-  ngOnDestroy(): void {
-    this.clipboard.destroy()
+    inject(DestroyRef).onDestroy(() => this.clipboard.destroy())
   }
 
   async copy(): Promise<void> {
-    const value = this.text()
-    if (value) {
-      await this.clipboard.copyText(value)
-    }
+    await this.clipboard.copyText(this.text())
   }
 }

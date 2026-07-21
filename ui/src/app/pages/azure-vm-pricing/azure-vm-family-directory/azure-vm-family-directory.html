@@ -1,0 +1,150 @@
+<article class="page-shell section-stack mx-auto max-w-6xl">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a class="breadcrumb-link" routerLink="/AzureVmPricing">Azure VM Sizes &amp; Pricing</a>
+    <span class="breadcrumb-separator">/</span>
+    <span class="breadcrumb-current" aria-current="page">Series</span>
+  </nav>
+
+  <header class="page-header">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+      <div class="max-w-4xl space-y-3">
+        <div class="flex items-center gap-3">
+          <div class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+            <app-lucide-icon name="tag" class="size-6 text-primary" aria-hidden="true" />
+          </div>
+          <div>
+            <p class="mb-1 text-sm font-semibold text-text-muted">Azure VM Sizes &amp; Pricing</p>
+            <h1 class="page-title">Azure VM pricing by series</h1>
+          </div>
+        </div>
+        <p class="page-lead">
+          Browse Azure VM series across D, E, F, M, N, and other VM families, then compare each
+          size's Linux or Windows pay-as-you-go, reserved, or Spot price, specifications, and
+          pricing coverage.
+        </p>
+      </div>
+    </div>
+
+    <dl class="vm-summary-ledger vm-summary-ledger--three">
+      <div class="vm-summary-ledger__item">
+        <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">Series</dt>
+        <dd class="text-2xl font-bold text-text-strong tabular-nums">
+          {{ formatNumber(vmSeriesDirectory().counts.familyCount) }}
+        </dd>
+      </div>
+      <div class="vm-summary-ledger__item">
+        <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">VM sizes</dt>
+        <dd class="text-2xl font-bold text-text-strong tabular-nums">
+          {{ formatNumber(seriesSkuCount()) }}
+        </dd>
+      </div>
+    </dl>
+  </header>
+
+  <section class="section-block" aria-labelledby="vm-series-directory-heading">
+    <div class="space-y-1">
+      <h2 id="vm-series-directory-heading" class="section-title">Browse VM series</h2>
+      <p class="text-sm text-text-muted">Search by series, VM family, or an ARM SKU name.</p>
+    </div>
+
+    <form class="max-w-2xl" role="search" (submit)="$event.preventDefault()">
+      <label for="vm-series-search" class="form-label">Search VM series</label>
+      <div class="form-control-shell mt-2">
+        <app-lucide-icon name="search" class="form-control-shell__icon size-4" aria-hidden="true" />
+        <input
+          #seriesSearch
+          id="vm-series-search"
+          name="vm-series-search"
+          type="search"
+          class="form-control form-control--icon-start form-control--action-end form-control-focus-ring min-h-11 md:min-h-9"
+          placeholder="Dsv7, Dasv5, ND MI300X, GPU..."
+          autocomplete="off"
+          spellcheck="false"
+          [value]="query()"
+          aria-describedby="vm-series-result-summary"
+          (input)="updateQuery(seriesSearch.value)"
+        />
+        @if (query()) {
+          <button
+            type="button"
+            class="form-control-shell__action"
+            aria-label="Clear VM series search"
+            (click)="clearQuery(); seriesSearch.focus()"
+          >
+            <app-lucide-icon name="x" class="size-3.5" aria-hidden="true" />
+          </button>
+        }
+      </div>
+    </form>
+
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <p id="vm-series-result-summary" class="text-sm text-text-muted" aria-live="polite">
+        {{ resultSummary() }}
+      </p>
+      <a class="link-primary text-sm font-semibold" routerLink="/AzureVmPricing/Regions">
+        Browse by region
+      </a>
+    </div>
+
+    @if (filteredSeries().length) {
+      <div class="table-shell">
+        <table class="table-base">
+          <thead class="table-head">
+            <tr>
+              <th scope="col" class="px-4 py-3">Series</th>
+              <th scope="col" class="px-4 py-3 text-right">VM sizes</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border-soft">
+            @for (series of filteredSeries(); track series.routeSlug) {
+              <tr class="table-row-hover align-top">
+                <th scope="row" class="px-4 py-3 text-left font-normal">
+                  <a
+                    class="link-primary font-semibold whitespace-nowrap"
+                    [href]="seriesHref(series)"
+                    translate="no"
+                  >
+                    {{ series.series }}
+                  </a>
+                  @if (series.familyGroup) {
+                    <div class="mt-1 text-xs text-text-muted" translate="no">
+                      {{ series.familyGroup }}
+                    </div>
+                  }
+                </th>
+                <td class="px-4 py-3 text-right tabular-nums">
+                  {{ formatNumber(series.skuCount) }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <div class="card flex flex-col items-center gap-3 py-10 text-center">
+        <app-lucide-icon name="search-x" class="size-10 text-text-muted" aria-hidden="true" />
+        <h3 class="font-semibold text-text-strong">No VM series match</h3>
+        <p class="text-sm text-text-muted">Try another series name or clear the search.</p>
+        <button
+          type="button"
+          class="btn btn-outline min-h-11"
+          (click)="clearQuery(); seriesSearch.focus()"
+        >
+          Clear search
+        </button>
+      </div>
+    }
+  </section>
+
+  <section class="section-block" aria-labelledby="vm-series-source-heading">
+    <h2 id="vm-series-source-heading" class="section-title">Source and scope</h2>
+    <p class="text-sm leading-relaxed text-text-muted">
+      Series and VM size relationships are derived from Azure Resource SKU family identifiers and
+      Azure VM family mappings. Specifications come from Azure Resource SKUs API version
+      <span class="font-mono" translate="no">{{
+        vmSeriesDirectory().source.resourceSkus.apiVersion
+      }}</span
+      >. Pricing does not guarantee capacity or deployment eligibility for every subscription.
+    </p>
+  </section>
+</article>

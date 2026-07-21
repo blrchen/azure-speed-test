@@ -1,85 +1,4 @@
 @theme {
-  @keyframes shimmer {
-    0% {
-      background-position: 200% 50%;
-    }
-    100% {
-      background-position: -200% 50%;
-    }
-  }
-}
-
-@utility animate-shimmer {
-  background-image: linear-gradient(
-    90deg,
-    transparent,
-    color-mix(in srgb, var(--color-border) 40%, transparent),
-    transparent
-  );
-  background-size: 200% 100%;
-  animation: shimmer 1.8s ease-in-out infinite;
-}
-
-@utility scrollbar-thin {
-  scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--color-border) 70%, transparent) transparent;
-
-  &::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: color-mix(in srgb, var(--color-border) 60%, transparent);
-    border-radius: 9999px;
-    transition: background-color 120ms ease;
-  }
-
-  &:hover::-webkit-scrollbar-thumb {
-    background-color: color-mix(in srgb, var(--color-border) 80%, transparent);
-  }
-
-  &::-webkit-scrollbar-track {
-    background-color: transparent;
-  }
-}
-
-@utility scrollbar-gutter-stable {
-  scrollbar-gutter: stable;
-}
-
-@utility scrollbar-gutter-both {
-  scrollbar-gutter: stable both-edges;
-}
-
-@utility step-number {
-  display: inline-flex;
-  height: 2rem;
-  width: 2rem;
-  align-items: center;
-  justify-content: center;
-  border-radius: 9999px;
-  background-color: var(--color-brand);
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-primary-foreground);
-  box-shadow: var(--shadow-sm);
-
-  @media (max-width: 768px) {
-    height: 1.75rem;
-    width: 1.75rem;
-    font-size: 0.875rem;
-  }
-}
-
-/* CLS prevention: Ensure hr has stable width */
-.stable-divider {
-  width: 100%;
-  box-sizing: border-box;
-}
-
-/* Animation keyframes */
-@theme {
   @keyframes fade-slide-in {
     from {
       opacity: 0;
@@ -101,53 +20,133 @@
   }
 }
 
+@utility scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--color-border) 70%, transparent) transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: color-mix(in srgb, var(--color-border) 60%, transparent);
+    border-radius: 9999px;
+  }
+
+  &:hover::-webkit-scrollbar-thumb {
+    background-color: color-mix(in srgb, var(--color-border) 80%, transparent);
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+}
+
+@utility step-number {
+  display: inline-flex;
+  height: 2rem;
+  width: 2rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background-color: var(--color-brand);
+  font-size: 1rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-primary-foreground);
+  box-shadow: var(--shadow-sm);
+
+  @media (max-width: 768px) {
+    height: 1.75rem;
+    width: 1.75rem;
+    font-size: 0.875rem;
+  }
+}
+
 .animate-fade-slide-in {
-  animation: fade-slide-in 0.3s ease-out forwards;
+  animation: fade-slide-in 0.2s ease-out forwards;
 }
 
 .animate-bar-grow {
-  animation: bar-grow 0.5s ease-out forwards;
+  animation: bar-grow 0.2s ease-out forwards;
+  transform-box: fill-box;
   transform-origin: left;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(root),
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+
+  .animate-fade-slide-in,
+  .animate-bar-grow,
+  .animate-pulse,
+  .animate-spin,
+  .spinner,
+  .spinner-sm {
+    animation: none;
+  }
+
+  .transition-transform {
+    transition: none;
+  }
 }
 
 /* Latency bar color utilities */
 .bar-color-fast {
   background-color: var(--color-success-dark);
+  fill: var(--color-success-dark);
 }
 
 .bar-color-moderate {
   background-color: var(--color-warning);
+  fill: var(--color-warning);
 }
 
 .bar-color-slow {
   background-color: var(--color-danger-dark);
+  fill: var(--color-danger-dark);
 }
 
 .bar-color-default {
   background-color: var(--color-primary);
+  fill: var(--color-primary);
 }
 
 /* Best result row highlight */
 @utility best-row {
+  --best-row-accent: var(--color-success-dark);
   background-color: color-mix(in srgb, var(--color-success) 12%, transparent);
   box-shadow:
-    inset 4px 0 0 0 var(--color-success),
-    0 1px 0 0 color-mix(in srgb, var(--color-success) 20%, transparent);
+    inset 4px 0 0 0 var(--best-row-accent),
+    0 1px 0 0 color-mix(in srgb, var(--best-row-accent) 20%, transparent);
 }
 
 /* Best result badge */
 @utility best-badge {
+  --best-badge-text: var(--color-success-foreground);
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
   padding: 0.15rem 0.45rem;
   border-radius: 9999px;
   background-color: color-mix(in srgb, var(--color-success) 18%, transparent);
-  color: var(--color-success);
+  color: var(--best-badge-text);
   font-size: 0.6875rem;
   font-weight: 700;
-  letter-spacing: 0.05em;
+  letter-spacing: 0;
   text-transform: uppercase;
+}
+
+.dark .best-row {
+  --best-row-accent: var(--color-success);
+}
+
+.dark .best-badge {
+  --best-badge-text: var(--color-success);
 }
 
 /* Code block - theme-aware syntax highlighting container */
@@ -156,6 +155,11 @@
   border-radius: 0.5rem;
   background-color: var(--color-surface-contrast);
   padding: 1rem;
+}
+
+.code-block:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 .code-block pre {

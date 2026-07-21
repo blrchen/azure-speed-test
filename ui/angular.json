@@ -6,7 +6,10 @@
     "schematicCollections": [
       "angular-eslint"
     ],
-    "analytics": false
+    "analytics": false,
+    "cache": {
+      "enabled": false
+    }
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -33,10 +36,11 @@
               "src/styles.css"
             ],
             "server": "src/main.server.ts",
-            "outputMode": "server",
-            "ssr": {
-              "entry": "src/server.ts"
-            }
+            "outputMode": "static",
+            "allowedCommonJsDependencies": [
+              "http-proxy-agent",
+              "https-proxy-agent"
+            ]
           },
           "configurations": {
             "production": {
@@ -49,7 +53,7 @@
                 {
                   "type": "anyComponentStyle",
                   "maximumWarning": "4kB",
-                  "maximumError": "12kB"
+                  "maximumError": "8kB"
                 }
               ],
               "outputHashing": "all"

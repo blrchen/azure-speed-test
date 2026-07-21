@@ -1,51 +1,88 @@
-import { isPlatformBrowser } from '@angular/common'
+import { DOCUMENT, isPlatformBrowser, Location } from '@angular/common'
 import {
-  ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   effect,
   inject,
-  OnDestroy,
+  input,
+  linkedSignal,
   OnInit,
   PLATFORM_ID,
-  signal,
-  untracked
 } from '@angular/core'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { Subscription, timer } from 'rxjs'
 
 import { RegionModel } from '../../../models'
-import { RegionService, SeoService } from '../../../services'
+import { RegionService } from '../../../services/region.service'
+import { SeoService } from '../../../services/seo.service'
 import { CopyButtonComponent } from '../../../shared/copy-button/copy-button.component'
+import { WidthPercentDirective } from '../../../shared/directives/width-percent.directive'
 import { ExportCsvButtonComponent } from '../../../shared/export-csv-button/export-csv-button.component'
 import { LucideIconComponent } from '../../../shared/icons/lucide-icons.component'
-import { buildRegionDetailRouterLink } from '../../../shared/utils'
-import { RegionGroupComponent } from '../../shared'
-import { CloudflareMetaStore } from './cloudflare-meta.store'
-import { ConnectionDetailsComponent } from './connection-details.component'
+import { RegionGroupComponent } from '../../../shared/region-group/region-group.component'
+import {
+  buildNormalizedRegionLookup,
+  buildRegionDetailHref,
+  buildRegionSelectionSignature,
+  getSortedRegionIds,
+  LatencyTone,
+  parseRegionParam,
+} from '../../../shared/utils'
+import { ConnectionDetailsContainerComponent } from './connection-details-container.component'
 
-// Single source of truth - minimal state
-interface RegionPingData {
-  regionId: string
-  geography: string
-  displayName: string
-  datacenterLocation: string
-  storageAccountName: string
+const LATENCY_CONFIG = {
+  MAX_PING_ATTEMPTS: 180,
+  PING_INTERVAL_MS: 2000,
+  MAX_PING_HISTORY: 20,
+  MIN_STABLE_PING_SAMPLES: 3,
+  MIN_OUTLIER_FILTER_SAMPLES: 8,
+  PING_TIMEOUT_MS: 2000,
+  SLOW_LATENCY_THRESHOLD_MS: 200,
+  CONCURRENT_PINGS: 4,
+  BATCH_UPDATE_DELAY_MS: 50,
+  RESOURCE_TIMING_WAIT_MS: 100,
+  LATENCY_FAST: 100,
+} as const
 
-  // Only store raw ping history - everything else is computed
-  pingHistory: number[]
-  lastPingTime: number
+const REGIONS_QUERY_PARAM = 'regions'
+
+interface RegionLatencyRow extends RegionModel {
+  median: LatencyDisplay
+  latest: LatencyDisplay
+  sampleCount: number
+  tone: LatencyTone
+  barWidthPercent: number
 }
 
-interface RegionWithLatencyMetrics extends RegionPingData {
-  medianLatency: number
-  currentLatency: number
+type PingMeasurementStatus = 'ok' | 'slow' | 'timeout' | 'error'
+type PingDisplayStatus = PingMeasurementStatus | 'warming' | 'measuring'
+
+const PING_STATUS_LABELS: Record<PingDisplayStatus, string> = {
+  warming: 'Warming...',
+  measuring: 'Measuring...',
+  ok: 'OK',
+  slow: 'Slow',
+  timeout: 'Timeout',
+  error: 'Error',
 }
 
-interface LatencyState {
-  regions: Map<string, RegionPingData>
-  pingAttemptCount: number
-  isTestRunning: boolean
+interface LatencyDisplay {
+  latencyMs: number
+  status: PingDisplayStatus
+  label: string
+  textClass: string
+}
+
+interface PingState {
+  warmupComplete: boolean
+  samples: readonly number[]
+  latest: PingResult | null
+}
+
+interface PingResult {
+  latencyMs: number
+  status: PingMeasurementStatus
 }
 
 @Component({
@@ -54,531 +91,674 @@ interface LatencyState {
     RegionGroupComponent,
     RouterLink,
     LucideIconComponent,
-    ConnectionDetailsComponent,
+    ConnectionDetailsContainerComponent,
     CopyButtonComponent,
-    ExportCsvButtonComponent
+    ExportCsvButtonComponent,
+    WidthPercentDirective,
   ],
   templateUrl: './latency.component.html',
-  styleUrl: './latency.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  host: { class: 'block' },
 })
-export class LatencyComponent implements OnInit, OnDestroy {
+export class LatencyComponent implements OnInit {
   private readonly regionService = inject(RegionService)
   private readonly seoService = inject(SeoService)
-  private readonly platformId = inject(PLATFORM_ID)
-  private readonly isBrowser = isPlatformBrowser(this.platformId)
+  private readonly document = inject(DOCUMENT)
+  protected readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID))
+  private readonly location = inject(Location)
   private readonly route = inject(ActivatedRoute)
   private readonly router = inject(Router)
-  private readonly allRegions = this.regionService.getAllRegions()
-  private readonly normalizedRegions = this.buildNormalizedRegionLookup(this.allRegions)
-  private readonly regionsParamKey = 'regions'
+
+  private readonly normalizedRegions = buildNormalizedRegionLookup(
+    this.regionService.getAllRegions()
+  )
   private lastUrlStateSignature = ''
   private canUpdateUrl = false
-  public readonly shareUrl = signal('')
-  protected readonly cloudflareMetaStore = inject(CloudflareMetaStore)
-  private hasComponentDestroyed = false
+  private hasAppliedRegionsInput = false
+  readonly regions = input<string | undefined>()
+  private readonly selectedRegionIds = computed(() =>
+    getSortedRegionIds(this.regionService.selectedRegions().map((region) => region.regionId))
+  )
+  readonly testLinkUrl = computed(() => {
+    if (!this.isBrowser) return ''
 
-  // Configuration constants
-  private static readonly CONFIG = {
-    MAX_PING_ATTEMPTS: 180,
-    PING_INTERVAL_MS: 2000,
-    MAX_PING_HISTORY: 20,
-    PING_TIMEOUT_MS: 2000,
-    MAX_ACCEPTABLE_LATENCY_MS: 500,
-    CONCURRENT_PINGS: 4,
-    BATCH_UPDATE_DELAY_MS: 50,
-    LATENCY_FAST: 100,
-    LATENCY_ACCEPTABLE: 200
-  } as const
+    const sortedRegionIds = this.selectedRegionIds()
+    if (!sortedRegionIds.length) return ''
 
-  // Single state signal - minimal source of truth
-  private state = signal<LatencyState>({
-    regions: new Map(),
-    pingAttemptCount: 0,
-    isTestRunning: false
+    const href = this.document.defaultView?.location.href
+    if (!href) return ''
+
+    const url = new URL(href)
+    url.searchParams.set(REGIONS_QUERY_PARAM, sortedRegionIds.join(','))
+    return url.href
   })
 
-  // Batch update mechanism
-  private pendingPingUpdates = new Map<string, number>()
-  private batchUpdateTimer?: ReturnType<typeof setTimeout>
+  private readonly pingStateByStorageAccount = linkedSignal<
+    readonly RegionModel[],
+    ReadonlyMap<string, PingState>
+  >({
+    source: this.regionService.selectedRegions,
+    computation: (regions, previous) => {
+      const previousStates = previous?.value ?? new Map<string, PingState>()
+      const nextStates = new Map<string, PingState>()
 
-  // All derived data as computed signals - no manual updates needed
-  public regionsWithMedian = computed<RegionWithLatencyMetrics[]>(() => {
-    const regions = Array.from(this.state().regions.values())
+      for (const { storageAccountName } of regions) {
+        const state = previousStates.get(storageAccountName)
+        if (state) {
+          nextStates.set(storageAccountName, state)
+        }
+      }
+
+      return nextStates
+    },
+  })
+  private pingAttemptCount = 0
+  private isPingCycleRunning = false
+  private isDestroyed = false
+
+  private readonly activePingControllers = new Set<AbortController>()
+  private readonly pendingPingUpdates = new Map<string, PingResult>()
+  private readonly pendingResourceTimings = new Map<string, (durationMs: number | null) => void>()
+  private batchUpdateTimer?: ReturnType<typeof setTimeout>
+  private resourceTimingObserver?: PerformanceObserver
+
+  readonly latencyRows = computed<RegionLatencyRow[]>(() => {
+    const states = this.pingStateByStorageAccount()
+    const regions = this.regionService.selectedRegions().map((region) => {
+      const state = states.get(region.storageAccountName) ?? createPingState()
+      const medianLatency = calculateStableMedian(state.samples)
+      return {
+        ...region,
+        median: createLatencyDisplay(medianLatency, getPingDisplayStatus(state, medianLatency)),
+        latest: getLatestDisplay(state),
+        sampleCount: state.samples.length,
+      }
+    })
+
+    regions.sort((left, right) => {
+      if (left.median.latencyMs > 0 && right.median.latencyMs > 0) {
+        return (
+          left.median.latencyMs - right.median.latencyMs ||
+          left.displayName.localeCompare(right.displayName)
+        )
+      }
+      if (left.median.latencyMs > 0) return -1
+      if (right.median.latencyMs > 0) return 1
+      return left.displayName.localeCompare(right.displayName)
+    })
+
+    const maxLatency = regions.reduce((max, region) => Math.max(max, region.median.latencyMs), 0)
     return regions.map((region) => ({
       ...region,
-      medianLatency: this.calculateMedian(region.pingHistory),
-      currentLatency: region.pingHistory[region.pingHistory.length - 1] || 0
+      tone: getLatencyTone(region.median.latencyMs),
+      barWidthPercent: getBarWidthPercent(region.median.latencyMs, maxLatency),
     }))
   })
 
-  private regionsWithLatency = computed<RegionWithLatencyMetrics[]>(() => {
-    return this.regionsWithMedian().filter((region) => region.medianLatency > 0)
-  })
-
-  public tableData = computed<RegionWithLatencyMetrics[]>(() => {
-    const regions = this.regionsWithLatency()
-    return regions.length ? [...regions].sort((a, b) => a.medianLatency - b.medianLatency) : []
-  })
-
-  public readonly isTestRunning = computed(() => this.state().isTestRunning)
-
-  public readonly hasSelectedRegions = computed(
-    () => this.regionService.selectedRegions().length > 0
+  private readonly measuredLatencyRows = computed(() =>
+    this.latencyRows().filter((region) => region.median.latencyMs > 0)
   )
 
-  public readonly shouldShowLatencySkeleton = computed(() => {
-    return this.hasSelectedRegions() && this.tableData().length === 0
+  private readonly rankedLatencyRows = computed(() =>
+    [...this.measuredLatencyRows()].sort(
+      (left, right) =>
+        left.median.latencyMs - right.median.latencyMs ||
+        left.displayName.localeCompare(right.displayName)
+    )
+  )
+
+  readonly topRegions = computed(() => this.rankedLatencyRows().slice(0, 3))
+  readonly recommendationSlots = computed<readonly (RegionLatencyRow | null)[]>(() => {
+    const top = this.topRegions()
+    return [top[0] ?? null, top[1] ?? null, top[2] ?? null]
+  })
+  readonly bestRegionId = computed(() => this.rankedLatencyRows()[0]?.regionId ?? null)
+
+  readonly measurementStatusText = computed(() => {
+    const rows = this.latencyRows()
+    if (rows.length === 0) return 'No regions selected.'
+
+    const stableRegionCount = rows.filter(
+      (row) => row.sampleCount >= LATENCY_CONFIG.MIN_STABLE_PING_SAMPLES
+    ).length
+    const regionLabel = rows.length === 1 ? 'region' : 'regions'
+
+    if (stableRegionCount === 0) {
+      return `Measuring latency for ${rows.length} ${regionLabel}.`
+    }
+    if (stableRegionCount < rows.length) {
+      return `${stableRegionCount} of ${rows.length} regions have stable latency results.`
+    }
+    return `Latency ranking available for ${rows.length} ${regionLabel}. Results continue updating.`
   })
 
-  public tableDataTop3 = computed<RegionWithLatencyMetrics[]>(() => this.tableData().slice(0, 3))
-  public bestRegion = computed<RegionWithLatencyMetrics | null>(() => {
-    const top = this.tableDataTop3()
-    return top.length ? top[0] : null
-  })
-  public runnerUpRegions = computed<RegionWithLatencyMetrics[]>(() => {
-    const top = this.tableDataTop3()
-    return top.length > 1 ? top.slice(1) : []
-  })
-  protected buildRegionRouterLink = buildRegionDetailRouterLink
+  protected buildRegionDetailHref = buildRegionDetailHref
 
-  // CSV export data
   readonly csvHeaders = [
     'Geography',
     'Region',
     'Region ID',
     'Datacenter Location',
     'Median Latency (ms)',
-    'Latest Latency (ms)'
+    'Samples',
+    'Latest',
+    'Status',
   ]
-  readonly csvRows = computed<string[][] | null>(() => {
-    const data = this.tableData()
+  readonly csvRows = computed(() => {
+    const data = this.rankedLatencyRows()
     if (data.length === 0) return null
     return data.map((row) => [
       row.geography,
       row.displayName,
       row.regionId,
       row.datacenterLocation,
-      row.medianLatency.toString(),
-      (row.currentLatency || '-').toString()
+      row.median.latencyMs.toString(),
+      row.sampleCount.toString(),
+      row.latest.label,
+      getPingStatusLabel(row.median.status),
     ])
   })
-
-  protected getLatencyBadgeState(
-    latency: number | null | undefined
-  ): 'fast' | 'moderate' | 'slow' | 'unknown' {
-    if (!this.hasValidLatency(latency)) {
-      return 'unknown'
-    }
-    if (latency < LatencyComponent.CONFIG.LATENCY_FAST) {
-      return 'fast'
-    }
-    if (latency < LatencyComponent.CONFIG.LATENCY_ACCEPTABLE) {
-      return 'moderate'
-    }
-    return 'slow'
-  }
-
-  private hasValidLatency(latency: number | null | undefined): latency is number {
-    return typeof latency === 'number' && latency > 0
-  }
-
-  // TrackBy functions for optimal rendering performance
-  trackByRegionData(_: number, item: RegionWithLatencyMetrics): string {
-    return item.storageAccountName || item.regionId || item.displayName
-  }
 
   private pingSubscription?: Subscription
 
   constructor() {
-    this.applyInitialUrlState()
+    inject(DestroyRef).onDestroy(() => {
+      this.isDestroyed = true
+      this.stopPingTimer()
+      this.abortActivePingRequests()
+      this.clearPendingPingUpdates()
+      this.destroyResourceTimingObserver()
+    })
+
     if (this.isBrowser) {
+      this.initializeResourceTimingObserver()
+      this.registerRegionsInputEffect()
       this.registerSelectedRegionsEffect()
     }
   }
 
+  private registerRegionsInputEffect(): void {
+    effect(() => {
+      this.applyRegionsInput(this.regions())
+    })
+  }
+
   private registerSelectedRegionsEffect(): void {
     effect(() => {
-      const regions = this.regionService.selectedRegions()
-      const hasSelection = regions.length > 0
-      const hasReachedLimit = untracked(() => {
-        const currentState = this.state()
-        return currentState.pingAttemptCount >= LatencyComponent.CONFIG.MAX_PING_ATTEMPTS
-      })
+      const selectedRegionIds = this.selectedRegionIds()
 
-      this.syncUrlWithSelection(regions)
+      this.syncUrlWithSelection(selectedRegionIds)
 
-      if (!hasSelection) {
-        this.pendingPingUpdates.clear()
-        this.initializeRegions([], { resetPingState: true })
+      if (!selectedRegionIds.length) {
+        this.clearPendingPingUpdates()
+        this.resetPingState()
         this.stopPingTimer()
         return
       }
 
-      if (hasReachedLimit) {
-        this.pendingPingUpdates.clear()
-        this.stopPingTimer()
+      if (this.hasReachedPingLimit()) {
+        this.clearPendingPingUpdates()
+        this.resetPingState()
       }
 
-      this.initializeRegions(regions, { resetPingState: hasReachedLimit })
-
-      if (!this.pingSubscription) {
-        this.startPingTimer()
-      }
+      this.stopPingTimer()
+      this.startPingTimer()
     })
   }
 
   ngOnInit(): void {
-    this.seoService.setMetaTitle('Azure Latency Test | Measure Datacenter Latency')
-    this.seoService.setMetaDescription(
-      'Test latency from your location to Azure datacenters worldwide. Measure the latency to various Azure regions and find the closest Azure datacenters.'
-    )
-    this.seoService.setCanonicalUrl('https://www.azurespeed.com/Azure/Latency')
-    if (this.isBrowser) {
-      // Defer Cloudflare metadata fetch until the browser is idle so initial render stays unblocked.
-      const globalScope = globalThis as typeof globalThis & {
-        requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number
-      }
-      if (typeof globalScope.requestIdleCallback === 'function') {
-        globalScope.requestIdleCallback(
-          () => {
-            if (!this.hasComponentDestroyed) {
-              void this.cloudflareMetaStore.load()
-            }
-          },
-          { timeout: 3000 }
-        )
-      } else {
-        setTimeout(() => {
-          if (!this.hasComponentDestroyed) {
-            void this.cloudflareMetaStore.load()
-          }
-        }, 0)
-      }
-    }
-  }
-
-  ngOnDestroy(): void {
-    this.hasComponentDestroyed = true
-    this.stopPingTimer()
-    if (this.batchUpdateTimer) {
-      clearTimeout(this.batchUpdateTimer)
-    }
-    this.cloudflareMetaStore.destroy()
-  }
-
-  private applyInitialUrlState(): void {
-    const rawRegions = this.route.snapshot.queryParamMap.get(this.regionsParamKey)
-    const parsedRegionTokens = this.parseRegionParam(rawRegions)
-    const regions = parsedRegionTokens.length ? this.resolveRegionsFromIds(parsedRegionTokens) : []
-    const hasSelection = regions.length > 0
-
-    if (hasSelection) {
-      this.lastUrlStateSignature = this.buildSignature(regions.map((region) => region.regionId))
-      this.regionService.updateSelectedRegions(regions)
-    }
-
-    this.updateShareUrl(hasSelection)
-    this.canUpdateUrl = true
-  }
-
-  private parseRegionParam(raw: string | null): string[] {
-    if (!raw) return []
-    const tokens = new Set<string>()
-    const sanitized = raw.replace(/[|;]/g, ',')
-    for (const part of sanitized.split(',')) {
-      const token = this.normalizeToken(part)
-      if (token) {
-        tokens.add(token)
-      }
-    }
-    return Array.from(tokens)
-  }
-
-  private normalizeToken(value: string | null | undefined): string {
-    if (value == null) return ''
-    return value
-      .toLowerCase()
-      .replace(/[\s/_-]+/g, '')
-      .replace(/[^a-z0-9]/g, '')
-  }
-
-  private resolveRegionsFromIds(regionTokens: string[]): RegionModel[] {
-    if (!regionTokens.length) {
-      return []
-    }
-
-    const selected: RegionModel[] = []
-    const seen = new Set<string>()
-
-    for (const token of regionTokens) {
-      const key = this.normalizeToken(token)
-      if (!key) continue
-      const match = this.normalizedRegions.get(key)
-      if (match && !seen.has(match.regionId)) {
-        seen.add(match.regionId)
-        selected.push(match)
-      }
-    }
-
-    return selected
-  }
-
-  private buildSignature(regionIds: string[], options: { alreadySorted?: boolean } = {}): string {
-    const normalizedIds = regionIds.map((id) => this.normalizeToken(id))
-    if (!options.alreadySorted) {
-      normalizedIds.sort()
-    }
-    return normalizedIds.join(',')
-  }
-
-  private buildNormalizedRegionLookup(regions: RegionModel[]): Map<string, RegionModel> {
-    const lookup = new Map<string, RegionModel>()
-    for (const region of regions) {
-      const key = this.normalizeToken(region.regionId)
-      if (key && !lookup.has(key)) {
-        lookup.set(key, region)
-      }
-    }
-    return lookup
-  }
-
-  private syncUrlWithSelection(regions: RegionModel[]): void {
-    if (!this.isBrowser || !this.canUpdateUrl) return
-
-    const regionIds = regions.map((region) => region.regionId)
-    const sortedRegionIds = [...regionIds].sort((a, b) => a.localeCompare(b))
-    const normalizedRegionSignature = this.buildSignature(sortedRegionIds, { alreadySorted: true })
-    if (normalizedRegionSignature === this.lastUrlStateSignature) {
-      return
-    }
-
-    this.lastUrlStateSignature = normalizedRegionSignature
-
-    const queryParams = { ...this.route.snapshot.queryParams }
-    if (sortedRegionIds.length) {
-      queryParams[this.regionsParamKey] = sortedRegionIds.join(',')
-    } else {
-      delete queryParams[this.regionsParamKey]
-    }
-
-    void this.router
-      .navigate([], {
-        relativeTo: this.route,
-        queryParams,
-        replaceUrl: true
-      })
-      .finally(() => this.updateShareUrl(sortedRegionIds.length > 0))
-  }
-
-  private updateShareUrl(hasSelection: boolean): void {
-    if (!this.isBrowser) return
-    if (!hasSelection) {
-      this.shareUrl.set('')
-      return
-    }
-    this.shareUrl.set(window.location.href)
-  }
-
-  private initializeRegions(
-    regions: RegionModel[],
-    options: { resetPingState?: boolean } = {}
-  ): void {
-    const resetPingState = options.resetPingState ?? false
-    // Get the current state to preserve existing ping history
-    const currentState = untracked(() => this.state())
-    const currentRegions = currentState.regions
-
-    const regionMap = new Map(
-      regions
-        .filter((region) => region.storageAccountName)
-        .map((region) => {
-          const storageAccountName = region.storageAccountName
-
-          // Check if this region already exists and has ping history
-          const existingRegion = currentRegions.get(storageAccountName)
-
-          return [
-            storageAccountName,
-            {
-              regionId: region.regionId,
-              geography: region.geography,
-              displayName: region.displayName,
-              datacenterLocation: region.datacenterLocation,
-              storageAccountName: region.storageAccountName,
-              // Preserve existing ping history unless we are kicking off a fresh run
-              pingHistory: resetPingState ? [] : existingRegion?.pingHistory || [],
-              lastPingTime: resetPingState ? 0 : existingRegion?.lastPingTime || 0
-            }
-          ]
-        })
-    )
-
-    const hasRegions = regionMap.size > 0
-
-    this.state.set({
-      regions: regionMap,
-      // Reset ping attempt count when starting a new run or when no regions are selected
-      pingAttemptCount: resetPingState || !hasRegions ? 0 : currentState.pingAttemptCount || 0,
-      isTestRunning: hasRegions && !resetPingState ? currentState.isTestRunning : false
+    this.seoService.setPageMeta({
+      title: 'Azure Latency Test | Measure Datacenter Latency',
+      description:
+        'Test latency from your location to Azure datacenters worldwide. Measure the latency to various Azure regions and find the closest Azure datacenters.',
+      canonicalUrl: 'https://www.azurespeed.com/Azure/Latency',
     })
   }
 
-  private startPingTimer(): void {
-    if (this.pingSubscription) {
-      return
+  private applyRegionsInput(rawRegions: string | undefined): void {
+    const parsedRegionTokens = parseRegionParam(rawRegions)
+    const regions = parsedRegionTokens.length ? this.resolveRegionsFromIds(parsedRegionTokens) : []
+    const shouldApplySelection =
+      (typeof rawRegions === 'string' && rawRegions.trim().length > 0) ||
+      this.hasAppliedRegionsInput
+
+    if (shouldApplySelection) {
+      this.lastUrlStateSignature = buildRegionSelectionSignature(
+        regions.map((region) => region.regionId)
+      )
+      this.regionService.updateSelectedRegions(regions)
     }
 
-    this.state.update((state) => ({ ...state, isTestRunning: true }))
+    this.canUpdateUrl = true
+    this.hasAppliedRegionsInput = true
+  }
 
-    this.pingSubscription = timer(0, LatencyComponent.CONFIG.PING_INTERVAL_MS).subscribe(() => {
-      const currentState = this.state()
-      if (currentState.pingAttemptCount >= LatencyComponent.CONFIG.MAX_PING_ATTEMPTS) {
+  private resolveRegionsFromIds(normalizedTokens: string[]): RegionModel[] {
+    const seen = new Set<string>()
+    return normalizedTokens
+      .map((token) => this.normalizedRegions.get(token))
+      .filter((match): match is RegionModel => {
+        if (!match || seen.has(match.regionId)) return false
+        seen.add(match.regionId)
+        return true
+      })
+  }
+
+  private syncUrlWithSelection(sortedRegionIds: readonly string[]): void {
+    if (!this.isBrowser || !this.canUpdateUrl) return
+
+    const signature = buildRegionSelectionSignature(sortedRegionIds)
+    if (signature === this.lastUrlStateSignature) return
+
+    this.lastUrlStateSignature = signature
+
+    const queryParams = { ...this.route.snapshot.queryParams }
+    if (sortedRegionIds.length) {
+      queryParams[REGIONS_QUERY_PARAM] = sortedRegionIds.join(',')
+    } else {
+      delete queryParams[REGIONS_QUERY_PARAM]
+    }
+
+    const urlTree = this.router.createUrlTree([], {
+      relativeTo: this.route,
+      queryParams,
+    })
+    this.location.replaceState(this.router.serializeUrl(urlTree))
+  }
+
+  private hasReachedPingLimit(): boolean {
+    return this.pingAttemptCount >= LATENCY_CONFIG.MAX_PING_ATTEMPTS
+  }
+
+  private clearPendingPingUpdates(): void {
+    this.pendingPingUpdates.clear()
+    if (this.batchUpdateTimer) {
+      clearTimeout(this.batchUpdateTimer)
+      this.batchUpdateTimer = undefined
+    }
+  }
+
+  private resetPingState(): void {
+    this.pingAttemptCount = 0
+    this.pingStateByStorageAccount.set(new Map())
+  }
+
+  private startPingTimer(): void {
+    if (this.pingSubscription) return
+
+    this.pingSubscription = timer(0, LATENCY_CONFIG.PING_INTERVAL_MS).subscribe(() => {
+      if (this.hasReachedPingLimit()) {
         this.stopPingTimer()
         return
       }
 
       void this.pingAllRegions()
-      this.state.update((state) => ({
-        ...state,
-        pingAttemptCount: state.pingAttemptCount + 1
-      }))
     })
   }
 
   private stopPingTimer(): void {
-    if (!this.pingSubscription) {
-      return
-    }
+    if (!this.pingSubscription) return
 
     this.pingSubscription.unsubscribe()
     this.pingSubscription = undefined
-    this.state.update((state) => ({ ...state, isTestRunning: false }))
+  }
+
+  private abortActivePingRequests(): void {
+    for (const controller of this.activePingControllers) {
+      controller.abort()
+    }
+    this.activePingControllers.clear()
   }
 
   private async pingAllRegions(): Promise<void> {
-    const { CONCURRENT_PINGS } = LatencyComponent.CONFIG
+    if (this.isPingCycleRunning || this.isDestroyed) return
 
-    const regions = Array.from(this.state().regions.values())
+    this.isPingCycleRunning = true
+    this.pingAttemptCount += 1
 
-    // Process in chunks for concurrency control
-    for (let i = 0; i < regions.length; i += CONCURRENT_PINGS) {
-      const chunk = regions.slice(i, i + CONCURRENT_PINGS)
-      await Promise.allSettled(chunk.map((region) => this.pingRegion(region)))
+    try {
+      const regions = shufflePingTargets(this.regionService.selectedRegions())
+
+      for (let i = 0; i < regions.length; i += LATENCY_CONFIG.CONCURRENT_PINGS) {
+        const chunk = regions.slice(i, i + LATENCY_CONFIG.CONCURRENT_PINGS)
+        await Promise.allSettled(chunk.map((region) => this.pingRegion(region)))
+      }
+    } finally {
+      this.isPingCycleRunning = false
     }
   }
 
-  private async pingRegion(region: RegionPingData): Promise<void> {
-    if (!this.isBrowser) return
-    if (!region.storageAccountName || !region.regionId) return
+  private async pingRegion(region: RegionModel): Promise<void> {
+    if (this.isDestroyed || !this.isBrowser || !region.storageAccountName || !region.regionId)
+      return
 
     const url = `https://${region.storageAccountName}.blob.core.windows.net/public/latency-test.json`
+    const requestUrl = `${url}?_=${createCacheBuster()}`
+    const resourceTimingPromise = this.createResourceTimingWaiter(requestUrl)
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), LatencyComponent.CONFIG.PING_TIMEOUT_MS)
+    this.activePingControllers.add(controller)
+    const timeoutId = setTimeout(() => controller.abort(), LATENCY_CONFIG.PING_TIMEOUT_MS)
 
     try {
       const startTime = performance.now()
 
-      const response = await fetch(`${url}?_=${Date.now()}`, {
+      const response = await fetch(requestUrl, {
         method: 'HEAD',
         signal: controller.signal,
         mode: 'cors',
-        cache: 'no-cache'
+        cache: 'no-cache',
       })
+      clearTimeout(timeoutId)
 
-      if (!response.ok) return
+      if (!response.ok) {
+        this.queuePingUpdate(region.storageAccountName, {
+          status: 'error',
+          latencyMs: 0,
+        })
+        return
+      }
 
-      const endTime = performance.now()
-      const latency = Math.round(endTime - startTime)
-
-      // Add to batch update queue
-      this.queuePingUpdate(region.storageAccountName, latency)
-    } catch {
-      // Silent fail for ping errors
+      const wallClockLatencyMs = performance.now() - startTime
+      const resourceTimingLatencyMs = await this.getResourceTimingLatency(
+        requestUrl,
+        resourceTimingPromise
+      )
+      const latencyMs = Math.round(resourceTimingLatencyMs ?? wallClockLatencyMs)
+      this.queuePingUpdate(region.storageAccountName, {
+        latencyMs,
+        status: latencyMs >= LATENCY_CONFIG.SLOW_LATENCY_THRESHOLD_MS ? 'slow' : 'ok',
+      })
+    } catch (error) {
+      this.queuePingUpdate(region.storageAccountName, {
+        status: isAbortError(error) ? 'timeout' : 'error',
+        latencyMs: 0,
+      })
     } finally {
       clearTimeout(timeoutId)
+      this.activePingControllers.delete(controller)
+      this.cancelResourceTimingWaiter(requestUrl)
     }
   }
 
-  private queuePingUpdate(storageAccountName: string, latency: number): void {
-    const { MAX_ACCEPTABLE_LATENCY_MS, BATCH_UPDATE_DELAY_MS } = LatencyComponent.CONFIG
+  private initializeResourceTimingObserver(): void {
+    if (typeof PerformanceObserver === 'undefined') return
 
-    if (latency > MAX_ACCEPTABLE_LATENCY_MS) return
+    const observer = new PerformanceObserver((list) => {
+      for (const entry of list.getEntriesByType('resource')) {
+        this.resolveResourceTiming(entry.name, getValidResourceTimingDuration(entry.duration))
+      }
+    })
 
-    this.pendingPingUpdates.set(storageAccountName, latency)
-
-    // Batch updates to reduce state operations
-    if (!this.batchUpdateTimer) {
-      this.batchUpdateTimer = setTimeout(() => {
-        this.flushPingUpdates()
-        this.batchUpdateTimer = undefined
-      }, BATCH_UPDATE_DELAY_MS)
+    try {
+      observer.observe({ entryTypes: ['resource'] })
+      this.resourceTimingObserver = observer
+    } catch {
+      observer.disconnect()
     }
+  }
+
+  private destroyResourceTimingObserver(): void {
+    this.resourceTimingObserver?.disconnect()
+    this.resourceTimingObserver = undefined
+
+    for (const resolve of this.pendingResourceTimings.values()) {
+      resolve(null)
+    }
+    this.pendingResourceTimings.clear()
+  }
+
+  private createResourceTimingWaiter(requestUrl: string): Promise<number | null> | null {
+    if (!this.resourceTimingObserver) return null
+
+    return new Promise((resolve) => {
+      this.pendingResourceTimings.set(requestUrl, resolve)
+    })
+  }
+
+  private async getResourceTimingLatency(
+    requestUrl: string,
+    observedTiming: Promise<number | null> | null
+  ): Promise<number | null> {
+    const bufferedTiming = this.getBufferedResourceTiming(requestUrl)
+    if (bufferedTiming !== null) {
+      this.cancelResourceTimingWaiter(requestUrl)
+      return bufferedTiming
+    }
+
+    if (!observedTiming) return null
+
+    const durationMs = await waitForResourceTiming(observedTiming)
+    this.cancelResourceTimingWaiter(requestUrl)
+    return durationMs ?? this.getBufferedResourceTiming(requestUrl)
+  }
+
+  private getBufferedResourceTiming(requestUrl: string): number | null {
+    const entries = performance.getEntriesByName(requestUrl, 'resource')
+    if (entries.length === 0) return null
+
+    const entry = entries[entries.length - 1]
+    return getValidResourceTimingDuration(entry.duration)
+  }
+
+  private resolveResourceTiming(requestUrl: string, durationMs: number | null): void {
+    const resolve = this.pendingResourceTimings.get(requestUrl)
+    if (!resolve) return
+
+    this.pendingResourceTimings.delete(requestUrl)
+    resolve(durationMs)
+  }
+
+  private cancelResourceTimingWaiter(requestUrl: string): void {
+    this.resolveResourceTiming(requestUrl, null)
+  }
+
+  private queuePingUpdate(storageAccountName: string, update: PingResult): void {
+    if (this.isDestroyed) return
+
+    this.pendingPingUpdates.set(storageAccountName, update)
+    this.schedulePingUpdateFlush()
+  }
+
+  private schedulePingUpdateFlush(): void {
+    this.batchUpdateTimer ??= setTimeout(() => {
+      this.batchUpdateTimer = undefined
+      if (this.isDestroyed) return
+      this.flushPingUpdates()
+    }, LATENCY_CONFIG.BATCH_UPDATE_DELAY_MS)
   }
 
   private flushPingUpdates(): void {
-    if (this.pendingPingUpdates.size === 0) return
+    if (!this.pendingPingUpdates.size) return
 
     const updates = new Map(this.pendingPingUpdates)
     this.pendingPingUpdates.clear()
 
-    this.state.update((currentState) => {
-      const regions = new Map(currentState.regions)
-      const timestamp = Date.now()
+    const selectedStorageAccounts = new Set(
+      this.regionService.selectedRegions().map((region) => region.storageAccountName)
+    )
+    if (!selectedStorageAccounts.size) return
 
-      for (const [name, latency] of updates) {
-        const region = regions.get(name)
-        if (!region) continue
+    this.pingStateByStorageAccount.update((currentStates) => {
+      const states = new Map(currentStates)
+      let hasUpdates = false
 
-        // Update ping history (single source of truth)
-        const history = [...region.pingHistory, latency]
-        if (history.length > LatencyComponent.CONFIG.MAX_PING_HISTORY) {
-          history.shift()
-        }
+      for (const [name, update] of updates) {
+        if (!selectedStorageAccounts.has(name)) continue
 
-        regions.set(name, {
-          ...region,
-          pingHistory: history,
-          lastPingTime: timestamp
-        })
+        states.set(name, applyPingUpdate(states.get(name) ?? createPingState(), update))
+        hasUpdates = true
       }
 
-      return {
-        ...currentState,
-        regions
-      }
+      return hasUpdates ? states : currentStates
     })
   }
+}
 
-  private calculateMedian(values: number[]): number {
-    if (values.length === 0) return 0
-    if (values.length === 1) return values[0]
-
-    const sorted = [...values].sort((a, b) => a - b)
-
-    // Simple outlier removal for small samples
-    if (sorted.length <= 5 && sorted.length > 2) {
-      sorted.pop() // Remove highest
-    }
-
-    // IQR method for larger samples
-    if (sorted.length > 5) {
-      const q1 = sorted[Math.floor(sorted.length * 0.25)]
-      const q3 = sorted[Math.floor(sorted.length * 0.75)]
-      const iqr = q3 - q1
-      const lowerBound = q1 - 1.5 * iqr
-      const upperBound = q3 + 1.5 * iqr
-
-      const filtered = sorted.filter((v) => v >= lowerBound && v <= upperBound)
-      if (filtered.length > 0) {
-        const mid = Math.floor(filtered.length / 2)
-        return filtered.length % 2 === 0
-          ? Math.floor((filtered[mid - 1] + filtered[mid]) / 2)
-          : filtered[mid]
-      }
-    }
-
-    const mid = Math.floor(sorted.length / 2)
-    return sorted.length % 2 === 0 ? Math.floor((sorted[mid - 1] + sorted[mid]) / 2) : sorted[mid]
+function createPingState(): PingState {
+  return {
+    warmupComplete: false,
+    samples: [],
+    latest: null,
   }
+}
+
+function applyPingUpdate(state: PingState, update: PingResult): PingState {
+  if (!state.warmupComplete) {
+    return {
+      ...state,
+      warmupComplete: true,
+      latest: isFailedPingStatus(update.status) ? update : null,
+    }
+  }
+
+  if (isFailedPingStatus(update.status)) {
+    return {
+      ...state,
+      latest: update,
+    }
+  }
+
+  const samples = [...state.samples, update.latencyMs]
+  if (samples.length > LATENCY_CONFIG.MAX_PING_HISTORY) {
+    samples.shift()
+  }
+
+  return {
+    warmupComplete: true,
+    samples,
+    latest: update,
+  }
+}
+
+function getLatestDisplay(state: PingState): LatencyDisplay {
+  if (state.latest) {
+    return createLatencyDisplay(state.latest.latencyMs, state.latest.status)
+  }
+
+  return createLatencyDisplay(0, state.warmupComplete ? 'measuring' : 'warming')
+}
+
+function getPingDisplayStatus(state: PingState, medianLatency: number): PingDisplayStatus {
+  if (medianLatency >= LATENCY_CONFIG.SLOW_LATENCY_THRESHOLD_MS) return 'slow'
+  if (medianLatency > 0) return 'ok'
+  if (!state.latest) return state.warmupComplete ? 'measuring' : 'warming'
+  if (isFailedPingStatus(state.latest.status)) return state.latest.status
+  return 'measuring'
+}
+
+function createLatencyDisplay(latencyMs: number, status: PingDisplayStatus): LatencyDisplay {
+  return {
+    latencyMs,
+    status,
+    label: latencyMs > 0 ? `${latencyMs} ms` : getPingStatusLabel(status),
+    textClass: getPingTextClass(status, latencyMs),
+  }
+}
+
+function getPingStatusLabel(status: PingDisplayStatus): string {
+  return PING_STATUS_LABELS[status]
+}
+
+function isFailedPingStatus(status: PingMeasurementStatus): status is 'timeout' | 'error' {
+  return status === 'timeout' || status === 'error'
+}
+
+function isAbortError(error: unknown): boolean {
+  return (
+    typeof error === 'object' && error !== null && 'name' in error && error.name === 'AbortError'
+  )
+}
+
+function getLatencyTone(latency: number | null | undefined): LatencyTone {
+  if (typeof latency !== 'number' || latency <= 0) return 'unknown'
+  if (latency < LATENCY_CONFIG.LATENCY_FAST) return 'fast'
+  if (latency < LATENCY_CONFIG.SLOW_LATENCY_THRESHOLD_MS) return 'moderate'
+  return 'slow'
+}
+
+function getPingTextClass(status: PingDisplayStatus, latency: number): string {
+  if (status === 'timeout' || status === 'error') return 'text-danger-dark dark:text-danger'
+  if (status === 'warming' || status === 'measuring') return 'text-text-muted'
+
+  switch (getLatencyTone(latency)) {
+    case 'fast':
+      return 'text-success-foreground dark:text-success'
+    case 'moderate':
+      return 'text-warning-foreground dark:text-warning'
+    case 'slow':
+      return 'text-danger-dark dark:text-danger'
+    default:
+      return 'text-text-muted'
+  }
+}
+
+function createCacheBuster(): string {
+  const browserCrypto = globalThis.crypto
+  return typeof browserCrypto.randomUUID === 'function'
+    ? browserCrypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(36).slice(2)}`
+}
+
+function getBarWidthPercent(medianLatency: number, maxLatency: number): number {
+  return maxLatency > 0 ? (medianLatency / maxLatency) * 100 : 0
+}
+
+function shufflePingTargets(targets: readonly RegionModel[]): RegionModel[] {
+  const shuffled = [...targets]
+  for (let i = shuffled.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1))
+    const current = shuffled[i]
+    shuffled[i] = shuffled[j]
+    shuffled[j] = current
+  }
+  return shuffled
+}
+
+function calculateStableMedian(values: readonly number[]): number {
+  if (values.length < LATENCY_CONFIG.MIN_STABLE_PING_SAMPLES) return 0
+
+  const sorted = [...values].sort((a, b) => a - b)
+  const filtered = removeOutliers(sorted)
+  return calculateMedian(filtered)
+}
+
+function calculateMedian(sorted: readonly number[]): number {
+  const mid = Math.floor(sorted.length / 2)
+  return sorted.length % 2 === 0 ? Math.round((sorted[mid - 1] + sorted[mid]) / 2) : sorted[mid]
+}
+
+function removeOutliers(sorted: readonly number[]): readonly number[] {
+  if (sorted.length < LATENCY_CONFIG.MIN_OUTLIER_FILTER_SAMPLES) return sorted
+
+  const q1 = getPercentile(sorted, 0.25)
+  const q3 = getPercentile(sorted, 0.75)
+  const iqr = q3 - q1
+  if (iqr === 0) return sorted
+
+  const filtered = sorted.filter((v) => v >= q1 - 1.5 * iqr && v <= q3 + 1.5 * iqr)
+  return filtered.length >= LATENCY_CONFIG.MIN_STABLE_PING_SAMPLES ? filtered : sorted
+}
+
+function getPercentile(sorted: readonly number[], percentile: number): number {
+  const index = (sorted.length - 1) * percentile
+  const lowerIndex = Math.floor(index)
+  const upperIndex = Math.ceil(index)
+  if (lowerIndex === upperIndex) return sorted[lowerIndex]
+
+  const upperWeight = index - lowerIndex
+  return sorted[lowerIndex] * (1 - upperWeight) + sorted[upperIndex] * upperWeight
+}
+
+function getValidResourceTimingDuration(durationMs: number): number | null {
+  return Number.isFinite(durationMs) && durationMs > 0 ? durationMs : null
+}
+
+function waitForResourceTiming(timing: Promise<number | null>): Promise<number | null> {
+  return new Promise((resolve) => {
+    const timeoutId = setTimeout(() => resolve(null), LATENCY_CONFIG.RESOURCE_TIMING_WAIT_MS)
+
+    void timing.then((durationMs) => {
+      clearTimeout(timeoutId)
+      resolve(durationMs)
+    })
+  })
 }

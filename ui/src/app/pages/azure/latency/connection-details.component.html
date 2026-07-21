@@ -6,10 +6,10 @@
   <!-- Header row - always visible -->
   <button
     type="button"
-    class="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-surface-muted"
+    class="flex w-full items-center justify-between gap-3 px-4 py-3 text-left hover:bg-surface-muted focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none focus-visible:ring-inset"
     (click)="toggleVisibility.emit()"
     [attr.aria-expanded]="isVisible()"
-    aria-controls="connection-details-content"
+    [attr.aria-controls]="isVisible() ? 'connection-details-content' : null"
   >
     <div class="flex items-center gap-2">
       <app-lucide-icon name="globe" class="size-4 text-text-subtle" aria-hidden="true" />
@@ -37,10 +37,8 @@
             <span>Network</span>
           </dt>
           <dd class="min-w-0 truncate text-text-body">
-            @if (error()) {
-              <span class="text-text-muted">—</span>
-            } @else if (isLoading()) {
-              <span class="inline-block h-4 w-36 animate-pulse rounded bg-border-soft"></span>
+            @if (isLoading()) {
+              <span class="skeleton-block inline-block h-4 w-36 rounded"></span>
             } @else if (networkLabel()) {
               {{ networkLabel() }}
             } @else {
@@ -56,10 +54,8 @@
             <span>Location</span>
           </dt>
           <dd class="min-w-0 truncate text-text-body">
-            @if (error()) {
-              <span class="text-text-muted">—</span>
-            } @else if (isLoading()) {
-              <span class="inline-block h-4 w-28 animate-pulse rounded bg-border-soft"></span>
+            @if (isLoading()) {
+              <span class="skeleton-block inline-block h-4 w-28 rounded"></span>
             } @else if (locationLabel()) {
               {{ locationLabel() }}
             } @else {
@@ -74,11 +70,9 @@
             <app-lucide-icon name="globe" class="size-3.5" aria-hidden="true" />
             <span>IP</span>
           </dt>
-          <dd class="min-w-0 truncate font-mono text-text-body">
-            @if (error()) {
-              <span class="text-text-muted">—</span>
-            } @else if (isLoading()) {
-              <span class="inline-block h-4 w-28 animate-pulse rounded bg-border-soft"></span>
+          <dd class="min-w-0 truncate font-mono text-text-body tabular-nums">
+            @if (isLoading()) {
+              <span class="skeleton-block inline-block h-4 w-28 rounded"></span>
             } @else if (ipLabel()) {
               {{ ipLabel() }}
             } @else {

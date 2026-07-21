@@ -1,2 +1,2 @@
-export * from './assistant'
 export * from './region'
+export * from './region-latency'

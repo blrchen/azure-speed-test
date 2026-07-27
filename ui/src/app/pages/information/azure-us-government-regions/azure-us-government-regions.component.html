@@ -1,8 +1,8 @@
-<article class="page-shell section-stack mx-auto max-w-5xl">
+<article class="page-shell section-stack">
   <nav class="breadcrumb" aria-label="Breadcrumb">
-    <a class="breadcrumb-link" routerLink="/Azure/Latency">Home</a>
+    <a class="breadcrumb-link" href="/Azure/Latency">Home</a>
     <span class="breadcrumb-separator">/</span>
-    <a class="breadcrumb-link" [routerLink]="['/Information/AzureRegions']">Azure regions</a>
+    <a class="breadcrumb-link" href="/Information/AzureRegions">Azure regions</a>
     <span class="breadcrumb-separator">/</span>
     <span class="breadcrumb-current" aria-current="page">Azure US government cloud regions</span>
   </nav>
@@ -10,31 +10,27 @@
   <header class="page-header">
     <h1 class="page-title">Azure US government cloud regions</h1>
     <nav class="flex flex-wrap gap-2" aria-label="Region types">
-      <a class="btn btn-outline btn--sm" [routerLink]="['/Information/AzureRegions']">
-        Global regions
-      </a>
+      <a class="btn btn-outline btn--sm" href="/Information/AzureRegions"> Global regions </a>
       <span class="btn btn--sm btn-current" aria-current="page">US Gov regions</span>
-      <a class="btn btn-outline btn--sm" [routerLink]="['/Information/AzureChinaRegions']">
-        China regions
-      </a>
-      <a class="btn btn-outline btn--sm" [routerLink]="['/Information/AzureRestrictedRegions']">
+      <a class="btn btn-outline btn--sm" href="/Information/AzureChinaRegions"> China regions </a>
+      <a class="btn btn-outline btn--sm" href="/Information/AzureRestrictedRegions">
         Restricted regions
       </a>
-      <a class="btn btn-outline btn--sm" [routerLink]="['/Information/AzureUpcomingRegions']">
+      <a class="btn btn-outline btn--sm" href="/Information/AzureUpcomingRegions">
         Upcoming regions
       </a>
     </nav>
     <p class="page-lead">
-      Azure regions are sets of datacenters inside a latency-defined perimeter, connected through a
-      dedicated regional network.
+      Explore dedicated Azure Government regions for eligible U.S. government organizations and
+      partners, with compliance offerings that include FedRAMP High and DoD Impact Level 5 (IL5).
     </p>
   </header>
 
   <section class="section-block" aria-labelledby="regions-heading">
     <h2 id="regions-heading" class="section-title">Azure US Government cloud regions</h2>
     <p class="text-text-muted">
-      These regions are designed for US government entities and their partners, meeting security and
-      compliance requirements.
+      Compare each region's approximate datacenter location, availability-zone count, paired region,
+      and customer eligibility.
     </p>
     <div class="table-shell">
       <table class="table-base">

@@ -20,8 +20,17 @@
   border: 1px solid var(--color-border-soft);
 }
 
+/* Tighter horizontal padding for count pills sitting inside another control.
+   Needed as a modifier because .badge is unlayered, so a px-* utility would lose. */
+.badge--compact {
+  padding-inline: 0.5rem;
+}
+
 .badge:focus-visible {
-  outline: none;
+  /* Transparent outline stays visible in forced-colors mode, where the
+     box-shadow ring below is suppressed. */
+  outline: 2px solid transparent;
+  outline-offset: 2px;
   box-shadow:
     0 0 0 2px var(--color-surface-base),
     0 0 0 4px var(--color-primary);
@@ -30,6 +39,13 @@
 /* ==========================================================================
    Badge Variants (data-attribute approach)
    ========================================================================== */
+.badge[data-variant='neutral'],
+.badge-neutral {
+  background-color: var(--color-surface-muted);
+  border-color: var(--color-border-soft);
+  color: var(--color-text-strong);
+}
+
 .badge[data-variant='brand'],
 .badge-brand {
   background-color: color-mix(in srgb, var(--color-brand) 12%, transparent);
@@ -56,61 +72,6 @@
   background-color: var(--color-danger-dark);
   border-color: var(--color-danger-dark);
   color: var(--color-danger-foreground);
-}
-
-/* ==========================================================================
-   Latency Badge (larger, centered for numeric values)
-   ========================================================================== */
-.badge-latency {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 2rem;
-  min-width: 3.5rem;
-  border-radius: 9999px;
-  padding: 0.25rem 0.75rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  line-height: 1.1;
-  text-align: center;
-  box-shadow: var(--shadow-xs);
-  transition: transform 0.15s ease-out;
-}
-
-.badge-latency:hover {
-  transform: scale(1.05);
-  box-shadow: var(--shadow-card);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .badge-latency {
-    transition: none;
-  }
-
-  .badge-latency:hover {
-    transform: none;
-  }
-}
-
-.badge-latency-success {
-  background-color: var(--color-success);
-  color: var(--color-success-foreground);
-}
-
-.badge-latency-warning {
-  background-color: var(--color-warning);
-  color: var(--color-warning-foreground);
-}
-
-.badge-latency-danger {
-  background-color: var(--color-danger-dark);
-  color: var(--color-danger-foreground);
-}
-
-.badge-latency-neutral {
-  background-color: var(--color-secondary);
-  color: var(--color-foreground);
 }
 
 /* ==========================================================================

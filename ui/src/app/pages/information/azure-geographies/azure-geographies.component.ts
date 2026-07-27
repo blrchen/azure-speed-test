@@ -11,8 +11,7 @@ import {
   PLATFORM_ID,
   signal,
 } from '@angular/core'
-import { form, FormField } from '@angular/forms/signals'
-import { ActivatedRoute, Router, RouterLink } from '@angular/router'
+import { ActivatedRoute, Router } from '@angular/router'
 
 import chinaRegionsJson from '../../../../assets/data/regions-china.json'
 import upcomingRegionsJson from '../../../../assets/data/regions-upcoming.json'
@@ -20,7 +19,10 @@ import governmentRegionsJson from '../../../../assets/data/regions-usgov.json'
 import globalRegionsJson from '../../../../assets/data/regions.json'
 import { Region, UpcomingRegion } from '../../../models'
 import { SeoService } from '../../../services/seo.service'
+import { readInputValue, readSelectValue } from '../../../shared/form-control-value'
 import { LucideIconComponent } from '../../../shared/icons/lucide-icons.component'
+import { replaceMergedQueryParamsIfChanged } from '../../../shared/query-param-sync'
+import { toQueryValue } from '../../../shared/query-value'
 import {
   AvailabilityZoneFilter,
   countGeographies,
@@ -29,8 +31,8 @@ import {
   normalizeSearchInput,
   normalizeSearchValue,
   normalizeZoneFilterInput,
-  toQueryValue,
 } from '../../../shared/region-directory'
+import { absoluteUrl, buildSchemaNode } from '../../../shared/structured-data'
 import { buildRegionDetailHref } from '../../../shared/utils'
 
 type GeographyScope = 'global' | 'restricted' | 'china' | 'usgov' | 'planned'
@@ -62,7 +64,7 @@ interface ScopeOption {
   readonly count: number
 }
 
-const PAGE_URL = 'https://www.azurespeed.com/Information/AzureGeographies'
+const PAGE_PATH = '/Information/AzureGeographies'
 const PAGE_DESCRIPTION =
   'Browse Azure geographies and regions, compare availability-zone support, and understand global, restricted, sovereign, and planned Azure region scopes.'
 const DEFAULT_SCOPE: GeographyScope = 'global'
@@ -163,7 +165,7 @@ const DEFAULT_GEOGRAPHIES = groupRegionsByGeography(REGIONS_BY_SCOPE.global)
 
 @Component({
   selector: 'app-azure-geographies',
-  imports: [FormField, LucideIconComponent, RouterLink],
+  imports: [LucideIconComponent],
   templateUrl: './azure-geographies.component.html',
   host: { class: 'block' },
 })
@@ -193,7 +195,6 @@ export class AzureGeographiesComponent implements OnInit {
   }))
 
   readonly filtersModel = linkedSignal(() => this.routeViewState())
-  readonly filtersForm = form(this.filtersModel, { name: 'azureGeographiesFilters' })
 
   readonly selectedScope = computed(
     () => SCOPE_OPTIONS_BY_VALUE.get(this.filtersModel().scope) ?? SCOPE_OPTIONS[0]
@@ -271,13 +272,11 @@ export class AzureGeographiesComponent implements OnInit {
     this.seoService.setPageMeta({
       title: 'Azure Geographies and Regions | Data Residency',
       description: PAGE_DESCRIPTION,
-      canonicalUrl: PAGE_URL,
-      structuredData: {
-        '@context': 'https://schema.org',
-        '@type': 'CollectionPage',
+      canonicalUrl: absoluteUrl(PAGE_PATH),
+      structuredData: buildSchemaNode('CollectionPage', {
         name: 'Azure geographies and regions',
         description: PAGE_DESCRIPTION,
-        url: PAGE_URL,
+        url: absoluteUrl(PAGE_PATH),
         mainEntity: {
           '@type': 'ItemList',
           numberOfItems: DEFAULT_GEOGRAPHIES.length,
@@ -288,11 +287,11 @@ export class AzureGeographiesComponent implements OnInit {
               '@type': 'Thing',
               name: geography.name,
               description: `${formatCount(geography.regions.length, 'Azure region', 'Azure regions')}: ${geography.regions.map((region) => region.displayName).join(', ')}`,
-              url: `${PAGE_URL}#${this.geographyAnchor(geography.name)}`,
+              url: `${absoluteUrl(PAGE_PATH)}#${this.geographyAnchor(geography.name)}`,
             },
           })),
         },
-      },
+      }),
     })
   }
 
@@ -304,22 +303,31 @@ export class AzureGeographiesComponent implements OnInit {
     this.filtersModel.update((state) => ({ ...state, search: '' }))
   }
 
+  updateSearch(event: Event): void {
+    const search = readInputValue(event)
+    this.filtersModel.update((state) => ({ ...state, search }))
+  }
+
+  updateScope(event: Event): void {
+    const scope = normalizeScopeInput(readSelectValue(event))
+    this.filtersModel.update((state) => ({ ...state, scope }))
+  }
+
+  updateZoneSupport(event: Event): void {
+    const zoneSupport = normalizeZoneFilterInput(readSelectValue(event))
+    this.filtersModel.update((state) => ({ ...state, zoneSupport }))
+  }
+
   geographyAnchor(name: string): string {
     return `geography-${toQueryValue(name)}`
   }
 
   private syncUrlState(nextState: GeographyViewState, routeState: GeographyViewState): void {
-    const nextQueryParams = this.buildQueryParams(nextState)
-    const currentQueryParams = this.buildQueryParams(routeState)
-    if (JSON.stringify(nextQueryParams) === JSON.stringify(currentQueryParams)) return
-
-    const urlTree = this.router.createUrlTree([], {
-      relativeTo: this.route,
-      queryParams: nextQueryParams,
-      queryParamsHandling: 'merge',
-      preserveFragment: true,
-    })
-    this.location.replaceState(this.router.serializeUrl(urlTree))
+    replaceMergedQueryParamsIfChanged(
+      { router: this.router, route: this.route, location: this.location },
+      this.buildQueryParams(nextState),
+      this.buildQueryParams(routeState)
+    )
   }
 
   private buildQueryParams(state: GeographyViewState): Record<string, string | null> {

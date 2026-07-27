@@ -6,7 +6,7 @@ import { firstValueFrom } from 'rxjs'
 import {
   decodeServiceTagServiceDirectories,
   decodeServiceTagSummary,
-  inferLegacyServiceTagCloud,
+  inferCloudFromServiceTagId,
   normalizeServiceTagIdInput,
   SERVICE_TAG_CLOUDS,
   SERVICE_TAG_REGION_DIRECTORY_PATH,
@@ -116,11 +116,11 @@ export class ServiceTagsLoader {
     return promise
   }
 
-  async getLegacyServiceTagPageData(
+  async getImplicitCloudServiceTagPageData(
     serviceTagIdInput: string | undefined
   ): Promise<ServiceTagPageData | null> {
     const serviceTagId = normalizeServiceTagIdInput(serviceTagIdInput)
-    const preferredCloud = inferLegacyServiceTagCloud(serviceTagId)
+    const preferredCloud = inferCloudFromServiceTagId(serviceTagId)
     const cloudOrder = [
       preferredCloud,
       ...SERVICE_TAG_CLOUDS.filter((cloud) => cloud !== preferredCloud),
@@ -143,14 +143,14 @@ export class ServiceTagsLoader {
     return this.getServiceTagPageData(cloud, serviceTagId)
   }
 
-  reloadLegacyServiceTagPageData(
+  reloadImplicitCloudServiceTagPageData(
     serviceTagIdInput: string | undefined
   ): Promise<ServiceTagPageData | null> {
     const serviceTagId = normalizeServiceTagIdInput(serviceTagIdInput)
     for (const cloud of SERVICE_TAG_CLOUDS) {
       this.clearServiceTagCache(cloud, serviceTagId)
     }
-    return this.getLegacyServiceTagPageData(serviceTagId)
+    return this.getImplicitCloudServiceTagPageData(serviceTagId)
   }
 
   getAllPrefixesServiceTagPageData(

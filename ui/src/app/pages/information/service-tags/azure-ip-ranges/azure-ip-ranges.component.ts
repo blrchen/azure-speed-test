@@ -9,8 +9,7 @@ import {
   PLATFORM_ID,
   signal,
 } from '@angular/core'
-import { form, FormField } from '@angular/forms/signals'
-import { Router, RouterLink } from '@angular/router'
+import { Router } from '@angular/router'
 
 import regionsJson from '../../../../../assets/data/regions.json'
 import { Region } from '../../../../models'
@@ -24,9 +23,13 @@ import {
   ServiceTagPageData,
   ServiceTagPageRouteData,
 } from '../../../../services/service-tags-snapshot'
+import { downloadBlob } from '../../../../shared/browser-download'
 import { CopyButtonComponent } from '../../../../shared/copy-button/copy-button.component'
+import { buildDocumentHref } from '../../../../shared/document-navigation'
 import { ExportCsvButtonComponent } from '../../../../shared/export-csv-button/export-csv-button.component'
+import { readInputValue } from '../../../../shared/form-control-value'
 import { LucideIconComponent } from '../../../../shared/icons/lucide-icons.component'
+import { absoluteUrl, buildBreadcrumbList, buildFaqPage } from '../../../../shared/structured-data'
 
 interface ServiceTagInsights {
   serviceTagId: string
@@ -43,6 +46,17 @@ type AddressFamilyFilter = 'all' | 'ipv4' | 'ipv6'
 type PrefixFamily = 'IPv4' | 'IPv6'
 type AllPrefixesDataState = 'idle' | 'loading' | 'loaded' | 'error'
 type PageRetryState = 'idle' | 'loading' | 'loaded' | 'error'
+
+const BREADCRUMB_DIRECTORIES: Readonly<Record<BreadcrumbSource, { name: string; path: string }>> = {
+  service: {
+    name: 'Azure IP ranges by service',
+    path: '/Information/AzureIpRangesByService',
+  },
+  region: {
+    name: 'Azure IP ranges by region',
+    path: '/Information/AzureIpRangesByRegion',
+  },
+}
 
 interface PrefixRow {
   prefix: string
@@ -65,6 +79,11 @@ const REGION_LOOKUP = new Map<string, Region>(
   (regionsJson as Region[]).map((region) => [region.regionId.toLowerCase(), region])
 )
 const SOURCE_LABEL = 'Microsoft Service Tags'
+const SOURCE_FAQ = {
+  question: 'Where do these IP ranges come from, and how often are they updated?',
+  answer:
+    'This page uses Microsoft Azure Service Tags data. Microsoft normally publishes downloadable service-tag files weekly. Review the official download when you need the latest published ranges.',
+} as const
 const SERVICE_TAG_CLOUD_LABELS: Readonly<Record<ServiceTagCloud, string>> = {
   public: 'Azure Public',
   china: 'Azure China',
@@ -107,13 +126,7 @@ function normalizeBreadcrumbSourceInput(value: string | undefined): BreadcrumbSo
 
 @Component({
   selector: 'app-azure-ip-ranges',
-  imports: [
-    FormField,
-    RouterLink,
-    LucideIconComponent,
-    CopyButtonComponent,
-    ExportCsvButtonComponent,
-  ],
+  imports: [LucideIconComponent, CopyButtonComponent, ExportCsvButtonComponent],
   templateUrl: './azure-ip-ranges.component.html',
   styleUrl: './azure-ip-ranges.component.css',
   host: {
@@ -122,6 +135,7 @@ function normalizeBreadcrumbSourceInput(value: string | undefined): BreadcrumbSo
   },
 })
 export class AzureIpRangesComponent {
+  readonly buildDocumentHref = buildDocumentHref
   private readonly seoService = inject(SeoService)
   private readonly serviceTagsLoader = inject(ServiceTagsLoader)
   private readonly router = inject(Router)
@@ -129,6 +143,7 @@ export class AzureIpRangesComponent {
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID))
 
   readonly familyFilterOptions = FAMILY_FILTER_OPTIONS
+  readonly sourceFaq = SOURCE_FAQ
   readonly cloud = input<ServiceTagCloud, string | undefined>('public', {
     transform: normalizeServiceTagCloud,
   })
@@ -138,7 +153,6 @@ export class AzureIpRangesComponent {
   readonly serviceTagId = input('AzureCloud', { transform: normalizeServiceTagIdInput })
   readonly serviceTagPageData = input<ServiceTagPageRouteData>(null)
   readonly prefixSearchModel = signal({ search: '' })
-  readonly prefixSearchForm = form(this.prefixSearchModel, { name: 'ipPrefixSearch' })
   readonly familyFilter = signal<AddressFamilyFilter>('all')
   readonly retryPageData = linkedSignal<ServiceTagPageData | null>(() => {
     this.cloud()
@@ -177,11 +191,11 @@ export class AzureIpRangesComponent {
     const routeData = this.serviceTagPageData()
     return isServiceTagPageData(routeData) ? routeData : undefined
   })
-  readonly isLegacyRoute = computed(() => {
+  readonly isImplicitCloudRoute = computed(() => {
     const retryData = this.retryPageData()
-    if (retryData?.legacyRoute !== undefined) return retryData.legacyRoute
+    if (retryData?.implicitCloudRoute !== undefined) return retryData.implicitCloudRoute
 
-    return Boolean(this.serviceTagPageData()?.legacyRoute)
+    return Boolean(this.serviceTagPageData()?.implicitCloudRoute)
   })
   readonly effectiveCloud = computed<ServiceTagCloud>(() => {
     const pageData = this.pageData()
@@ -325,13 +339,6 @@ export class AzureIpRangesComponent {
     }
     return { ipv4, ipv6 }
   })
-  readonly commonUseCases = [
-    'Configure enterprise firewalls for Azure connectivity',
-    'Set up network security groups',
-    'Plan hybrid cloud network architecture',
-    'Implement Azure ExpressRoute configurations',
-  ]
-
   constructor() {
     effect(() => {
       const query = this.prefixSearchModel().search.trim()
@@ -348,6 +355,10 @@ export class AzureIpRangesComponent {
 
   clearSearch(): void {
     if (this.prefixSearchModel().search) this.prefixSearchModel.set({ search: '' })
+  }
+
+  updateSearch(event: Event): void {
+    this.prefixSearchModel.set({ search: readInputValue(event) })
   }
 
   resetFilters(): void {
@@ -398,14 +409,14 @@ export class AzureIpRangesComponent {
 
     const routeCloud = this.cloud()
     const cloud = this.effectiveCloud()
-    const legacyRoute = this.isLegacyRoute()
+    const implicitCloudRoute = this.isImplicitCloudRoute()
     const serviceTagId = this.serviceTagId()
     this.pageRetryState.set('loading')
     this.retryPageError.set('')
 
     try {
-      const data = legacyRoute
-        ? await this.serviceTagsLoader.reloadLegacyServiceTagPageData(serviceTagId)
+      const data = implicitCloudRoute
+        ? await this.serviceTagsLoader.reloadImplicitCloudServiceTagPageData(serviceTagId)
         : await this.serviceTagsLoader.reloadServiceTagPageData(cloud, serviceTagId)
       if (this.cloud() !== routeCloud || this.serviceTagId() !== serviceTagId) return
 
@@ -415,7 +426,7 @@ export class AzureIpRangesComponent {
         return
       }
 
-      this.retryPageData.set({ ...data, legacyRoute })
+      this.retryPageData.set({ ...data, implicitCloudRoute })
       this.pageRetryState.set('loaded')
     } catch {
       if (this.cloud() !== routeCloud || this.serviceTagId() !== serviceTagId) return
@@ -442,13 +453,22 @@ export class AzureIpRangesComponent {
     const insights = this.tagInsights()
     const currentServiceTag = this.serviceTagId()
     const cloud = this.effectiveCloud()
-    const canonicalPath = this.isLegacyRoute()
-      ? `Information/AzureIpRanges/${currentServiceTag}`
-      : `Information/AzureIpRanges/${cloud}/${currentServiceTag}`
+    const canonicalPath = this.isImplicitCloudRoute()
+      ? `/Information/AzureIpRanges/${currentServiceTag}`
+      : `/Information/AzureIpRanges/${cloud}/${currentServiceTag}`
+    const breadcrumbDirectory = BREADCRUMB_DIRECTORIES[this.breadcrumbSource()]
     this.seoService.setPageMeta({
       title: `${currentServiceTag} IP Ranges | ${SERVICE_TAG_CLOUD_LABELS[cloud]}`,
       description: insights.metaDescription,
-      canonicalUrl: `https://www.azurespeed.com/${canonicalPath}`,
+      canonicalUrl: absoluteUrl(canonicalPath),
+      structuredData: [
+        buildBreadcrumbList([
+          { name: 'Home', path: '/Azure/Latency' },
+          { name: breadcrumbDirectory.name, path: breadcrumbDirectory.path },
+          { name: currentServiceTag, path: canonicalPath },
+        ]),
+        buildFaqPage([SOURCE_FAQ]),
+      ],
     })
   }
 
@@ -579,18 +599,6 @@ export class AzureIpRangesComponent {
 
     const date = new Date().toISOString().split('T')[0]
     const filename = `${this.exportFilename()}-${date}.${extension}`
-    const blob = new Blob([content], { type })
-    const url = URL.createObjectURL(blob)
-    const link = this.document.createElement('a')
-
-    link.href = url
-    link.download = filename
-    link.style.visibility = 'hidden'
-
-    const body = this.document.body
-    body.appendChild(link)
-    link.click()
-    body.removeChild(link)
-    URL.revokeObjectURL(url)
+    downloadBlob(this.document, filename, new Blob([content], { type }))
   }
 }

@@ -1,13 +1,12 @@
 .angular/
 dist/
+docs/*
 node_modules/
 
 *.md
 *.json
 *.d.ts
+*.yml
+*.yaml
 
 .env*
-src/styles/theme.css
-
-# Generated from Angular official docs. Validate with npm run check:angular-context.
-docs/ai/angular-*

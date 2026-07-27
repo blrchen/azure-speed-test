@@ -1,8 +1,4 @@
-<div
-  class="region-selector flex min-w-0 flex-col gap-3"
-  [class.region-selector--collapsed]="isCollapsed()"
-  [attr.aria-busy]="disabled()"
->
+<div class="region-selector flex min-w-0 flex-col gap-3" [attr.aria-busy]="disabled()">
   @if (!isCollapsed()) {
     <form
       class="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 @min-[44rem]:grid-cols-[minmax(18rem,1fr)_auto_auto]"
@@ -20,7 +16,7 @@
           #regionSearchInput
           id="region-selector-search"
           type="search"
-          class="h-9 min-h-11 w-full rounded-md border border-border-strong bg-transparent pr-15 pl-9 text-sm text-text-body shadow-xs placeholder:text-text-placeholder focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-none @min-[44rem]:min-h-9"
+          class="h-9 min-h-11 w-full rounded-md border border-border-strong bg-transparent pr-15 pl-9 text-sm text-text-body shadow-xs placeholder:text-text-placeholder focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-hidden @min-[44rem]:min-h-9"
           placeholder="Search name, location, or ID..."
           autocomplete="off"
           spellcheck="false"
@@ -34,7 +30,7 @@
         @if (hasSearchQuery()) {
           <button
             type="button"
-            class="absolute top-1/2 right-1.5 min-h-8 min-w-12 -translate-y-1/2 rounded-md text-xs font-semibold text-text-muted hover:bg-surface-muted hover:text-text-strong focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-none"
+            class="absolute top-1/2 right-1.5 min-h-8 min-w-12 -translate-y-1/2 rounded-md text-xs font-semibold text-text-muted hover:bg-surface-muted hover:text-text-strong focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-hidden"
             (click)="clearSearchAndFocus()"
           >
             Clear
@@ -81,7 +77,7 @@
   @if (resultsTargetId()) {
     <div
       #selectorStatusBar
-      class="region-selector__status-bar top-[calc(env(safe-area-inset-top)+4rem)] z-30 flex min-h-13 min-w-0 flex-wrap items-center justify-between gap-x-4 gap-y-2.5 rounded-lg border border-border-strong bg-surface-raised p-2 shadow-xs outline-none"
+      class="region-selector__status-bar top-[calc(env(safe-area-inset-top)+var(--app-header-height)+0.5rem)] z-30 flex min-h-13 min-w-0 flex-wrap items-center justify-between gap-x-4 gap-y-2.5 rounded-lg border border-border-strong bg-surface-raised p-2 shadow-xs outline-hidden"
       [class.sticky]="!isCollapsed()"
       [class.static]="isCollapsed()"
       tabindex="-1"
@@ -159,7 +155,7 @@
                 <input
                   type="checkbox"
                   name="selectedRegionGroups"
-                  class="m-0 size-[1.125rem] shrink-0 [cursor:inherit] accent-brand focus-visible:outline-none"
+                  class="m-0 size-[1.125rem] shrink-0 [cursor:inherit] accent-brand focus-visible:outline-hidden"
                   [id]="getGroupCheckboxId(group)"
                   [checked]="isGroupChecked(group)"
                   [indeterminate]="isGroupIndeterminate(group)"
@@ -174,7 +170,7 @@
                   {{ group.regionGroup }}
                 </h3>
                 <span
-                  class="mt-0.5 block text-[0.6875rem] font-medium whitespace-nowrap text-text-muted tabular-nums"
+                  class="mt-0.5 block text-micro font-medium whitespace-nowrap text-text-muted tabular-nums"
                 >
                   {{ getGroupSelectedCount(group) }} / {{ group.regions.length }} selected
                 </span>
@@ -183,7 +179,7 @@
               <h3 class="m-0 min-w-0 @min-[44rem]:hidden">
                 <button
                   type="button"
-                  class="flex min-h-11 w-full min-w-0 items-center justify-between gap-3 rounded-md px-2 py-1 text-left hover:bg-surface-muted focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-none disabled:cursor-default disabled:hover:bg-transparent"
+                  class="flex min-h-11 w-full min-w-0 items-center justify-between gap-3 rounded-md px-2 py-1 text-left hover:bg-surface-muted focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-hidden disabled:cursor-default disabled:hover:bg-transparent"
                   [attr.aria-expanded]="groupExpanded"
                   [attr.aria-controls]="getGroupPanelId(group)"
                   [disabled]="hasSearchQuery()"
@@ -194,7 +190,7 @@
                       {{ group.regionGroup }}
                     </span>
                     <span
-                      class="shrink-0 text-[0.6875rem] font-medium whitespace-nowrap text-text-muted tabular-nums"
+                      class="shrink-0 text-micro font-medium whitespace-nowrap text-text-muted tabular-nums"
                     >
                       {{ getGroupSelectedCount(group) }} / {{ group.regions.length }} selected
                     </span>
@@ -234,7 +230,7 @@
                   <input
                     type="checkbox"
                     name="selectedRegions"
-                    class="m-0 size-4 shrink-0 [cursor:inherit] accent-brand focus-visible:outline-none"
+                    class="m-0 size-4 shrink-0 [cursor:inherit] accent-brand focus-visible:outline-hidden"
                     [id]="getRegionCheckboxId(region.regionId)"
                     [checked]="isActive"
                     [disabled]="regionDisabled"

@@ -1,32 +1,37 @@
-import { Component, computed, effect, inject, input, signal } from '@angular/core'
-import { RouterLink } from '@angular/router'
+import { Component, computed, effect, inject, input, linkedSignal, signal } from '@angular/core'
 
 import { SeoService } from '../../../services/seo.service'
 import {
   buildVmRegionHref,
   buildVmSkuHref,
-  expandVmRegionSku,
   VM_TYPE_OPTIONS,
   VmOperatingSystem,
   VmPriceMode,
-  vmPriceModeDescription,
   vmPriceModeLabel,
+  vmPriceProfileSourceLabel,
   VmRegionDetailDocument,
-  vmRegionHourlyPrice,
+  vmRegionPricedRegionCount,
   VmRegionPriceSummary,
+  VmRegionSkuSpecs,
   VmRegionStatus,
-  vmSkuPricedRegionCount,
-  VmSkuSummary,
-  vmTypeCategory,
 } from '../../../services/vm-catalog'
 import {
-  buildVmSkuSpecs,
+  formatVmHourlyPrice,
+  formatVmMonthlyPrice,
   formatVmNumber,
   VM_NAME_COLLATOR,
   VM_NUMBER_FORMATTER,
-  VmSkuSpecs,
 } from '../../../services/vm-catalog-view'
+import { ExportCsvButtonComponent } from '../../../shared/export-csv-button/export-csv-button.component'
 import { LucideIconComponent } from '../../../shared/icons/lucide-icons.component'
+import {
+  buildSearchIndex,
+  buildSearchQuery,
+  matchesSearchIndex,
+  SearchIndex,
+} from '../../../shared/search-normalization'
+import { absoluteUrl, buildBreadcrumbList, buildItemList } from '../../../shared/structured-data'
+import { VmCatalogNotice } from '../vm-catalog-notice/vm-catalog-notice'
 import {
   matchesVmNumericFilter,
   VM_MEMORY_QUICK_VALUES,
@@ -49,11 +54,17 @@ import {
 type RegionPriceSort = 'memory' | 'price' | 'regions' | 'series' | 'sku' | 'vcpus'
 
 interface RegionPriceView {
-  readonly sku: VmSkuSummary
-  readonly specs: VmSkuSpecs
+  readonly sku: VmRegionPriceSummary
+  readonly specs: VmRegionSkuSpecs
   readonly hourlyPrice: number
   readonly pricedRegionCount: number
-  readonly searchText: string
+  readonly searchIndex: SearchIndex
+}
+
+interface RegionPriceBaseView {
+  readonly sku: VmRegionPriceSummary
+  readonly specs: VmRegionSkuSpecs
+  readonly searchIndex: SearchIndex
 }
 
 interface FamilyGroupOption {
@@ -62,7 +73,7 @@ interface FamilyGroupOption {
 }
 
 const STRUCTURED_DATA_ITEM_LIMIT = 48
-const MONTHLY_HOURS = 730
+const INITIAL_VISIBLE_RESULT_COUNT = 100
 const DEFAULT_SORT_DIRECTIONS: Readonly<Record<RegionPriceSort, VmPriceSortDirection>> = {
   memory: 'desc',
   price: 'asc',
@@ -72,33 +83,40 @@ const DEFAULT_SORT_DIRECTIONS: Readonly<Record<RegionPriceSort, VmPriceSortDirec
   vcpus: 'desc',
 }
 
-function buildPriceView(
-  price: VmRegionPriceSummary,
-  operatingSystem: VmOperatingSystem,
-  priceMode: VmPriceMode
-): RegionPriceView | null {
-  const hourlyPrice = vmRegionHourlyPrice(price, operatingSystem, priceMode)
-  if (hourlyPrice === null) return null
-  const sku = expandVmRegionSku(price)
-  const specs = buildVmSkuSpecs(sku)
+function buildPriceBaseView(sku: VmRegionPriceSummary): RegionPriceBaseView {
+  const specs = sku.specs
   return {
     sku,
     specs,
+    searchIndex: buildSearchIndex(
+      [
+        sku.sku,
+        sku.size,
+        sku.series,
+        sku.familyGroup,
+        specs.architecture,
+        specs.vcpus === null ? null : `${specs.vcpus} vCPU vCPUs CPU cores`,
+        specs.memoryGB === null ? null : `${specs.memoryGB} GB memory RAM`,
+        specs.gpuCount === null ? null : `${specs.gpuCount} GPU GPUs`,
+      ]
+        .filter(Boolean)
+        .join(' ')
+    ),
+  }
+}
+
+function buildPriceView(
+  baseView: RegionPriceBaseView,
+  operatingSystem: VmOperatingSystem,
+  priceMode: VmPriceMode
+): RegionPriceView | null {
+  const hourlyPrice = baseView.sku.hourlyPrices[operatingSystem][priceMode]
+  const pricedRegionCount = vmRegionPricedRegionCount(baseView.sku, operatingSystem, priceMode)
+  if (hourlyPrice === undefined || pricedRegionCount === null) return null
+  return {
+    ...baseView,
     hourlyPrice,
-    pricedRegionCount: vmSkuPricedRegionCount(sku, operatingSystem, priceMode),
-    searchText: [
-      sku.sku,
-      sku.size,
-      sku.family,
-      sku.series,
-      sku.familyGroup,
-      specs.architecture,
-      ...Object.keys(sku.coreCapabilities),
-      ...Object.values(sku.coreCapabilities),
-    ]
-      .filter(Boolean)
-      .join(' ')
-      .toLowerCase(),
+    pricedRegionCount,
   }
 }
 
@@ -120,15 +138,15 @@ function buildNumericFilterOptions(
 @Component({
   selector: 'app-azure-vm-region-sizes',
   imports: [
+    ExportCsvButtonComponent,
     LucideIconComponent,
-    RouterLink,
+    VmCatalogNotice,
     VmNumericMultiFilter,
     VmOperatingSystemToggle,
     VmPriceModeToggle,
   ],
   templateUrl: './azure-vm-region-sizes.html',
-  styleUrl: './azure-vm-region-sizes.css',
-  host: { class: 'block' },
+  host: { class: 'block min-w-0' },
 })
 export class AzureVmRegionSizes {
   private readonly seoService = inject(SeoService)
@@ -145,16 +163,38 @@ export class AzureVmRegionSizes {
   readonly selectedPriceMode = signal<VmPriceMode>('PayAsYouGo')
   readonly sortKey = signal<RegionPriceSort>('price')
   readonly sortDirection = signal<VmPriceSortDirection>('asc')
+  readonly showAllResults = linkedSignal({
+    source: () =>
+      [
+        this.query(),
+        this.selectedType(),
+        this.selectedFamilyGroup(),
+        this.selectedVcpus(),
+        this.selectedVcpuRange(),
+        this.selectedMemoryGB(),
+        this.selectedMemoryRange(),
+        this.selectedOperatingSystem(),
+        this.selectedPriceMode(),
+      ] as const,
+    computation: () => false,
+  })
   readonly region = computed(() => this.vmRegionPageData().region)
   readonly selectedPriceModeLabel = computed(() => vmPriceModeLabel(this.selectedPriceMode()))
-  readonly selectedPriceModeDescription = computed(() =>
-    vmPriceModeDescription(this.selectedPriceMode())
+  readonly selectedPriceSourceLabel = computed(() =>
+    vmPriceProfileSourceLabel(
+      this.vmRegionPageData().source,
+      this.selectedOperatingSystem(),
+      this.selectedPriceMode()
+    )
+  )
+  readonly priceBaseViews = computed(() =>
+    this.vmRegionPageData().prices.map((price) => buildPriceBaseView(price))
   )
   readonly priceViews = computed(() => {
     const operatingSystem = this.selectedOperatingSystem()
     const priceMode = this.selectedPriceMode()
-    return this.vmRegionPageData().prices.flatMap((price) => {
-      const view = buildPriceView(price, operatingSystem, priceMode)
+    return this.priceBaseViews().flatMap((baseView) => {
+      const view = buildPriceView(baseView, operatingSystem, priceMode)
       return view ? [view] : []
     })
   })
@@ -175,7 +215,7 @@ export class AzureVmRegionSizes {
     for (const view of this.priceViews()) {
       const group = view.sku.familyGroup
       if (!group) continue
-      if (selectedType && vmTypeCategory(group) !== selectedType) continue
+      if (selectedType && view.sku.typeCategory !== selectedType) continue
       counts.set(group, (counts.get(group) ?? 0) + 1)
     }
     return Array.from(counts, ([familyGroup, count]) => ({ familyGroup, count })).sort(
@@ -189,24 +229,25 @@ export class AzureVmRegionSizes {
     buildNumericFilterOptions(this.priceViews(), (view) => view.specs.memoryGB)
   )
   readonly filteredPrices = computed(() => {
-    const tokens = this.query().trim().toLowerCase().split(/\s+/).filter(Boolean)
+    const searchQuery = buildSearchQuery(this.query())
     const type = this.selectedType()
     const familyGroup = this.selectedFamilyGroup()
     const vcpus = this.selectedVcpus()
     const vcpuRange = this.selectedVcpuRange()
     const memoryGB = this.selectedMemoryGB()
     const memoryRange = this.selectedMemoryRange()
+    const sortKey = this.sortKey()
     const sortDirection = this.sortDirection()
     const prices = this.priceViews().filter((view) => {
-      if (type && vmTypeCategory(view.sku.familyGroup) !== type) return false
+      if (type && view.sku.typeCategory !== type) return false
       if (familyGroup && view.sku.familyGroup !== familyGroup) return false
       if (!matchesVmNumericFilter(view.specs.vcpus, vcpus, vcpuRange)) return false
       if (!matchesVmNumericFilter(view.specs.memoryGB, memoryGB, memoryRange)) return false
-      return tokens.every((token) => view.searchText.includes(token))
+      return matchesSearchIndex(view.searchIndex, searchQuery)
     })
 
     return [...prices].sort((left, right) => {
-      switch (this.sortKey()) {
+      switch (sortKey) {
         case 'memory':
           return (
             compareNullableVmPriceNumbers(
@@ -244,9 +285,69 @@ export class AzureVmRegionSizes {
       }
     })
   })
-  readonly resultSummary = computed(
-    () =>
-      `${VM_NUMBER_FORMATTER.format(this.filteredPrices().length)} matching prices (${VM_NUMBER_FORMATTER.format(this.priceViews().length)} total)`
+  readonly visiblePrices = computed(() => {
+    const filteredPrices = this.filteredPrices()
+    return this.showAllResults()
+      ? filteredPrices
+      : filteredPrices.slice(0, INITIAL_VISIBLE_RESULT_COUNT)
+  })
+  readonly canToggleResultVisibility = computed(
+    () => this.filteredPrices().length > INITIAL_VISIBLE_RESULT_COUNT
+  )
+  readonly resultSummary = computed(() => {
+    const visible = this.visiblePrices().length
+    const filtered = this.filteredPrices().length
+    const total = this.priceViews().length
+    const visibleLabel =
+      visible < filtered
+        ? `${VM_NUMBER_FORMATTER.format(visible)} of ${VM_NUMBER_FORMATTER.format(filtered)}`
+        : `all ${VM_NUMBER_FORMATTER.format(filtered)}`
+    return `Showing ${visibleLabel} matching prices (${VM_NUMBER_FORMATTER.format(total)} total)`
+  })
+  readonly resultVisibilityLabel = computed(() =>
+    this.showAllResults()
+      ? `Show first ${VM_NUMBER_FORMATTER.format(INITIAL_VISIBLE_RESULT_COUNT)} prices`
+      : `Show all ${VM_NUMBER_FORMATTER.format(this.filteredPrices().length)} prices`
+  )
+  readonly csvFilename = computed(
+    () => `azure-vm-${this.region().armRegionName.toLowerCase()}-prices`
+  )
+  readonly csvHeaders = computed(() => {
+    const currency = this.vmRegionPageData().source.retailPrices.currencyCode
+    return [
+      'SKU',
+      'Series',
+      'Type',
+      'vCPUs',
+      'Memory (GB)',
+      'Architecture',
+      'Region',
+      'ARM region',
+      'Operating system',
+      'Pricing model',
+      'Price source',
+      `Hourly (${currency})`,
+      `Estimated monthly (${currency})`,
+      'Priced regions',
+    ]
+  })
+  readonly csvRows = computed<string[][]>(() =>
+    this.filteredPrices().map((view) => [
+      view.sku.sku,
+      view.sku.series,
+      view.sku.typeCategory ?? 'N/A',
+      formatVmNumber(view.specs.vcpus),
+      formatVmNumber(view.specs.memoryGB),
+      view.specs.architecture ?? 'N/A',
+      this.region().displayName,
+      this.region().armRegionName,
+      this.selectedOperatingSystem(),
+      this.selectedPriceModeLabel(),
+      this.selectedPriceSourceLabel(),
+      this.formatHourlyPrice(view.hourlyPrice),
+      this.formatMonthlyPrice(view.hourlyPrice),
+      String(view.pricedRegionCount),
+    ])
   )
   readonly hasActiveFilters = computed(() =>
     Boolean(
@@ -259,24 +360,6 @@ export class AzureVmRegionSizes {
       this.selectedMemoryRange() !== null
     )
   )
-  private readonly currencyFormatter = computed(
-    () =>
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: this.vmRegionPageData().source.retailPrices.currencyCode,
-        minimumFractionDigits: 4,
-        maximumFractionDigits: 6,
-      })
-  )
-  private readonly monthlyCurrencyFormatter = computed(
-    () =>
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: this.vmRegionPageData().source.retailPrices.currencyCode,
-        maximumFractionDigits: 2,
-      })
-  )
-
   readonly buildVmSkuHref = buildVmSkuHref
   readonly formatNumber = formatVmNumber
 
@@ -285,52 +368,27 @@ export class AzureVmRegionSizes {
       const data = this.vmRegionPageData()
       const region = data.region
       const canonicalPath = buildVmRegionHref(region.armRegionName)
-      const description = `Compare Linux and Windows pay-as-you-go, reserved, and Spot Azure VM prices in ${region.displayName} (${region.armRegionName}). Search and sort by hourly price, VM size, series, family, vCPU, memory, and architecture.`
+      const description = `Compare Linux and Windows pay-as-you-go, savings plan, reserved, and Spot Azure VM prices in ${region.displayName} (${region.armRegionName}). Search and sort by hourly price, VM size, series, family, vCPU, memory, and architecture.`
 
       this.seoService.setPageMeta({
         title: `Azure VM Prices in ${region.displayName}: Linux and Windows`,
         description,
-        canonicalUrl: `https://www.azurespeed.com${canonicalPath}`,
+        canonicalUrl: absoluteUrl(canonicalPath),
         robots: region.indexable ? undefined : 'noindex,follow',
         structuredData: [
-          {
-            '@context': 'https://schema.org',
-            '@type': 'BreadcrumbList',
-            itemListElement: [
-              {
-                '@type': 'ListItem',
-                position: 1,
-                name: 'Azure VM Sizes & Pricing',
-                item: 'https://www.azurespeed.com/AzureVmPricing',
-              },
-              {
-                '@type': 'ListItem',
-                position: 2,
-                name: 'Regions',
-                item: 'https://www.azurespeed.com/AzureVmPricing/Regions',
-              },
-              {
-                '@type': 'ListItem',
-                position: 3,
-                name: region.displayName,
-                item: `https://www.azurespeed.com${canonicalPath}`,
-              },
-            ],
-          },
-          {
-            '@context': 'https://schema.org',
-            '@type': 'ItemList',
+          buildBreadcrumbList([
+            { name: 'Azure VM Sizes & Pricing', path: '/AzureVmPricing' },
+            { name: 'Regions', path: '/AzureVmPricing/Regions' },
+            { name: region.displayName, path: canonicalPath },
+          ]),
+          buildItemList({
             name: `Azure VM prices in ${region.displayName}`,
             numberOfItems: data.prices.length,
-            itemListElement: data.prices
-              .slice(0, STRUCTURED_DATA_ITEM_LIMIT)
-              .map((price, index) => ({
-                '@type': 'ListItem',
-                position: index + 1,
-                name: price.sku,
-                url: `https://www.azurespeed.com${buildVmSkuHref(price.sku, region.armRegionName)}`,
-              })),
-          },
+            entries: data.prices.slice(0, STRUCTURED_DATA_ITEM_LIMIT).map((price) => ({
+              name: price.sku,
+              path: buildVmSkuHref(price.sku, region.armRegionName),
+            })),
+          }),
         ],
       })
     })
@@ -401,6 +459,10 @@ export class AzureVmRegionSizes {
     return this.sortDirection() === 'asc'
   }
 
+  toggleResultVisibility(): void {
+    this.showAllResults.update((showAll) => !showAll)
+  }
+
   clearFilters(): void {
     this.query.set('')
     this.selectedType.set('')
@@ -412,11 +474,11 @@ export class AzureVmRegionSizes {
   }
 
   formatHourlyPrice(price: number): string {
-    return this.currencyFormatter().format(price)
+    return formatVmHourlyPrice(price, this.vmRegionPageData().source.retailPrices.currencyCode)
   }
 
   formatMonthlyPrice(price: number): string {
-    return this.monthlyCurrencyFormatter().format(price * MONTHLY_HOURS)
+    return formatVmMonthlyPrice(price, this.vmRegionPageData().source.retailPrices.currencyCode)
   }
 
   statusLabel(status: VmRegionStatus): string {

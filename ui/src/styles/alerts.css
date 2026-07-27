@@ -19,9 +19,7 @@
 .alert--error {
   border-color: color-mix(in srgb, var(--color-danger) 40%, transparent);
   background-color: color-mix(in srgb, var(--color-danger) 10%, transparent);
-  color: color-mix(in srgb, var(--color-danger-dark) 80%, #000);
-}
-
-.dark .alert--error {
-  color: color-mix(in srgb, var(--color-danger) 85%, var(--color-danger-foreground));
+  /* Darker than --color-danger-emphasis on purpose: this text sits on a tinted
+     danger background, so it takes the extra contrast (6.9:1 vs 4.8:1 on white). */
+  color: var(--status-danger-strong);
 }

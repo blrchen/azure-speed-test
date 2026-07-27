@@ -1,4 +1,4 @@
-<article class="page-shell section-stack mx-auto max-w-5xl">
+<article class="page-shell section-stack">
   <header class="page-header">
     <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
       <h1 class="page-title">Azure IP ranges by region</h1>
@@ -8,16 +8,15 @@
         </span>
         <a
           class="btn btn-outline btn--sm min-h-11 md:min-h-9"
-          routerLink="/Information/AzureIpRangesByService"
-          [queryParams]="cloudQueryParams()"
+          [href]="buildDocumentHref('/Information/AzureIpRangesByService', cloudQueryParams())"
         >
           By service
         </a>
       </nav>
     </div>
     <p class="page-lead">
-      Browse Microsoft Service Tag address prefixes by Azure region and cloud for firewall, proxy,
-      and routing configuration.
+      Find Azure IP ranges by region and build network rules for the locations that matter to your
+      workloads.
     </p>
   </header>
 
@@ -25,7 +24,7 @@
     <div class="flex items-start gap-3">
       <app-lucide-icon
         name="shield-check"
-        class="mt-0.5 size-5 shrink-0 text-warning-foreground dark:text-warning"
+        class="mt-0.5 size-5 shrink-0 text-warning-emphasis"
         aria-hidden="true"
       />
       <div class="min-w-0 space-y-1 text-sm leading-relaxed text-text-muted">
@@ -33,9 +32,8 @@
           Use service tags directly when supported
         </h2>
         <p>
-          Azure NSGs and Azure Firewall can track service-tag changes automatically. Raw IP prefixes
-          are useful for systems that cannot consume service tags, but they require regular updates
-          and do not establish data residency, traffic identity, or a complete security boundary.
+          Use service tags when available. If you rely on raw IP ranges, review them regularly and
+          combine them with identity and application controls.
         </p>
       </div>
     </div>
@@ -71,7 +69,9 @@
               #regionSearchInput
               id="ip-region-search"
               type="search"
-              [formField]="filtersForm.search"
+              name="ipRangesByRegionFilters.search"
+              [value]="filtersModel().search"
+              (input)="updateSearch($event)"
               placeholder="East US, eastus, or AzureCloud.eastus..."
               autocomplete="off"
               spellcheck="false"
@@ -100,7 +100,9 @@
             <select
               id="ip-region-cloud"
               class="form-select min-h-11"
-              [formField]="filtersForm.cloud"
+              name="ipRangesByRegionFilters.cloud"
+              [value]="filtersModel().cloud"
+              (change)="updateCloud($event)"
               autocomplete="off"
             >
               @for (cloudOption of cloudOptions(); track cloudOption.id) {
@@ -118,7 +120,9 @@
             <select
               id="ip-region-status"
               class="form-select min-h-11"
-              [formField]="filtersForm.status"
+              name="ipRangesByRegionFilters.status"
+              [value]="filtersModel().status"
+              (change)="updateStatus($event)"
               autocomplete="off"
             >
               <option value="">All statuses</option>
@@ -137,7 +141,9 @@
             <select
               id="ip-region-group"
               class="form-select min-h-11"
-              [formField]="filtersForm.regionGroup"
+              name="ipRangesByRegionFilters.regionGroup"
+              [value]="filtersModel().regionGroup"
+              (change)="updateRegionGroup($event)"
               autocomplete="off"
             >
               <option value="">All region groups</option>
@@ -179,7 +185,7 @@
       @if (directory.filteredRegionCount) {
         @for (group of directory.groups; track group.label) {
           <section
-            class="service-tag-directory-group flex flex-col gap-3 rounded-lg bg-surface-muted/40 p-3"
+            class="flex flex-col gap-3 rounded-lg bg-surface-muted/40 p-3 [contain-intrinsic-size:auto_18rem] [content-visibility:auto]"
             [attr.aria-labelledby]="group.headingId"
           >
             <header class="flex flex-wrap items-center justify-between gap-2">
@@ -194,7 +200,7 @@
             <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               @for (region of group.regions; track region.cloud + '/' + region.regionId) {
                 <a
-                  class="group flex min-h-16 items-center gap-3 rounded-lg border border-border-soft bg-surface-raised p-3 hover:border-primary hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-none"
+                  class="group flex min-h-16 items-center gap-3 rounded-lg border border-border-soft bg-surface-raised p-3 hover:border-primary hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-hidden"
                   [href]="regionHref(region)"
                 >
                   <div class="min-w-0 flex-1">
@@ -209,7 +215,7 @@
                       {{ region.serviceTagId }}
                     </p>
                     @if (region.status !== 'available') {
-                      <span class="mt-1 inline-flex text-[0.6875rem] font-semibold text-text-muted">
+                      <span class="mt-1 inline-flex text-micro font-semibold text-text-muted">
                         {{ statusLabel(region.status) }}
                       </span>
                     }
@@ -243,34 +249,40 @@
       }
     </section>
 
-    <section class="section-block" aria-labelledby="region-source-heading">
-      <h2 id="region-source-heading" class="section-title">Source and updates</h2>
-      <p class="max-w-4xl leading-relaxed text-text-muted">
-        This directory uses Microsoft Azure Service Tags data. Microsoft normally publishes
-        downloadable service-tag files weekly, so automate updates if you copy raw prefixes into an
-        external firewall or proxy.
-      </p>
-      <div class="flex flex-wrap gap-2">
-        <a
-          class="btn btn-outline btn--sm"
-          href="https://learn.microsoft.com/en-us/azure/virtual-network/service-tags-overview"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Service tags overview
-          <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
-        </a>
-        @if (selectedCloud(); as cloudMetadata) {
-          <a
-            class="btn btn-outline btn--sm"
-            [href]="cloudMetadata.downloadUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Official {{ cloudMetadata.label }} download
-            <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
-          </a>
-        }
+    <section class="section-block" aria-labelledby="region-faq-heading">
+      <h2 id="region-faq-heading" class="section-title">Frequently asked questions</h2>
+      <div class="faq-list">
+        <details class="faq-item group">
+          <summary class="faq-summary">
+            <span class="faq-question">{{ sourceFaq.question }}</span>
+            <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
+          </summary>
+          <div class="faq-body">
+            <p>{{ sourceFaq.answer }}</p>
+            <div class="flex flex-wrap gap-2">
+              <a
+                class="btn btn-outline btn--sm"
+                href="https://learn.microsoft.com/en-us/azure/virtual-network/service-tags-overview"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Service tags overview
+                <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
+              </a>
+              @if (selectedCloud(); as cloudMetadata) {
+                <a
+                  class="btn btn-outline btn--sm"
+                  [href]="cloudMetadata.downloadUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Official {{ cloudMetadata.label }} download
+                  <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
+                </a>
+              }
+            </div>
+          </div>
+        </details>
       </div>
     </section>
   } @else {
@@ -311,7 +323,7 @@
         </a>
       </div>
       @if (loadState() === 'error') {
-        <p class="text-sm font-semibold text-danger-dark dark:text-danger" role="alert">
+        <p class="text-sm font-semibold text-danger-emphasis" role="alert">
           The retry failed. Check your network and try again.
         </p>
       }

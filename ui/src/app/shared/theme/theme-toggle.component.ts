@@ -9,7 +9,7 @@ import { LucideIconComponent } from '../icons/lucide-icons.component'
   template: `
     <button
       type="button"
-      class="inline-flex size-9 items-center justify-center rounded-md text-text-muted hover:bg-surface-muted hover:text-text-body focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-none"
+      class="inline-flex size-9 items-center justify-center rounded-md text-text-muted hover:bg-surface-muted hover:text-text-body focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-hidden"
       [attr.aria-label]="ariaLabel()"
       [attr.title]="ariaLabel()"
       (click)="themeService.toggleTheme()"

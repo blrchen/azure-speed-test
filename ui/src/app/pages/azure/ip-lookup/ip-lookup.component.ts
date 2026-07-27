@@ -14,13 +14,12 @@ import {
   untracked,
 } from '@angular/core'
 import { form, FormField, maxLength, required, submit, validate } from '@angular/forms/signals'
-import { Router } from '@angular/router'
 import { EmptyError, firstValueFrom, Subject, takeUntil, timeout, TimeoutError } from 'rxjs'
 
 import { RegionModel } from '../../../models'
 import { RegionService } from '../../../services/region.service'
 import { SeoService } from '../../../services/seo.service'
-import { buildServiceTagHref } from '../../../services/service-tags-snapshot'
+import { buildServiceTagHref } from '../../../services/service-tag-hrefs'
 import { API_ENDPOINT } from '../../../shared/constants'
 import { CopyButtonComponent } from '../../../shared/copy-button/copy-button.component'
 import { LucideIconComponent } from '../../../shared/icons/lucide-icons.component'
@@ -92,7 +91,6 @@ interface ApiExample {
 export class IPLookupComponent implements OnInit {
   private readonly seoService = inject(SeoService)
   private readonly http = inject(HttpClient)
-  private readonly router = inject(Router)
   private readonly document = inject(DOCUMENT)
   private readonly regionService = inject(RegionService)
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID))
@@ -192,7 +190,7 @@ export class IPLookupComponent implements OnInit {
     this.seoService.setPageMeta({
       title: 'Azure IP and Service Tag Lookup',
       description:
-        'Check IPv4, IPv6, and resolved domain addresses against Microsoft Azure Public Cloud service tags, regions, prefixes, and network features.',
+        'Check whether an IP address or domain is associated with Azure Public Cloud ranges. Use the results for network reviews, traffic analysis, and incident triage.',
       canonicalUrl: 'https://www.azurespeed.com/Azure/IPLookup',
       robots: this.normalizeInput(inputValue) ? 'noindex, follow' : undefined,
     })
@@ -212,7 +210,7 @@ export class IPLookupComponent implements OnInit {
         return undefined
       }
 
-      await this.router.navigate([IP_LOOKUP_ROUTE, normalized])
+      this.document.defaultView?.location.assign(this.buildLookupPageHref(normalized))
       return undefined
     })
   }
@@ -226,7 +224,7 @@ export class IPLookupComponent implements OnInit {
 
     const normalized = this.normalizeInput(inputValue)
     if (normalized && inputValue !== normalized) {
-      void this.router.navigate([IP_LOOKUP_ROUTE, normalized], { replaceUrl: true })
+      this.document.defaultView?.location.replace(this.buildLookupPageHref(normalized))
       return
     }
 
@@ -235,7 +233,7 @@ export class IPLookupComponent implements OnInit {
     if (this.ipLookupForm.ipOrDomain().invalid()) {
       this.ipLookupForm.ipOrDomain().markAsTouched()
       this.clearLookupState()
-      void this.router.navigate([IP_LOOKUP_ROUTE], { replaceUrl: true })
+      this.document.defaultView?.location.replace(IP_LOOKUP_ROUTE)
       return
     }
 
@@ -367,7 +365,11 @@ export class IPLookupComponent implements OnInit {
     const origin = this.document.defaultView?.location.origin
     if (!origin) return ''
 
-    return `${origin}${IP_LOOKUP_ROUTE}/${encodeURIComponent(value)}`
+    return `${origin}${this.buildLookupPageHref(value)}`
+  }
+
+  private buildLookupPageHref(value: string): string {
+    return `${IP_LOOKUP_ROUTE}/${encodeURIComponent(value)}`
   }
 
   private buildLookupApiUrl(value: string): string {

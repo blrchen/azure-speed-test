@@ -54,6 +54,10 @@ export const serverRoutes: ServerRoute[] = [
     path: 'AzureVmPricing/Compare',
     renderMode: RenderMode.Prerender,
   },
+  {
+    path: 'AzureAiModelPricing/Compare',
+    renderMode: RenderMode.Prerender,
+  },
   // Prerender one canonical page for every observed ARM VM SKU name.
   {
     path: 'AzureVmPricing/:armSkuName',

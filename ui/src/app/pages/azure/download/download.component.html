@@ -1,4 +1,4 @@
-<article class="page-shell section-stack mx-auto max-w-5xl">
+<article class="page-shell section-stack">
   <header class="page-header">
     <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
       <h1 class="page-title">Azure download speed test</h1>
@@ -8,7 +8,7 @@
         </span>
         <a
           class="btn btn-outline btn--sm min-h-11 md:min-h-9"
-          routerLink="/Azure/DownloadTestFile"
+          href="/Azure/DownloadTestFile"
           queryParamsHandling="preserve"
         >
           Download test files
@@ -16,8 +16,8 @@
       </nav>
     </div>
     <p class="page-lead">
-      Download 100 MiB from each selected Azure Blob Storage region and measure live progress,
-      elapsed time, and sequential region comparisons. View speeds in Mbps or MiB/s.
+      Compare download performance from Azure regions and identify the best experience for your
+      users and workloads.
     </p>
   </header>
 
@@ -36,14 +36,14 @@
       <h2
         #regionSelectionHeading
         id="region-selection-heading"
-        class="section-title focus-visible:outline-none"
+        class="section-title focus-visible:outline-hidden"
         tabindex="-1"
       >
         Select Azure regions
       </h2>
       <p class="mt-2 text-sm text-text-muted">
-        Tests run one region at a time so concurrent downloads do not compete for your local
-        bandwidth.
+        Choose the Azure regions you want to compare and see which locations deliver the strongest
+        download experience from your connection.
       </p>
     </header>
 
@@ -55,7 +55,6 @@
     }
 
     <app-region-group
-      #regionSelector
       resultsTargetId="download-results-heading"
       [disabled]="isRunning()"
       [resultsAvailable]="results.length > 0"
@@ -69,21 +68,20 @@
       >
         <div class="text-sm text-text-muted">
           @if (regions.length > 0) {
-            Ready to download
-            <span class="font-semibold text-text-strong">{{ downloadSizeMiB }} MiB</span>
-            from
+            Ready to compare download performance across
             <span class="font-semibold text-text-strong">{{ regions.length }}</span>
-            {{ regions.length === 1 ? 'region' : 'regions' }} sequentially.
+            {{ regions.length === 1 ? 'region' : 'regions' }} with a
+            <span class="font-semibold text-text-strong">{{ downloadSizeMiB }} MiB</span>
+            transfer from each region.
             <span class="mt-1 block">
-              Planned transfer: up to
+              Planned download: up to
               <span class="font-semibold text-text-strong">
-                {{ downloadSizeMiB * regions.length }} MiB
-              </span>
-              plus protocol overhead.
+                {{ downloadSizeMiB * regions.length }} MiB </span
+              >.
             </span>
           } @else {
-            Each selected region downloads a fixed {{ downloadSizeMiB }} MiB. Select one or more
-            regions to begin.
+            Select one or more regions to compare download performance with a
+            {{ downloadSizeMiB }} MiB transfer from each region.
           }
         </div>
         <button
@@ -124,11 +122,7 @@
     <section class="section-block" aria-labelledby="download-results-heading">
       <header class="mb-4 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <h2
-            id="download-results-heading"
-            class="section-title scroll-mt-[calc(env(safe-area-inset-top)+5rem)]"
-            tabindex="-1"
-          >
+          <h2 id="download-results-heading" class="section-title" tabindex="-1">
             Download test results
           </h2>
           <p class="mt-1 min-h-10 text-sm text-text-muted lg:min-h-0">
@@ -138,7 +132,8 @@
                 Currently testing {{ current.region.displayName }}.
               }
             } @else {
-              Average Azure-to-browser throughput for this test run, ranked fastest first.
+              Compare Azure region download speeds from your current connection, ranked fastest
+              first.
             }
           </p>
         </div>
@@ -154,13 +149,6 @@
               {{ isCancelling() ? 'Cancelling...' : 'Cancel Test' }}
             </button>
           } @else {
-            <button
-              type="button"
-              class="btn btn-outline btn--sm"
-              (click)="regionSelector.showSelection()"
-            >
-              Change Regions
-            </button>
             @if (failedRegionCount() > 0) {
               <button type="button" class="btn btn-outline btn--sm" (click)="retryFailedRegions()">
                 Retry Failed Regions
@@ -183,8 +171,8 @@
 
       <div class="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <p id="download-speed-unit-help" class="text-xs text-text-muted">
-          Mbps matches typical internet plan speeds. MiB/s shows file transfer throughput. CSV
-          exports include both.
+          Mbps aligns with typical internet plan speeds, while MiB/s helps you compare file download
+          performance. CSV exports include both.
         </p>
         <div
           class="speed-unit-toggle shrink-0"
@@ -389,7 +377,7 @@
                 @if (result.status === 'preparing') {
                   <div class="flex items-center gap-2 text-sm text-text-muted" role="status">
                     <span class="spinner-sm" aria-hidden="true"></span>
-                    Preparing secure download URL...
+                    Preparing download...
                   </div>
                 } @else if (result.status === 'downloading' || result.status === 'completed') {
                   <div>
@@ -484,38 +472,41 @@
   }
 
   <section class="section-block" aria-labelledby="download-alternatives-heading">
-    <h2 id="download-alternatives-heading" class="section-title">Choose the right download tool</h2>
+    <h2 id="download-alternatives-heading" class="section-title">
+      Explore more ways to compare Azure performance
+    </h2>
     <div class="mt-4 grid gap-4 md:grid-cols-3">
       <a
-        routerLink="/Azure/DownloadTestFile"
-        [queryParams]="selectedRegionQueryParams()"
-        class="group rounded-lg bg-surface-muted p-4 text-inherit hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-none"
+        [href]="buildDocumentHref('/Azure/DownloadTestFile', selectedRegionQueryParams())"
+        class="group rounded-lg bg-surface-muted p-4 text-inherit hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-hidden"
       >
         <app-lucide-icon name="file-text" class="size-5 text-primary" aria-hidden="true" />
         <h3 class="mt-3 font-semibold text-text-strong group-hover:text-primary">
           Download Test Files
         </h3>
         <p class="mt-1 text-sm text-text-muted">
-          Generate expiring file links for manual downloads, download managers, or external tools.
+          Compare Azure region download performance with your browser, download manager, or
+          preferred tool.
         </p>
       </a>
       <a
-        routerLink="/Azure/Upload"
-        class="group rounded-lg bg-surface-muted p-4 text-inherit hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-none"
+        href="/Azure/Upload"
+        class="group rounded-lg bg-surface-muted p-4 text-inherit hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-hidden"
       >
         <app-lucide-icon name="upload" class="size-5 text-primary" aria-hidden="true" />
         <h3 class="mt-3 font-semibold text-text-strong group-hover:text-primary">
           Azure Upload Test
         </h3>
         <p class="mt-1 text-sm text-text-muted">
-          Generate synthetic data and measure sequential upload throughput to Azure regions.
+          Compare upload performance across Azure regions and find the best experience for your
+          users and workloads.
         </p>
       </a>
       <a
         href="https://learn.microsoft.com/azure/storage/common/storage-ref-azcopy-bench"
         target="_blank"
         rel="noopener noreferrer"
-        class="group rounded-lg bg-surface-muted p-4 text-inherit hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-none"
+        class="group rounded-lg bg-surface-muted p-4 text-inherit hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-hidden"
       >
         <app-lucide-icon name="terminal" class="size-5 text-primary" aria-hidden="true" />
         <h3
@@ -525,7 +516,8 @@
           <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
         </h3>
         <p class="mt-1 text-sm text-text-muted">
-          Use Microsoft's CLI benchmark for servers, automation, and production-scale testing.
+          Compare download and upload performance for servers, automation, and production-scale
+          Azure workloads.
         </p>
       </a>
     </div>

@@ -1,4 +1,4 @@
-import { DOCUMENT, isPlatformBrowser, NgOptimizedImage } from '@angular/common'
+import { DOCUMENT, isPlatformBrowser } from '@angular/common'
 import {
   Component,
   computed,
@@ -9,13 +9,14 @@ import {
   OnInit,
   PLATFORM_ID,
 } from '@angular/core'
-import { form, FormField } from '@angular/forms/signals'
 
 import { RegionLatencyResult } from '../../../models'
 import { RegionLatencyService } from '../../../services/region-latency.service'
 import { SeoService } from '../../../services/seo.service'
 import { WidthPercentDirective } from '../../../shared/directives/width-percent.directive'
+import { readInputValue, readSelectValue } from '../../../shared/form-control-value'
 import { LucideIconComponent } from '../../../shared/icons/lucide-icons.component'
+import { absoluteUrl, buildFaqPage } from '../../../shared/structured-data'
 import {
   buildRegionDetailHref,
   buildRegionLatencyHref,
@@ -34,9 +35,18 @@ interface LatencySummary {
   slowest: PublishedLatencyResult
 }
 
+const PAGE_LEAD =
+  'Compare Azure region-to-region latency to plan faster application paths and choose better deployment locations.'
+const LATENCY_SOURCE_FAQ = {
+  question: 'Where does this region-to-region latency data come from?',
+  answer:
+    'The comparison uses Azure network round-trip latency statistics published on Microsoft Learn. Region pairs without a published numeric value are omitted. Published averages are a planning reference; application latency varies with workload, routing, network conditions, and VM configuration.',
+} as const
+const LATENCY_SOURCE_FAQ_STRUCTURED_DATA = buildFaqPage([LATENCY_SOURCE_FAQ])
+
 @Component({
   selector: 'app-region-to-region-latency',
-  imports: [FormField, LucideIconComponent, NgOptimizedImage, WidthPercentDirective],
+  imports: [LucideIconComponent, WidthPercentDirective],
   templateUrl: './region-to-region-latency.component.html',
   styleUrl: './region-to-region-latency.component.css',
   host: { class: 'block' },
@@ -48,6 +58,8 @@ export class RegionToRegionLatencyComponent implements OnInit {
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID))
   readonly sourceRegion = input<string | undefined>(undefined)
 
+  readonly pageLead = PAGE_LEAD
+  readonly latencySourceFaq = LATENCY_SOURCE_FAQ
   readonly sourceRegions = this.regionLatencyService.getSourceRegions()
 
   private readonly normalizedSourceLookup = this.buildNormalizedSourceLookup(this.sourceRegions)
@@ -55,14 +67,10 @@ export class RegionToRegionLatencyComponent implements OnInit {
   readonly sourceModel = linkedSignal(() => ({
     sourceRegion: this.resolveSourceFromRouteToken(normalizeUrlToken(this.sourceRegion())),
   }))
-  readonly sourceForm = form(this.sourceModel, { name: 'regionLatencySource' })
 
   readonly destinationFilterModel = linkedSignal({
     source: () => this.sourceModel().sourceRegion,
     computation: () => ({ search: '' }),
-  })
-  readonly destinationFilterForm = form(this.destinationFilterModel, {
-    name: 'regionLatencyDestination',
   })
 
   readonly sortedResults = computed<PublishedLatencyResult[]>(() => {
@@ -109,15 +117,6 @@ export class RegionToRegionLatencyComponent implements OnInit {
   readonly pageHeading = computed(() => {
     const source = this.sourceModel().sourceRegion
     return source ? `${source} Azure Region Latency` : 'Azure Region to Region Latency'
-  })
-  readonly pageLead = computed(() => {
-    const source = this.sourceModel().sourceRegion
-    const routeCount = this.sortedResults().length
-    if (source && routeCount > 0) {
-      return `Compare ${this.formatInteger(routeCount)} Microsoft-published round-trip latency measurements from ${source} to other Azure regions.`
-    }
-
-    return 'Compare Microsoft-published round-trip latency between Azure regions to plan application placement and network architecture.'
   })
 
   readonly buildRegionDetailHref = buildRegionDetailHref
@@ -178,6 +177,15 @@ export class RegionToRegionLatencyComponent implements OnInit {
     this.destinationFilterModel.update((model) => ({ ...model, search: '' }))
   }
 
+  updateSourceRegion(event: Event): void {
+    this.sourceModel.set({ sourceRegion: readSelectValue(event) })
+  }
+
+  updateDestinationSearch(event: Event): void {
+    const search = readInputValue(event)
+    this.destinationFilterModel.update((model) => ({ ...model, search }))
+  }
+
   private registerSeoEffect(): void {
     effect(() => this.updateSeoMeta())
   }
@@ -185,18 +193,18 @@ export class RegionToRegionLatencyComponent implements OnInit {
   private updateSeoMeta(): void {
     const source = this.sourceModel().sourceRegion
     if (source) {
-      const routeCount = this.sortedResults().length
       this.seoService.setPageMeta({
         title: `${source} Azure Region Latency`,
-        description: `Compare ${routeCount} Microsoft-published round-trip latency measurements from ${source} to other Azure regions, including the fastest, median, and slowest routes.`,
-        canonicalUrl: `https://www.azurespeed.com/Azure/RegionToRegionLatency/${toRegionNameNoSpace(source)}`,
+        description: `Compare latency from ${source} to other Azure regions and identify faster deployment paths for globally distributed applications.`,
+        canonicalUrl: absoluteUrl(`/Azure/RegionToRegionLatency/${toRegionNameNoSpace(source)}`),
+        structuredData: LATENCY_SOURCE_FAQ_STRUCTURED_DATA,
       })
     } else {
       this.seoService.setPageMeta({
         title: 'Azure Region to Region Latency',
-        description:
-          'View average latency between Azure datacenters on their backbone network. Compare round-trip times between regions to optimize your application deployment.',
-        canonicalUrl: 'https://www.azurespeed.com/Azure/RegionToRegionLatency',
+        description: PAGE_LEAD,
+        canonicalUrl: absoluteUrl('/Azure/RegionToRegionLatency'),
+        structuredData: LATENCY_SOURCE_FAQ_STRUCTURED_DATA,
       })
     }
   }

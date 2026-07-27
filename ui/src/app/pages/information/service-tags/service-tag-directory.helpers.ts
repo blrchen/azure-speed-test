@@ -4,6 +4,7 @@ import {
   ServiceTagRegionStatus,
   ServiceTagScope,
 } from '../../../services/service-tags-snapshot'
+import { toQueryValue } from '../../../shared/query-value'
 
 export interface FilterOption<T extends string> {
   readonly value: T
@@ -46,6 +47,20 @@ export function normalizeRegionStatus(value: string | undefined): ServiceTagRegi
     : 'available'
 }
 
+/**
+ * Status normalizer for the region-status <select>, where the empty option means "all statuses".
+ * normalizeRegionStatus cannot be reused: it defaults unrecognized input to 'available' so a
+ * missing ?status= query param lands on the default view, which would turn selecting
+ * "All statuses" into "Generally available".
+ */
+export function normalizeRegionStatusSelection(
+  value: string | undefined
+): ServiceTagRegionStatus | '' {
+  return REGION_STATUSES.has(value as ServiceTagRegionStatus)
+    ? (value as ServiceTagRegionStatus)
+    : ''
+}
+
 export function normalizeServiceTagScope(value: string | undefined): ServiceTagScope | '' {
   return SERVICE_TAG_SCOPES.has(value as ServiceTagScope) ? (value as ServiceTagScope) : ''
 }
@@ -68,14 +83,6 @@ export function normalizeSearchText(value: string): string {
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
-}
-
-export function toQueryValue(value: string): string {
-  return value
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '')
 }
 
 export function toDomId(prefix: string, value: string): string {

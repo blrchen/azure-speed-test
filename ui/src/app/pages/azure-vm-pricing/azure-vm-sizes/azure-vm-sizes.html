@@ -1,7 +1,7 @@
-<article class="page-shell section-stack mx-auto max-w-7xl">
+<article class="page-shell section-stack">
   <header class="page-header">
     <nav class="flex items-center gap-2 text-sm text-text-muted" aria-label="Breadcrumb">
-      <a class="breadcrumb-link" routerLink="/Information/AzureRegions">Azure resources</a>
+      <a class="breadcrumb-link" href="/Information/AzureRegions">Azure resources</a>
       <span aria-hidden="true">/</span>
       <span aria-current="page">Azure VM Sizes &amp; Pricing</span>
     </nav>
@@ -15,20 +15,26 @@
       </div>
       <p class="page-lead">
         Compare Azure VM sizes, hardware specifications, and Linux or Windows pay-as-you-go, 1-year
-        reserved, 3-year reserved, and Spot pricing. Find each size's lowest published hourly price
-        and estimated monthly cost.
+        savings plan, 3-year savings plan, 1-year reserved, 3-year reserved, and Spot pricing. Find
+        each size's lowest published hourly price and estimated monthly cost.
       </p>
     </div>
 
     @if (catalog(); as data) {
-      <dl class="vm-catalog-metrics">
-        <div class="vm-catalog-metric">
+      <dl
+        class="grid grid-cols-2 overflow-hidden rounded-lg border border-border-soft bg-surface-raised shadow-card sm:grid-cols-4"
+      >
+        <div
+          class="flex min-w-0 flex-col gap-1 border-b border-border-soft p-3 max-sm:odd:border-r sm:border-b-0 sm:p-4 sm:not-last:border-r"
+        >
           <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">VM sizes</dt>
           <dd class="font-mono text-xl font-bold text-text-strong tabular-nums sm:text-2xl">
             {{ data.counts.skuCount }}
           </dd>
         </div>
-        <div class="vm-catalog-metric">
+        <div
+          class="flex min-w-0 flex-col gap-1 border-b border-border-soft p-3 sm:border-b-0 sm:p-4 sm:not-last:border-r"
+        >
           <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">
             Priced sizes
           </dt>
@@ -36,7 +42,9 @@
             {{ priceCounts().pricedSkuCount }}
           </dd>
         </div>
-        <div class="vm-catalog-metric">
+        <div
+          class="flex min-w-0 flex-col gap-1 border-border-soft p-3 max-sm:odd:border-r sm:p-4 sm:not-last:border-r"
+        >
           <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">
             Pricing regions
           </dt>
@@ -44,7 +52,7 @@
             {{ priceCounts().pricedRegionCount }}
           </dd>
         </div>
-        <div class="vm-catalog-metric">
+        <div class="flex min-w-0 flex-col gap-1 border-border-soft p-3 sm:p-4 sm:not-last:border-r">
           <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">
             Regional prices
           </dt>
@@ -56,26 +64,31 @@
     }
   </header>
 
+  <app-vm-catalog-notice
+    [catalog]="vmCatalog()"
+    [operatingSystem]="selectedOperatingSystem()"
+    [priceMode]="selectedPriceMode()"
+  />
+
   @if (catalog(); as data) {
     <section class="section-block" aria-labelledby="vm-directory-heading">
       <div class="space-y-1">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <h2 id="vm-directory-heading" class="section-title">Compare VM prices</h2>
           <div class="flex flex-wrap items-center gap-4">
-            <a class="link-primary text-sm font-semibold" routerLink="/AzureVmPricing/Series">
+            <a class="link-primary text-sm font-semibold" href="/AzureVmPricing/Series">
               Browse by series
             </a>
-            <a class="link-primary text-sm font-semibold" routerLink="/AzureVmPricing/Regions">
+            <a class="link-primary text-sm font-semibold" href="/AzureVmPricing/Regions">
               Browse by region
             </a>
-            <a class="link-primary text-sm font-semibold" [routerLink]="comparisonHref">
+            <a class="link-primary text-sm font-semibold" [href]="comparisonHref">
               Compare VM sizes
             </a>
           </div>
         </div>
         <p class="text-sm text-text-muted">
-          Search terms are combined. Try a size such as D4s_v5, a series such as Dsv5, x64, Arm64,
-          GPU, or a priced ARM region such as eastus.
+          Search terms are combined. Try D4s_v5, Dsv5, d2sv5, 16 vCPU, 64 GB, x64, Arm64, or GPU.
         </p>
       </div>
 
@@ -101,8 +114,8 @@
               (input)="updateQuery(searchInput.value)"
             />
             <span id="vm-size-search-hint" class="sr-only">
-              Search by SKU, size, series, family, region, architecture, or capability value.
-              Multiple terms must all match.
+              Search by SKU, size, series, family, vCPU, memory, architecture, or capability value.
+              Punctuation and spacing are optional. Multiple terms must all match.
             </span>
             @if (query()) {
               <button
@@ -247,16 +260,25 @@
         >
           {{ resultSummary() }}
         </p>
-        @if (hasActiveFilters()) {
-          <button
-            type="button"
-            class="btn btn-outline btn--sm min-h-11 md:min-h-9"
-            (click)="clearFilters(); searchInput.focus()"
-          >
-            <app-lucide-icon name="x" class="size-3.5" aria-hidden="true" />
-            Clear filters
-          </button>
-        }
+        <div class="flex flex-wrap items-center gap-2">
+          <app-export-csv-button
+            [filename]="csvFilename"
+            [headers]="csvHeaders()"
+            [rowsFactory]="buildCsvRows"
+            [rowCount]="filteredSkus().length"
+            ariaLabel="Export the filtered Azure VM prices to CSV"
+          />
+          @if (hasActiveFilters()) {
+            <button
+              type="button"
+              class="btn btn-outline btn--sm min-h-11 md:min-h-9"
+              (click)="clearFilters(); searchInput.focus()"
+            >
+              <app-lucide-icon name="x" class="size-3.5" aria-hidden="true" />
+              Clear filters
+            </button>
+          }
+        </div>
       </div>
 
       @if (selectedComparisonSkuNames().length) {
@@ -285,7 +307,7 @@
                   </span>
                   <button
                     type="button"
-                    class="inline-flex size-8 items-center justify-center rounded-full text-text-muted hover:bg-surface-muted hover:text-text-strong focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
+                    class="inline-flex size-8 items-center justify-center rounded-full text-text-muted hover:bg-surface-muted hover:text-text-strong focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-hidden"
                     [attr.aria-label]="'Remove ' + skuName + ' from comparison'"
                     (click)="removeComparisonSku(skuName)"
                   >
@@ -307,8 +329,7 @@
             @if (comparisonReady()) {
               <a
                 class="btn btn-primary min-h-11"
-                [routerLink]="comparisonHref"
-                [queryParams]="comparisonQueryParams()"
+                [href]="buildDocumentHref(comparisonHref, comparisonQueryParams())"
               >
                 Compare {{ selectedComparisonSkuNames().length }} VMs
                 <app-lucide-icon name="chevron-right" class="size-4" aria-hidden="true" />
@@ -354,7 +375,7 @@
 
       @if (filteredSkus().length) {
         <div class="table-shell" aria-describedby="vm-size-result-summary">
-          <table class="table-base vm-size-table">
+          <table id="vm-size-results-table" class="table-base vm-size-table">
             <caption class="sr-only">
               Azure VM lowest
               {{
@@ -457,7 +478,7 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-border-soft">
-              @for (sku of filteredSkus(); track sku.entry.skuKey) {
+              @for (sku of visibleSkus(); track sku.entry.skuKey) {
                 <tr class="table-row-hover align-middle">
                   <td class="px-2 py-1 text-center">
                     <label
@@ -496,14 +517,14 @@
                     }
                   </td>
                   <td class="px-4 py-3 font-mono text-xs" translate="no">
-                    {{ cheapestRegionLabel(sku) }}
+                    {{ sku.cheapestRegionLabel }}
                   </td>
                   <td class="px-4 py-3 text-right tabular-nums">
                     {{ formatNumber(sku.vcpus) }}
                   </td>
                   <td class="px-4 py-3 text-right whitespace-nowrap tabular-nums">
                     @if (sku.memoryGB === null) {
-                      Not listed
+                      N/A
                     } @else {
                       {{ formatNumber(sku.memoryGB) }} GB
                     }
@@ -519,6 +540,19 @@
             </tbody>
           </table>
         </div>
+        @if (canToggleResultVisibility()) {
+          <div class="flex justify-center">
+            <button
+              type="button"
+              class="btn btn-outline min-h-11"
+              aria-controls="vm-size-results-table"
+              [attr.aria-expanded]="showAllResults()"
+              (click)="toggleResultVisibility()"
+            >
+              {{ resultVisibilityLabel() }}
+            </button>
+          </div>
+        }
       } @else {
         <div
           class="flex flex-col items-center gap-3 rounded-lg border border-border-soft bg-surface-raised px-4 py-10 text-center text-sm text-text-muted shadow-sm"
@@ -538,52 +572,36 @@
       }
     </section>
 
-    <section class="section-block" aria-labelledby="vm-catalog-source-heading">
-      <h2 id="vm-catalog-source-heading" class="section-title">Source and interpretation</h2>
+    <section class="section-block" aria-labelledby="vm-catalog-planning-heading">
+      <h2 id="vm-catalog-planning-heading" class="section-title">Plan with confidence</h2>
       <div class="grid gap-4 lg:grid-cols-2">
         <article class="card space-y-3">
-          <h3 class="font-semibold text-text-strong">How prices are selected</h3>
+          <h3 class="font-semibold text-text-strong">Compare pricing options</h3>
           <p class="text-sm leading-relaxed text-text-muted">
-            The lowest value is the minimum current {{ selectedOperatingSystem() }}
-            {{ selectedPriceModeLabel() }} hourly rate published or derived for the VM size across
-            Azure regions. Reservation totals are amortized across their full term; Windows
-            reservation estimates retain the PAYG software surcharge and do not model Azure Hybrid
-            Benefit. Spot capacity can be evicted. Monthly cost is an estimate based on 730 hours.
+            Compare pay-as-you-go, savings plan, reserved, and Spot pricing across Azure regions to
+            find the best fit for your workload and budget.
           </p>
         </article>
         <article class="card space-y-3">
-          <h3 class="font-semibold text-text-strong">Availability is separate</h3>
+          <h3 class="font-semibold text-text-strong">Validate your deployment</h3>
           <p class="text-sm leading-relaxed text-text-muted">
-            A published price does not guarantee quota, capacity, zone support, or deployment
-            eligibility for a particular subscription. Subscription restrictions are intentionally
-            excluded.
+            Confirm quota, capacity, zone support, and subscription eligibility before launch. Spot
+            VMs can be evicted and prices can change.
           </p>
         </article>
       </div>
-      <p class="text-sm text-text-muted">
-        Prices: Azure Retail Prices API version
-        <span class="font-mono" translate="no">{{ data.source.retailPrices.apiVersion }}</span
-        >. Specifications: Resource SKUs API version
-        <span class="font-mono" translate="no">{{ data.source.resourceSkus.apiVersion }}</span
-        >.
+      <p class="text-sm leading-relaxed text-text-muted">
+        Estimates cover VM compute only. Monthly totals use 730 hours; storage, taxes, discounts,
+        and Azure Hybrid Benefit are not included.
       </p>
       <div class="flex flex-wrap gap-3">
-        <a
-          class="btn btn-outline btn--sm min-h-11 md:min-h-9"
-          href="https://learn.microsoft.com/en-us/rest/api/cost-management/retail-prices/azure-retail-prices"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Retail Prices API documentation
-          <app-lucide-icon name="external-link" class="size-3.5" aria-hidden="true" />
-        </a>
         <a
           class="btn btn-outline btn--sm min-h-11 md:min-h-9"
           href="https://learn.microsoft.com/en-us/azure/cost-management-billing/reservations/reserved-instance-windows-software-costs"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Windows reservation software costs
+          Understand Windows reservation costs
           <app-lucide-icon name="external-link" class="size-3.5" aria-hidden="true" />
         </a>
         <a
@@ -592,9 +610,43 @@
           target="_blank"
           rel="noopener noreferrer"
         >
-          Azure Spot VM behavior
+          Review Azure Spot VM behavior
           <app-lucide-icon name="external-link" class="size-3.5" aria-hidden="true" />
         </a>
+      </div>
+    </section>
+
+    <section class="section-block" aria-labelledby="vm-pricing-faq-heading">
+      <h2 id="vm-pricing-faq-heading" class="section-title">Azure VM pricing questions</h2>
+      <div class="faq-list">
+        <details class="faq-item group">
+          <summary class="faq-summary">
+            <span class="faq-question">{{ pricingSourceFaq.question }}</span>
+            <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
+          </summary>
+          <div class="faq-body">
+            <p>{{ pricingSourceFaq.answer }}</p>
+            <p>
+              Current catalog versions: Retail Prices API
+              <span class="font-mono" translate="no">{{
+                data.source.retailPrices.apiVersion
+              }}</span>
+              and Resource SKUs API
+              <span class="font-mono" translate="no">{{ data.source.resourceSkus.apiVersion }}</span
+              >.
+            </p>
+            <p>
+              <a
+                class="link-primary inline-flex min-h-11 items-center"
+                href="https://learn.microsoft.com/en-us/rest/api/cost-management/retail-prices/azure-retail-prices"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Azure Retail Prices API documentation
+              </a>
+            </p>
+          </div>
+        </details>
       </div>
     </section>
   }

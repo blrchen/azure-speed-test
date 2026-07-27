@@ -1,8 +1,0 @@
-:host {
-  min-width: 0;
-}
-
-.vm-family-directory-item {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 15rem;
-}

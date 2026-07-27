@@ -1,34 +1,38 @@
 import { Component, computed, effect, inject, input } from '@angular/core'
-import { Router, RouterLink } from '@angular/router'
+import { Router } from '@angular/router'
 
 import chinaRegionsJson from '../../../../assets/data/regions-china.json'
 import govRegionsJson from '../../../../assets/data/regions-usgov.json'
 import azureGlobalCloudRegionsJson from '../../../../assets/data/regions.json'
 import { Region } from '../../../models'
 import { SeoService } from '../../../services/seo.service'
-import { buildAzureCloudRegionServiceTagHref } from '../../../services/service-tags-snapshot'
+import { buildAzureCloudRegionServiceTagHref } from '../../../services/service-tag-hrefs'
 import { buildVmRegionHref } from '../../../services/vm-catalog'
+import { buildDocumentHref } from '../../../shared/document-navigation'
 import { LucideIconComponent } from '../../../shared/icons/lucide-icons.component'
 import { AzureRegionMapViewComponent } from '../../../shared/region-map/azure-region-map-view.component'
+import { absoluteUrl, BreadcrumbEntry, buildBreadcrumbList } from '../../../shared/structured-data'
 import { buildRegionDetailHref, toRegionNameNoSpace } from '../../../shared/utils'
 
 type RegionBreadcrumbSource = 'restricted' | 'china' | 'usgov'
 
-const REGION_BREADCRUMB_MAP: Record<RegionBreadcrumbSource, { label: string; routerLink: string }> =
-  {
-    restricted: {
-      label: 'Access restricted regions',
-      routerLink: '/Information/AzureRestrictedRegions',
-    },
-    china: {
-      label: 'Azure China cloud regions',
-      routerLink: '/Information/AzureChinaRegions',
-    },
-    usgov: {
-      label: 'Azure US government cloud regions',
-      routerLink: '/Information/AzureUSGovernmentRegions',
-    },
-  }
+const REGION_PAGE_DESCRIPTION =
+  "Explore this Azure region's approximate location, infrastructure, availability zones, and nearby regions. Facility-level locations are not shown."
+
+const REGION_BREADCRUMB_MAP: Record<RegionBreadcrumbSource, { label: string; href: string }> = {
+  restricted: {
+    label: 'Access restricted regions',
+    href: '/Information/AzureRestrictedRegions',
+  },
+  china: {
+    label: 'Azure China cloud regions',
+    href: '/Information/AzureChinaRegions',
+  },
+  usgov: {
+    label: 'Azure US government cloud regions',
+    href: '/Information/AzureUSGovernmentRegions',
+  },
+}
 
 function isRegionBreadcrumbSource(value: string): value is RegionBreadcrumbSource {
   return value in REGION_BREADCRUMB_MAP
@@ -46,12 +50,12 @@ function normalizeBreadcrumbSourceInput(value: string | undefined): string {
 
 @Component({
   selector: 'app-azure-region-details',
-  imports: [RouterLink, LucideIconComponent, AzureRegionMapViewComponent],
+  imports: [LucideIconComponent, AzureRegionMapViewComponent],
   templateUrl: './azure-region-details.component.html',
-  styleUrl: './azure-region-details.component.css',
   host: { class: 'block' },
 })
 export class AzureRegionDetailsComponent {
+  readonly buildDocumentHref = buildDocumentHref
   private readonly router = inject(Router)
   private readonly seoService = inject(SeoService)
 
@@ -88,9 +92,6 @@ export class AzureRegionDetailsComponent {
     return regionId && this.globalRegionIds.has(regionId) ? buildVmRegionHref(regionId) : ''
   })
   readonly regionDescription = computed(() => this.buildRegionDescription(this.regionData()))
-  readonly regionMetaDescription = computed(() =>
-    this.buildRegionMetaDescription(this.regionData())
-  )
   readonly hasCoordinates = computed(() => {
     const region = this.regionData()
     return region !== null && Number.isFinite(region.latitude) && Number.isFinite(region.longitude)
@@ -159,121 +160,40 @@ export class AzureRegionDetailsComponent {
       const region = this.regionData()
       if (!region) return
 
+      const canonicalPath = `/Information/AzureRegions/${toRegionNameNoSpace(region.displayName)}`
+      const breadcrumbEntries: BreadcrumbEntry[] = [
+        { name: 'Home', path: '/Azure/Latency' },
+        { name: 'Azure regions', path: '/Information/AzureRegions' },
+      ]
+      const breadcrumbParent = this.breadcrumbParent()
+      if (breadcrumbParent) {
+        breadcrumbEntries.push({
+          name: breadcrumbParent.label,
+          path: breadcrumbParent.href,
+        })
+      }
+      breadcrumbEntries.push({ name: region.displayName, path: canonicalPath })
+
       this.seoService.setPageMeta({
         title: `${region.displayName} Azure Region`,
-        description: this.regionMetaDescription(),
-        canonicalUrl: `https://www.azurespeed.com/Information/AzureRegions/${toRegionNameNoSpace(region.displayName)}`,
+        description: this.regionDescription(),
+        canonicalUrl: absoluteUrl(canonicalPath),
+        structuredData: buildBreadcrumbList(breadcrumbEntries),
       })
     })
   }
 
   readonly buildRegionDetailHref = buildRegionDetailHref
 
-  private buildRegionMetaDescription(region: Region | null): string {
-    if (!region) {
-      return 'Explore this Azure region, including its location, availability zones, paired region, approximate opening year, and regional context map.'
-    }
-
-    const locationParts = this.buildRegionLocationParts(region)
-    const intro = locationParts.length
-      ? `Explore ${region.displayName}, an Azure region in ${locationParts.join(', ')}.`
-      : `Explore the ${region.displayName} Azure region.`
-
-    return `${intro} See availability zones, paired region, approximate opening year, and regional context map.`
-  }
-
   private buildRegionDescription(region: Region | null): string {
-    if (!region)
-      return 'Detailed information about this Azure region, including availability, location, and paired region guidance.'
+    if (!region) return REGION_PAGE_DESCRIPTION
 
-    const locationParts = this.buildRegionLocationParts(region)
-    const introSentence = locationParts.length
-      ? `${region.displayName} is an Azure region in ${locationParts.join(', ')}.`
-      : `${region.displayName} is an Azure region.`
-
-    const detailParts: string[] = []
-    if (region.launchYear) {
-      detailParts.push(`has a listed location opening year of approximately ${region.launchYear}`)
-    }
-    if (typeof region.availabilityZoneCount === 'number') {
-      if (region.availabilityZoneCount > 0) {
-        const zoneLabel =
-          region.availabilityZoneCount === 1
-            ? '1 availability zone'
-            : `${region.availabilityZoneCount} availability zones`
-        detailParts.push(`offers ${zoneLabel}`)
-      } else {
-        detailParts.push('does not currently offer dedicated availability zones')
-      }
-    }
-    if (region.pairedRegion) {
-      detailParts.push(`is paired with ${region.pairedRegion}`)
-    }
-    if (region.availableTo) {
-      detailParts.push(this.buildAvailabilityPhrase(region.availableTo))
-    }
-    const detailSentence = detailParts.length ? `It ${this.joinDetailParts(detailParts)}.` : ''
-
-    const residency = region.dataResidency
-      ? region.dataResidency.trim().replace(/\.$/, '') + '.'
-      : ''
-
-    return [
-      introSentence,
-      detailSentence,
-      residency,
-      'View its approximate region-level location, paired region, and related Azure regions.',
-    ]
-      .filter(Boolean)
-      .join(' ')
+    return `Explore the approximate location, infrastructure, availability zones, and nearby regions for ${region.displayName}. Facility-level locations are not shown.`
   }
 
   private buildRegionLocationParts(region: Region): string[] {
     return [region.datacenterLocation, region.geography || region.geographicGroup]
       .map((value) => value.trim())
       .filter(Boolean)
-  }
-
-  private buildAvailabilityPhrase(availableTo: string): string {
-    const normalized = availableTo.trim().replace(/\.$/, '')
-    if (!normalized) return ''
-
-    const availableMatch = normalized.match(/^Available to\s+(.+)$/i)
-    if (availableMatch) {
-      return `is available to ${this.lowercaseFirst(availableMatch[1])}`
-    }
-
-    const reservedForMatch = normalized.match(/^Reserved for\s+(.+)$/i)
-    if (reservedForMatch) {
-      return `is reserved for ${reservedForMatch[1]}`
-    }
-
-    if (/^Reserved access region/i.test(normalized)) {
-      return `is a ${this.lowercaseFirst(normalized)}`
-    }
-
-    return `is available to ${this.lowercaseFirst(normalized)}`
-  }
-
-  private joinDetailParts(parts: string[]): string {
-    const usableParts = parts.filter(Boolean)
-
-    if (usableParts.length <= 1) {
-      return usableParts[0] ?? ''
-    }
-
-    if (usableParts.length === 2) {
-      return `${usableParts[0]} and ${usableParts[1]}`
-    }
-
-    return `${usableParts.slice(0, -1).join(', ')}, and ${usableParts[usableParts.length - 1]}`
-  }
-
-  private lowercaseFirst(value: string): string {
-    if (/^[A-Z]{2,}\b/.test(value)) {
-      return value
-    }
-
-    return value.charAt(0).toLowerCase() + value.slice(1)
   }
 }

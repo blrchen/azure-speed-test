@@ -1,20 +1,6 @@
-.azure-regions-nav-link {
-  min-height: 2.25rem;
-}
-
-.azure-regions-filter-control {
-  min-height: 2.75rem;
-}
-
-.azure-regions-table-shell {
-  overscroll-behavior-inline: contain;
-}
-
-.azure-regions-table tbody td {
-  vertical-align: middle;
-  white-space: nowrap;
-}
-
+/* Restores the table-head typography that the sort <button> resets. Utilities
+   cannot express `font: inherit` / `letter-spacing: inherit` / `text-transform:
+   inherit`, and the template also toggles text-align per column. */
 .azure-regions-sort-button {
   display: inline-flex;
   width: 100%;
@@ -35,23 +21,18 @@
 }
 
 .azure-regions-sort-button:focus-visible {
-  outline: none;
+  /* Transparent outline stays visible in forced-colors mode, where the
+     box-shadow ring below is suppressed. */
+  outline: 2px solid transparent;
+  outline-offset: -2px;
   box-shadow: inset 0 0 0 2px var(--color-primary);
 }
 
-.azure-regions-sort-icon {
-  flex: 0 0 auto;
-  transition: transform 150ms ease;
-}
-
-.azure-regions-sort-icon--ascending {
-  transform: rotate(180deg);
-}
-
-@media (max-width: 767px) {
-  .azure-regions-nav-link {
-    min-height: 2.75rem;
-  }
+/* Sticky first column: needs :first-child plus paired th/td stacking contexts
+   and a hover rule that reaches across the row. */
+.azure-regions-table tbody td {
+  vertical-align: middle;
+  white-space: nowrap;
 }
 
 @media (max-width: 1279px) {
@@ -75,11 +56,5 @@
 
   .azure-regions-table tbody tr:hover > td:first-child {
     background: color-mix(in srgb, var(--color-secondary) 50%, var(--color-surface-raised));
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .azure-regions-sort-icon {
-    transition: none;
   }
 }

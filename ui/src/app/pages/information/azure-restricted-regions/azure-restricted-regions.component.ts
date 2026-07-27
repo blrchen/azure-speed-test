@@ -1,14 +1,16 @@
 import { Component, inject, OnInit } from '@angular/core'
-import { RouterLink } from '@angular/router'
 
 import azureGlobalCloudRegionsJson from '../../../../assets/data/regions.json'
 import { SeoService } from '../../../services/seo.service'
 import { LucideIconComponent } from '../../../shared/icons/lucide-icons.component'
+import { absoluteUrl, buildBreadcrumbList } from '../../../shared/structured-data'
 import { buildRegionDetailHref } from '../../../shared/utils'
+
+const PAGE_PATH = '/Information/AzureRestrictedRegions'
 
 @Component({
   selector: 'app-azure-restricted-regions',
-  imports: [RouterLink, LucideIconComponent],
+  imports: [LucideIconComponent],
   templateUrl: './azure-restricted-regions.component.html',
   host: { class: 'block' },
 })
@@ -25,7 +27,12 @@ export class AzureRestrictedRegionsComponent implements OnInit {
       title: 'Restricted Access Azure Regions',
       description:
         'Azure regions requiring special onboarding, with geography, location, and availability details.',
-      canonicalUrl: 'https://www.azurespeed.com/Information/AzureRestrictedRegions',
+      canonicalUrl: absoluteUrl(PAGE_PATH),
+      structuredData: buildBreadcrumbList([
+        { name: 'Home', path: '/Azure/Latency' },
+        { name: 'Azure regions', path: '/Information/AzureRegions' },
+        { name: 'Access restricted regions', path: PAGE_PATH },
+      ]),
     })
   }
 }

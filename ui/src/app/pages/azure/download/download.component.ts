@@ -14,15 +14,27 @@ import {
   untracked,
   viewChild,
 } from '@angular/core'
-import { ActivatedRoute, Router, RouterLink } from '@angular/router'
+import { ActivatedRoute, Router } from '@angular/router'
 
 import { RegionModel } from '../../../models'
 import { RegionService } from '../../../services/region.service'
 import { SeoService } from '../../../services/seo.service'
 import { WidthPercentDirective } from '../../../shared/directives/width-percent.directive'
+import { buildDocumentHref } from '../../../shared/document-navigation'
 import { ExportCsvButtonComponent } from '../../../shared/export-csv-button/export-csv-button.component'
 import { LucideIconComponent } from '../../../shared/icons/lucide-icons.component'
 import { RegionGroupComponent } from '../../../shared/region-group/region-group.component'
+import {
+  AbortAndTimeoutOptions,
+  awaitWithAbortAndTimeout,
+  BYTES_PER_MIB,
+  formatMibDataSize,
+  formatTestDuration,
+  formatTestTime,
+  isAbortError,
+  isErrorLike,
+  throwIfAborted,
+} from '../../../shared/speed-test-helpers'
 import {
   buildNormalizedRegionLookup,
   buildRegionDetailHref,
@@ -30,16 +42,16 @@ import {
   getSasUrl,
   getSortedRegionIds,
   parseRegionParam,
+  resolveRegionsFromNormalizedTokens,
 } from '../../../shared/utils'
 
-const BYTES_PER_MIB = 1024 * 1024
 const DOWNLOAD_TEST_FILE_NAME = '100MB.bin'
 const DOWNLOAD_SIZE_MIB = 100
 const SAS_REQUEST_TIMEOUT_MS = 20_000
 const PROGRESS_UPDATE_INTERVAL_MS = 100
 const REGIONS_QUERY_PARAM = 'regions'
-const LEGACY_SIZE_QUERY_PARAM = 'downloadSize'
 const LEAVE_TEST_MESSAGE = 'A download speed test is in progress. Leave this page and cancel it?'
+const DOWNLOAD_CANCEL_MESSAGE = 'Download cancelled'
 
 type RegionDownloadStatus =
   'queued' | 'preparing' | 'downloading' | 'completed' | 'failed' | 'cancelled'
@@ -87,11 +99,16 @@ class DownloadHttpError extends Error {
   }
 }
 
+const DOWNLOAD_ABORT_AND_TIMEOUT_OPTIONS: AbortAndTimeoutOptions = {
+  cancelMessage: DOWNLOAD_CANCEL_MESSAGE,
+  createTimeoutError: () => new DownloadPreparationTimeoutError(),
+  wrapRejection: (error) => new Error('Preparing the download failed.', { cause: error }),
+}
+
 @Component({
   selector: 'app-download',
   imports: [
     DecimalPipe,
-    RouterLink,
     RegionGroupComponent,
     LucideIconComponent,
     ExportCsvButtonComponent,
@@ -104,6 +121,7 @@ class DownloadHttpError extends Error {
   },
 })
 export class DownloadComponent implements OnInit {
+  readonly buildDocumentHref = buildDocumentHref
   private readonly regionService = inject(RegionService)
   private readonly seoService = inject(SeoService)
   private readonly http = inject(HttpClient)
@@ -124,8 +142,6 @@ export class DownloadComponent implements OnInit {
   private lastUrlStateSignature = ''
   private canUpdateUrl = false
   private hasAppliedRouteState = false
-  private pendingLegacySizeParamRemoval =
-    this.route.snapshot.queryParamMap.has(LEGACY_SIZE_QUERY_PARAM)
 
   readonly regions = input<string | undefined>()
   readonly downloadSizeMiB = DOWNLOAD_SIZE_MIB
@@ -262,7 +278,7 @@ export class DownloadComponent implements OnInit {
     this.seoService.setPageMeta({
       title: 'Azure Multi-Region Download Speed Test',
       description:
-        'Download 100 MiB per region and measure Azure Blob Storage throughput with live progress, Mbps, MiB/s, elapsed time, cancellation, and sequential comparisons.',
+        'Compare download performance from Azure regions and identify the best experience for your users and workloads.',
       canonicalUrl: 'https://www.azurespeed.com/Azure/Download',
     })
   }
@@ -342,11 +358,11 @@ export class DownloadComponent implements OnInit {
   }
 
   formatDataSize(bytes: number): string {
-    return formatDataSize(bytes)
+    return formatMibDataSize(bytes)
   }
 
   formatDuration(seconds: number): string {
-    return formatDuration(seconds)
+    return formatTestDuration(seconds)
   }
 
   formatTestTime(timestamp: number | null): string {
@@ -420,9 +436,10 @@ export class DownloadComponent implements OnInit {
       const sasUrl = await awaitWithAbortAndTimeout(
         getSasUrl(this.http, region.regionId, DOWNLOAD_TEST_FILE_NAME, 'download'),
         abortSignal,
-        SAS_REQUEST_TIMEOUT_MS
+        SAS_REQUEST_TIMEOUT_MS,
+        DOWNLOAD_ABORT_AND_TIMEOUT_OPTIONS
       )
-      throwIfAborted(abortSignal)
+      throwIfAborted(abortSignal, DOWNLOAD_CANCEL_MESSAGE)
 
       const browserWindow = this.document.defaultView
       if (!browserWindow) throw new Error('Browser download APIs are unavailable.')
@@ -447,7 +464,7 @@ export class DownloadComponent implements OnInit {
         while (downloadedBytes < totalBytes) {
           const { done, value } = await reader.read()
           if (done) break
-          throwIfAborted(abortSignal)
+          throwIfAborted(abortSignal, DOWNLOAD_CANCEL_MESSAGE)
 
           downloadedBytes = Math.min(downloadedBytes + value.byteLength, totalBytes)
           const now = browserWindow.performance.now()
@@ -468,7 +485,7 @@ export class DownloadComponent implements OnInit {
         reader.releaseLock()
       }
 
-      throwIfAborted(abortSignal)
+      throwIfAborted(abortSignal, DOWNLOAD_CANCEL_MESSAGE)
       if (downloadedBytes < totalBytes) {
         throw new Error('The download ended before the requested test data was received.')
       }
@@ -531,7 +548,10 @@ export class DownloadComponent implements OnInit {
 
     const shouldApplyRegions = typeof rawRegions === 'string' || this.hasAppliedRouteState
     if (shouldApplyRegions) {
-      const regions = this.resolveRegionsFromIds(parseRegionParam(rawRegions))
+      const regions = resolveRegionsFromNormalizedTokens(
+        parseRegionParam(rawRegions),
+        this.normalizedRegions
+      )
       this.regionService.updateSelectedRegions(regions)
     }
 
@@ -542,31 +562,17 @@ export class DownloadComponent implements OnInit {
     )
   }
 
-  private resolveRegionsFromIds(normalizedTokens: string[]): RegionModel[] {
-    const seen = new Set<string>()
-    return normalizedTokens
-      .map((token) => this.normalizedRegions.get(token))
-      .filter((match): match is RegionModel => {
-        if (!match || seen.has(match.regionId)) return false
-        seen.add(match.regionId)
-        return true
-      })
-  }
-
   private syncUrlWithSelection(regionIds: readonly string[]): void {
     if (!this.isBrowser || !this.canUpdateUrl) return
 
     const signature = buildRegionSelectionSignature(regionIds)
-    if (signature === this.lastUrlStateSignature && !this.pendingLegacySizeParamRemoval) return
+    if (signature === this.lastUrlStateSignature) return
     this.lastUrlStateSignature = signature
 
     const queryParams = { ...this.route.snapshot.queryParams }
     const sortedIds = getSortedRegionIds(regionIds)
     if (sortedIds.length > 0) queryParams[REGIONS_QUERY_PARAM] = sortedIds.join(',')
     else delete queryParams[REGIONS_QUERY_PARAM]
-
-    delete queryParams[LEGACY_SIZE_QUERY_PARAM]
-    this.pendingLegacySizeParamRemoval = false
 
     const urlTree = this.router.createUrlTree([], {
       relativeTo: this.route,
@@ -594,23 +600,6 @@ function calculateDownloadMetrics(
   }
 }
 
-function formatDataSize(bytes: number): string {
-  const value = bytes / BYTES_PER_MIB
-  return `${new Intl.NumberFormat('en', { maximumFractionDigits: 1 }).format(value)} MiB`
-}
-
-function formatDuration(seconds: number): string {
-  if (seconds < 60) return `${seconds.toFixed(seconds < 10 ? 1 : 0)} sec`
-  return `${Math.floor(seconds / 60)} min ${Math.round(seconds % 60)} sec`
-}
-
-function formatTestTime(timestamp: number): string {
-  return new Intl.DateTimeFormat('en', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  }).format(timestamp)
-}
-
 function getStatusLabel(status: RegionDownloadStatus): string {
   switch (status) {
     case 'queued':
@@ -630,17 +619,6 @@ function getStatusLabel(status: RegionDownloadStatus): string {
 
 function isFinishedStatus(status: RegionDownloadStatus): boolean {
   return status === 'completed' || status === 'failed' || status === 'cancelled'
-}
-
-function throwIfAborted(signal: AbortSignal): void {
-  if (signal.aborted) throw new DOMException('Download cancelled', 'AbortError')
-}
-
-function isAbortError(error: unknown): boolean {
-  if (typeof DOMException !== 'undefined' && error instanceof DOMException) {
-    return error.name === 'AbortError'
-  }
-  return isDownloadErrorWithStatus(error) && error.name === 'AbortError'
 }
 
 function getDownloadErrorMessage(error: unknown, isOffline: boolean): string {
@@ -673,42 +651,5 @@ function getDownloadErrorMessage(error: unknown, isOffline: boolean): string {
 }
 
 function isDownloadErrorWithStatus(error: unknown): error is DownloadErrorWithStatus {
-  return typeof error === 'object' && error !== null
-}
-
-function awaitWithAbortAndTimeout<T>(
-  promise: Promise<T>,
-  signal: AbortSignal,
-  timeoutMs: number
-): Promise<T> {
-  return new Promise<T>((resolve, reject) => {
-    if (signal.aborted) {
-      reject(new DOMException('Download cancelled', 'AbortError'))
-      return
-    }
-
-    function finish(callback: () => void): void {
-      clearTimeout(timeoutId)
-      signal.removeEventListener('abort', onAbort)
-      callback()
-    }
-    const timeoutId = setTimeout(
-      () => finish(() => reject(new DownloadPreparationTimeoutError())),
-      timeoutMs
-    )
-    const onAbort = () => finish(() => reject(new DOMException('Download cancelled', 'AbortError')))
-
-    signal.addEventListener('abort', onAbort, { once: true })
-    promise.then(
-      (value) => finish(() => resolve(value)),
-      (error: unknown) =>
-        finish(() =>
-          reject(
-            error instanceof Error
-              ? error
-              : new Error('Preparing the download failed.', { cause: error })
-          )
-        )
-    )
-  })
+  return isErrorLike<DownloadErrorWithStatus>(error)
 }

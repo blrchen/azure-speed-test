@@ -2,6 +2,9 @@ html {
   color-scheme: light;
   /* Prevent CLS from scrollbar appearance shifting centered content */
   scrollbar-gutter: stable;
+  /* Height of the sticky app header (`h-14` on the <header> in app.html). Anything that
+     sticks below the header offsets by this token rather than repeating the literal. */
+  --app-header-height: 3.5rem;
 }
 
 html.dark {

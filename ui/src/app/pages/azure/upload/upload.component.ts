@@ -15,7 +15,7 @@ import {
   viewChild,
 } from '@angular/core'
 import { disabled, form, FormField, submit } from '@angular/forms/signals'
-import { ActivatedRoute, Router, RouterLink } from '@angular/router'
+import { ActivatedRoute, Router } from '@angular/router'
 import type { BlockBlobParallelUploadOptions } from '@azure/storage-blob'
 
 import { RegionModel } from '../../../models'
@@ -26,6 +26,17 @@ import { ExportCsvButtonComponent } from '../../../shared/export-csv-button/expo
 import { LucideIconComponent } from '../../../shared/icons/lucide-icons.component'
 import { RegionGroupComponent } from '../../../shared/region-group/region-group.component'
 import {
+  AbortAndTimeoutOptions,
+  awaitWithAbortAndTimeout,
+  BYTES_PER_MIB,
+  formatMibDataSize,
+  formatTestDuration,
+  formatTestTime,
+  isAbortError,
+  isErrorLike,
+  throwIfAborted,
+} from '../../../shared/speed-test-helpers'
+import {
   buildNormalizedRegionLookup,
   buildRegionDetailHref,
   buildRegionSelectionSignature,
@@ -33,9 +44,9 @@ import {
   getSasUrl,
   getSortedRegionIds,
   parseRegionParam,
+  resolveRegionsFromNormalizedTokens,
 } from '../../../shared/utils'
 
-const BYTES_PER_MIB = 1024 * 1024
 const DEFAULT_UPLOAD_SIZE_MIB = 100
 const UPLOAD_SIZE_OPTIONS_MIB = [50, 100, 250, 500] as const
 const UPLOAD_BLOCK_SIZE_BYTES = 4 * BYTES_PER_MIB
@@ -49,6 +60,7 @@ const SIZE_QUERY_PARAM = 'uploadSize'
 const EXCLUDED_REGION_IDS = ['australiacentral'] as const
 const EXCLUDED_REGION_ID_LOOKUP = new Set<string>(EXCLUDED_REGION_IDS)
 const LEAVE_TEST_MESSAGE = 'An upload speed test is in progress. Leave this page and cancel it?'
+const UPLOAD_CANCEL_MESSAGE = 'Upload cancelled'
 
 type RegionUploadStatus =
   'queued' | 'preparing' | 'uploading' | 'completed' | 'failed' | 'cancelled'
@@ -105,12 +117,17 @@ class UploadRequestError extends Error implements UploadErrorWithStatus {
   }
 }
 
+const UPLOAD_ABORT_AND_TIMEOUT_OPTIONS: AbortAndTimeoutOptions = {
+  cancelMessage: UPLOAD_CANCEL_MESSAGE,
+  createTimeoutError: () => new UploadPreparationTimeoutError(),
+  wrapRejection: (error) => new UploadRequestError(error),
+}
+
 @Component({
   selector: 'app-upload',
   imports: [
     DecimalPipe,
     FormField,
-    RouterLink,
     RegionGroupComponent,
     LucideIconComponent,
     ExportCsvButtonComponent,
@@ -295,7 +312,7 @@ export class UploadComponent implements OnInit {
     this.seoService.setPageMeta({
       title: 'Azure Multi-Region Upload Speed Test',
       description:
-        'Generate synthetic browser test data and measure sequential upload throughput to selected Azure Blob Storage regions.',
+        'Compare upload performance across Azure regions and identify the strongest destination for your data and workloads.',
       canonicalUrl: 'https://www.azurespeed.com/Azure/Upload',
     })
   }
@@ -385,11 +402,11 @@ export class UploadComponent implements OnInit {
   }
 
   formatDataSize(bytes: number): string {
-    return formatDataSize(bytes)
+    return formatMibDataSize(bytes)
   }
 
   formatDuration(seconds: number): string {
-    return formatDuration(seconds)
+    return formatTestDuration(seconds)
   }
 
   formatTestTime(timestamp: number | null): string {
@@ -468,11 +485,12 @@ export class UploadComponent implements OnInit {
         awaitWithAbortAndTimeout(
           getSasUrl(this.http, region.regionId, generateTimestampedBlobName()),
           abortSignal,
-          SAS_REQUEST_TIMEOUT_MS
+          SAS_REQUEST_TIMEOUT_MS,
+          UPLOAD_ABORT_AND_TIMEOUT_OPTIONS
         ),
-        import('@azure/storage-blob'),
+        import('../../../services/block-blob-client.adapter'),
       ])
-      throwIfAborted(abortSignal)
+      throwIfAborted(abortSignal, UPLOAD_CANCEL_MESSAGE)
 
       const blockBlobClient = new BlockBlobClient(sasUrl)
       const uploadStartTime = Date.now()
@@ -492,7 +510,7 @@ export class UploadComponent implements OnInit {
       }
 
       await blockBlobClient.uploadData(uploadPayload, options)
-      throwIfAborted(abortSignal)
+      throwIfAborted(abortSignal, UPLOAD_CANCEL_MESSAGE)
       this.updateTestResult(region.regionId, {
         ...calculateUploadMetrics(totalBytes, totalBytes, uploadStartTime),
         status: 'completed',
@@ -549,7 +567,10 @@ export class UploadComponent implements OnInit {
 
     const shouldApplyRegions = typeof rawRegions === 'string' || this.hasAppliedRouteState
     if (shouldApplyRegions) {
-      const regions = this.resolveRegionsFromIds(parseRegionParam(rawRegions))
+      const regions = resolveRegionsFromNormalizedTokens(
+        parseRegionParam(rawRegions),
+        this.normalizedRegions
+      )
       this.regionService.updateSelectedRegions(regions)
     }
 
@@ -568,17 +589,6 @@ export class UploadComponent implements OnInit {
       this.selectedRegions().map((region) => region.regionId),
       this.selectedUploadSizeMiB()
     )
-  }
-
-  private resolveRegionsFromIds(normalizedTokens: string[]): RegionModel[] {
-    const seen = new Set<string>()
-    return normalizedTokens
-      .map((token) => this.normalizedRegions.get(token))
-      .filter((match): match is RegionModel => {
-        if (!match || seen.has(match.regionId)) return false
-        seen.add(match.regionId)
-        return true
-      })
   }
 
   private syncUrlWithSelection(regionIds: readonly string[], uploadSizeMiB: number): void {
@@ -635,23 +645,6 @@ function calculateUploadMetrics(
   }
 }
 
-function formatDataSize(bytes: number): string {
-  const value = bytes / BYTES_PER_MIB
-  return `${new Intl.NumberFormat('en', { maximumFractionDigits: 1 }).format(value)} MiB`
-}
-
-function formatDuration(seconds: number): string {
-  if (seconds < 60) return `${seconds.toFixed(seconds < 10 ? 1 : 0)} sec`
-  return `${Math.floor(seconds / 60)} min ${Math.round(seconds % 60)} sec`
-}
-
-function formatTestTime(timestamp: number): string {
-  return new Intl.DateTimeFormat('en', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  }).format(timestamp)
-}
-
 function getStatusLabel(status: RegionUploadStatus): string {
   switch (status) {
     case 'queued':
@@ -673,21 +666,10 @@ function isFinishedStatus(status: RegionUploadStatus): boolean {
   return status === 'completed' || status === 'failed' || status === 'cancelled'
 }
 
-function throwIfAborted(signal: AbortSignal): void {
-  if (signal.aborted) throw new DOMException('Upload cancelled', 'AbortError')
-}
-
-function isAbortError(error: unknown): boolean {
-  if (typeof DOMException !== 'undefined' && error instanceof DOMException) {
-    return error.name === 'AbortError'
-  }
-  return isUploadErrorWithStatus(error) && error.name === 'AbortError'
-}
-
 function getUploadErrorMessage(error: unknown, isOffline: boolean): string {
   if (isOffline) return 'You appear to be offline. Reconnect, then try this region again.'
   if (error instanceof UploadPreparationTimeoutError) {
-    return 'Preparing the secure upload URL took too long. Try this region again.'
+    return 'Preparing the upload took too long. Try this region again.'
   }
 
   const status =
@@ -699,7 +681,7 @@ function getUploadErrorMessage(error: unknown, isOffline: boolean): string {
   const code = isUploadErrorWithStatus(error) ? error.code : undefined
 
   if (status === 401 || status === 403 || code === 'AuthenticationFailed') {
-    return 'The secure upload URL expired or was rejected. Try a smaller test size or run it again.'
+    return 'The upload session expired or was rejected. Try a smaller test size or run it again.'
   }
   if (status === 429) return 'Azure is limiting requests right now. Wait, then try again.'
   if (status != null && status >= 500) {
@@ -712,36 +694,5 @@ function getUploadErrorMessage(error: unknown, isOffline: boolean): string {
 }
 
 function isUploadErrorWithStatus(error: unknown): error is UploadErrorWithStatus {
-  return typeof error === 'object' && error !== null
-}
-
-function awaitWithAbortAndTimeout<T>(
-  promise: Promise<T>,
-  signal: AbortSignal,
-  timeoutMs: number
-): Promise<T> {
-  return new Promise<T>((resolve, reject) => {
-    if (signal.aborted) {
-      reject(new DOMException('Upload cancelled', 'AbortError'))
-      return
-    }
-
-    function finish(callback: () => void): void {
-      clearTimeout(timeoutId)
-      signal.removeEventListener('abort', onAbort)
-      callback()
-    }
-    const timeoutId = setTimeout(
-      () => finish(() => reject(new UploadPreparationTimeoutError())),
-      timeoutMs
-    )
-    const onAbort = () => finish(() => reject(new DOMException('Upload cancelled', 'AbortError')))
-
-    signal.addEventListener('abort', onAbort, { once: true })
-    promise.then(
-      (value) => finish(() => resolve(value)),
-      (error: unknown) =>
-        finish(() => reject(error instanceof Error ? error : new UploadRequestError(error)))
-    )
-  })
+  return isErrorLike<UploadErrorWithStatus>(error)
 }

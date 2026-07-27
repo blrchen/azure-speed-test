@@ -30,10 +30,11 @@ export const vmRegionDirectoryResolver: ResolveFn<VmRegionsDocument> = () =>
 export const vmSeriesDirectoryResolver: ResolveFn<VmFamiliesDocument> = () =>
   inject(VmCatalogLoader).getSeries()
 
-export const vmComparisonResolver: ResolveFn<VmComparisonDocument> = async (
+export const vmComparisonResolver: ResolveFn<VmComparisonDocument | RedirectCommand> = async (
   route: ActivatedRouteSnapshot
 ) => {
   const loader = inject(VmCatalogLoader)
+  const router = inject(Router)
   const [catalog, regionDirectory] = await Promise.all([loader.getDirectory(), loader.getRegions()])
   const skuNamesByKey = new Map(catalog.skus.map((sku) => [sku.sku.trim().toLowerCase(), sku.sku]))
   const requestedSkuNames = (route.queryParamMap.get('skus') ?? '')
@@ -62,7 +63,7 @@ export const vmComparisonResolver: ResolveFn<VmComparisonDocument> = async (
     selectedSkuNames.map((skuName) => loader.getSkuDetail(skuName))
   )
   if (resolvedSkus.some((sku) => sku === null)) {
-    throw new Error('VM comparison could not load every selected SKU detail asset.')
+    return notFoundRedirect(router)
   }
   const skus = resolvedSkus.filter((sku): sku is VmSkuDetailDocument => sku !== null)
 
@@ -81,6 +82,7 @@ export const vmComparisonResolver: ResolveFn<VmComparisonDocument> = async (
   )
     ? requestedRegionName
     : ''
+  const showDifferencesOnly = route.queryParamMap.get('diff') === '1'
 
   return {
     catalog,
@@ -91,6 +93,7 @@ export const vmComparisonResolver: ResolveFn<VmComparisonDocument> = async (
     selectedOperatingSystem,
     selectedPriceMode,
     requestedRegion,
+    showDifferencesOnly,
   }
 }
 

@@ -1,9 +1,9 @@
-<article class="page-shell section-stack mx-auto max-w-5xl">
+<article class="page-shell section-stack">
   <header class="page-header">
     <h1 class="page-title">Azure latency test</h1>
     <p class="page-lead">
-      Measure network latency from your IP location to Azure datacenters worldwide and compare
-      selected regions by median latency from your connection. To compare with AWS regions, visit
+      Find the Azure regions with the lowest latency from your current connection and shortlist the
+      best locations for your apps. To compare with AWS regions, visit
       <a
         href="https://awsspeedtest.com/latency"
         target="_blank"
@@ -18,28 +18,25 @@
   <section class="section-block" aria-labelledby="latency-test-heading">
     <h2 id="latency-test-heading" class="sr-only">Latency test</h2>
     <div class="mb-4 rounded-lg bg-primary/5 p-4">
-      <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
-          <h3 class="text-xs font-bold tracking-widest text-primary uppercase">Test Steps</h3>
-          <ol class="flex list-none flex-wrap items-center gap-4 text-sm">
-            <li class="flex items-center gap-2.5">
-              <span class="step-number" aria-hidden="true">1</span>
-              <span class="text-text-body">Select regions</span>
-            </li>
-            <li class="flex items-center gap-2.5">
-              <span class="step-number" aria-hidden="true">2</span>
-              <span class="text-text-body">Wait ~15 seconds</span>
-            </li>
-            <li class="flex items-center gap-2.5">
-              <span class="step-number" aria-hidden="true">3</span>
-              <span class="text-text-body">View Test Results</span>
-            </li>
-          </ol>
-        </div>
+      <div class="flex flex-wrap items-center gap-x-6 gap-y-3">
+        <h3 class="text-xs font-bold tracking-widest text-primary uppercase">Test Steps</h3>
+        <ol class="flex list-none flex-wrap items-center gap-4 text-sm">
+          <li class="flex items-center gap-2.5">
+            <span class="step-number" aria-hidden="true">1</span>
+            <span class="text-text-body">Select regions</span>
+          </li>
+          <li class="flex items-center gap-2.5">
+            <span class="step-number" aria-hidden="true">2</span>
+            <span class="text-text-body">Wait ~15 seconds</span>
+          </li>
+          <li class="flex items-center gap-2.5">
+            <span class="step-number" aria-hidden="true">3</span>
+            <span class="text-text-body">View Test Results</span>
+          </li>
+        </ol>
       </div>
     </div>
     <app-region-group
-      #regionSelector
       resultsTargetId="results-heading"
       resultsLabel="View Test Results"
       [resultsAvailable]="latencyRows().length > 0"
@@ -49,11 +46,10 @@
 
   @let rows = latencyRows();
 
-  <section class="section-block" aria-labelledby="recommendations-heading">
-    @let hasSelection = rows.length > 0;
-    <div class="flex flex-wrap items-start justify-between gap-4">
-      <h2 id="recommendations-heading" class="section-title">Lowest-latency Azure regions</h2>
-      <div class="flex max-w-sm flex-col items-start gap-2 sm:items-end sm:text-right">
+  <section class="section-block" aria-labelledby="results-heading">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <h2 id="results-heading" class="section-title" tabindex="-1">Azure latency test results</h2>
+      <div class="flex flex-wrap items-center gap-2">
         @let testLink = testLinkUrl();
         <app-copy-button
           [text]="testLink"
@@ -61,149 +57,6 @@
           ariaLabel="Copy test link. Anyone opening this link will run a new test from their own connection."
           [resetOn]="testLink"
         />
-        <p class="text-xs leading-relaxed text-text-muted">
-          Anyone opening this link will run a new test from their own connection.
-        </p>
-      </div>
-    </div>
-    @let recommendationRows = recommendationSlots();
-    <div class="mt-4 space-y-3">
-      <div
-        class="divide-y divide-border-soft rounded-lg border border-border-soft bg-surface-raised"
-      >
-        @for (region of recommendationRows; track $index; let i = $index) {
-          @if (region; as rankedRegion) {
-            <a
-              [class]="
-                'flex min-h-16 items-center gap-4 border-l-4 px-4 py-3 first:rounded-t-lg last:rounded-b-lg focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none focus-visible:ring-inset ' +
-                (i === 0
-                  ? 'relative border-l-success bg-success/10 hover:bg-success/15'
-                  : 'border-l-transparent hover:bg-surface-muted')
-              "
-              [href]="buildRegionDetailHref(rankedRegion.displayName)"
-            >
-              <span
-                [class]="
-                  'flex shrink-0 items-center justify-center rounded-full font-bold tabular-nums ' +
-                  (i === 0
-                    ? 'size-8 bg-success text-sm text-success-foreground shadow-md shadow-success/30'
-                    : 'size-7 bg-primary/15 text-xs text-text-strong')
-                "
-                >{{ i + 1 }}</span
-              >
-              <div class="min-w-0 flex-1">
-                <div class="flex items-center gap-2">
-                  <span
-                    [class]="
-                      i === 0
-                        ? 'text-base font-bold text-text-strong'
-                        : 'font-semibold text-text-strong'
-                    "
-                    >{{ rankedRegion.displayName }}</span
-                  >
-                  @if (i === 0) {
-                    <span class="best-badge">Lowest</span>
-                  }
-                </div>
-                <div
-                  class="truncate"
-                  [class]="i === 0 ? 'text-sm text-text-body' : 'text-sm text-text-muted'"
-                >
-                  {{ rankedRegion.datacenterLocation }}
-                </div>
-              </div>
-              <span
-                class="badge-latency"
-                [class.badge-latency-success]="rankedRegion.tone === 'fast'"
-                [class.badge-latency-warning]="rankedRegion.tone === 'moderate'"
-                [class.badge-latency-danger]="rankedRegion.tone === 'slow'"
-                [class.badge-latency-neutral]="rankedRegion.tone === 'unknown'"
-              >
-                {{ rankedRegion.median.label }}
-              </span>
-              <app-lucide-icon
-                name="chevron-right"
-                [class]="
-                  i === 0
-                    ? 'size-5 text-success-foreground dark:text-success'
-                    : 'size-4 text-text-muted'
-                "
-                aria-hidden="true"
-              />
-            </a>
-          } @else {
-            <div
-              class="flex min-h-16 items-center gap-4 border-l-4 border-l-transparent px-4 py-3"
-              aria-hidden="true"
-            >
-              <span
-                [class]="
-                  'flex shrink-0 items-center justify-center rounded-full bg-surface-muted font-bold text-text-muted tabular-nums ' +
-                  (i === 0 ? 'size-8 text-sm' : 'size-7 text-xs')
-                "
-              >
-                {{ i + 1 }}
-              </span>
-              <div class="min-w-0 flex-1">
-                <div class="flex items-center gap-2">
-                  <span class="font-semibold text-text-muted">
-                    {{
-                      !hasSelection
-                        ? 'Select regions to compare'
-                        : i < rows.length
-                          ? 'Collecting stable samples...'
-                          : 'Select more regions to compare'
-                    }}
-                  </span>
-                  @if (i === 0) {
-                    <span class="invisible best-badge">Lowest</span>
-                  }
-                </div>
-                <div class="text-sm text-text-muted">
-                  {{
-                    !hasSelection
-                      ? 'No result yet'
-                      : i < rows.length
-                        ? 'Ranking pending'
-                        : 'Rank slot available'
-                  }}
-                </div>
-              </div>
-              <span class="badge-latency badge-latency-neutral">Pending</span>
-              <app-lucide-icon
-                name="chevron-right"
-                [class]="i === 0 ? 'invisible size-5' : 'invisible size-4'"
-                aria-hidden="true"
-              />
-            </div>
-          }
-        }
-      </div>
-      <app-connection-details-container />
-    </div>
-  </section>
-
-  <section class="section-block" aria-labelledby="results-heading">
-    <div class="flex flex-wrap items-center justify-between gap-4">
-      <h2
-        id="results-heading"
-        class="section-title scroll-mt-[calc(env(safe-area-inset-top)+5rem)]"
-        tabindex="-1"
-      >
-        Azure latency test results
-      </h2>
-      <div class="flex flex-wrap items-center gap-2">
-        <button
-          type="button"
-          class="btn btn-outline btn--sm"
-          [class.invisible]="rows.length === 0"
-          [disabled]="rows.length === 0"
-          [attr.aria-hidden]="rows.length === 0 ? 'true' : null"
-          [tabIndex]="rows.length === 0 ? -1 : 0"
-          (click)="regionSelector.showSelection()"
-        >
-          Change Regions
-        </button>
         <app-export-csv-button
           filename="azure-latency-results"
           [headers]="csvHeaders"
@@ -214,14 +67,13 @@
     <p class="sr-only" role="status" aria-live="polite" aria-atomic="true">
       {{ measurementStatusText() }}
     </p>
-    <div class="flex min-h-[420px] flex-col gap-4">
+    <div class="flex flex-col gap-4">
       @if (rows.length) {
         <div class="table-shell hidden sm:block">
           <table class="table-base">
             <caption class="sr-only">
-              Azure regions sorted by median latency, lowest available result first. Median and
-              latest values update as samples are collected. Regions without stable results follow
-              measured regions.
+              Azure regions ranked from lowest to highest latency to help shortlist locations for
+              your apps.
             </caption>
             <thead class="table-head">
               <tr>
@@ -377,20 +229,20 @@
         </div>
       }
     </div>
+    <app-connection-details-container />
     <div class="alert alert--info" role="note">
       <app-lucide-icon
         name="info"
-        class="mt-0.5 size-5 shrink-0 text-info-foreground dark:text-info"
+        class="mt-0.5 size-5 shrink-0 text-info-emphasis"
         aria-hidden="true"
       />
       <div class="space-y-1">
-        <p class="text-sm font-semibold text-text-strong">Latency-only ranking</p>
+        <p class="text-sm font-semibold text-text-strong">Use latency to shortlist regions</p>
         <p class="text-sm leading-relaxed text-text-body">
-          This ranking compares median browser-to-Azure Blob Storage HTTPS latency from your current
-          connection. Use it as initial guidance, not as the sole basis for choosing a region. For a
-          lower-overhead network measurement, visit
-          <a routerLink="/Azure/PsPing" class="link-primary font-semibold"
-            >PsPing Network Latency Test</a
+          Use this ranking to identify lower-latency Azure regions from your current connection.
+          Validate your shortlist against application, cost, availability, compliance, and
+          resiliency requirements before deployment. For another network view, use
+          <a href="/Azure/PsPing" class="link-primary font-semibold">PsPing Network Latency Test</a
           >.
         </p>
       </div>
@@ -460,16 +312,16 @@
           </p>
           <ul>
             <li>
-              <strong class="text-success-foreground dark:text-success">✓</strong> Good for
-              comparing relative latency between Azure regions
+              <strong class="text-success-emphasis">✓</strong> Good for comparing relative latency
+              between Azure regions
             </li>
             <li>
-              <strong class="text-success-foreground dark:text-success">✓</strong> Useful for
-              region-selection discussions
+              <strong class="text-success-emphasis">✓</strong> Useful for region-selection
+              discussions
             </li>
             <li>
-              <strong class="text-danger-dark dark:text-danger">✗</strong> Not a substitute for
-              application-level load or performance testing
+              <strong class="text-danger-emphasis">✗</strong> Not a substitute for application-level
+              load or performance testing
             </li>
           </ul>
           <p>Use this test as a signal for initial guidance, not as the sole decision-maker.</p>
@@ -499,13 +351,10 @@
         </summary>
         <div class="faq-body">
           <p>
-            <a routerLink="/Azure/Upload" class="link-primary font-medium"
-              >Run the Azure upload speed test</a
-            >
+            <a href="/Azure/Upload" class="link-primary">Run the Azure upload speed test</a>
             or
-            <a routerLink="/Azure/Download" class="link-primary font-medium"
-              >Run the Azure download speed test</a
-            >. Currently, measuring packet loss or jitter is not supported.
+            <a href="/Azure/Download" class="link-primary">Run the Azure download speed test</a>.
+            Currently, measuring packet loss or jitter is not supported.
           </p>
         </div>
       </details>
@@ -551,7 +400,7 @@
               href="https://github.com/blrchen/azure-speed-test/issues/new"
               target="_blank"
               rel="noopener noreferrer"
-              class="link-primary font-medium"
+              class="link-primary"
             >
               GitHub </a
             >.

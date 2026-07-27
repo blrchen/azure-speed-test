@@ -1,15 +1,18 @@
-<article class="page-shell section-stack mx-auto max-w-5xl">
+<article class="page-shell section-stack">
   <header class="page-header">
     <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
       <h1 class="page-title">Azure regions</h1>
       <div class="flex flex-wrap items-center gap-2">
         <nav class="flex flex-wrap gap-2" aria-label="Region views">
-          <span class="azure-regions-nav-link btn btn--sm btn-current" aria-current="page">
+          <span
+            class="btn btn--sm btn-current min-h-9 touch-manipulation max-md:min-h-11"
+            aria-current="page"
+          >
             Table view
           </span>
           <a
-            class="azure-regions-nav-link btn btn-outline btn--sm"
-            routerLink="/Information/AzureRegionMap"
+            class="btn btn-outline btn--sm min-h-9 touch-manipulation max-md:min-h-11"
+            href="/Information/AzureRegionMap"
           >
             <app-lucide-icon name="map" class="size-4" aria-hidden="true" />
             Map view
@@ -19,30 +22,33 @@
     </div>
 
     <nav class="flex flex-wrap gap-2" aria-label="Azure cloud region types">
-      <span class="azure-regions-nav-link btn btn--sm btn-current" aria-current="page">
+      <span
+        class="btn btn--sm btn-current min-h-9 touch-manipulation max-md:min-h-11"
+        aria-current="page"
+      >
         Global regions
       </span>
       <a
-        class="azure-regions-nav-link btn btn-outline btn--sm"
-        routerLink="/Information/AzureUSGovernmentRegions"
+        class="btn btn-outline btn--sm min-h-9 touch-manipulation max-md:min-h-11"
+        href="/Information/AzureUSGovernmentRegions"
       >
         US Gov regions
       </a>
       <a
-        class="azure-regions-nav-link btn btn-outline btn--sm"
-        routerLink="/Information/AzureChinaRegions"
+        class="btn btn-outline btn--sm min-h-9 touch-manipulation max-md:min-h-11"
+        href="/Information/AzureChinaRegions"
       >
         China regions
       </a>
       <a
-        class="azure-regions-nav-link btn btn-outline btn--sm"
-        routerLink="/Information/AzureRestrictedRegions"
+        class="btn btn-outline btn--sm min-h-9 touch-manipulation max-md:min-h-11"
+        href="/Information/AzureRestrictedRegions"
       >
         Restricted regions
       </a>
       <a
-        class="azure-regions-nav-link btn btn-outline btn--sm"
-        routerLink="/Information/AzureUpcomingRegions"
+        class="btn btn-outline btn--sm min-h-9 touch-manipulation max-md:min-h-11"
+        href="/Information/AzureUpcomingRegions"
       >
         Upcoming regions
       </a>
@@ -78,8 +84,10 @@
             type="search"
             id="searchInput"
             placeholder="East US, Virginia, eastus, or 2025..."
-            [formField]="filtersForm.search"
-            class="azure-regions-filter-control form-control form-control--icon-start form-control--action-end form-control-focus-ring"
+            name="azureRegionsFilters.search"
+            [value]="filtersModel().search"
+            (input)="updateSearch($event)"
+            class="form-control form-control--icon-start form-control--action-end form-control-focus-ring min-h-11"
             autocomplete="off"
             spellcheck="false"
             aria-describedby="region-search-hint"
@@ -106,8 +114,10 @@
         <div class="form-select-wrapper">
           <select
             id="regionGroupFilter"
-            [formField]="filtersForm.regionGroup"
-            class="azure-regions-filter-control form-select"
+            name="azureRegionsFilters.regionGroup"
+            [value]="filtersModel().regionGroup"
+            (change)="updateRegionGroup($event)"
+            class="form-select min-h-11"
             autocomplete="off"
           >
             <option value="">All region groups</option>
@@ -125,8 +135,10 @@
         <div class="form-select-wrapper">
           <select
             id="zoneFilter"
-            [formField]="filtersForm.zoneSupport"
-            class="azure-regions-filter-control form-select"
+            name="azureRegionsFilters.zoneSupport"
+            [value]="filtersModel().zoneSupport"
+            (change)="updateZoneSupport($event)"
+            class="form-select min-h-11"
             autocomplete="off"
           >
             <option value="">All regions</option>
@@ -169,9 +181,9 @@
         On smaller screens, scroll horizontally to view all columns. The Region column stays
         visible.
       </p>
-      <div class="table-shell azure-regions-table-shell">
+      <div class="table-shell overscroll-x-contain">
         <table
-          class="table-base azure-regions-table min-w-[64rem]"
+          class="table-base azure-regions-table"
           aria-describedby="region-results-summary region-table-scroll-hint"
         >
           <caption class="sr-only">
@@ -200,11 +212,9 @@
                     {{ column.label }}
                     <app-lucide-icon
                       name="chevron-down"
-                      class="azure-regions-sort-icon size-3.5"
+                      class="size-3.5 shrink-0 transition-transform motion-reduce:transition-none"
                       [class.invisible]="!isSortedBy(column.key)"
-                      [class.azure-regions-sort-icon--ascending]="
-                        isSortedBy(column.key) && isSortAscending()
-                      "
+                      [class.rotate-180]="isSortedBy(column.key) && isSortAscending()"
                       aria-hidden="true"
                     />
                   </button>
@@ -310,7 +320,7 @@
           <li class="flex items-start gap-2">
             <app-lucide-icon
               name="check"
-              class="mt-0.5 size-4 shrink-0 text-success-foreground dark:text-success"
+              class="mt-0.5 size-4 shrink-0 text-success-emphasis"
               aria-hidden="true"
             />
             Some services use pairs for geo-replication and recovery sequencing
@@ -318,7 +328,7 @@
           <li class="flex items-start gap-2">
             <app-lucide-icon
               name="check"
-              class="mt-0.5 size-4 shrink-0 text-success-foreground dark:text-success"
+              class="mt-0.5 size-4 shrink-0 text-success-emphasis"
               aria-hidden="true"
             />
             Planned platform updates are generally sequenced across paired regions
@@ -326,7 +336,7 @@
           <li class="flex items-start gap-2">
             <app-lucide-icon
               name="check"
-              class="mt-0.5 size-4 shrink-0 text-success-foreground dark:text-success"
+              class="mt-0.5 size-4 shrink-0 text-success-emphasis"
               aria-hidden="true"
             />
             Most pairs remain in one geography, but documented exceptions exist
@@ -351,7 +361,7 @@
           <li class="flex items-start gap-2">
             <app-lucide-icon
               name="check"
-              class="mt-0.5 size-4 shrink-0 text-success-foreground dark:text-success"
+              class="mt-0.5 size-4 shrink-0 text-success-emphasis"
               aria-hidden="true"
             />
             Independent infrastructure helps isolate zone-level failures
@@ -359,7 +369,7 @@
           <li class="flex items-start gap-2">
             <app-lucide-icon
               name="check"
-              class="mt-0.5 size-4 shrink-0 text-success-foreground dark:text-success"
+              class="mt-0.5 size-4 shrink-0 text-success-emphasis"
               aria-hidden="true"
             />
             Microsoft targets less than approximately 2&nbsp;ms round-trip network latency between
@@ -368,7 +378,7 @@
           <li class="flex items-start gap-2">
             <app-lucide-icon
               name="check"
-              class="mt-0.5 size-4 shrink-0 text-success-foreground dark:text-success"
+              class="mt-0.5 size-4 shrink-0 text-success-emphasis"
               aria-hidden="true"
             />
             Configuration options and availability SLAs vary by Azure service

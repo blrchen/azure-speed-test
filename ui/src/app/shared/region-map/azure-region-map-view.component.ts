@@ -8,19 +8,18 @@ import {
   output,
   signal,
 } from '@angular/core'
-import { geoEqualEarth, geoPath, type GeoGeometryObjects } from 'd3-geo'
-import { feature, mesh } from 'topojson-client'
-import type { GeometryCollection, Objects, Topology } from 'topojson-specification'
-import worldTopologyJson from 'world-atlas/countries-110m.json'
 
 import { Region } from '../../models'
+import {
+  COUNTRY_BORDER_PATH,
+  LAND_PATH,
+  MAP_HEIGHT,
+  MAP_WIDTH,
+  REGION_MAP_POINTS,
+  SPHERE_PATH,
+} from './world-map-data'
 
-export type AzureRegionMapMode = 'all-regions' | 'single-region'
-
-interface WorldTopologyObjects extends Objects {
-  countries: GeometryCollection
-  land: GeometryCollection
-}
+type AzureRegionMapMode = 'all-regions' | 'single-region'
 
 interface RegionMapPoint {
   readonly region: Region
@@ -46,34 +45,12 @@ interface LabelBounds {
   readonly bottom: number
 }
 
-const MAP_WIDTH = 1000
-const MAP_HEIGHT = 520
 const MAP_ASPECT_RATIO = MAP_WIDTH / MAP_HEIGHT
 const WORLD_VIEWPORT: MapViewport = { x: 0, y: 0, width: MAP_WIDTH, height: MAP_HEIGHT }
 const FOCUS_PADDING = 52
 const MIN_FOCUS_WIDTH = 240
 const MIN_FOCUS_HEIGHT = MIN_FOCUS_WIDTH / MAP_ASPECT_RATIO
 const SINGLE_REGION_MARKER_SCALE = 3.2
-const WORLD_TOPOLOGY = worldTopologyJson as unknown as Topology<WorldTopologyObjects>
-const WORLD_SPHERE: GeoGeometryObjects = { type: 'Sphere' }
-const WORLD_PROJECTION = geoEqualEarth().fitExtent(
-  [
-    [24, 18],
-    [MAP_WIDTH - 24, MAP_HEIGHT - 18],
-  ],
-  WORLD_SPHERE
-)
-const WORLD_PATH = geoPath(WORLD_PROJECTION).digits(0)
-const LAND_FEATURE = feature(WORLD_TOPOLOGY, WORLD_TOPOLOGY.objects.land)
-const COUNTRY_BORDERS = mesh(
-  WORLD_TOPOLOGY,
-  WORLD_TOPOLOGY.objects.countries,
-  (left, right) => left !== right
-)
-
-const SPHERE_PATH = WORLD_PATH(WORLD_SPHERE) ?? ''
-const LAND_PATH = WORLD_PATH(LAND_FEATURE) ?? ''
-const COUNTRY_BORDER_PATH = WORLD_PATH(COUNTRY_BORDERS) ?? ''
 
 const DEFAULT_LABEL_PLACEMENT = {
   anchor: 'middle',
@@ -324,11 +301,9 @@ export class AzureRegionMapViewComponent {
   }
 
   private buildMapPoint(region: Region): RegionMapPoint | null {
-    if (!Number.isFinite(region.latitude) || !Number.isFinite(region.longitude)) {
-      return null
-    }
-
-    const projected = WORLD_PROJECTION([region.longitude, region.latitude])
+    // Positions are precomputed at build time (scripts/generate-world-map-paths.js). A missing
+    // entry means the region has no usable coordinates, so it simply gets no marker.
+    const projected = REGION_MAP_POINTS[region.regionId]
     if (!projected) return null
 
     const isSingleRegion = this.mode() === 'single-region'

@@ -12,7 +12,6 @@ import {
   viewChild,
 } from '@angular/core'
 import { disabled, form, FormField, required, submit, validate } from '@angular/forms/signals'
-import { RouterLink } from '@angular/router'
 import type { BlockBlobParallelUploadOptions } from '@azure/storage-blob'
 
 import { RegionModel } from '../../../models'
@@ -21,6 +20,15 @@ import { SeoService } from '../../../services/seo.service'
 import { WidthPercentDirective } from '../../../shared/directives/width-percent.directive'
 import { ExportCsvButtonComponent } from '../../../shared/export-csv-button/export-csv-button.component'
 import { LucideIconComponent } from '../../../shared/icons/lucide-icons.component'
+import {
+  AbortAndTimeoutOptions,
+  awaitWithAbortAndTimeout,
+  formatTestDuration,
+  formatTestTime,
+  isAbortError,
+  isErrorLike,
+  throwIfAborted,
+} from '../../../shared/speed-test-helpers'
 import {
   buildRegionDetailHref,
   generateTimestampedBlobName,
@@ -37,6 +45,7 @@ const MAX_SINGLE_SHOT_SIZE = 0
 const SAS_REQUEST_TIMEOUT_MS = 20_000
 const EXCLUDED_REGION_IDS = new Set(['australiacentral'])
 const LEAVE_UPLOAD_MESSAGE = 'An upload is in progress. Leave this page and cancel the test?'
+const UPLOAD_CANCEL_MESSAGE = 'Upload cancelled'
 
 const BLOCK_SIZE_OPTIONS = [
   { value: 'auto', label: 'Auto' },
@@ -105,12 +114,17 @@ class UploadPreparationTimeoutError extends Error {
   override readonly name = 'UploadPreparationTimeoutError'
 }
 
+const UPLOAD_ABORT_AND_TIMEOUT_OPTIONS: AbortAndTimeoutOptions = {
+  cancelMessage: UPLOAD_CANCEL_MESSAGE,
+  createTimeoutError: () => new UploadPreparationTimeoutError(),
+  wrapRejection: (error) => new Error(String(error)),
+}
+
 @Component({
   selector: 'app-upload-large-file',
   imports: [
     DecimalPipe,
     FormField,
-    RouterLink,
     ExportCsvButtonComponent,
     LucideIconComponent,
     WidthPercentDirective,
@@ -295,7 +309,7 @@ export class UploadLargeFileComponent implements OnInit {
     this.seoService.setPageMeta({
       title: 'Azure Large File Upload Speed Test',
       description:
-        'Upload a local test file directly from your browser to Azure Blob Storage, choose an Azure region, and measure transfer time and throughput.',
+        'Test real-world file upload performance to an Azure region using your own non-sensitive file.',
       canonicalUrl: 'https://www.azurespeed.com/Azure/UploadLargeFile',
     })
   }
@@ -427,7 +441,7 @@ export class UploadLargeFileComponent implements OnInit {
   }
 
   formatDuration(seconds: number): string {
-    return formatDuration(seconds)
+    return formatTestDuration(seconds)
   }
 
   formatRemainingTime(seconds: number | null): string {
@@ -516,11 +530,12 @@ export class UploadLargeFileComponent implements OnInit {
         awaitWithAbortAndTimeout(
           getSasUrl(this.httpClient, configuration.region.regionId, id),
           controller.signal,
-          SAS_REQUEST_TIMEOUT_MS
+          SAS_REQUEST_TIMEOUT_MS,
+          UPLOAD_ABORT_AND_TIMEOUT_OPTIONS
         ),
-        import('@azure/storage-blob'),
+        import('../../../services/block-blob-client.adapter'),
       ])
-      throwIfAborted(controller.signal)
+      throwIfAborted(controller.signal, UPLOAD_CANCEL_MESSAGE)
 
       const blockBlobClient = new BlockBlobClient(sasUrl)
       const uploadStartTime = Date.now()
@@ -541,7 +556,7 @@ export class UploadLargeFileComponent implements OnInit {
       }
 
       await blockBlobClient.uploadData(configuration.file, options)
-      throwIfAborted(controller.signal)
+      throwIfAborted(controller.signal, UPLOAD_CANCEL_MESSAGE)
       this.finalizeUpload(
         id,
         'completed',
@@ -655,20 +670,6 @@ function formatNumber(value: number): string {
   return new Intl.NumberFormat('en', { maximumFractionDigits: value >= 10 ? 1 : 2 }).format(value)
 }
 
-function formatDuration(seconds: number): string {
-  if (seconds < 60) return `${seconds.toFixed(seconds < 10 ? 1 : 0)} sec`
-  const minutes = Math.floor(seconds / 60)
-  const remainingSeconds = Math.round(seconds % 60)
-  return `${minutes} min ${remainingSeconds} sec`
-}
-
-function formatTestTime(timestamp: number): string {
-  return new Intl.DateTimeFormat('en', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  }).format(timestamp)
-}
-
 function getStatusLabel(status: FinalUploadStatus): string {
   switch (status) {
     case 'completed':
@@ -694,21 +695,10 @@ function isFinalStatus(status: UploadStatus): status is FinalUploadStatus {
   return status === 'completed' || status === 'failed' || status === 'cancelled'
 }
 
-function throwIfAborted(signal: AbortSignal): void {
-  if (signal.aborted) throw new DOMException('Upload cancelled', 'AbortError')
-}
-
-function isAbortError(error: unknown): boolean {
-  if (typeof DOMException !== 'undefined' && error instanceof DOMException) {
-    return error.name === 'AbortError'
-  }
-  return isUploadErrorWithStatus(error) && error.name === 'AbortError'
-}
-
 function getUploadErrorMessage(error: unknown, isOffline: boolean): string {
   if (isOffline) return 'You appear to be offline. Reconnect, then try the upload again.'
   if (error instanceof UploadPreparationTimeoutError) {
-    return 'Preparing the secure upload URL took too long. Try again in a moment.'
+    return 'Preparing the upload took too long. Try again in a moment.'
   }
 
   const status =
@@ -720,7 +710,7 @@ function getUploadErrorMessage(error: unknown, isOffline: boolean): string {
   const code = isUploadErrorWithStatus(error) ? error.code : undefined
 
   if (status === 401 || status === 403 || code === 'AuthenticationFailed') {
-    return 'The secure upload URL expired or was rejected. Start the test again.'
+    return 'The upload session expired or was rejected. Start the test again.'
   }
   if (status === 429) return 'Azure is limiting requests right now. Wait a moment, then try again.'
   if (status != null && status >= 500) {
@@ -733,36 +723,5 @@ function getUploadErrorMessage(error: unknown, isOffline: boolean): string {
 }
 
 function isUploadErrorWithStatus(error: unknown): error is UploadErrorWithStatus {
-  return typeof error === 'object' && error !== null
-}
-
-function awaitWithAbortAndTimeout<T>(
-  promise: Promise<T>,
-  signal: AbortSignal,
-  timeoutMs: number
-): Promise<T> {
-  return new Promise<T>((resolve, reject) => {
-    if (signal.aborted) {
-      reject(new DOMException('Upload cancelled', 'AbortError'))
-      return
-    }
-
-    function finish(callback: () => void): void {
-      clearTimeout(timeoutId)
-      signal.removeEventListener('abort', onAbort)
-      callback()
-    }
-    const timeoutId = setTimeout(
-      () => finish(() => reject(new UploadPreparationTimeoutError())),
-      timeoutMs
-    )
-    const onAbort = () => finish(() => reject(new DOMException('Upload cancelled', 'AbortError')))
-
-    signal.addEventListener('abort', onAbort, { once: true })
-    promise.then(
-      (value) => finish(() => resolve(value)),
-      (error: unknown) =>
-        finish(() => reject(error instanceof Error ? error : new Error(String(error))))
-    )
-  })
+  return isErrorLike<UploadErrorWithStatus>(error)
 }

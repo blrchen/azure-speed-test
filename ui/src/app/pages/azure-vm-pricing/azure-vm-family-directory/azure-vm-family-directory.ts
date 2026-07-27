@@ -1,5 +1,4 @@
 import { Component, computed, inject, input, OnInit, signal } from '@angular/core'
-import { RouterLink } from '@angular/router'
 
 import { SeoService } from '../../../services/seo.service'
 import {
@@ -10,13 +9,15 @@ import {
 } from '../../../services/vm-catalog'
 import { VM_NAME_COLLATOR, VM_NUMBER_FORMATTER } from '../../../services/vm-catalog-view'
 import { LucideIconComponent } from '../../../shared/icons/lucide-icons.component'
+import { buildSearchPhrases, matchesSearchPhrases } from '../../../shared/search-normalization'
+import { absoluteUrl, buildBreadcrumbList, buildItemList } from '../../../shared/structured-data'
+import { VmCatalogNotice } from '../vm-catalog-notice/vm-catalog-notice'
 
 @Component({
   selector: 'app-azure-vm-family-directory',
-  imports: [LucideIconComponent, RouterLink],
+  imports: [LucideIconComponent, VmCatalogNotice],
   templateUrl: './azure-vm-family-directory.html',
-  styleUrl: './azure-vm-family-directory.css',
-  host: { class: 'block' },
+  host: { class: 'block min-w-0' },
 })
 export class AzureVmFamilyDirectory implements OnInit {
   private readonly seoService = inject(SeoService)
@@ -27,18 +28,15 @@ export class AzureVmFamilyDirectory implements OnInit {
     this.vmSeriesDirectory().families.reduce((total, series) => total + series.skuCount, 0)
   )
   readonly filteredSeries = computed(() => {
-    const tokens = this.query().trim().toLowerCase().split(/\s+/).filter(Boolean)
+    const searchPhrases = buildSearchPhrases(this.query())
     return [...this.vmSeriesDirectory().families]
       .filter((series) => {
-        const searchable = [
-          series.series,
-          series.familyGroup ?? '',
-          series.family,
-          series.singletonSku ?? '',
-        ]
-          .join(' ')
-          .toLowerCase()
-        return tokens.every((token) => searchable.includes(token))
+        return matchesSearchPhrases(
+          [series.series, series.familyGroup ?? '', series.family, series.singletonSku ?? ''].join(
+            ' '
+          ),
+          searchPhrases
+        )
       })
       .sort((left, right) => VM_NAME_COLLATOR.compare(left.series, right.series))
   })
@@ -49,43 +47,25 @@ export class AzureVmFamilyDirectory implements OnInit {
 
   ngOnInit(): void {
     const data = this.vmSeriesDirectory()
-    const canonicalUrl = 'https://www.azurespeed.com/AzureVmPricing/Series'
-    const description = `Browse ${VM_NUMBER_FORMATTER.format(data.counts.familyCount)} Azure VM series across D, E, F, M, N, and other VM families. Compare Linux and Windows pay-as-you-go, reserved, and Spot prices, specifications, and pricing coverage by VM size.`
+    const canonicalPath = '/AzureVmPricing/Series'
+    const description = `Browse ${VM_NUMBER_FORMATTER.format(data.counts.familyCount)} Azure VM series across D, E, F, M, N, and other VM families. Compare Linux and Windows pay-as-you-go, savings plan, reserved, and Spot prices, specifications, and pricing coverage by VM size.`
     this.seoService.setPageMeta({
       title: 'Azure VM Series: Sizes, Prices and Specifications',
       description,
-      canonicalUrl,
+      canonicalUrl: absoluteUrl(canonicalPath),
       structuredData: [
-        {
-          '@context': 'https://schema.org',
-          '@type': 'BreadcrumbList',
-          itemListElement: [
-            {
-              '@type': 'ListItem',
-              position: 1,
-              name: 'Azure VM Sizes & Pricing',
-              item: 'https://www.azurespeed.com/AzureVmPricing',
-            },
-            {
-              '@type': 'ListItem',
-              position: 2,
-              name: 'Series',
-              item: canonicalUrl,
-            },
-          ],
-        },
-        {
-          '@context': 'https://schema.org',
-          '@type': 'ItemList',
+        buildBreadcrumbList([
+          { name: 'Azure VM Sizes & Pricing', path: '/AzureVmPricing' },
+          { name: 'Series', path: canonicalPath },
+        ]),
+        buildItemList({
           name: 'Azure VM series',
           numberOfItems: data.families.length,
-          itemListElement: data.families.map((series, index) => ({
-            '@type': 'ListItem',
-            position: index + 1,
+          entries: data.families.map((series) => ({
             name: series.series,
-            url: canonicalUrlForSeries(series),
+            path: pathForSeries(series),
           })),
-        },
+        }),
       ],
     })
   }
@@ -109,9 +89,8 @@ export class AzureVmFamilyDirectory implements OnInit {
   }
 }
 
-function canonicalUrlForSeries(series: VmFamilySummary): string {
-  const path = series.singletonSku
+function pathForSeries(series: VmFamilySummary): string {
+  return series.singletonSku
     ? buildVmSkuHref(series.singletonSku)
     : buildVmSeriesHref(series.series)
-  return `https://www.azurespeed.com${path}`
 }

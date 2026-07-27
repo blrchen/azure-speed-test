@@ -13,7 +13,7 @@ import { VM_OPERATING_SYSTEMS, VmOperatingSystem } from '../../../services/vm-ca
       @for (operatingSystem of operatingSystems; track operatingSystem) {
         <button
           type="button"
-          class="min-h-11 rounded-md px-4 py-2 text-sm font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:outline-none md:min-h-9 md:py-1.5"
+          class="min-h-11 rounded-md px-4 py-2 text-sm font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:outline-hidden md:min-h-9 md:py-1.5"
           [class.bg-primary]="selected() === operatingSystem"
           [class.text-primary-foreground]="selected() === operatingSystem"
           [class.shadow-sm]="selected() === operatingSystem"

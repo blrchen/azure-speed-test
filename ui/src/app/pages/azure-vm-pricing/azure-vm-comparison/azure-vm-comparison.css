@@ -1,13 +1,21 @@
-.vm-comparison-table {
+/* Column-count-driven min-width: an attribute selector that also has to beat
+   .table-base's unlayered min-width, which a Tailwind utility could not do. */
+.vm-comparison-table[data-column-count='2'] {
+  min-width: 43rem;
+}
+
+.vm-comparison-table[data-column-count='3'] {
   min-width: 58rem;
-  table-layout: fixed;
 }
 
-.vm-comparison-table__attribute {
-  width: 14rem;
-  min-width: 14rem;
-}
-
-.vm-comparison-table__column {
-  min-width: 14rem;
+/* Narrows the shared .comparison-mobile-card__row value column on phones so
+   stacked VM prices wrap. Targets a class owned by src/styles/comparison-pages.css. */
+@media (max-width: 767px) {
+  .comparison-mobile-card__row dd {
+    display: flex;
+    max-width: 9rem;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+  }
 }

@@ -1,127 +1,49 @@
-<article class="page-shell section-stack mx-auto max-w-7xl">
-  <nav class="breadcrumb" aria-label="Breadcrumb">
-    <a class="breadcrumb-link" routerLink="/AzureVmPricing">Azure VM Sizes &amp; Pricing</a>
-    <span class="breadcrumb-separator">/</span>
-    <span class="breadcrumb-current" aria-current="page">Compare VM sizes</span>
-  </nav>
+<article class="page-shell section-stack comparison-page min-w-0">
+  <header class="page-header comparison-page-header">
+    <nav class="flex items-center gap-2 text-sm text-text-muted" aria-label="Breadcrumb">
+      <a class="breadcrumb-link" href="/AzureVmPricing">Azure VM Sizes &amp; Pricing</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">Compare VM sizes</span>
+    </nav>
 
-  <header class="page-header">
-    <div class="max-w-4xl space-y-3">
-      <div class="flex items-center gap-3">
-        <div class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10">
-          <app-lucide-icon name="arrow-left-right" class="size-6 text-primary" aria-hidden="true" />
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+      <div class="max-w-4xl space-y-3">
+        <div class="flex min-w-0 items-center gap-3">
+          <div class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+            <app-lucide-icon
+              name="arrow-left-right"
+              class="size-6 text-primary"
+              aria-hidden="true"
+            />
+          </div>
+          <h1 class="page-title min-w-0">Compare Azure VM sizes</h1>
         </div>
-        <div>
-          <p class="mb-1 text-sm font-semibold text-text-muted">Cross-series comparison</p>
-          <h1 class="page-title">Compare Azure VM sizes</h1>
-        </div>
-      </div>
-      <p class="page-lead">
-        Select 2 or 3 VM sizes from any Azure VM series and compare specifications, PAYG, reserved,
-        or Spot pricing side by side. Choose a common region for a like-for-like price comparison.
-      </p>
-    </div>
-
-    <dl class="vm-summary-ledger">
-      <div class="vm-summary-ledger__item">
-        <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">Selected VMs</dt>
-        <dd class="text-2xl font-bold text-text-strong tabular-nums">
-          {{ vmComparisonPageData().skus.length }} / 3
-        </dd>
-      </div>
-      <div class="vm-summary-ledger__item">
-        <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">Series</dt>
-        <dd class="text-2xl font-bold text-text-strong tabular-nums">
-          {{ selectedSeriesCount() }}
-        </dd>
-      </div>
-      <div class="vm-summary-ledger__item">
-        <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">
-          Common pricing regions
-        </dt>
-        <dd class="text-2xl font-bold text-text-strong tabular-nums">
-          {{ commonRegions().length }}
-        </dd>
-      </div>
-      <div class="vm-summary-ledger__item">
-        <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">
-          Pricing profile
-        </dt>
-        <dd class="text-base font-semibold text-text-strong">
-          {{ selectedOperatingSystem() }} {{ selectedPriceModeLabel() }}
-        </dd>
-      </div>
-    </dl>
-  </header>
-
-  <section class="section-block" aria-labelledby="vm-comparison-picker-heading">
-    <div class="flex flex-wrap items-end justify-between gap-3">
-      <div>
-        <h2 id="vm-comparison-picker-heading" class="section-title">Choose 2-3 VM sizes</h2>
-        <p class="mt-2 text-sm text-text-muted">
-          Enter an exact ARM SKU name. Selected VMs can come from different series.
+        <p class="page-lead">
+          Compare 2 or 3 VM sizes across pricing and specifications. Search or replace a SKU
+          directly in its comparison column.
         </p>
       </div>
-      @if (vmComparisonPageData().skus.length) {
-        <button type="button" class="btn btn-outline btn--sm min-h-11" (click)="clearComparison()">
-          <app-lucide-icon name="x" class="size-3.5" aria-hidden="true" />
-          Clear comparison
-        </button>
-      }
+
+      <a class="btn btn-outline min-h-11 shrink-0" href="/AzureVmPricing">
+        Browse all VM sizes
+        <app-lucide-icon name="chevron-right" class="size-4" aria-hidden="true" />
+      </a>
     </div>
+  </header>
 
-    <form (submit)="$event.preventDefault(); addSku()">
-      <label for="vm-comparison-sku-picker" class="form-label">Add a VM size</label>
-      <div class="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center">
-        <div class="form-control-shell min-w-0 flex-1">
-          <app-lucide-icon
-            name="search"
-            class="form-control-shell__icon size-4"
-            aria-hidden="true"
-          />
-          <input
-            #skuPicker
-            id="vm-comparison-sku-picker"
-            name="comparisonSku"
-            type="text"
-            class="form-control form-control--icon-start form-control-focus-ring min-h-11"
-            list="vm-comparison-sku-options"
-            placeholder="For example, Standard_D4s_v5"
-            autocomplete="off"
-            spellcheck="false"
-            [disabled]="!canAddSku()"
-            [value]="skuInput()"
-            aria-describedby="vm-comparison-sku-hint vm-comparison-picker-message"
-            (input)="updateSkuInput(skuPicker.value)"
-          />
-          <datalist id="vm-comparison-sku-options">
-            @for (skuName of skuOptions(); track skuName) {
-              <option [value]="skuName"></option>
-            }
-          </datalist>
-        </div>
-        <button type="submit" class="btn btn-primary min-h-11" [disabled]="!canAddSku()">
-          Add VM
-        </button>
-      </div>
-      <p id="vm-comparison-sku-hint" class="mt-2 text-xs text-text-muted">
-        @if (canAddSku()) {
-          {{ remainingSlotCount() }} comparison slot{{ remainingSlotCount() === 1 ? '' : 's' }}
-          remaining.
-        } @else {
-          Remove a VM before adding another.
-        }
+  <app-vm-catalog-notice
+    [catalog]="vmComparisonPageData().catalog"
+    [operatingSystem]="selectedOperatingSystem()"
+    [priceMode]="selectedPriceMode()"
+  />
+
+  <section class="section-block min-w-0" aria-labelledby="vm-comparison-scope-heading">
+    <div class="space-y-1">
+      <h2 id="vm-comparison-scope-heading" class="section-title">Comparison scope</h2>
+      <p class="text-sm text-text-muted">
+        Every change updates the URL, so this exact comparison can be bookmarked or shared.
       </p>
-    </form>
-
-    <p
-      id="vm-comparison-picker-message"
-      class="min-h-5 text-sm font-semibold text-danger-dark dark:text-danger"
-      role="alert"
-      aria-live="assertive"
-    >
-      {{ pickerMessage() }}
-    </p>
+    </div>
 
     @if (vmComparisonPageData().invalidSkuNames.length) {
       <p class="rounded-lg border border-warning/40 bg-warning/5 p-3 text-sm text-text-body">
@@ -140,53 +62,32 @@
       </p>
     }
 
-    <div class="flex flex-wrap items-center gap-3" aria-live="polite" aria-atomic="true">
-      <span class="text-sm font-semibold text-text-body">{{ selectionStatus() }}</span>
-      @for (detail of vmComparisonPageData().skus; track detail.sku.skuKey) {
-        <span
-          class="inline-flex min-h-9 items-center gap-2 rounded-full border border-border-soft bg-surface-raised py-1 pr-1 pl-3 shadow-sm"
-        >
-          <span class="font-mono text-xs font-semibold text-text-strong" translate="no">
-            {{ detail.sku.sku }}
-          </span>
-          <button
-            type="button"
-            class="inline-flex size-8 items-center justify-center rounded-full text-text-muted hover:bg-surface-muted hover:text-text-strong focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
-            [attr.aria-label]="'Remove ' + detail.sku.sku + ' from comparison'"
-            (click)="removeSku(detail.sku.sku)"
-          >
-            <app-lucide-icon name="x" class="size-3.5" aria-hidden="true" />
-          </button>
-        </span>
-      }
-    </div>
-  </section>
+    <div class="comparison-scope-card">
+      <div
+        class="grid min-w-0 gap-3.5 p-3.5 min-[1200px]:grid-cols-[minmax(18rem,1.6fr)_minmax(16rem,1.3fr)_auto_minmax(18rem,auto)] min-[1200px]:items-end md:grid-cols-2 md:gap-4 md:p-4"
+      >
+        <app-comparison-picker
+          class="min-[1200px]:col-auto md:col-span-2"
+          inputId="vm-comparison-add-sku"
+          [label]="'Add VM (' + vmComparisonPageData().skus.length + '/3)'"
+          [options]="availableSkuPickerOptions()"
+          [selectedValue]="null"
+          [disabled]="!canAddSku()"
+          [codeStyle]="true"
+          [placeholder]="
+            canAddSku() ? 'Search SKU, series, vCPU, or memory...' : 'Three-VM limit reached'
+          "
+          (optionSelected)="addSku($event)"
+        />
 
-  @if (comparisonReady()) {
-    <section class="section-block" aria-labelledby="vm-comparison-heading">
-      <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-          <h2 id="vm-comparison-heading" class="section-title">Specifications and pricing</h2>
-        </div>
-      </div>
-
-      <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-          <p class="mt-2 max-w-3xl text-sm leading-relaxed text-text-muted">
-            {{ selectedPriceModeDescription() }} Monthly estimates use 730 hours and cover VM
-            compute only. Windows reserved estimates retain the Windows software surcharge and do
-            not model Azure Hybrid Benefit.
-          </p>
-        </div>
-
-        <div class="flex min-w-64 flex-col gap-2">
-          <label for="vm-comparison-region" class="form-label">Price comparison region</label>
+        <div class="comparison-scope-field min-[1200px]:col-auto md:col-span-2">
+          <label for="vm-comparison-region" class="comparison-scope-label">Price region</label>
           <div class="form-select-wrapper">
             <select
               #regionSelect
               id="vm-comparison-region"
               name="comparisonRegion"
-              class="form-select min-h-11 md:min-h-9"
+              class="form-select min-h-11"
               [value]="selectedRegion()"
               (change)="updateRegion(regionSelect.value)"
             >
@@ -199,6 +100,79 @@
             </select>
           </div>
         </div>
+
+        <div class="comparison-scope-field items-start">
+          <span class="comparison-scope-label">Operating system</span>
+          <app-vm-operating-system-toggle
+            [selected]="selectedOperatingSystem()"
+            (selectedChange)="updateOperatingSystem($event)"
+          />
+        </div>
+
+        <div class="comparison-scope-field items-start">
+          <span class="comparison-scope-label">Pricing model</span>
+          <app-vm-price-mode-toggle
+            [selected]="selectedPriceMode()"
+            (selectedChange)="updatePriceMode($event)"
+          />
+        </div>
+      </div>
+
+      <div
+        class="flex items-start gap-2.5 border-t border-border-soft bg-[color-mix(in_srgb,var(--color-primary)_5%,var(--color-surface-raised))] px-4 py-3 text-xs leading-[1.6] text-text-muted [&_strong]:text-text-strong"
+      >
+        <app-lucide-icon name="info" class="size-4 shrink-0 text-primary" aria-hidden="true" />
+        <p>
+          Pricing basis: <strong>{{ pricingBasisLabel() }}</strong
+          >.
+          @if (!selectedRegion()) {
+            Global lowest prices can come from different regions. Choose one of the
+            {{ commonRegions().length }} common regions for a like-for-like comparison.
+          } @else {
+            All prices use the same Azure region.
+            <a class="link-primary font-semibold" [href]="buildVmRegionHref(selectedRegion())">
+              View region pricing
+            </a>
+            .
+          }
+        </p>
+      </div>
+
+      <div class="comparison-selection-status" aria-live="polite">
+        <p>
+          <strong>{{ vmComparisonPageData().skus.length }} of 3</strong> VM slots filled.
+          @if (vmComparisonPageData().skus.length < 2) {
+            Add {{ 2 - vmComparisonPageData().skus.length }} more to start comparing.
+          } @else if (canAddSku()) {
+            Add another VM or replace one below.
+          } @else {
+            Replace a VM below to change this comparison.
+          }
+        </p>
+        @if (vmComparisonPageData().skus.length) {
+          <button
+            type="button"
+            class="btn btn-outline btn--sm min-h-10"
+            (click)="clearComparison()"
+          >
+            Clear all
+          </button>
+        }
+      </div>
+    </div>
+  </section>
+
+  @if (comparisonReady()) {
+    <section class="section-block min-w-0" aria-labelledby="vm-comparison-heading">
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div class="space-y-1">
+          <h2 id="vm-comparison-heading" class="section-title">Compare selected VMs</h2>
+          <p class="max-w-4xl text-sm leading-relaxed text-text-muted">
+            {{ selectedOperatingSystem() }} {{ selectedPriceModeLabel() }} prices use
+            {{ pricingBasisLabel() }}. Monthly estimates use 730 compute hours.
+          </p>
+        </div>
+        <span class="comparison-count-pill">{{ vmComparisonPageData().skus.length }} VMs</span>
       </div>
 
       @if (requestedRegionUnavailable()) {
@@ -209,54 +183,27 @@
         </p>
       }
 
-      <aside
-        class="flex items-start gap-3 rounded-lg border border-border-soft bg-surface-muted p-4 text-sm leading-relaxed text-text-muted"
-        aria-label="Comparison pricing basis"
+      <app-comparison-view-toolbar
+        [totalRows]="totalComparisonRowCount"
+        [differingRows]="differingRows().size"
+        [uniformlyUnavailableRows]="uniformlyUnavailableRows()"
+        [showDifferencesOnly]="showDifferencesOnly()"
+        (showDifferencesOnlyChange)="updateShowDifferencesOnly($event)"
       >
-        <app-lucide-icon
-          name="info"
-          class="mt-0.5 size-5 shrink-0 text-primary"
-          aria-hidden="true"
+        <app-export-csv-button
+          comparison-toolbar-action
+          [filename]="csvFilename"
+          [headers]="csvHeaders()"
+          [rows]="csvRows()"
+          ariaLabel="Export this Azure VM comparison to CSV"
         />
-        <p>
-          Pricing basis: <strong class="text-text-strong">{{ pricingBasisLabel() }}</strong
-          >.
-          @if (!selectedRegion()) {
-            Global lowest prices can come from different regions. Select one of the
-            {{ commonRegions().length }} common pricing regions for a like-for-like comparison.
-          } @else {
-            All hourly prices below use the same Azure region.
-            <a class="link-primary font-semibold" [href]="buildVmRegionHref(selectedRegion())">
-              View region pricing
-            </a>
-            .
-          }
-        </p>
-      </aside>
+      </app-comparison-view-toolbar>
 
-      <div class="flex flex-wrap items-end gap-x-6 gap-y-4">
-        <div class="flex flex-col items-start gap-2">
-          <span class="text-xs font-semibold tracking-wide text-text-muted uppercase">
-            Operating system
-          </span>
-          <app-vm-operating-system-toggle
-            [selected]="selectedOperatingSystem()"
-            (selectedChange)="updateOperatingSystem($event)"
-          />
-        </div>
-        <div class="flex max-w-full flex-col items-start gap-2">
-          <span class="text-xs font-semibold tracking-wide text-text-muted uppercase">
-            Pricing model
-          </span>
-          <app-vm-price-mode-toggle
-            [selected]="selectedPriceMode()"
-            (selectedChange)="updatePriceMode($event)"
-          />
-        </div>
-      </div>
-
-      <div class="table-shell">
-        <table class="table-base vm-comparison-table">
+      <div cdkScrollable class="table-shell comparison-table-workspace max-md:hidden">
+        <table
+          class="table-base vm-comparison-table w-full table-fixed"
+          [attr.data-column-count]="columns().length"
+        >
           <caption class="sr-only">
             Side-by-side Azure VM specification and
             {{
@@ -270,40 +217,67 @@
               selectedSkuNames().join(', ')
             }}.
           </caption>
+          <colgroup>
+            <col class="w-52 min-w-52" />
+            @for (column of columns(); track column.detail.sku.skuKey) {
+              <col class="w-60 min-w-60" />
+            }
+          </colgroup>
           <thead class="table-head">
             <tr>
               <th
                 scope="col"
-                class="vm-comparison-table__attribute sticky left-0 z-20 bg-surface-muted px-4 py-3 text-left"
+                class="sticky left-0 z-20 w-52 min-w-52 bg-surface-muted px-4 py-3 text-left"
               >
                 Attribute
               </th>
-              @for (column of columns(); track column.detail.sku.skuKey) {
-                <th scope="col" class="vm-comparison-table__column px-4 py-3 text-left align-top">
-                  <a
-                    class="link-primary font-mono text-sm font-bold break-words"
-                    [href]="buildVmSkuHref(column.detail.sku.sku)"
-                    translate="no"
-                  >
-                    {{ column.detail.sku.sku }}
-                  </a>
-                  <p class="mt-1 font-mono text-xs font-medium text-text-muted" translate="no">
-                    {{ column.detail.sku.series }}
-                  </p>
-                  <button
-                    type="button"
-                    class="mt-2 inline-flex min-h-9 items-center gap-1 text-xs font-semibold text-text-muted hover:text-danger-dark focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none dark:hover:text-danger"
-                    [attr.aria-label]="'Remove ' + column.detail.sku.sku + ' from comparison'"
-                    (click)="removeSku(column.detail.sku.sku)"
-                  >
-                    <app-lucide-icon name="x" class="size-3.5" aria-hidden="true" />
-                    Remove
-                  </button>
+              @for (column of columns(); track column.detail.sku.skuKey; let columnIndex = $index) {
+                <th scope="col" class="w-60 min-w-60 px-3 py-3 text-left align-top">
+                  <app-comparison-picker
+                    [inputId]="'desktop-vm-picker-' + column.detail.sku.skuKey"
+                    [label]="'VM ' + (columnIndex + 1)"
+                    [options]="skuOptionsFor(column.detail.sku.sku)"
+                    [selectedValue]="column.detail.sku.sku"
+                    [codeStyle]="true"
+                    placeholder="Search SKU, series, vCPU, or memory..."
+                    (optionSelected)="replaceSku(column.detail.sku.sku, $event)"
+                  />
+                  <div class="comparison-column-meta normal-case">
+                    <a
+                      class="link-primary min-w-0 truncate font-mono font-semibold"
+                      [href]="buildVmSeriesHref(column.detail.familySummary.series)"
+                      translate="no"
+                    >
+                      {{ column.detail.sku.series }}
+                    </a>
+                    <button
+                      type="button"
+                      class="comparison-remove-button"
+                      [attr.aria-label]="'Remove ' + column.detail.sku.sku + ' from comparison'"
+                      (click)="removeSku(column.detail.sku.sku)"
+                    >
+                      <app-lucide-icon name="x" class="size-3.5" aria-hidden="true" />
+                      Remove
+                    </button>
+                  </div>
+                  <dl class="comparison-column-summary normal-case">
+                    <div class="comparison-column-summary__item">
+                      <dt>Hourly</dt>
+                      <dd>{{ formatHourlyPrice(column.hourlyPrice) }}</dd>
+                    </div>
+                    <div class="comparison-column-summary__item">
+                      <dt>Compute</dt>
+                      <dd>
+                        {{ formatNumber(column.specs.vcpus) }} vCPU /
+                        {{ formatMemory(column.specs.memoryGB) }}
+                      </dd>
+                    </div>
+                  </dl>
                 </th>
               }
             </tr>
           </thead>
-          <tbody class="divide-y divide-border-soft">
+          <tbody class="divide-y divide-border-soft" [hidden]="!shouldShowGroup('identity')">
             <tr>
               <th
                 scope="rowgroup"
@@ -313,7 +287,11 @@
                 Identity
               </th>
             </tr>
-            <tr class="table-row-hover align-top">
+            <tr
+              class="table-row-hover comparison-row align-top"
+              [attr.data-different]="differingRows().has('series') ? '' : null"
+              [hidden]="!shouldShowRow('series')"
+            >
               <th
                 scope="row"
                 class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
@@ -334,7 +312,7 @@
             </tr>
           </tbody>
 
-          <tbody class="divide-y divide-border-soft">
+          <tbody class="divide-y divide-border-soft" [hidden]="!shouldShowGroup('pricing')">
             <tr>
               <th
                 scope="rowgroup"
@@ -344,7 +322,11 @@
                 {{ selectedOperatingSystem() }} {{ selectedPriceModeLabel() }} pricing
               </th>
             </tr>
-            <tr class="table-row-hover align-top">
+            <tr
+              class="table-row-hover comparison-row align-top"
+              [attr.data-different]="differingRows().has('hourlyPrice') ? '' : null"
+              [hidden]="!shouldShowRow('hourlyPrice')"
+            >
               <th
                 scope="row"
                 class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
@@ -355,12 +337,20 @@
                 <td class="px-4 py-3 font-bold whitespace-nowrap tabular-nums">
                   {{ formatHourlyPrice(column.hourlyPrice) }}
                   @if (column.isLowestPrice) {
-                    <span class="badge badge-success mt-1 block w-fit">Lowest</span>
+                    <!-- Wrapper does the block-level break: .badge is unlayered, so a
+                         `block` utility on the badge itself loses to its inline-flex. -->
+                    <div class="mt-1">
+                      <span class="badge badge-success">Lowest</span>
+                    </div>
                   }
                 </td>
               }
             </tr>
-            <tr class="table-row-hover align-top">
+            <tr
+              class="table-row-hover comparison-row align-top"
+              [attr.data-different]="differingRows().has('monthlyPrice') ? '' : null"
+              [hidden]="!shouldShowRow('monthlyPrice')"
+            >
               <th
                 scope="row"
                 class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
@@ -373,7 +363,11 @@
                 </td>
               }
             </tr>
-            <tr class="table-row-hover align-top">
+            <tr
+              class="table-row-hover comparison-row align-top"
+              [attr.data-different]="differingRows().has('priceDifference') ? '' : null"
+              [hidden]="!shouldShowRow('priceDifference')"
+            >
               <th
                 scope="row"
                 class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
@@ -386,7 +380,11 @@
                 </td>
               }
             </tr>
-            <tr class="table-row-hover align-top">
+            <tr
+              class="table-row-hover comparison-row align-top"
+              [attr.data-different]="differingRows().has('priceRegion') ? '' : null"
+              [hidden]="!shouldShowRow('priceRegion')"
+            >
               <th
                 scope="row"
                 class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
@@ -397,7 +395,11 @@
                 <td class="px-4 py-3 text-sm">{{ column.priceRegionLabel }}</td>
               }
             </tr>
-            <tr class="table-row-hover align-top">
+            <tr
+              class="table-row-hover comparison-row align-top"
+              [attr.data-different]="differingRows().has('pricedRegions') ? '' : null"
+              [hidden]="!shouldShowRow('pricedRegions')"
+            >
               <th
                 scope="row"
                 class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
@@ -410,7 +412,7 @@
             </tr>
           </tbody>
 
-          <tbody class="divide-y divide-border-soft">
+          <tbody class="divide-y divide-border-soft" [hidden]="!shouldShowGroup('compute')">
             <tr>
               <th
                 scope="rowgroup"
@@ -420,7 +422,11 @@
                 Compute and memory
               </th>
             </tr>
-            <tr class="table-row-hover align-top">
+            <tr
+              class="table-row-hover comparison-row align-top"
+              [attr.data-different]="differingRows().has('vcpus') ? '' : null"
+              [hidden]="!shouldShowRow('vcpus')"
+            >
               <th
                 scope="row"
                 class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
@@ -431,7 +437,11 @@
                 <td class="px-4 py-3 tabular-nums">{{ formatNumber(column.specs.vcpus) }}</td>
               }
             </tr>
-            <tr class="table-row-hover align-top">
+            <tr
+              class="table-row-hover comparison-row align-top"
+              [attr.data-different]="differingRows().has('memory') ? '' : null"
+              [hidden]="!shouldShowRow('memory')"
+            >
               <th
                 scope="row"
                 class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
@@ -444,7 +454,28 @@
                 </td>
               }
             </tr>
-            <tr class="table-row-hover align-top">
+            <tr
+              class="table-row-hover comparison-row align-top"
+              [attr.data-different]="differingRows().has('constrainedVcpus') ? '' : null"
+              [hidden]="!shouldShowRow('constrainedVcpus')"
+            >
+              <th
+                scope="row"
+                class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
+              >
+                Constrained vCPU
+              </th>
+              @for (column of columns(); track column.detail.sku.skuKey) {
+                <td class="px-4 py-3">
+                  {{ formatVcpuConstraint(column.cpuDetails) }}
+                </td>
+              }
+            </tr>
+            <tr
+              class="table-row-hover comparison-row align-top"
+              [attr.data-different]="differingRows().has('memoryPerVcpu') ? '' : null"
+              [hidden]="!shouldShowRow('memoryPerVcpu')"
+            >
               <th
                 scope="row"
                 class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
@@ -457,7 +488,11 @@
                 </td>
               }
             </tr>
-            <tr class="table-row-hover align-top">
+            <tr
+              class="table-row-hover comparison-row align-top"
+              [attr.data-different]="differingRows().has('architecture') ? '' : null"
+              [hidden]="!shouldShowRow('architecture')"
+            >
               <th
                 scope="row"
                 class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
@@ -465,10 +500,16 @@
                 CPU architecture
               </th>
               @for (column of columns(); track column.detail.sku.skuKey) {
-                <td class="px-4 py-3" translate="no">{{ column.specs.architecture }}</td>
+                <td class="px-4 py-3" translate="no">
+                  {{ column.specs.architecture ?? 'N/A' }}
+                </td>
               }
             </tr>
-            <tr class="table-row-hover align-top">
+            <tr
+              class="table-row-hover comparison-row align-top"
+              [attr.data-different]="differingRows().has('gpus') ? '' : null"
+              [hidden]="!shouldShowRow('gpus')"
+            >
               <th
                 scope="row"
                 class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
@@ -481,7 +522,7 @@
             </tr>
           </tbody>
 
-          <tbody class="divide-y divide-border-soft">
+          <tbody class="divide-y divide-border-soft" [hidden]="!shouldShowGroup('storage')">
             <tr>
               <th
                 scope="rowgroup"
@@ -491,7 +532,11 @@
                 Storage and networking
               </th>
             </tr>
-            <tr class="table-row-hover align-top">
+            <tr
+              class="table-row-hover comparison-row align-top"
+              [attr.data-different]="differingRows().has('maxDataDisks') ? '' : null"
+              [hidden]="!shouldShowRow('maxDataDisks')"
+            >
               <th
                 scope="row"
                 class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
@@ -504,7 +549,11 @@
                 </td>
               }
             </tr>
-            <tr class="table-row-hover align-top">
+            <tr
+              class="table-row-hover comparison-row align-top"
+              [attr.data-different]="differingRows().has('maxNetworkInterfaces') ? '' : null"
+              [hidden]="!shouldShowRow('maxNetworkInterfaces')"
+            >
               <th
                 scope="row"
                 class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
@@ -517,7 +566,62 @@
                 </td>
               }
             </tr>
-            <tr class="table-row-hover align-top">
+            <tr
+              class="table-row-hover comparison-row align-top"
+              [attr.data-different]="differingRows().has('diskControllerTypes') ? '' : null"
+              [hidden]="!shouldShowRow('diskControllerTypes')"
+            >
+              <th
+                scope="row"
+                class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
+              >
+                Disk controllers
+              </th>
+              @for (column of columns(); track column.detail.sku.skuKey) {
+                <td class="px-4 py-3" translate="no">
+                  {{ column.storagePerformance.diskControllerTypes ?? 'N/A' }}
+                </td>
+              }
+            </tr>
+            <tr
+              class="table-row-hover comparison-row align-top"
+              [attr.data-different]="differingRows().has('uncachedDiskIops') ? '' : null"
+              [hidden]="!shouldShowRow('uncachedDiskIops')"
+            >
+              <th
+                scope="row"
+                class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
+              >
+                Uncached disk IOPS
+              </th>
+              @for (column of columns(); track column.detail.sku.skuKey) {
+                <td class="px-4 py-3 tabular-nums">
+                  {{ formatNumber(column.storagePerformance.uncachedDiskIops) }}
+                </td>
+              }
+            </tr>
+            <tr
+              class="table-row-hover comparison-row align-top"
+              [attr.data-different]="differingRows().has('uncachedDiskThroughput') ? '' : null"
+              [hidden]="!shouldShowRow('uncachedDiskThroughput')"
+            >
+              <th
+                scope="row"
+                class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
+              >
+                Uncached disk throughput
+              </th>
+              @for (column of columns(); track column.detail.sku.skuKey) {
+                <td class="px-4 py-3 tabular-nums">
+                  {{ formatBytesPerSecond(column.storagePerformance.uncachedDiskBytesPerSecond) }}
+                </td>
+              }
+            </tr>
+            <tr
+              class="table-row-hover comparison-row align-top"
+              [attr.data-different]="differingRows().has('premiumIO') ? '' : null"
+              [hidden]="!shouldShowRow('premiumIO')"
+            >
               <th
                 scope="row"
                 class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
@@ -528,7 +632,11 @@
                 <td class="px-4 py-3">{{ formatBoolean(column.specs.premiumIO) }}</td>
               }
             </tr>
-            <tr class="table-row-hover align-top">
+            <tr
+              class="table-row-hover comparison-row align-top"
+              [attr.data-different]="differingRows().has('acceleratedNetworking') ? '' : null"
+              [hidden]="!shouldShowRow('acceleratedNetworking')"
+            >
               <th
                 scope="row"
                 class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
@@ -541,7 +649,11 @@
                 </td>
               }
             </tr>
-            <tr class="table-row-hover align-top">
+            <tr
+              class="table-row-hover comparison-row align-top"
+              [attr.data-different]="differingRows().has('rdma') ? '' : null"
+              [hidden]="!shouldShowRow('rdma')"
+            >
               <th
                 scope="row"
                 class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
@@ -552,7 +664,11 @@
                 <td class="px-4 py-3">{{ formatBoolean(column.specs.rdma) }}</td>
               }
             </tr>
-            <tr class="table-row-hover align-top">
+            <tr
+              class="table-row-hover comparison-row align-top"
+              [attr.data-different]="differingRows().has('observedRegions') ? '' : null"
+              [hidden]="!shouldShowRow('observedRegions')"
+            >
               <th
                 scope="row"
                 class="sticky left-0 z-10 bg-surface-raised px-4 py-3 text-left text-sm font-semibold text-text-body"
@@ -566,21 +682,103 @@
               }
             </tr>
           </tbody>
+          @if (showDifferencesOnly() && visibleComparisonRowCount() === 0) {
+            <tbody>
+              <tr>
+                <td
+                  class="px-6 py-10 text-center text-sm text-text-muted"
+                  [attr.colspan]="columns().length + 1"
+                >
+                  No differing specification or pricing rows for the current comparison.
+                </td>
+              </tr>
+            </tbody>
+          }
         </table>
       </div>
 
-      <p class="text-xs leading-relaxed text-text-muted">
-        Prices come from the Azure Retail Prices API and specifications come from the Resource SKUs
-        API. A public price does not guarantee quota, capacity, zone support, or deployment
-        eligibility. Reservation values are full-term totals amortized to hourly equivalents. Spot
-        VMs can be evicted and prices can change.
+      @if (showDifferencesOnly() && visibleComparisonRowCount() === 0) {
+        <p class="comparison-mobile-empty">
+          No differing specification or pricing rows for the current comparison.
+        </p>
+      } @else {
+        <div cdkScrollable class="comparison-mobile" aria-label="Selected VM comparison cards">
+          @for (
+            card of mobileCards();
+            track card.column.detail.sku.skuKey;
+            let cardIndex = $index
+          ) {
+            <article class="comparison-mobile-card">
+              <header class="comparison-mobile-card__header">
+                <app-comparison-picker
+                  [inputId]="'mobile-vm-picker-' + card.column.detail.sku.skuKey"
+                  [label]="'VM ' + (cardIndex + 1)"
+                  [options]="skuOptionsFor(card.column.detail.sku.sku)"
+                  [selectedValue]="card.column.detail.sku.sku"
+                  [codeStyle]="true"
+                  placeholder="Search SKU, series, vCPU, or memory..."
+                  (optionSelected)="replaceSku(card.column.detail.sku.sku, $event)"
+                />
+                <div class="comparison-column-meta">
+                  <a
+                    class="link-primary min-w-0 truncate font-mono font-semibold"
+                    [href]="buildVmSkuHref(card.column.detail.sku.sku)"
+                    translate="no"
+                  >
+                    View {{ card.column.detail.sku.series }} details
+                  </a>
+                  <button
+                    type="button"
+                    class="comparison-remove-button"
+                    [attr.aria-label]="'Remove ' + card.column.detail.sku.sku + ' from comparison'"
+                    (click)="removeSku(card.column.detail.sku.sku)"
+                  >
+                    <app-lucide-icon name="x" class="size-3.5" aria-hidden="true" />
+                    Remove
+                  </button>
+                </div>
+              </header>
+
+              @for (group of card.groups; track group.key) {
+                @if (shouldShowGroup(group.key)) {
+                  <section class="comparison-mobile-card__group">
+                    <h3>{{ group.label }}</h3>
+                    <dl class="comparison-mobile-card__rows">
+                      @for (row of group.rows; track row.key) {
+                        @if (shouldShowRow(row.key)) {
+                          <div
+                            class="comparison-mobile-card__row"
+                            [class.comparison-mobile-card__row--key]="row.emphasized"
+                            [attr.data-different]="differingRows().has(row.key) ? '' : null"
+                          >
+                            <dt>{{ row.label }}</dt>
+                            <dd>
+                              {{ row.value }}
+                              @if (row.lowestPrice) {
+                                <span class="badge badge-success">Lowest</span>
+                              }
+                            </dd>
+                          </div>
+                        }
+                      }
+                    </dl>
+                  </section>
+                }
+              }
+            </article>
+          }
+        </div>
+      }
+
+      <p class="comparison-note">
+        Compare VM prices and specifications side by side. Availability, quota, and capacity vary by
+        region and subscription. Savings plan and reserved prices reflect commitment pricing;
+        reserved prices are shown as hourly equivalents. Spot prices can change and Spot VMs may be
+        evicted.
       </p>
     </section>
   } @else {
-    <section
-      class="flex flex-col items-center gap-4 rounded-xl border border-dashed border-border-soft bg-surface-muted px-6 py-12 text-center"
-      aria-labelledby="vm-comparison-empty-heading"
-    >
+    <section class="comparison-empty" aria-labelledby="vm-comparison-empty-heading">
       <div class="flex size-12 items-center justify-center rounded-xl bg-primary/10">
         <app-lucide-icon name="arrow-left-right" class="size-6 text-primary" aria-hidden="true" />
       </div>
@@ -590,14 +788,10 @@
           {{ vmComparisonPageData().skus.length === 0 ? 'sizes' : 'size' }}
         </h2>
         <p class="text-sm leading-relaxed text-text-muted">
-          The comparison table appears after two VM sizes are selected. You can start here or select
-          VMs from the main pricing directory.
+          Search by SKU, series, vCPU, or memory above. The comparison appears as soon as two VM
+          sizes are selected.
         </p>
       </div>
-      <a class="btn btn-outline min-h-11" routerLink="/AzureVmPricing">
-        Browse all VM sizes
-        <app-lucide-icon name="chevron-right" class="size-4" aria-hidden="true" />
-      </a>
     </section>
   }
 </article>

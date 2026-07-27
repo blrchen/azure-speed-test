@@ -1,26 +1,21 @@
-<article class="page-shell section-stack mx-auto max-w-5xl">
+<article class="page-shell section-stack">
   <nav class="breadcrumb" aria-label="Breadcrumb">
-    <a class="breadcrumb-link" routerLink="/Azure/Latency">Home</a>
+    <a class="breadcrumb-link" href="/Azure/Latency">Home</a>
     <span class="breadcrumb-separator">/</span>
     @if (breadcrumbParent(); as parent) {
       <a
         class="breadcrumb-link"
-        [routerLink]="['/Information/AzureRegions']"
-        [queryParams]="breadcrumbQueryParams()"
+        [href]="buildDocumentHref('/Information/AzureRegions', breadcrumbQueryParams())"
       >
         Azure regions
       </a>
       <span class="breadcrumb-separator">/</span>
-      <a
-        class="breadcrumb-link"
-        [routerLink]="parent.routerLink"
-        [queryParams]="breadcrumbQueryParams()"
-      >
+      <a class="breadcrumb-link" [href]="buildDocumentHref(parent.href, breadcrumbQueryParams())">
         {{ parent.label }}
       </a>
       <span class="breadcrumb-separator">/</span>
     } @else {
-      <a class="breadcrumb-link" routerLink="/Information/AzureRegions">Azure regions</a>
+      <a class="breadcrumb-link" href="/Information/AzureRegions">Azure regions</a>
       <span class="breadcrumb-separator">/</span>
     }
     <span class="breadcrumb-current" aria-current="page">
@@ -32,8 +27,12 @@
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <h1 class="page-title">{{ regionData()?.displayName ?? regionId() }}</h1>
       <span
-        class="region-status inline-flex min-h-8 shrink-0 items-center gap-1.5 self-start rounded-full px-3 py-1 text-xs font-bold whitespace-nowrap sm:self-auto"
-        [class.region-status--restricted]="regionData()?.restricted"
+        class="inline-flex min-h-8 shrink-0 items-center gap-1.5 self-start rounded-full px-3 py-1 text-xs font-bold whitespace-nowrap sm:self-auto"
+        [class]="
+          regionData()?.restricted
+            ? 'bg-warning/18 text-warning-emphasis'
+            : 'bg-success/18 text-success-emphasis'
+        "
       >
         <app-lucide-icon
           [name]="regionData()?.restricted ? 'lock' : 'check-circle'"
@@ -48,15 +47,18 @@
 
     <div class="flex flex-wrap items-center gap-3" role="group" aria-label="Region actions">
       <a
-        class="btn btn-primary min-h-11 touch-manipulation text-[0.8125rem]"
-        routerLink="/Azure/Latency"
-        [queryParams]="{ regions: regionData()?.regionId ?? regionId() }"
+        class="btn btn-primary btn--compact min-h-11 touch-manipulation"
+        [href]="
+          buildDocumentHref('/Azure/Latency', {
+            regions: regionData()?.regionId ?? regionId(),
+          })
+        "
       >
         <app-lucide-icon name="activity" class="size-4" aria-hidden="true" />
         Test latency
       </a>
       <a
-        class="btn btn-secondary min-h-11 touch-manipulation text-[0.8125rem]"
+        class="btn btn-secondary btn--compact min-h-11 touch-manipulation"
         [href]="regionServiceTagHref()"
       >
         <app-lucide-icon name="network" class="size-4" aria-hidden="true" />
@@ -64,7 +66,7 @@
       </a>
       @if (vmRegionCatalogHref()) {
         <a
-          class="btn btn-secondary min-h-11 touch-manipulation text-[0.8125rem]"
+          class="btn btn-secondary btn--compact min-h-11 touch-manipulation"
           [href]="vmRegionCatalogHref()"
         >
           <app-lucide-icon name="server" class="size-4" aria-hidden="true" />
@@ -77,24 +79,34 @@
   <section class="section-block" aria-labelledby="overview-heading">
     <div>
       <h2 id="overview-heading" class="section-title">Region overview</h2>
-      <p class="mt-2 text-sm text-text-muted">Location, infrastructure, and access metadata.</p>
+      <p class="mt-2 text-sm text-text-muted">
+        Location, infrastructure, availability, and access at a glance.
+      </p>
     </div>
 
     <dl class="grid gap-3 min-[560px]:grid-cols-2">
-      <div class="region-fact">
-        <dt>Region location</dt>
-        <dd>
+      <div
+        class="flex min-w-0 flex-col justify-center gap-[0.35rem] rounded-control bg-surface-muted px-5 py-4"
+      >
+        <dt class="text-xs font-semibold whitespace-nowrap text-text-muted">Region location</dt>
+        <dd class="m-0 text-sm leading-snug-body font-semibold wrap-anywhere text-text-strong">
           {{ regionData()?.datacenterLocation || 'Not specified' }},
           {{ regionData()?.geography || 'Not specified' }}
         </dd>
       </div>
-      <div class="region-fact">
-        <dt>Availability zones</dt>
-        <dd>{{ availabilityZoneSummary() }}</dd>
+      <div
+        class="flex min-w-0 flex-col justify-center gap-[0.35rem] rounded-control bg-surface-muted px-5 py-4"
+      >
+        <dt class="text-xs font-semibold whitespace-nowrap text-text-muted">Availability zones</dt>
+        <dd class="m-0 text-sm leading-snug-body font-semibold wrap-anywhere text-text-strong">
+          {{ availabilityZoneSummary() }}
+        </dd>
       </div>
-      <div class="region-fact">
-        <dt>Paired region</dt>
-        <dd>
+      <div
+        class="flex min-w-0 flex-col justify-center gap-[0.35rem] rounded-control bg-surface-muted px-5 py-4"
+      >
+        <dt class="text-xs font-semibold whitespace-nowrap text-text-muted">Paired region</dt>
+        <dd class="m-0 text-sm leading-snug-body font-semibold wrap-anywhere text-text-strong">
           @if (pairedRegionData(); as pairedRegion) {
             <a class="link-primary" [href]="buildRegionDetailHref(pairedRegion.displayName)">
               {{ pairedRegion.displayName }}
@@ -106,19 +118,31 @@
           }
         </dd>
       </div>
-      <div class="region-fact">
-        <dt>Opened</dt>
-        <dd class="tabular-nums">
+      <div
+        class="flex min-w-0 flex-col justify-center gap-[0.35rem] rounded-control bg-surface-muted px-5 py-4"
+      >
+        <dt class="text-xs font-semibold whitespace-nowrap text-text-muted">Opened</dt>
+        <dd
+          class="m-0 text-sm leading-snug-body font-semibold wrap-anywhere text-text-strong tabular-nums"
+        >
           {{ regionData()?.launchYear ? '~' + regionData()?.launchYear : 'Unknown' }}
         </dd>
       </div>
-      <div class="region-fact min-[560px]:col-span-2">
-        <dt>Access</dt>
-        <dd>{{ regionData()?.availableTo || 'All customers' }}</dd>
+      <div
+        class="flex min-w-0 flex-col justify-center gap-[0.35rem] rounded-control bg-surface-muted px-5 py-4 min-[560px]:col-span-2"
+      >
+        <dt class="text-xs font-semibold whitespace-nowrap text-text-muted">Access</dt>
+        <dd class="m-0 text-sm leading-snug-body font-semibold wrap-anywhere text-text-strong">
+          {{ regionData()?.availableTo || 'All customers' }}
+        </dd>
       </div>
-      <div class="region-fact min-[560px]:col-span-2">
-        <dt>Data residency</dt>
-        <dd>{{ regionData()?.dataResidency || 'Not specified' }}</dd>
+      <div
+        class="flex min-w-0 flex-col justify-center gap-[0.35rem] rounded-control bg-surface-muted px-5 py-4 min-[560px]:col-span-2"
+      >
+        <dt class="text-xs font-semibold whitespace-nowrap text-text-muted">Data residency</dt>
+        <dd class="m-0 text-sm leading-snug-body font-semibold wrap-anywhere text-text-strong">
+          {{ regionData()?.dataResidency || 'Not specified' }}
+        </dd>
       </div>
     </dl>
   </section>
@@ -129,11 +153,11 @@
         <div>
           <h2 id="map-heading" class="section-title">Approximate region location</h2>
           <p id="map-description" class="mt-2 text-sm text-text-muted">
-            Regional context based on Azure metadata, not a physical facility address.
+            This map provides approximate regional context. Facility-level locations are not shown.
           </p>
         </div>
         <a
-          class="link-primary inline-flex min-h-11 shrink-0 touch-manipulation items-center gap-1 self-start rounded-md px-2 text-[0.8125rem] font-semibold"
+          class="link-primary inline-flex min-h-11 shrink-0 touch-manipulation items-center gap-1 self-start rounded-md px-2 text-compact font-semibold"
           [href]="regionReferencePointHref()"
           target="_blank"
           rel="noopener noreferrer"
@@ -144,7 +168,9 @@
         </a>
       </header>
 
-      <div class="region-context-map">
+      <div
+        class="relative isolate min-h-72 overflow-hidden rounded-control bg-[color-mix(in_srgb,var(--color-surface-base)_78%,var(--color-brand)_22%)] min-[960px]:min-h-80"
+      >
         @defer (on viewport) {
           <app-azure-region-map-view
             class="absolute inset-0"
@@ -199,8 +225,8 @@
           </p>
         </div>
         <a
-          class="link-primary inline-flex min-h-11 shrink-0 touch-manipulation items-center gap-1 self-start rounded-md px-2 text-[0.8125rem] font-semibold"
-          routerLink="/Information/AzureRegions"
+          class="link-primary inline-flex min-h-11 shrink-0 touch-manipulation items-center gap-1 self-start rounded-md px-2 text-compact font-semibold"
+          href="/Information/AzureRegions"
         >
           View all regions
           <app-lucide-icon name="chevron-right" class="size-4" aria-hidden="true" />
@@ -210,11 +236,11 @@
       <div class="grid gap-3 min-[560px]:grid-cols-2 min-[960px]:grid-cols-3">
         @if (pairedRegionData(); as pairedRegion) {
           <a
-            class="group flex min-h-[4.75rem] min-w-0 touch-manipulation items-center gap-3 rounded-lg bg-primary/[0.08] p-4 text-inherit hover:bg-primary/[0.12] focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-none"
+            class="group flex min-h-[4.75rem] min-w-0 touch-manipulation items-center gap-3 rounded-lg bg-primary/[0.08] p-4 text-inherit hover:bg-primary/[0.12] focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-hidden"
             [href]="buildRegionDetailHref(pairedRegion.displayName)"
           >
             <div
-              class="flex size-10 shrink-0 items-center justify-center rounded-[0.625rem] bg-primary/10 text-brand"
+              class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-brand"
               aria-hidden="true"
             >
               <app-lucide-icon name="arrow-left-right" class="size-5" />
@@ -224,7 +250,10 @@
                 <h3 class="m-0 text-sm font-bold text-text-strong">
                   {{ pairedRegion.displayName }}
                 </h3>
-                <span class="region-paired-tag">Paired</span>
+                <span
+                  class="inline-flex items-center rounded-md bg-brand/14 px-1.5 py-0.5 text-[0.625rem] leading-none font-semibold text-accent-foreground"
+                  >Paired</span
+                >
               </div>
               @if (pairedRegion.datacenterLocation; as pairedLocation) {
                 <p class="mt-0.5 mb-0 truncate text-xs text-text-muted">{{ pairedLocation }}</p>
@@ -240,11 +269,11 @@
 
         @for (region of otherRelatedRegions(); track region.regionId) {
           <a
-            class="group flex min-h-[4.75rem] min-w-0 touch-manipulation items-center gap-3 rounded-lg bg-surface-muted p-4 text-inherit hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-none"
+            class="group flex min-h-[4.75rem] min-w-0 touch-manipulation items-center gap-3 rounded-lg bg-surface-muted p-4 text-inherit hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-hidden"
             [href]="buildRegionDetailHref(region.displayName)"
           >
             <div
-              class="flex size-10 shrink-0 items-center justify-center rounded-[0.625rem] bg-primary/10 text-brand"
+              class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-brand"
               aria-hidden="true"
             >
               <app-lucide-icon name="map-pin" class="size-5" />

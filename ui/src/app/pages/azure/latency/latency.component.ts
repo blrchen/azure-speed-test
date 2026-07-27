@@ -10,7 +10,7 @@ import {
   OnInit,
   PLATFORM_ID,
 } from '@angular/core'
-import { ActivatedRoute, Router, RouterLink } from '@angular/router'
+import { ActivatedRoute, Router } from '@angular/router'
 import { Subscription, timer } from 'rxjs'
 
 import { RegionModel } from '../../../models'
@@ -21,6 +21,7 @@ import { WidthPercentDirective } from '../../../shared/directives/width-percent.
 import { ExportCsvButtonComponent } from '../../../shared/export-csv-button/export-csv-button.component'
 import { LucideIconComponent } from '../../../shared/icons/lucide-icons.component'
 import { RegionGroupComponent } from '../../../shared/region-group/region-group.component'
+import { isAbortError } from '../../../shared/speed-test-helpers'
 import {
   buildNormalizedRegionLookup,
   buildRegionDetailHref,
@@ -28,6 +29,7 @@ import {
   getSortedRegionIds,
   LatencyTone,
   parseRegionParam,
+  resolveRegionsFromNormalizedTokens,
 } from '../../../shared/utils'
 import { ConnectionDetailsContainerComponent } from './connection-details-container.component'
 
@@ -89,7 +91,6 @@ interface PingResult {
   selector: 'app-azure-latency',
   imports: [
     RegionGroupComponent,
-    RouterLink,
     LucideIconComponent,
     ConnectionDetailsContainerComponent,
     CopyButtonComponent,
@@ -194,23 +195,12 @@ export class LatencyComponent implements OnInit {
     }))
   })
 
-  private readonly measuredLatencyRows = computed(() =>
+  // `latencyRows()` is already sorted by median latency then display name, and it sorts
+  // measured regions ahead of unmeasured ones, so filtering preserves that order.
+  private readonly rankedLatencyRows = computed(() =>
     this.latencyRows().filter((region) => region.median.latencyMs > 0)
   )
 
-  private readonly rankedLatencyRows = computed(() =>
-    [...this.measuredLatencyRows()].sort(
-      (left, right) =>
-        left.median.latencyMs - right.median.latencyMs ||
-        left.displayName.localeCompare(right.displayName)
-    )
-  )
-
-  readonly topRegions = computed(() => this.rankedLatencyRows().slice(0, 3))
-  readonly recommendationSlots = computed<readonly (RegionLatencyRow | null)[]>(() => {
-    const top = this.topRegions()
-    return [top[0] ?? null, top[1] ?? null, top[2] ?? null]
-  })
   readonly bestRegionId = computed(() => this.rankedLatencyRows()[0]?.regionId ?? null)
 
   readonly measurementStatusText = computed(() => {
@@ -309,14 +299,16 @@ export class LatencyComponent implements OnInit {
     this.seoService.setPageMeta({
       title: 'Azure Latency Test | Measure Datacenter Latency',
       description:
-        'Test latency from your location to Azure datacenters worldwide. Measure the latency to various Azure regions and find the closest Azure datacenters.',
+        'Find the Azure regions with the lowest latency from your current connection and shortlist the best locations for your apps.',
       canonicalUrl: 'https://www.azurespeed.com/Azure/Latency',
     })
   }
 
   private applyRegionsInput(rawRegions: string | undefined): void {
     const parsedRegionTokens = parseRegionParam(rawRegions)
-    const regions = parsedRegionTokens.length ? this.resolveRegionsFromIds(parsedRegionTokens) : []
+    const regions = parsedRegionTokens.length
+      ? resolveRegionsFromNormalizedTokens(parsedRegionTokens, this.normalizedRegions)
+      : []
     const shouldApplySelection =
       (typeof rawRegions === 'string' && rawRegions.trim().length > 0) ||
       this.hasAppliedRegionsInput
@@ -330,17 +322,6 @@ export class LatencyComponent implements OnInit {
 
     this.canUpdateUrl = true
     this.hasAppliedRegionsInput = true
-  }
-
-  private resolveRegionsFromIds(normalizedTokens: string[]): RegionModel[] {
-    const seen = new Set<string>()
-    return normalizedTokens
-      .map((token) => this.normalizedRegions.get(token))
-      .filter((match): match is RegionModel => {
-        if (!match || seen.has(match.regionId)) return false
-        seen.add(match.regionId)
-        return true
-      })
   }
 
   private syncUrlWithSelection(sortedRegionIds: readonly string[]): void {
@@ -662,12 +643,6 @@ function isFailedPingStatus(status: PingMeasurementStatus): status is 'timeout' 
   return status === 'timeout' || status === 'error'
 }
 
-function isAbortError(error: unknown): boolean {
-  return (
-    typeof error === 'object' && error !== null && 'name' in error && error.name === 'AbortError'
-  )
-}
-
 function getLatencyTone(latency: number | null | undefined): LatencyTone {
   if (typeof latency !== 'number' || latency <= 0) return 'unknown'
   if (latency < LATENCY_CONFIG.LATENCY_FAST) return 'fast'
@@ -676,16 +651,16 @@ function getLatencyTone(latency: number | null | undefined): LatencyTone {
 }
 
 function getPingTextClass(status: PingDisplayStatus, latency: number): string {
-  if (status === 'timeout' || status === 'error') return 'text-danger-dark dark:text-danger'
+  if (status === 'timeout' || status === 'error') return 'text-danger-emphasis'
   if (status === 'warming' || status === 'measuring') return 'text-text-muted'
 
   switch (getLatencyTone(latency)) {
     case 'fast':
-      return 'text-success-foreground dark:text-success'
+      return 'text-success-emphasis'
     case 'moderate':
-      return 'text-warning-foreground dark:text-warning'
+      return 'text-warning-emphasis'
     case 'slow':
-      return 'text-danger-dark dark:text-danger'
+      return 'text-danger-emphasis'
     default:
       return 'text-text-muted'
   }

@@ -1,8 +1,8 @@
-<article class="page-shell section-stack mx-auto max-w-6xl">
+<article class="page-shell section-stack">
   <nav class="breadcrumb" aria-label="Breadcrumb">
-    <a class="breadcrumb-link" routerLink="/AzureVmPricing">Azure VM Sizes &amp; Pricing</a>
+    <a class="breadcrumb-link" href="/AzureVmPricing">Azure VM Sizes &amp; Pricing</a>
     <span class="breadcrumb-separator">/</span>
-    <a class="breadcrumb-link" routerLink="/AzureVmPricing/Series">Series</a>
+    <a class="breadcrumb-link" href="/AzureVmPricing/Series">Series</a>
     <span class="breadcrumb-separator">/</span>
     @if (familySummary().skuCount > 1) {
       <a class="breadcrumb-link" [href]="buildVmSeriesHref(familySummary().series)" translate="no">
@@ -25,17 +25,21 @@
         </div>
       </div>
       <p class="page-lead">
-        Compare Linux and Windows pay-as-you-go, 1-year reserved, 3-year reserved, and Spot pricing
-        for this VM size across Azure regions, with available hardware specifications and series
-        metadata.
+        Compare Linux and Windows pay-as-you-go, savings plan, reserved, and Spot pricing for this
+        VM size across Azure regions, with available hardware specifications and series metadata.
       </p>
     </div>
 
     <dl class="vm-summary-ledger">
       <div class="vm-summary-ledger__item">
         <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">vCPUs</dt>
-        <dd class="text-2xl font-bold text-text-strong tabular-nums">
-          {{ formatNumber(specs().vcpus) }}
+        <dd class="text-text-strong tabular-nums">
+          <span class="block text-2xl font-bold">{{ formatNumber(specs().vcpus) }}</span>
+          @if (cpuDetails().isConstrained) {
+            <span class="mt-1 block text-xs font-semibold text-text-muted">
+              Constrained from {{ formatNumber(cpuDetails().baseVcpus) }}
+            </span>
+          }
         </dd>
       </div>
       <div class="vm-summary-ledger__item">
@@ -47,7 +51,7 @@
       <div class="vm-summary-ledger__item">
         <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">Architecture</dt>
         <dd class="text-2xl font-bold text-text-strong" translate="no">
-          {{ specs().architecture }}
+          {{ specs().architecture ?? 'N/A' }}
         </dd>
       </div>
       <div class="vm-summary-ledger__item">
@@ -63,14 +67,19 @@
     <div>
       <a
         class="btn btn-primary min-h-11"
-        [routerLink]="comparisonHref"
-        [queryParams]="comparisonQueryParams()"
+        [href]="buildDocumentHref(comparisonHref, comparisonQueryParams())"
       >
         <app-lucide-icon name="arrow-left-right" class="size-4" aria-hidden="true" />
         Compare this VM
       </a>
     </div>
   </header>
+
+  <app-vm-catalog-notice
+    [catalog]="vmSkuPageData()"
+    [operatingSystem]="selectedOperatingSystem()"
+    [priceMode]="selectedPriceMode()"
+  />
 
   <section class="section-block" aria-labelledby="vm-region-pricing-heading">
     <div class="flex flex-wrap items-end justify-between gap-3">
@@ -81,11 +90,19 @@
           lowest to highest. Monthly estimates use 730 hours.
         </p>
       </div>
-      @if (regionPrices().length) {
-        <span class="badge badge-neutral tabular-nums">
-          {{ regionPrices().length }} priced regions
-        </span>
-      }
+      <div class="flex flex-wrap items-center gap-2">
+        <app-export-csv-button
+          [filename]="csvFilename()"
+          [headers]="csvHeaders()"
+          [rows]="csvRows()"
+          ariaLabel="Export this Azure VM's regional prices to CSV"
+        />
+        @if (regionPrices().length) {
+          <span class="badge badge-neutral tabular-nums">
+            {{ regionPrices().length }} priced regions
+          </span>
+        }
+      </div>
     </div>
 
     @if (cheapestRegionPrice(); as cheapest) {
@@ -94,9 +111,7 @@
         aria-label="Cheapest region price"
       >
         <div class="min-w-0">
-          <p
-            class="text-xs font-semibold tracking-wide text-success-foreground uppercase dark:text-success"
-          >
+          <p class="text-xs font-semibold tracking-wide text-success-emphasis uppercase">
             Cheapest published price
           </p>
           <p class="mt-1 text-lg font-bold text-text-strong">
@@ -271,18 +286,8 @@
     }
 
     <p id="vm-region-pricing-note" class="text-xs leading-relaxed text-text-muted">
-      Vs. cheapest compares each region's hourly price with the lowest published price for the
-      selected OS and pricing option. Source:
-      <a
-        class="link-primary"
-        href="https://learn.microsoft.com/en-us/rest/api/cost-management/retail-prices/azure-retail-prices"
-        target="_blank"
-        rel="noopener noreferrer"
-        >Azure Retail Prices API</a
-      >, {{ priceCurrency() }}. {{ selectedPriceModeDescription() }} Windows reserved estimates
-      retain the current Windows software surcharge and do not model Azure Hybrid Benefit. Prices
-      exclude Low Priority, savings plans, storage, taxes, and negotiated discounts. Published
-      pricing does not guarantee capacity or deployment eligibility.
+      Vs. cheapest shows how each region compares with the lowest available public price. Prices are
+      shown in {{ priceCurrency() }} and may vary by availability, capacity, and agreement.
     </p>
   </section>
 
@@ -293,30 +298,29 @@
         Canonical Resource SKUs fields and the most commonly compared capabilities.
       </p>
       <div class="mt-3 space-y-3 text-sm">
-        <h3 class="font-semibold text-text-body">How to read a VM size name</h3>
-        <p class="text-text-muted">
-          Each segment of
-          <code class="font-mono text-text-strong" translate="no">Standard_DC8ads_v5</code>
-          encodes a specific attribute. The
-          <code class="font-mono text-text-strong" translate="no">Standard_</code> prefix is omitted
-          from the display name.
-        </p>
-        <dl class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
-          <dt class="font-mono font-semibold text-primary" translate="no">D</dt>
-          <dd class="text-text-muted">Family &mdash; General-purpose D</dd>
-          <dt class="font-mono font-semibold text-primary" translate="no">C</dt>
-          <dd class="text-text-muted">Subfamily &mdash; Confidential computing</dd>
-          <dt class="font-mono font-semibold text-primary" translate="no">8</dt>
-          <dd class="text-text-muted">vCPUs &mdash; 8 virtual CPUs</dd>
-          <dt class="font-mono font-semibold text-primary" translate="no">a</dt>
-          <dd class="text-text-muted">Processor &mdash; AMD-based</dd>
-          <dt class="font-mono font-semibold text-primary" translate="no">d</dt>
-          <dd class="text-text-muted">Local disk &mdash; Includes a local temporary disk</dd>
-          <dt class="font-mono font-semibold text-primary" translate="no">s</dt>
-          <dd class="text-text-muted">Premium SSD &mdash; Compatible with Premium SSD</dd>
-          <dt class="font-mono font-semibold text-primary" translate="no">_v5</dt>
-          <dd class="text-text-muted">Version &mdash; 5th generation of this series</dd>
-        </dl>
+        <h3 class="font-semibold text-text-body">How to read this VM size name</h3>
+        @if (nameSegments().length) {
+          <p class="text-text-muted">
+            Each segment of
+            <code class="font-mono text-text-strong" translate="no">{{ sku().sku }}</code>
+            encodes a specific attribute. The
+            <code class="font-mono text-text-strong" translate="no">Standard_</code> prefix is
+            omitted from the breakdown below.
+          </p>
+          <dl class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
+            @for (segment of nameSegments(); track $index) {
+              <dt class="font-mono font-semibold text-primary" translate="no">
+                {{ segment.value }}
+              </dt>
+              <dd class="text-text-muted">{{ segment.label }} &mdash; {{ segment.description }}</dd>
+            }
+          </dl>
+        } @else {
+          <p class="text-text-muted">
+            Azure encodes the family, vCPU count, additive features, accelerator, and version in
+            each size name.
+          </p>
+        }
         <a
           class="link-primary inline-flex items-center gap-1 font-semibold"
           href="https://learn.microsoft.com/en-us/azure/virtual-machines/vm-naming-conventions"

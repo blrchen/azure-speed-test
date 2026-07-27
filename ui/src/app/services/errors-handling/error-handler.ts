@@ -26,9 +26,8 @@ export class CustomErrorHandler implements ErrorHandler {
 
   handleError(error: unknown): void {
     const originalError = this.unwrapError(error)
-    const isChunkLoadError = this.isChunkLoadError(originalError)
 
-    if (isChunkLoadError && this.isOnline) {
+    if (this.isChunkLoadError(originalError) && this.isOnline) {
       this.reloadPrompt.show()
     }
 
@@ -36,30 +35,35 @@ export class CustomErrorHandler implements ErrorHandler {
   }
 
   private isChunkLoadError(error: unknown): boolean {
-    const errorMessage = this.getErrorMessage(error)
-    return CHUNK_LOAD_ERROR_PATTERNS.some((pattern) => pattern.test(errorMessage))
+    // Match against the stack too: hashed chunk filenames only ever appear there.
+    const errorText = this.getErrorText(error)
+    return CHUNK_LOAD_ERROR_PATTERNS.some((pattern) => pattern.test(errorText))
   }
 
-  private getErrorMessage(error: unknown): string {
+  private getErrorText(error: unknown): string {
     if (error instanceof Error) {
-      return this.getFirstLine(`${error.name}: ${error.message}`)
+      return `${error.name}\n${error.message}\n${error.stack ?? ''}`
     }
 
     if (typeof error === 'string') {
-      return this.getFirstLine(error)
+      return error
     }
 
     if (this.isRecord(error)) {
-      const name = typeof error['name'] === 'string' ? error['name'] : ''
       const message = typeof error['message'] === 'string' ? error['message'] : ''
-      return this.getFirstLine(name && message ? `${name}: ${message}` : name || message)
+      const stack = typeof error['stack'] === 'string' ? error['stack'] : ''
+      return `${message}\n${stack}`.trim() || this.stringifyError(error)
     }
 
-    return this.getFirstLine(String(error))
+    return String(error)
   }
 
-  private getFirstLine(value: string): string {
-    return value.split('\n', 1)[0]?.trim() ?? ''
+  private stringifyError(error: unknown): string {
+    try {
+      return JSON.stringify(error)
+    } catch {
+      return String(error)
+    }
   }
 
   private unwrapError(error: unknown): unknown {

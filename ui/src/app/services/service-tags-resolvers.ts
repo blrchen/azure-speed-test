@@ -20,20 +20,20 @@ export const azureIpRangesResolver: ResolveFn<ServiceTagPageRouteData | Redirect
   const loader = inject(ServiceTagsLoader)
   const router = inject(Router)
   const cloudParam = route.paramMap.get('cloud')
-  const legacyRoute = cloudParam === null
+  const implicitCloudRoute = cloudParam === null
   const cloud = normalizeServiceTagCloud(cloudParam ?? undefined)
   const serviceTagId = normalizeServiceTagIdInput(route.paramMap.get('serviceTagId') ?? undefined)
 
   try {
-    const data = legacyRoute
-      ? await loader.getLegacyServiceTagPageData(serviceTagId)
+    const data = implicitCloudRoute
+      ? await loader.getImplicitCloudServiceTagPageData(serviceTagId)
       : await loader.getServiceTagPageData(cloud, serviceTagId)
-    return data ? { ...data, legacyRoute } : notFoundRedirect(router)
+    return data ? { ...data, implicitCloudRoute } : notFoundRedirect(router)
   } catch {
     return {
       error: 'Service tag data could not be loaded. Check your connection and try again.',
       cloud,
-      legacyRoute,
+      implicitCloudRoute,
     }
   }
 }

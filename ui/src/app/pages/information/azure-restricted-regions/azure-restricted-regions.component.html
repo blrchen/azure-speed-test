@@ -1,8 +1,8 @@
-<article class="page-shell section-stack mx-auto max-w-5xl">
+<article class="page-shell section-stack">
   <nav class="breadcrumb" aria-label="Breadcrumb">
-    <a class="breadcrumb-link" routerLink="/Azure/Latency">Home</a>
+    <a class="breadcrumb-link" href="/Azure/Latency">Home</a>
     <span class="breadcrumb-separator">/</span>
-    <a class="breadcrumb-link" [routerLink]="['/Information/AzureRegions']">Azure regions</a>
+    <a class="breadcrumb-link" href="/Information/AzureRegions">Azure regions</a>
     <span class="breadcrumb-separator">/</span>
     <span class="breadcrumb-current" aria-current="page">Access restricted regions</span>
   </nav>
@@ -10,31 +10,27 @@
   <header class="page-header">
     <h1 class="page-title">Access restricted Azure regions</h1>
     <nav class="flex flex-wrap gap-2" aria-label="Region types">
-      <a class="btn btn-outline btn--sm" [routerLink]="['/Information/AzureRegions']">
-        Global regions
-      </a>
-      <a class="btn btn-outline btn--sm" [routerLink]="['/Information/AzureUSGovernmentRegions']">
+      <a class="btn btn-outline btn--sm" href="/Information/AzureRegions"> Global regions </a>
+      <a class="btn btn-outline btn--sm" href="/Information/AzureUSGovernmentRegions">
         US Gov regions
       </a>
-      <a class="btn btn-outline btn--sm" [routerLink]="['/Information/AzureChinaRegions']">
-        China regions
-      </a>
+      <a class="btn btn-outline btn--sm" href="/Information/AzureChinaRegions"> China regions </a>
       <span class="btn btn--sm btn-current" aria-current="page">Restricted regions</span>
-      <a class="btn btn-outline btn--sm" [routerLink]="['/Information/AzureUpcomingRegions']">
+      <a class="btn btn-outline btn--sm" href="/Information/AzureUpcomingRegions">
         Upcoming regions
       </a>
     </nav>
     <p class="page-lead">
-      Azure regions are sets of datacenters inside a latency-defined perimeter, connected through a
-      dedicated regional network.
+      Find Azure regions that require special onboarding or are limited to specific customer
+      scenarios, and learn how to request access through Microsoft.
     </p>
   </header>
 
   <section class="section-block" aria-labelledby="restricted-regions-heading">
     <h2 id="restricted-regions-heading" class="section-title">Access restricted Azure regions</h2>
     <p class="text-text-muted">
-      These regions require special onboarding or are reserved for specific customer scenarios such
-      as in-country disaster recovery. Contact Microsoft support or your account team for access.
+      Compare each region's geography, approximate datacenter location, and availability
+      restrictions. Contact Microsoft support or your account team to confirm access.
     </p>
     <div class="table-shell">
       <table class="table-base">

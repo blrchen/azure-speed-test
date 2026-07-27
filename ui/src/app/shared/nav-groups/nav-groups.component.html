@@ -1,4 +1,4 @@
-@for (group of navGroups(); track group.id; let last = $last) {
+@for (group of resolvedNavGroups(); track group.id; let last = $last) {
   <div class="flex flex-col gap-2">
     @if (group.heading) {
       <div class="flex h-8 shrink-0 items-center px-2 text-xs font-medium text-text-muted">
@@ -6,35 +6,19 @@
       </div>
     }
     <ul class="m-0 flex list-none flex-col gap-1 p-0">
-      @for (item of group.items; track item.routerLink) {
+      @for (item of group.items; track item.href) {
+        @let itemIsActive = item.isActive();
         <li class="w-full">
-          @if (item.documentNavigation) {
-            <a
-              class="group flex h-8 w-full items-center gap-2 rounded-md px-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary"
-              [class]="isNavItemActive(item) ? activeLinkClasses : inactiveLinkClasses"
-              [href]="item.routerLink"
-              [attr.title]="item.label"
-              [attr.aria-current]="isNavItemActive(item) ? 'page' : null"
-            >
-              <app-lucide-icon [name]="item.icon" class="size-4 shrink-0" aria-hidden="true" />
-              <span class="min-w-0 truncate">{{ item.label }}</span>
-            </a>
-          } @else {
-            <a
-              #linkActive="routerLinkActive"
-              class="group flex h-8 w-full items-center gap-2 rounded-md px-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary"
-              [class]="linkActive.isActive ? activeLinkClasses : inactiveLinkClasses"
-              [routerLink]="item.routerLink"
-              [routerLinkActive]="[]"
-              [routerLinkActiveOptions]="item.activeMatchOptions ?? exactMatchOptions"
-              [attr.title]="item.label"
-              ariaCurrentWhenActive="page"
-              (click)="handleNavLinkClick($event)"
-            >
-              <app-lucide-icon [name]="item.icon" class="size-4 shrink-0" aria-hidden="true" />
-              <span class="min-w-0 truncate">{{ item.label }}</span>
-            </a>
-          }
+          <a
+            class="group flex h-8 w-full items-center gap-2 rounded-md px-2 text-sm outline-hidden focus-visible:ring-2 focus-visible:ring-primary"
+            [class]="itemIsActive ? activeLinkClasses : inactiveLinkClasses"
+            [href]="item.href"
+            [attr.title]="item.label"
+            [attr.aria-current]="itemIsActive ? 'page' : null"
+          >
+            <app-lucide-icon [name]="item.icon" class="size-4 shrink-0" aria-hidden="true" />
+            <span class="min-w-0 truncate">{{ item.label }}</span>
+          </a>
         </li>
       }
     </ul>

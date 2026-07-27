@@ -1,4 +1,5 @@
 <!doctype html>
+<!-- Light is the default theme; the head script switches to dark before paint when stored. -->
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -6,7 +7,6 @@
     <script>
       function applyInitialTheme() {
         const storageKey = 'THEME_PREFERENCE'
-        const darkModeQuery = '(prefers-color-scheme: dark)'
         const lightThemeColor = '#ffffff'
         const darkThemeColor = '#171717'
         let theme = null
@@ -20,8 +20,8 @@
           theme = null
         }
 
-        const prefersDark = window.matchMedia ? window.matchMedia(darkModeQuery).matches : false
-        const shouldUseDarkTheme = theme ? theme === 'dark' : prefersDark
+        // No stored preference defaults to light, not the system setting.
+        const shouldUseDarkTheme = theme === 'dark'
         document.documentElement.classList.toggle('dark', shouldUseDarkTheme)
 
         const themeColorMeta = document.querySelector('meta[name="theme-color"]')

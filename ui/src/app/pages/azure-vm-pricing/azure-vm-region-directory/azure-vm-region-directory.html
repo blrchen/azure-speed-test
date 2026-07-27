@@ -1,6 +1,6 @@
-<article class="page-shell section-stack mx-auto max-w-7xl">
+<article class="page-shell section-stack">
   <nav class="breadcrumb" aria-label="Breadcrumb">
-    <a class="breadcrumb-link" routerLink="/AzureVmPricing">Azure VM Sizes &amp; Pricing</a>
+    <a class="breadcrumb-link" href="/AzureVmPricing">Azure VM Sizes &amp; Pricing</a>
     <span class="breadcrumb-separator">/</span>
     <span class="breadcrumb-current" aria-current="page">Regions</span>
   </nav>
@@ -14,9 +14,9 @@
         <h1 class="page-title">Azure VM pricing by region</h1>
       </div>
       <p class="page-lead">
-        Compare Linux and Windows pay-as-you-go, 1-year reserved, 3-year reserved, and Spot Azure VM
-        prices within a specific region. Open a region to search VM sizes and sort its rates from
-        lowest to highest.
+        Compare Linux and Windows pay-as-you-go, 1-year savings plan, 3-year savings plan, 1-year
+        reserved, 3-year reserved, and Spot Azure VM prices within a specific region. Open a region
+        to search VM sizes and sort its rates from lowest to highest.
       </p>
     </div>
 
@@ -54,15 +54,20 @@
     </dl>
   </header>
 
+  <app-vm-catalog-notice
+    [catalog]="vmRegionDirectory()"
+    [operatingSystem]="selectedOperatingSystem()"
+    [priceMode]="selectedPriceMode()"
+  />
+
   <aside
     class="flex items-start gap-3 rounded-lg border border-border-soft bg-surface-muted p-4 text-sm leading-relaxed text-text-muted"
-    aria-label="Region interpretation"
+    aria-label="Pricing guidance"
   >
     <app-lucide-icon name="info" class="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
     <p>
-      Region pricing comes from the anonymous Azure Retail Prices API. ResourceSku.locations is
-      retained only as subscription-scoped catalog evidence and does not filter public prices.
-      Published pricing does not guarantee capacity, quota, or deployment eligibility.
+      Compare public VM prices across Azure regions. Confirm capacity, quota, and deployment
+      eligibility before launch.
     </p>
   </aside>
 
@@ -276,7 +281,8 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-border-soft">
-            @for (region of filteredRegions(); track region.armRegionName) {
+            @for (row of filteredRegions(); track row.region.armRegionName) {
+              @let region = row.region;
               <tr class="table-row-hover align-middle">
                 <th scope="row" class="px-4 py-3 text-left font-normal">
                   <a
@@ -312,7 +318,7 @@
                   </span>
                 </td>
                 <td class="px-4 py-3 text-right font-semibold tabular-nums">
-                  {{ formatNumber(pricedSkuCount(region)) }}
+                  {{ formatNumber(row.pricedSkuCount) }}
                 </td>
                 <td class="px-4 py-3">
                   <div class="flex items-center justify-end gap-3 whitespace-nowrap">
@@ -343,7 +349,7 @@
         </table>
       </div>
     } @else {
-      <div class="card flex flex-col items-center gap-3 py-10 text-center">
+      <div class="card card--tall flex flex-col items-center gap-3 text-center">
         <app-lucide-icon name="search-x" class="size-10 text-text-muted" aria-hidden="true" />
         <h3 class="font-semibold text-text-strong">No pricing regions match</h3>
         <p class="text-sm text-text-muted">Try another name or remove the status filter.</p>

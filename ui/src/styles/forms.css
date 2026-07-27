@@ -46,52 +46,15 @@ input[type='search']::-webkit-search-results-decoration {
 }
 
 .form-control:focus-visible {
-  outline: none;
+  /* Transparent outline stays visible in forced-colors mode, where the
+     box-shadow ring below is suppressed. */
+  outline: 2px solid transparent;
+  outline-offset: 2px;
   box-shadow: 0 0 0 1px var(--color-primary);
 }
 
 .form-control::placeholder {
   color: var(--color-text-placeholder);
-}
-
-/* Legacy control with icon */
-.form-control-icon {
-  height: 2.25rem;
-  width: 100%;
-  border-radius: 0.375rem;
-  border: 1px solid var(--color-border-strong);
-  background-color: transparent;
-  font-size: 0.875rem;
-  color: var(--color-text-body);
-  box-shadow: var(--shadow-xs);
-}
-
-.form-control-icon:focus {
-  outline: none;
-  box-shadow: 0 0 0 1px var(--color-primary);
-}
-
-.form-control-icon::placeholder {
-  color: var(--color-text-placeholder);
-}
-
-.form-icon-wrapper {
-  position: relative;
-}
-
-.form-control-icon {
-  padding: 0 0.75rem 0 2.25rem;
-}
-
-.form-icon-clear {
-  position: absolute;
-  top: 50%;
-  right: 0.75rem;
-  transform: translateY(-50%);
-  color: var(--color-text-muted);
-}
-.form-icon-clear:hover {
-  color: var(--color-text-body);
 }
 
 .form-control-focus-ring:focus-visible {
@@ -146,7 +109,10 @@ input[type='search']::-webkit-search-results-decoration {
 
 .form-control-shell__action:focus-visible {
   z-index: 1;
-  outline: none;
+  /* Transparent outline stays visible in forced-colors mode, where the
+     box-shadow ring below is suppressed. */
+  outline: 2px solid transparent;
+  outline-offset: 2px;
   box-shadow:
     0 0 0 2px var(--color-surface-base),
     0 0 0 4px var(--color-primary);
@@ -191,7 +157,10 @@ input[type='search']::-webkit-search-results-decoration {
   mask-size: contain;
 }
 .form-select:focus-visible {
-  outline: none;
+  /* Transparent outline stays visible in forced-colors mode, where the
+     box-shadow ring below is suppressed. */
+  outline: 2px solid transparent;
+  outline-offset: 2px;
   box-shadow:
     0 0 0 2px var(--color-surface-base),
     0 0 0 4px var(--color-primary);

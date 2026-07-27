@@ -1,8 +1,8 @@
-<article class="page-shell section-stack mx-auto max-w-5xl">
+<article class="page-shell section-stack">
   <nav class="breadcrumb" aria-label="Breadcrumb">
-    <a class="breadcrumb-link" routerLink="/Azure/Latency">Home</a>
+    <a class="breadcrumb-link" href="/Azure/Latency">Home</a>
     <span class="breadcrumb-separator">/</span>
-    <a class="breadcrumb-link" [routerLink]="['/Information/AzureRegions']">Azure regions</a>
+    <a class="breadcrumb-link" href="/Information/AzureRegions">Azure regions</a>
     <span class="breadcrumb-separator">/</span>
     <span class="breadcrumb-current" aria-current="page">Azure China cloud regions</span>
   </nav>
@@ -10,31 +10,29 @@
   <header class="page-header">
     <h1 class="page-title">Azure China cloud regions</h1>
     <nav class="flex flex-wrap gap-2" aria-label="Region types">
-      <a class="btn btn-outline btn--sm" [routerLink]="['/Information/AzureRegions']">
-        Global regions
-      </a>
-      <a class="btn btn-outline btn--sm" [routerLink]="['/Information/AzureUSGovernmentRegions']">
+      <a class="btn btn-outline btn--sm" href="/Information/AzureRegions"> Global regions </a>
+      <a class="btn btn-outline btn--sm" href="/Information/AzureUSGovernmentRegions">
         US Gov regions
       </a>
       <span class="btn btn--sm btn-current" aria-current="page">China regions</span>
-      <a class="btn btn-outline btn--sm" [routerLink]="['/Information/AzureRestrictedRegions']">
+      <a class="btn btn-outline btn--sm" href="/Information/AzureRestrictedRegions">
         Restricted regions
       </a>
-      <a class="btn btn-outline btn--sm" [routerLink]="['/Information/AzureUpcomingRegions']">
+      <a class="btn btn-outline btn--sm" href="/Information/AzureUpcomingRegions">
         Upcoming regions
       </a>
     </nav>
     <p class="page-lead">
-      Azure regions are sets of datacenters inside a latency-defined perimeter, connected through a
-      dedicated regional network.
+      Explore Azure regions in China, a physically separate cloud operated by 21Vianet for customers
+      subject to Chinese regulatory and data residency requirements.
     </p>
   </header>
 
   <section class="section-block" aria-labelledby="regions-heading">
     <h2 id="regions-heading" class="section-title">Azure China cloud regions</h2>
     <p class="text-text-muted">
-      These regions are designed to ensure compliance with Chinese regulatory requirements and are
-      operated by 21Vianet.
+      Compare each region's approximate datacenter location, availability-zone count, paired region,
+      and customer availability.
     </p>
     <div class="table-shell">
       <table class="table-base">

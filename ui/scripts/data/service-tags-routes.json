@@ -1,0 +1,15 @@
+{
+  "implicitCloudRouteServiceTagIds": [
+    "ActionGroup.CentralIndia",
+    "ActionGroup.IsraelNorthwest",
+    "ApiManagement.CentralUSEUAP",
+    "AppService.CanadaEast",
+    "AppService.SwedenSouth"
+  ],
+  "sovereignServiceTags": [
+    { "cloud": "china", "serviceTagId": "AzureContainerRegistry" },
+    { "cloud": "china", "serviceTagId": "AzureIoTHub.ChinaEast3" },
+    { "cloud": "usgovernment", "serviceTagId": "ActionGroup.USDoDCentral" },
+    { "cloud": "usgovernment", "serviceTagId": "AzureCognitiveSearch.USDoDEast" }
+  ]
+}

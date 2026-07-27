@@ -12,7 +12,7 @@ import {
   signal,
   untracked,
 } from '@angular/core'
-import { ActivatedRoute, Router, RouterLink } from '@angular/router'
+import { ActivatedRoute, Router } from '@angular/router'
 
 import { RegionModel } from '../../../models'
 import { RegionService } from '../../../services/region.service'
@@ -26,6 +26,7 @@ import {
   getSasUrl,
   getSortedRegionIds,
   parseRegionParam,
+  resolveRegionsFromNormalizedTokens,
 } from '../../../shared/utils'
 
 const DOWNLOAD_TEST_FILE_NAME = '100MB.bin'
@@ -34,7 +35,7 @@ const REGIONS_QUERY_PARAM = 'regions'
 
 @Component({
   selector: 'app-download-test-file',
-  imports: [RouterLink, RegionGroupComponent, LucideIconComponent],
+  imports: [RegionGroupComponent, LucideIconComponent],
   templateUrl: './download-test-file.component.html',
   host: { class: 'block' },
 })
@@ -70,9 +71,9 @@ export class DownloadTestFileComponent implements OnInit {
 
     const readyCount = rows.filter((row) => Boolean(row.url)).length
     if (readyCount === rows.length) {
-      return `${readyCount} ${readyCount === 1 ? 'download link' : 'download links'} ready`
+      return `${readyCount} regional test ${readyCount === 1 ? 'file' : 'files'} ready`
     }
-    return `${readyCount} of ${rows.length} download links ready`
+    return `${readyCount} of ${rows.length} regional test files ready`
   })
   private readonly pendingDownloadRequests = new Set<string>()
   private queuedDownloadRequests: string[] = []
@@ -106,9 +107,9 @@ export class DownloadTestFileComponent implements OnInit {
 
   ngOnInit(): void {
     this.seoService.setPageMeta({
-      title: 'Azure Download Test File Generator',
+      title: 'Azure Download Test Files',
       description:
-        'Generate short-lived links to 100 MiB test files hosted in Azure Storage regions for manual download testing.',
+        'Download region-hosted Azure test files with your browser, download manager, or benchmarking tool.',
       canonicalUrl: 'https://www.azurespeed.com/Azure/DownloadTestFile',
     })
   }
@@ -149,7 +150,10 @@ export class DownloadTestFileComponent implements OnInit {
   }
 
   private applyRegionsInput(rawRegions: string | undefined): void {
-    const regions = this.resolveRegionsFromIds(parseRegionParam(rawRegions))
+    const regions = resolveRegionsFromNormalizedTokens(
+      parseRegionParam(rawRegions),
+      this.normalizedRegions
+    )
     const shouldApplySelection =
       (typeof rawRegions === 'string' && rawRegions.trim().length > 0) ||
       this.hasAppliedRegionsInput
@@ -163,17 +167,6 @@ export class DownloadTestFileComponent implements OnInit {
 
     this.canUpdateUrl = true
     this.hasAppliedRegionsInput = true
-  }
-
-  private resolveRegionsFromIds(normalizedTokens: string[]): RegionModel[] {
-    const seen = new Set<string>()
-    return normalizedTokens
-      .map((token) => this.normalizedRegions.get(token))
-      .filter((match): match is RegionModel => {
-        if (!match || seen.has(match.regionId)) return false
-        seen.add(match.regionId)
-        return true
-      })
   }
 
   private syncUrlWithSelection(sortedRegionIds: readonly string[]): void {

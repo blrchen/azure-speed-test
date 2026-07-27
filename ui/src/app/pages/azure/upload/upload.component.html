@@ -1,9 +1,9 @@
-<article class="page-shell section-stack mx-auto max-w-5xl">
+<article class="page-shell section-stack">
   <header class="page-header">
     <h1 class="page-title">Azure Multi-Region Upload Speed Test</h1>
     <p class="page-lead">
-      Generate synthetic test data in your browser and compare sequential upload throughput across
-      selected Azure Blob Storage regions.
+      Compare upload performance across Azure regions and identify the strongest destination for
+      your data and workloads.
     </p>
   </header>
 
@@ -23,14 +23,14 @@
       <h2
         #regionSelectionHeading
         id="region-selection-heading"
-        class="section-title focus-visible:outline-none"
+        class="section-title focus-visible:outline-hidden"
         tabindex="-1"
       >
         Select Azure Regions
       </h2>
       <p class="mt-2 text-sm text-text-muted">
-        Tests run one region at a time so concurrent transfers do not compete for your local
-        bandwidth.
+        Choose the Azure regions you want to compare and see which destinations deliver the
+        strongest upload experience from your connection.
       </p>
     </header>
 
@@ -42,7 +42,6 @@
     }
 
     <app-region-group
-      #regionSelector
       resultsTargetId="upload-results-heading"
       [disabled]="isRunning()"
       [excludedRegionIds]="excludedRegionIds"
@@ -53,10 +52,10 @@
 
     <form class="mt-6" (submit)="onSubmit($event)">
       <fieldset class="m-0 border-none p-0">
-        <legend class="form-label mb-2">Upload Data Size per Region</legend>
+        <legend class="form-label mb-2">Upload Size per Region</legend>
         <p class="mb-3 text-sm text-text-muted">
-          Start with 50 or 100 MiB. Larger payloads provide steadier results but consume more data
-          and take longer.
+          Start with 50 or 100 MiB for a quick comparison. Larger sizes provide a longer view of
+          upload performance but use more data and take more time.
         </p>
         <div class="flex flex-wrap gap-2" role="radiogroup" aria-label="Upload data size options">
           @for (uploadSizeMiB of uploadSizeMiBOptions; track uploadSizeMiB) {
@@ -83,20 +82,19 @@
       >
         <div class="text-sm text-text-muted">
           @if (regions.length > 0) {
-            Ready to upload
-            <span class="font-semibold text-text-strong">{{ selectedSize }} MiB</span>
-            to
+            Ready to compare upload performance across
             <span class="font-semibold text-text-strong">{{ regions.length }}</span>
-            {{ regions.length === 1 ? 'region' : 'regions' }} sequentially.
+            {{ regions.length === 1 ? 'region' : 'regions' }} with a
+            <span class="font-semibold text-text-strong">{{ selectedSize }} MiB</span>
+            transfer to each region.
             <span class="mt-1 block">
-              Planned transfer: up to
+              Planned upload: up to
               <span class="font-semibold text-text-strong">
-                {{ selectedSize * regions.length }} MiB
-              </span>
-              plus protocol overhead.
+                {{ selectedSize * regions.length }} MiB </span
+              >.
             </span>
           } @else {
-            Select one or more regions to configure the test.
+            Select one or more regions to compare upload performance.
           }
         </div>
         <button
@@ -137,11 +135,7 @@
     <section class="section-block" aria-labelledby="upload-results-heading">
       <header class="mb-4 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <h2
-            id="upload-results-heading"
-            class="section-title scroll-mt-[calc(env(safe-area-inset-top)+5rem)]"
-            tabindex="-1"
-          >
+          <h2 id="upload-results-heading" class="section-title" tabindex="-1">
             Upload Test Results
           </h2>
           <p class="mt-1 min-h-10 text-sm text-text-muted lg:min-h-0">
@@ -151,7 +145,7 @@
                 Currently testing {{ current.region.displayName }}.
               }
             } @else {
-              Average browser-to-Azure throughput for this test run.
+              Compare Azure region upload speeds from your current connection, ranked fastest first.
             }
           </p>
         </div>
@@ -167,13 +161,6 @@
               {{ isCancelling() ? 'Cancelling...' : 'Cancel Test' }}
             </button>
           } @else {
-            <button
-              type="button"
-              class="btn btn-outline btn--sm"
-              (click)="regionSelector.showSelection()"
-            >
-              Change Regions
-            </button>
             @if (failedRegionCount() > 0) {
               <button type="button" class="btn btn-outline btn--sm" (click)="retryFailedRegions()">
                 Retry Failed Regions
@@ -196,8 +183,8 @@
 
       <div class="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <p id="upload-speed-unit-help" class="text-xs text-text-muted">
-          Mbps matches typical internet plan speeds. MiB/s shows file transfer throughput. CSV
-          exports include both.
+          Mbps aligns with typical internet plan speeds, while MiB/s helps you compare file upload
+          performance. CSV exports include both.
         </p>
         <div
           class="speed-unit-toggle shrink-0"
@@ -394,7 +381,7 @@
                 @if (result.status === 'preparing') {
                   <div class="flex items-center gap-2 text-sm text-text-muted" role="status">
                     <span class="spinner-sm" aria-hidden="true"></span>
-                    Preparing secure upload URL...
+                    Preparing upload...
                   </div>
                 } @else if (result.status === 'uploading' || result.status === 'completed') {
                   <div>
@@ -479,44 +466,48 @@
           No Upload Tests Yet
         </h2>
         <p class="mt-1 text-sm text-text-muted">
-          Select regions and a payload size, then start the upload test.
+          Select regions and an upload size, then start comparing upload performance.
         </p>
       </div>
     </section>
   }
 
   <section class="section-block" aria-labelledby="upload-alternatives-heading">
-    <h2 id="upload-alternatives-heading" class="section-title">Choose the Right Transfer Test</h2>
+    <h2 id="upload-alternatives-heading" class="section-title">
+      Explore More Ways to Compare Azure Performance
+    </h2>
     <div class="mt-4 grid gap-4 md:grid-cols-3">
       <a
-        routerLink="/Azure/UploadLargeFile"
-        class="group rounded-lg bg-surface-muted p-4 text-inherit hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-none"
+        href="/Azure/UploadLargeFile"
+        class="group rounded-lg bg-surface-muted p-4 text-inherit hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-hidden"
       >
         <app-lucide-icon name="file-text" class="size-5 text-primary" aria-hidden="true" />
         <h3 class="mt-3 font-semibold text-text-strong group-hover:text-primary">
           Large File Upload Test
         </h3>
         <p class="mt-1 text-sm text-text-muted">
-          Upload your own generated, non-sensitive file to one Azure region with advanced settings.
+          Compare a larger file upload to one Azure region with advanced settings. Use only
+          generated, non-sensitive test files.
         </p>
       </a>
       <a
-        routerLink="/Azure/Download"
-        class="group rounded-lg bg-surface-muted p-4 text-inherit hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-none"
+        href="/Azure/Download"
+        class="group rounded-lg bg-surface-muted p-4 text-inherit hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-hidden"
       >
         <app-lucide-icon name="download" class="size-5 text-primary" aria-hidden="true" />
         <h3 class="mt-3 font-semibold text-text-strong group-hover:text-primary">
           Azure Download Test
         </h3>
         <p class="mt-1 text-sm text-text-muted">
-          Measure download throughput from Azure Storage to your current network.
+          Compare download performance across Azure regions and find the best experience for your
+          users and workloads.
         </p>
       </a>
       <a
         href="https://learn.microsoft.com/azure/storage/common/storage-ref-azcopy-bench"
         target="_blank"
         rel="noopener noreferrer"
-        class="group rounded-lg bg-surface-muted p-4 text-inherit hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-none"
+        class="group rounded-lg bg-surface-muted p-4 text-inherit hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-hidden"
       >
         <app-lucide-icon name="terminal" class="size-5 text-primary" aria-hidden="true" />
         <h3
@@ -526,7 +517,8 @@
           <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
         </h3>
         <p class="mt-1 text-sm text-text-muted">
-          Use Microsoft's CLI benchmark for servers, automation, and production-scale testing.
+          Compare download and upload performance for servers, automation, and production-scale
+          Azure workloads.
         </p>
       </a>
     </div>

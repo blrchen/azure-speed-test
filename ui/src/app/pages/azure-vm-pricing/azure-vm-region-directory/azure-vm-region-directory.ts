@@ -1,5 +1,4 @@
 import { Component, computed, effect, inject, input, signal } from '@angular/core'
-import { RouterLink } from '@angular/router'
 
 import { SeoService } from '../../../services/seo.service'
 import {
@@ -14,6 +13,9 @@ import {
 } from '../../../services/vm-catalog'
 import { VM_NAME_COLLATOR, VM_NUMBER_FORMATTER } from '../../../services/vm-catalog-view'
 import { LucideIconComponent } from '../../../shared/icons/lucide-icons.component'
+import { buildSearchPhrases, matchesSearchPhrases } from '../../../shared/search-normalization'
+import { absoluteUrl, buildBreadcrumbList, buildItemList } from '../../../shared/structured-data'
+import { VmCatalogNotice } from '../vm-catalog-notice/vm-catalog-notice'
 import { VmOperatingSystemToggle } from '../vm-operating-system-toggle/vm-operating-system-toggle'
 import { VmPriceModeToggle } from '../vm-price-mode-toggle/vm-price-mode-toggle'
 import {
@@ -37,10 +39,9 @@ const DEFAULT_SORT_DIRECTIONS: Readonly<Record<RegionSort, VmPriceSortDirection>
 
 @Component({
   selector: 'app-azure-vm-region-directory',
-  imports: [LucideIconComponent, RouterLink, VmOperatingSystemToggle, VmPriceModeToggle],
+  imports: [LucideIconComponent, VmCatalogNotice, VmOperatingSystemToggle, VmPriceModeToggle],
   templateUrl: './azure-vm-region-directory.html',
-  styleUrl: './azure-vm-region-directory.css',
-  host: { class: 'block' },
+  host: { class: 'block min-w-0' },
 })
 export class AzureVmRegionDirectory {
   private readonly seoService = inject(SeoService)
@@ -70,29 +71,28 @@ export class AzureVmRegionDirectory {
     )
   })
   readonly filteredRegions = computed(() => {
-    const query = this.query().trim().toLowerCase()
+    const searchPhrases = buildSearchPhrases(this.query())
     const status = this.selectedStatus()
     const operatingSystem = this.selectedOperatingSystem()
     const priceMode = this.selectedPriceMode()
     const regions = this.vmRegionDirectory().regions.filter((region) => {
       if (vmRegionPricedSkuCount(region, operatingSystem, priceMode) === 0) return false
       if (status && region.status !== status) return false
-      if (!query) return true
-      return [
-        region.armRegionName,
-        region.displayName,
-        region.geography,
-        region.regionGroup,
-        region.status,
-      ]
-        .join(' ')
-        .toLowerCase()
-        .includes(query)
+      return matchesSearchPhrases(
+        [
+          region.armRegionName,
+          region.displayName,
+          region.geography,
+          region.regionGroup,
+          region.status,
+        ].join(' '),
+        searchPhrases
+      )
     })
 
     const sortKey = this.sortKey()
     const sortDirection = this.sortDirection()
-    return [...regions].sort((left, right) => {
+    const sorted = [...regions].sort((left, right) => {
       let comparison: number
       switch (sortKey) {
         case 'arm-region':
@@ -121,8 +121,8 @@ export class AzureVmRegionDirectory {
           break
         case 'sku-count':
           comparison = compareVmPriceNumbers(
-            vmRegionPricedSkuCount(left, this.selectedOperatingSystem(), this.selectedPriceMode()),
-            vmRegionPricedSkuCount(right, this.selectedOperatingSystem(), this.selectedPriceMode()),
+            vmRegionPricedSkuCount(left, operatingSystem, priceMode),
+            vmRegionPricedSkuCount(right, operatingSystem, priceMode),
             sortDirection
           )
           break
@@ -144,6 +144,11 @@ export class AzureVmRegionDirectory {
       }
       return comparison || VM_NAME_COLLATOR.compare(left.displayName, right.displayName)
     })
+
+    return sorted.map((region) => ({
+      region,
+      pricedSkuCount: vmRegionPricedSkuCount(region, operatingSystem, priceMode),
+    }))
   })
   readonly resultSummary = computed(
     () =>
@@ -156,46 +161,28 @@ export class AzureVmRegionDirectory {
   constructor() {
     effect(() => {
       const data = this.vmRegionDirectory()
-      const canonicalUrl = 'https://www.azurespeed.com/AzureVmPricing/Regions'
-      const description = `Compare Linux and Windows pay-as-you-go, reserved, and Spot Azure VM prices across Azure regions. Open a region to sort VM sizes by hourly price, series, CPU, memory, family, and architecture.`
+      const canonicalPath = '/AzureVmPricing/Regions'
+      const description = `Compare Linux and Windows pay-as-you-go, savings plan, reserved, and Spot Azure VM prices across Azure regions. Open a region to sort VM sizes by hourly price, series, CPU, memory, family, and architecture.`
 
       this.seoService.setPageMeta({
         title: 'Azure VM Pricing by Region: Linux and Windows',
         description,
-        canonicalUrl,
+        canonicalUrl: absoluteUrl(canonicalPath),
         structuredData: [
-          {
-            '@context': 'https://schema.org',
-            '@type': 'BreadcrumbList',
-            itemListElement: [
-              {
-                '@type': 'ListItem',
-                position: 1,
-                name: 'Azure VM Sizes & Pricing',
-                item: 'https://www.azurespeed.com/AzureVmPricing',
-              },
-              {
-                '@type': 'ListItem',
-                position: 2,
-                name: 'Regions',
-                item: canonicalUrl,
-              },
-            ],
-          },
-          {
-            '@context': 'https://schema.org',
-            '@type': 'ItemList',
+          buildBreadcrumbList([
+            { name: 'Azure VM Sizes & Pricing', path: '/AzureVmPricing' },
+            { name: 'Regions', path: canonicalPath },
+          ]),
+          buildItemList({
             name: 'Azure VM pricing regions',
             numberOfItems: data.regions.length,
-            itemListElement: data.regions
+            entries: data.regions
               .filter((region) => region.indexable)
-              .map((region, index) => ({
-                '@type': 'ListItem',
-                position: index + 1,
+              .map((region) => ({
                 name: `${region.displayName} Azure VM pricing`,
-                url: `https://www.azurespeed.com${buildVmRegionHref(region.armRegionName)}`,
+                path: buildVmRegionHref(region.armRegionName),
               })),
-          },
+          }),
         ],
       })
     })
@@ -220,10 +207,6 @@ export class AzureVmRegionDirectory {
 
   updatePriceMode(priceMode: VmPriceMode): void {
     this.selectedPriceMode.set(priceMode)
-  }
-
-  pricedSkuCount(region: VmRegionsDocument['regions'][number]): number {
-    return vmRegionPricedSkuCount(region, this.selectedOperatingSystem(), this.selectedPriceMode())
   }
 
   sortBy(sortKey: RegionSort): void {

@@ -1,12 +1,11 @@
 import { Component, inject, OnInit } from '@angular/core'
-import { RouterLink } from '@angular/router'
 
 import { SeoService } from '../../../services/seo.service'
 import { LucideIconComponent } from '../../../shared/icons/lucide-icons.component'
 
 @Component({
   selector: 'app-azure-sovereign-clouds',
-  imports: [LucideIconComponent, RouterLink],
+  imports: [LucideIconComponent],
   templateUrl: './azure-sovereign-clouds.component.html',
   host: { class: 'block' },
 })

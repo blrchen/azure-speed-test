@@ -32,7 +32,6 @@ const NUMBER_FORMATTER = new Intl.NumberFormat('en-US')
   selector: 'app-vm-numeric-multi-filter',
   imports: [LucideIconComponent],
   templateUrl: './vm-numeric-multi-filter.html',
-  styleUrl: './vm-numeric-multi-filter.css',
   host: { class: 'block min-w-0' },
 })
 export class VmNumericMultiFilter {

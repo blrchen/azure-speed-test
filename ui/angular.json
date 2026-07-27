@@ -29,8 +29,7 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              },
-              "src/assets"
+              }
             ],
             "styles": [
               "src/styles.css"
@@ -38,6 +37,7 @@
             "server": "src/main.server.ts",
             "outputMode": "static",
             "allowedCommonJsDependencies": [
+              "events",
               "http-proxy-agent",
               "https-proxy-agent"
             ]

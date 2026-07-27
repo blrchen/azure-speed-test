@@ -1,4 +1,5 @@
-@import 'tailwindcss';
+@import 'tailwindcss' source(none);
+@source './';
 
 @import './styles/theme.css';
 @import './styles/utilities.css';
@@ -9,6 +10,7 @@
 @import './styles/breadcrumbs.css';
 @import './styles/buttons.css';
 @import './styles/cards.css';
+@import './styles/comparison-pages.css';
 @import './styles/faq.css';
 @import './styles/forms.css';
 @import './styles/layout.css';

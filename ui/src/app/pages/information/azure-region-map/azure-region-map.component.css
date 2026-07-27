@@ -1,6 +1,14 @@
+/* Page-level theme tokens for the whole map module, plus the dark-mode variants.
+   Kept here because these are custom-property definitions, not utility-equivalent
+   declarations, and because .azure-region-map-page has to override .page-shell
+   (unlayered semantic class, so max-w-* / gap-* utilities would lose). */
 .azure-region-map-page {
   width: 100%;
   max-width: 100rem;
+  /* This is the only full-width-shell route, so it is the only page that can hit
+     its own max-width and need centring. .page-shell sets margin: 0 and would
+     beat an mx-auto utility, leaving the page left-aligned past 100rem. */
+  margin-inline: auto;
   gap: 1.5rem;
   --azure-map-shell-bg: linear-gradient(
     145deg,
@@ -51,24 +59,7 @@
   --azure-map-shadow: var(--shadow-card-strong);
 }
 
-.azure-map-header {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-@media (min-width: 768px) {
-  .azure-map-header {
-    flex-direction: row;
-    align-items: flex-end;
-    justify-content: space-between;
-  }
-}
-
-.azure-map-header__copy {
-  max-width: 48rem;
-}
-
+/* Small eyebrow label repeated 7 times across the template. */
 .azure-map-panel-label {
   margin: 0;
   color: var(--color-brand);
@@ -78,30 +69,42 @@
   text-transform: uppercase;
 }
 
-.azure-map-lead {
-  margin: 0.75rem 0 0;
-  max-width: 42rem;
-  color: var(--color-text-muted);
-  font-size: 1rem;
-  line-height: 1.6;
+/* Legend swatches: the outer ring is built from currentColor, so color and
+   background must be set together per tone, and the selected tone also changes
+   size and uses a two-stop ring. */
+.azure-map-legend-swatch {
+  display: inline-flex;
+  width: 0.75rem;
+  height: 0.75rem;
+  flex: 0 0 auto;
+  border: 2px solid var(--color-primary-foreground);
+  border-radius: 999px;
+  box-shadow: 0 0 0 2px color-mix(in srgb, currentColor 18%, transparent);
 }
 
-.azure-map-header__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
+.azure-map-legend-swatch[data-tone='region'] {
+  color: var(--azure-map-marker);
+  background: var(--azure-map-marker);
 }
 
-.azure-map-header__actions .btn {
-  min-height: 2.75rem;
-  touch-action: manipulation;
+.azure-map-legend-swatch[data-tone='selected'] {
+  width: 0.95rem;
+  height: 0.95rem;
+  color: var(--azure-map-marker);
+  background: var(--azure-map-marker-selected);
+  box-shadow:
+    0 0 0 2px var(--azure-map-marker),
+    0 0 0 5px color-mix(in srgb, var(--azure-map-marker) 22%, transparent);
 }
 
-.azure-map-explorer {
-  overflow: hidden;
-  border: 1px solid var(--azure-map-shell-border);
-  border-radius: var(--radius-xl);
-  background: var(--azure-map-shell-bg);
-  color: var(--color-text-body);
-  box-shadow: var(--azure-map-shadow);
+/* List-item selection states: these must win over the hover utilities on the
+   same element, which same-layer utilities could not guarantee by class order. */
+.azure-map-region-item--active {
+  background: color-mix(in srgb, var(--color-brand) 12%, transparent);
+  color: var(--color-text-strong);
+}
+
+.azure-map-region-item--selected {
+  border-left: 3px solid var(--color-brand);
+  background: color-mix(in srgb, var(--color-brand) 8%, transparent);
 }

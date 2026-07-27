@@ -1,12 +1,11 @@
-<article class="page-shell section-stack mx-auto max-w-5xl">
+<article class="page-shell section-stack">
   <header class="page-header">
     <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
       <h1 class="page-title">Azure IP ranges by service</h1>
       <nav class="flex flex-wrap gap-2" aria-label="Azure IP range directory views">
         <a
           class="btn btn-outline btn--sm min-h-11 md:min-h-9"
-          routerLink="/Information/AzureIpRangesByRegion"
-          [queryParams]="cloudQueryParams()"
+          [href]="buildDocumentHref('/Information/AzureIpRangesByRegion', cloudQueryParams())"
         >
           By region
         </a>
@@ -16,8 +15,8 @@
       </nav>
     </div>
     <p class="page-lead">
-      Browse Azure service tags by service and cloud, then inspect IPv4 and IPv6 prefixes for each
-      global or regional tag.
+      Explore Azure IP ranges by service and quickly find the network scopes relevant to your
+      architecture.
     </p>
   </header>
 
@@ -25,7 +24,7 @@
     <div class="flex items-start gap-3">
       <app-lucide-icon
         name="shield-check"
-        class="mt-0.5 size-5 shrink-0 text-warning-foreground dark:text-warning"
+        class="mt-0.5 size-5 shrink-0 text-warning-emphasis"
         aria-hidden="true"
       />
       <div class="min-w-0 space-y-1 text-sm leading-relaxed text-text-muted">
@@ -33,9 +32,8 @@
           Use service tags directly when supported
         </h2>
         <p>
-          Service tags simplify network rules, but they do not replace identity, TLS, Private Link,
-          or application-layer controls. If an external firewall requires raw prefixes, keep the
-          copied list synchronized with Microsoft's regularly updated source files.
+          Use service tags when available. If you rely on raw IP ranges, review them regularly and
+          combine them with identity and application controls.
         </p>
       </div>
     </div>
@@ -49,9 +47,8 @@
       <div>
         <h2 id="service-directory-heading" class="section-title">Service directory</h2>
         <p class="mt-2 text-text-muted">
-          A service can publish 1 global tag, multiple regional tags, or both. This view includes
-          tags with a Microsoft-published system-service association; use By region for AzureCloud
-          regional scopes. Counts represent service-tag identifiers, not individual CIDR prefixes.
+          Browse global and regional service tags, then open any tag to review its IPv4 and IPv6
+          ranges.
         </p>
       </div>
 
@@ -72,7 +69,9 @@
               #serviceSearchInput
               id="ip-service-search"
               type="search"
-              [formField]="filtersForm.search"
+              name="ipRangesByServiceFilters.search"
+              [value]="filtersModel().search"
+              (input)="updateSearch($event)"
               placeholder="AzureStorage or ActionGroup.AustraliaEast..."
               autocomplete="off"
               spellcheck="false"
@@ -101,9 +100,10 @@
             <select
               id="ip-service-cloud"
               class="form-select min-h-11"
-              [formField]="filtersForm.cloud"
+              name="ipRangesByServiceFilters.cloud"
+              [value]="filtersModel().cloud"
               autocomplete="off"
-              (change)="clearSelectedService()"
+              (change)="updateCloud($event)"
             >
               @for (cloudOption of cloudOptions(); track cloudOption.id) {
                 <option [value]="cloudOption.id">
@@ -120,9 +120,10 @@
             <select
               id="ip-service-scope"
               class="form-select min-h-11"
-              [formField]="filtersForm.scope"
+              name="ipRangesByServiceFilters.scope"
+              [value]="filtersModel().scope"
               autocomplete="off"
-              (change)="clearSelectedService()"
+              (change)="updateScope($event)"
             >
               <option value="">Global and regional tags</option>
               @for (scopeOption of scopeOptions; track scopeOption.value) {
@@ -136,7 +137,7 @@
       <nav class="flex flex-wrap gap-1.5" aria-label="Filter services by first letter">
         <button
           type="button"
-          class="btn btn--sm min-h-11 min-w-11 p-0 md:min-h-9 md:min-w-9"
+          class="btn btn--sm ip-service-letter"
           [class.btn-current]="!filtersModel().letter"
           [class.btn-outline]="filtersModel().letter"
           [attr.aria-pressed]="!filtersModel().letter"
@@ -147,7 +148,7 @@
         @for (availableLetter of availableLetters(); track availableLetter) {
           <button
             type="button"
-            class="btn btn--sm min-h-11 min-w-11 p-0 md:min-h-9 md:min-w-9"
+            class="btn btn--sm ip-service-letter"
             [class.btn-current]="filtersModel().letter === availableLetter"
             [class.btn-outline]="filtersModel().letter !== availableLetter"
             [attr.aria-pressed]="filtersModel().letter === availableLetter"
@@ -184,12 +185,13 @@
       @if (services.length) {
         <ul class="flex flex-col gap-2" aria-describedby="ip-service-result-summary">
           @for (serviceEntry of services; track serviceEntry.name) {
-            <li class="service-directory-item flex flex-col gap-2">
+            <li
+              class="flex flex-col gap-2 [contain-intrinsic-size:auto_3rem] [content-visibility:auto]"
+            >
               <button
                 type="button"
-                class="btn btn-outline btn--wrap min-h-11 w-full items-center justify-between gap-3 bg-surface-raised text-sm font-semibold text-text-strong"
-                [class.border-primary]="selected?.name === serviceEntry.name"
-                [class.bg-surface-muted]="selected?.name === serviceEntry.name"
+                class="btn btn-outline ip-service-toggle w-full items-center text-text-strong"
+                [class.ip-service-toggle--selected]="selected?.name === serviceEntry.name"
                 (click)="selectService(serviceEntry.name)"
                 [attr.aria-expanded]="selected?.name === serviceEntry.name"
                 [attr.aria-controls]="
@@ -207,7 +209,7 @@
                   />
                   <span class="min-w-0 break-words" translate="no">{{ serviceEntry.name }}</span>
                 </span>
-                <span class="badge badge-brand shrink-0 justify-center px-2" aria-hidden="true">
+                <span class="badge badge-brand badge--compact shrink-0" aria-hidden="true">
                   {{ serviceEntry.serviceTags.length }}
                 </span>
               </button>
@@ -229,7 +231,7 @@
 
                   @for (tagGroup of selectedServiceGroups(); track tagGroup.label) {
                     <section
-                      class="service-tag-scope-group space-y-2"
+                      class="space-y-2 [contain-intrinsic-size:auto_12rem] [content-visibility:auto]"
                       [attr.aria-labelledby]="tagGroup.headingId"
                     >
                       <h3 [id]="tagGroup.headingId" class="text-sm font-semibold text-text-strong">
@@ -238,7 +240,7 @@
                       <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
                         @for (serviceTag of tagGroup.serviceTags; track serviceTag.serviceTagId) {
                           <a
-                            class="group flex min-h-14 min-w-0 items-center gap-2 rounded-lg bg-surface-raised px-3 py-2 hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-none"
+                            class="group flex min-h-14 min-w-0 items-center gap-2 rounded-lg bg-surface-raised px-3 py-2 hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-hidden"
                             [href]="serviceTagHref(serviceTag)"
                           >
                             <div class="min-w-0 flex-1">
@@ -296,33 +298,40 @@
       }
     </section>
 
-    <section class="section-block" aria-labelledby="service-source-heading">
-      <h2 id="service-source-heading" class="section-title">Source and updates</h2>
-      <p class="max-w-4xl leading-relaxed text-text-muted">
-        This directory uses Microsoft Azure Service Tags data. Microsoft normally publishes
-        downloadable service-tag files weekly.
-      </p>
-      <div class="flex flex-wrap gap-2">
-        <a
-          class="btn btn-outline btn--sm"
-          href="https://learn.microsoft.com/en-us/azure/virtual-network/service-tags-overview"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Service tags overview
-          <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
-        </a>
-        @if (selectedCloud(); as cloudMetadata) {
-          <a
-            class="btn btn-outline btn--sm"
-            [href]="cloudMetadata.downloadUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Official {{ cloudMetadata.label }} download
-            <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
-          </a>
-        }
+    <section class="section-block" aria-labelledby="service-faq-heading">
+      <h2 id="service-faq-heading" class="section-title">Frequently asked questions</h2>
+      <div class="faq-list">
+        <details class="faq-item group">
+          <summary class="faq-summary">
+            <span class="faq-question">{{ sourceFaq.question }}</span>
+            <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
+          </summary>
+          <div class="faq-body">
+            <p>{{ sourceFaq.answer }}</p>
+            <div class="flex flex-wrap gap-2">
+              <a
+                class="btn btn-outline btn--sm"
+                href="https://learn.microsoft.com/en-us/azure/virtual-network/service-tags-overview"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Service tags overview
+                <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
+              </a>
+              @if (selectedCloud(); as cloudMetadata) {
+                <a
+                  class="btn btn-outline btn--sm"
+                  [href]="cloudMetadata.downloadUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Official {{ cloudMetadata.label }} download
+                  <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
+                </a>
+              }
+            </div>
+          </div>
+        </details>
       </div>
     </section>
   } @else {
@@ -363,7 +372,7 @@
         </a>
       </div>
       @if (loadState() === 'error') {
-        <p class="text-sm font-semibold text-danger-dark dark:text-danger" role="alert">
+        <p class="text-sm font-semibold text-danger-emphasis" role="alert">
           The retry failed. Check your network and try again.
         </p>
       }

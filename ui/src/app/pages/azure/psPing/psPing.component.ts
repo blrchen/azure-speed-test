@@ -1,10 +1,10 @@
 import { NgOptimizedImage } from '@angular/common'
 import { Component, computed, inject, OnInit, signal } from '@angular/core'
-import { RouterLink } from '@angular/router'
 
 import { RegionService } from '../../../services/region.service'
 import { SeoService } from '../../../services/seo.service'
 import { CopyButtonComponent } from '../../../shared/copy-button/copy-button.component'
+import { buildDocumentHref } from '../../../shared/document-navigation'
 import { LucideIconComponent } from '../../../shared/icons/lucide-icons.component'
 
 const DEFAULT_REGION_ID = 'westus'
@@ -19,11 +19,12 @@ interface TestComparisonRow {
 
 @Component({
   selector: 'app-psping',
-  imports: [CopyButtonComponent, LucideIconComponent, NgOptimizedImage, RouterLink],
+  imports: [CopyButtonComponent, LucideIconComponent, NgOptimizedImage],
   templateUrl: './psPing.component.html',
   host: { class: 'block' },
 })
 export class PSPingComponent implements OnInit {
+  protected readonly buildDocumentHref = buildDocumentHref
   private readonly regionService = inject(RegionService)
   private readonly seoService = inject(SeoService)
 
@@ -87,7 +88,7 @@ export class PSPingComponent implements OnInit {
     this.seoService.setPageMeta({
       title: 'PsPing Azure Latency Test and Command Generator',
       description:
-        'Generate a PsPing command to test TCP connection latency to Azure region endpoints, understand the results, and compare PsPing with browser latency tests.',
+        'Generate a ready-to-run PsPing command and compare network latency to Azure regions from your own connection.',
       canonicalUrl: 'https://www.azurespeed.com/Azure/PsPing',
     })
   }

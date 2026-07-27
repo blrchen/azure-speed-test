@@ -1,57 +1,75 @@
-<article class="page-shell azure-region-map-page mx-auto">
-  <header class="azure-map-header">
-    <div class="azure-map-header__copy">
+<article class="page-shell azure-region-map-page">
+  <header class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+    <div class="max-w-3xl">
       <h1 class="page-title">Azure region map</h1>
-      <p class="azure-map-lead">
-        Explore unrestricted global Azure cloud regions, inspect regional metadata, and continue
-        directly into latency testing.
+      <p class="page-lead mt-3 max-w-2xl">
+        Explore Azure regions around the world and find locations that support your deployment
+        strategy.
       </p>
     </div>
-    <nav class="azure-map-header__actions" aria-label="Region views">
-      <a class="btn btn-outline btn--sm" routerLink="/Information/AzureRegions"> Table view </a>
-      <span class="btn btn--sm btn-current" aria-current="page">
+    <nav class="flex flex-wrap gap-3" aria-label="Region views">
+      <a
+        class="btn btn-outline btn--sm min-h-11 touch-manipulation"
+        href="/Information/AzureRegions"
+      >
+        Table view
+      </a>
+      <span class="btn btn--sm btn-current min-h-11 touch-manipulation" aria-current="page">
         <app-lucide-icon name="map" class="size-4" aria-hidden="true" />
         Map view
       </span>
     </nav>
   </header>
 
-  <section class="azure-map-explorer" aria-labelledby="region-map-heading">
+  <section
+    class="overflow-hidden rounded-xl border border-(--azure-map-shell-border) bg-[image:var(--azure-map-shell-bg)] text-text-body shadow-(--azure-map-shadow)"
+    aria-labelledby="region-map-heading"
+  >
     <h2 id="region-map-heading" class="sr-only">Browse regions by map</h2>
     <p class="sr-only" aria-live="polite" aria-atomic="true">
       {{ selectedRegionAnnouncement() }}
     </p>
 
-    <div class="azure-map-control-strip" role="group" aria-label="Map filters and controls">
-      <div class="azure-map-control-strip__header">
+    <div
+      class="grid gap-[0.85rem] border-b border-(--azure-map-panel-border) bg-[color-mix(in_srgb,var(--azure-map-section-bg)_86%,transparent)] p-3 md:px-4 md:pt-[0.85rem] md:pb-4"
+      role="group"
+      aria-label="Map filters and controls"
+    >
+      <div
+        class="grid min-w-0 items-center gap-x-4 gap-y-[0.65rem] sm:grid-cols-[minmax(16rem,28rem)_minmax(0,1fr)]"
+      >
         <form
-          class="azure-map-search"
+          class="m-0 min-w-0"
           role="search"
           aria-label="Search Azure regions"
           (submit)="$event.preventDefault()"
         >
           <label class="sr-only" for="azure-map-search">Search regions or locations</label>
-          <div class="azure-map-search__field">
+          <div
+            class="relative flex min-w-0 items-center rounded-xl border border-(--azure-map-panel-border) bg-[color-mix(in_srgb,var(--color-surface-raised)_92%,transparent)] transition-[border-color,box-shadow] duration-[160ms] ease-[ease] focus-within:border-primary focus-within:shadow-[0_0_0_2px_var(--color-surface-base),0_0_0_4px_var(--color-primary)] motion-reduce:transition-none"
+          >
             <app-lucide-icon
               name="search"
-              class="azure-map-search__icon size-4"
+              class="pointer-events-none absolute left-[0.85rem] size-4 text-text-muted"
               aria-hidden="true"
             />
             <input
               #mapSearchInput
               id="azure-map-search"
-              class="azure-map-search__input"
+              class="min-h-11 w-full min-w-0 border-0 bg-transparent py-[0.65rem] pr-12 pl-[2.65rem] font-[inherit] text-sm text-text-body outline-0 placeholder:text-text-placeholder [&::-webkit-search-cancel-button]:hidden"
               type="search"
               inputmode="search"
               placeholder="Search regions or locations..."
               autocomplete="off"
               spellcheck="false"
-              [formField]="filtersForm.search"
+              name="azureRegionMapFilters.search"
+              [value]="filtersModel().search"
+              (input)="updateSearch($event)"
             />
             @if (hasSearchQuery()) {
               <button
                 type="button"
-                class="azure-map-search__clear"
+                class="form-control-focus-ring absolute right-0 inline-flex size-11 touch-manipulation items-center justify-center rounded-control border-0 bg-transparent text-text-muted outline-hidden hover:text-text-strong"
                 aria-label="Clear region search"
                 (click)="clearSearch()"
               >
@@ -60,17 +78,17 @@
             }
           </div>
         </form>
-        <p class="azure-map-control-strip__summary" aria-live="polite">
+        <p class="m-0 text-compact font-bold text-text-muted sm:text-right" aria-live="polite">
           {{ regionCountLabel() }}
         </p>
       </div>
 
-      <div class="azure-map-control-strip__controls">
-        <div class="azure-map-geography-select">
+      <div class="flex min-w-0 items-end gap-[0.65rem] max-[360px]:grid">
+        <div class="grid min-w-0 flex-auto gap-[0.45rem] sm:hidden">
           <label class="azure-map-panel-label" for="azure-map-geography-select">Geography</label>
           <select
             id="azure-map-geography-select"
-            class="azure-map-geography-select__control"
+            class="form-control-focus-ring min-h-11 w-full rounded-control border border-(--azure-map-panel-border) bg-surface-raised py-[0.55rem] pr-9 pl-3 font-[inherit] text-compact font-bold text-text-body outline-hidden"
             autocomplete="off"
             [value]="selectedGroup()"
             (change)="selectGroupFromControl($event)"
@@ -83,14 +101,13 @@
           </select>
         </div>
 
-        <fieldset class="azure-map-geography-group">
+        <fieldset class="m-0 hidden min-w-0 flex-auto gap-[0.45rem] border-0 p-0 sm:grid">
           <legend class="azure-map-panel-label">Geography</legend>
-          <div id="azure-map-geography" class="azure-map-geography-inline">
+          <div id="azure-map-geography" class="flex min-w-0 flex-wrap items-center gap-[0.4rem]">
             @for (group of regionGroups(); track group.id) {
               <button
                 type="button"
-                class="azure-map-filter-chip"
-                [class.azure-map-filter-chip--active]="selectedGroup() === group.id"
+                class="form-control-focus-ring inline-flex min-h-11 shrink-0 touch-manipulation items-center gap-[0.45rem] rounded-full border border-(--azure-map-panel-border) bg-[color-mix(in_srgb,var(--color-surface-muted)_80%,transparent)] px-[0.7rem] py-2 text-xs font-extrabold text-text-muted outline-hidden hover:border-[color-mix(in_srgb,var(--color-brand)_54%,var(--color-border-soft))] hover:text-text-strong aria-pressed:border-brand aria-pressed:bg-brand aria-pressed:text-primary-foreground"
                 [attr.aria-label]="
                   group.label +
                   ' ' +
@@ -105,7 +122,10 @@
                 (click)="selectGroup(group.id)"
               >
                 <span>{{ group.label }}</span>
-                <span class="azure-map-filter-chip__count">{{ group.count }}</span>
+                <span
+                  class="min-w-[1.3rem] rounded-full bg-[color-mix(in_srgb,currentColor_16%,transparent)] px-[0.35rem] py-[0.05rem] text-center tabular-nums in-aria-pressed:bg-scrim-on-solid"
+                  >{{ group.count }}</span
+                >
               </button>
             }
           </div>
@@ -114,8 +134,7 @@
         <button
           #legendTrigger
           type="button"
-          class="azure-map-tool-button azure-map-tool-button--legend"
-          [class.azure-map-tool-button--active]="activeToolbarPanel() === 'legend'"
+          class="form-control-focus-ring inline-flex min-h-11 shrink-0 touch-manipulation items-center justify-center gap-[0.4rem] rounded-control border border-(--azure-map-panel-border) bg-[color-mix(in_srgb,var(--color-surface-muted)_80%,transparent)] px-3 py-[0.55rem] text-xs font-extrabold whitespace-nowrap text-text-muted outline-hidden hover:bg-brand/10 hover:text-text-strong aria-expanded:border-[color-mix(in_srgb,var(--color-brand)_58%,transparent)] aria-expanded:bg-brand aria-expanded:text-primary-foreground aria-expanded:hover:bg-brand aria-expanded:hover:text-primary-foreground"
           [attr.aria-expanded]="activeToolbarPanel() === 'legend'"
           [attr.aria-controls]="activeToolbarPanel() === 'legend' ? 'azure-map-legend' : null"
           (click)="toggleToolbarPanel('legend')"
@@ -126,26 +145,33 @@
       </div>
     </div>
 
-    <div class="azure-map-layout">
-      <div class="azure-map-canvas-panel">
-        <div class="azure-map-canvas">
+    <div
+      class="grid grid-cols-[minmax(0,1fr)] gap-0 xl:h-[clamp(32rem,58vh,40rem)] xl:grid-cols-[minmax(0,1fr)_minmax(20rem,24rem)]"
+    >
+      <div class="order-1 min-w-0 p-3 md:p-4 xl:h-full">
+        <div
+          class="relative isolate aspect-[4/3] min-h-48 overflow-hidden rounded-lg border border-(--azure-map-panel-border) bg-[color:var(--azure-map-canvas-bg)] bg-[image:linear-gradient(var(--azure-map-grid)_1px,transparent_1px),linear-gradient(90deg,var(--azure-map-grid)_1px,transparent_1px)] bg-[size:64px_64px] after:pointer-events-none after:absolute after:inset-0 after:z-4 after:shadow-[inset_0_0_72px_color-mix(in_srgb,var(--color-overlay)_12%,transparent)] after:content-[''] md:aspect-video md:min-h-0 xl:aspect-auto xl:h-full"
+        >
           @if (activeToolbarPanel() === 'legend') {
             <div
               id="azure-map-legend"
-              class="azure-map-overlay-panel azure-map-overlay-panel--legend"
+              class="absolute top-3 right-3 left-3 z-5 max-w-96 rounded-[0.75rem] border border-(--azure-map-toolbar-border) bg-(--azure-map-toolbar-bg) p-[0.85rem] shadow-(--azure-map-shadow) backdrop-blur-[18px] md:top-4 md:right-4 md:left-auto"
               role="region"
               aria-labelledby="azure-map-legend-title"
             >
-              <div class="azure-map-overlay-panel__header">
+              <div class="flex items-start justify-between gap-4">
                 <div>
                   <p class="azure-map-panel-label">Legend</p>
-                  <h3 id="azure-map-legend-title" class="azure-map-overlay-title">
+                  <h3
+                    id="azure-map-legend-title"
+                    class="mt-[0.18rem] mb-0 text-base leading-tight font-extrabold text-text-strong"
+                  >
                     Region marker meaning
                   </h3>
                 </div>
                 <button
                   type="button"
-                  class="azure-map-overlay-close"
+                  class="form-control-focus-ring inline-flex size-11 shrink-0 touch-manipulation items-center justify-center rounded-control border border-(--azure-map-panel-border) bg-[color-mix(in_srgb,var(--color-surface-muted)_82%,transparent)] text-text-muted outline-hidden hover:text-text-strong"
                   aria-label="Close legend"
                   (click)="closeToolbarPanel()"
                 >
@@ -153,17 +179,22 @@
                 </button>
               </div>
 
-              <dl class="azure-map-legend-list">
+              <dl class="mt-[0.8rem] mb-0 grid gap-[0.55rem]">
                 @for (item of legendItems(); track item.tone) {
-                  <div class="azure-map-legend-item">
-                    <dt>
+                  <div class="flex items-center justify-between gap-3 text-compact text-text-body">
+                    <dt class="inline-flex min-w-0 items-center gap-2 font-bold">
                       <span
-                        [class]="'azure-map-legend-swatch azure-map-legend-swatch--' + item.tone"
+                        class="azure-map-legend-swatch"
+                        [attr.data-tone]="item.tone"
                         aria-hidden="true"
                       ></span>
                       <span>{{ item.label }}</span>
                     </dt>
-                    <dd>{{ item.countLabel }}</dd>
+                    <dd
+                      class="m-0 max-w-44 truncate text-right text-xs font-extrabold text-text-muted"
+                    >
+                      {{ item.countLabel }}
+                    </dd>
                   </div>
                 }
               </dl>
@@ -181,12 +212,15 @@
           />
 
           @if (!filteredRegions().length) {
-            <div class="azure-map-empty" role="status">
+            <div
+              class="absolute inset-0 z-3 flex flex-col items-center justify-center gap-3 bg-[color-mix(in_srgb,var(--azure-map-canvas-bg)_88%,transparent)] p-6 text-center text-text-muted backdrop-blur-[6px]"
+              role="status"
+            >
               <app-lucide-icon name="search-x" class="size-8" aria-hidden="true" />
-              <p>No regions match the current filters.</p>
+              <p class="m-0 text-sm font-bold">No regions match the current filters.</p>
               <button
                 type="button"
-                class="btn btn-outline btn--sm"
+                class="btn btn-outline btn--sm min-h-11 touch-manipulation"
                 (click)="clearFilters(); mapSearchInput.focus()"
               >
                 Clear filters
@@ -195,19 +229,26 @@
           }
 
           @if (previewRegion(); as mapRegion) {
-            <div class="azure-map-current-region">
-              <div class="azure-map-current-region__copy">
+            <div
+              class="absolute right-3 bottom-3 left-3 z-3 flex items-center justify-between gap-[0.9rem] rounded-[0.75rem] border border-(--azure-map-toolbar-border) bg-[color-mix(in_srgb,var(--azure-map-toolbar-bg)_94%,transparent)] p-3 shadow-(--azure-map-shadow) backdrop-blur-[18px] md:right-auto md:bottom-4 md:left-4 md:w-[min(28rem,calc(100%-2rem))] xl:hidden"
+            >
+              <div class="min-w-0">
                 <p class="azure-map-panel-label">
                   {{ isPreviewingRegion() ? 'Preview' : 'Selected' }}
                 </p>
-                <h3>{{ mapRegion.displayName }}</h3>
-                <p>{{ mapRegion.datacenterLocation }} - {{ mapRegion.regionGroup }}</p>
+                <h3
+                  class="mt-[0.1rem] mb-0 truncate text-base leading-[1.1] font-[850] text-text-strong"
+                >
+                  {{ mapRegion.displayName }}
+                </h3>
+                <p class="mt-1 mb-0 truncate text-xs font-bold text-text-muted">
+                  {{ mapRegion.datacenterLocation }} - {{ mapRegion.regionGroup }}
+                </p>
               </div>
               @if (!isPreviewingRegion() && selectedRegion()) {
                 <a
-                  class="azure-map-current-region__action"
-                  routerLink="/Azure/Latency"
-                  [queryParams]="selectedLatencyQueryParams()"
+                  class="form-control-focus-ring inline-flex min-h-11 min-w-11 shrink-0 touch-manipulation items-center justify-center gap-[0.4rem] rounded-control bg-brand px-3 py-[0.55rem] text-xs font-[850] text-primary-foreground no-underline outline-hidden"
+                  [href]="buildDocumentHref('/Azure/Latency', selectedLatencyQueryParams())"
                   [attr.aria-label]="'Test latency for ' + mapRegion.displayName"
                 >
                   <app-lucide-icon name="activity" class="size-4" aria-hidden="true" />
@@ -219,29 +260,40 @@
         </div>
       </div>
 
-      <div class="azure-map-side-panel">
-        <section class="azure-map-selected-panel" aria-labelledby="selected-region-heading">
+      <div
+        class="order-2 flex min-h-0 min-w-0 flex-col border-t border-(--azure-map-panel-border) bg-(--azure-map-panel-bg) xl:h-full xl:overflow-hidden xl:border-t-0 xl:border-l xl:border-(--azure-map-panel-border)"
+      >
+        <section
+          class="flex shrink-0 grow-0 flex-col gap-4 border-b border-(--azure-map-panel-border) bg-(--azure-map-section-bg) p-4 md:max-xl:flex-row md:max-xl:items-center md:max-xl:justify-between"
+          aria-labelledby="selected-region-heading"
+        >
           @if (selectedRegion(); as region) {
-            <div class="azure-map-selected-panel__summary">
-              <div class="azure-map-selected-panel__icon" aria-hidden="true">
+            <div class="flex min-w-0 items-start gap-[0.9rem]">
+              <div
+                class="inline-flex size-10 shrink-0 items-center justify-center rounded-control bg-brand/14 text-brand"
+                aria-hidden="true"
+              >
                 <app-lucide-icon name="server" class="size-5" />
               </div>
               <div class="min-w-0">
                 <p class="azure-map-panel-label">Selected region</p>
-                <h3 id="selected-region-heading" class="azure-map-selected-panel__title">
+                <h3
+                  id="selected-region-heading"
+                  class="mt-[0.15rem] mb-0 text-[1.15rem] font-extrabold wrap-anywhere text-text-strong"
+                >
                   {{ region.displayName }}
                 </h3>
-                <p class="azure-map-selected-panel__details">
+                <p class="mt-1 mb-0 text-sm leading-snug-body text-text-muted">
                   {{ region.datacenterLocation }} - {{ region.regionGroup }}
                 </p>
-                <p class="azure-map-selected-panel__status">
+                <p class="mt-[0.3rem] mb-0 text-compact font-bold text-text-body tabular-nums">
                   {{ regionStatusLabel(region) }} - {{ formatCoordinates(region) }}
                 </p>
               </div>
             </div>
-            <div class="azure-map-selected-panel__actions">
+            <div class="flex flex-wrap gap-[0.7rem]">
               <a
-                class="btn btn-primary"
+                class="btn btn-primary min-h-11 touch-manipulation"
                 [href]="selectedRegionDetailHref()"
                 [attr.aria-label]="'View details for ' + region.displayName"
               >
@@ -249,9 +301,8 @@
                 View details
               </a>
               <a
-                class="btn btn-secondary"
-                routerLink="/Azure/Latency"
-                [queryParams]="selectedLatencyQueryParams()"
+                class="btn btn-secondary min-h-11 touch-manipulation"
+                [href]="buildDocumentHref('/Azure/Latency', selectedLatencyQueryParams())"
                 [attr.aria-label]="'Test latency for ' + region.displayName"
               >
                 <app-lucide-icon name="activity" class="size-4" aria-hidden="true" />
@@ -259,16 +310,22 @@
               </a>
             </div>
           } @else {
-            <div class="azure-map-selected-panel__empty">
-              <div class="azure-map-selected-panel__icon" aria-hidden="true">
+            <div class="flex min-w-0 items-start gap-[0.9rem]">
+              <div
+                class="inline-flex size-10 shrink-0 items-center justify-center rounded-control bg-brand/14 text-brand"
+                aria-hidden="true"
+              >
                 <app-lucide-icon name="map-pin" class="size-5" />
               </div>
               <div>
                 <p class="azure-map-panel-label">Selected region</p>
-                <h3 id="selected-region-heading" class="azure-map-selected-panel__title">
+                <h3
+                  id="selected-region-heading"
+                  class="mt-[0.15rem] mb-0 text-[1.15rem] font-extrabold wrap-anywhere text-text-strong"
+                >
                   Select a region
                 </h3>
-                <p class="azure-map-selected-panel__details">
+                <p class="mt-1 mb-0 text-sm leading-snug-body text-text-muted">
                   Choose a map marker or a region from the list to view details and test latency.
                 </p>
               </div>
@@ -276,11 +333,14 @@
           }
         </section>
 
-        <section class="azure-map-list-panel" aria-labelledby="region-list-heading">
-          <div class="azure-map-list-panel__header">
+        <section
+          class="flex min-h-0 flex-auto flex-col bg-(--azure-map-panel-bg)"
+          aria-labelledby="region-list-heading"
+        >
+          <div class="flex shrink-0 grow-0 items-center justify-between gap-4 p-4">
             <div>
               <p class="azure-map-panel-label">Regions</p>
-              <h3 id="region-list-heading" class="azure-map-panel-title">
+              <h3 id="region-list-heading" class="mt-1 mb-0 text-base font-bold text-text-strong">
                 {{ regionCountLabel() }}
               </h3>
             </div>
@@ -288,12 +348,14 @@
           </div>
 
           @if (filteredRegions().length) {
-            <ul class="azure-map-region-list">
+            <ul
+              class="m-0 grid max-h-88 min-h-0 list-none overflow-y-auto overscroll-contain border-t border-(--azure-map-panel-border) p-0 md:max-xl:grid-cols-2 xl:block xl:max-h-none xl:flex-auto [&>li]:min-w-0"
+            >
               @for (region of filteredRegions(); track region.regionId) {
                 <li>
                   <button
                     type="button"
-                    class="azure-map-region-item"
+                    class="azure-map-region-item flex min-h-15 w-full touch-manipulation items-center justify-between gap-3 border-0 border-b border-(--azure-map-panel-border) bg-transparent px-4 py-3 text-left text-text-body outline-hidden hover:bg-brand/12 hover:text-text-strong focus-visible:relative focus-visible:z-1 focus-visible:inset-shadow-[0_0_0_2px_var(--color-primary)] max-[360px]:block"
                     [class.azure-map-region-item--active]="isPreviewRegion(region)"
                     [class.azure-map-region-item--selected]="isSelectedRegion(region)"
                     [attr.aria-pressed]="isSelectedRegion(region)"
@@ -306,13 +368,17 @@
                     (blur)="clearActiveRegion()"
                     (keydown)="handleListKeydown($event, region)"
                   >
-                    <span class="azure-map-region-item__main">
-                      <span class="azure-map-region-item__name">{{ region.displayName }}</span>
-                      <span class="azure-map-region-item__location">
+                    <span class="grid min-w-0 gap-[0.15rem]">
+                      <span class="truncate text-sm font-bold text-current">
+                        {{ region.displayName }}
+                      </span>
+                      <span class="truncate text-xs text-text-muted">
                         {{ region.datacenterLocation }}
                       </span>
                     </span>
-                    <span class="azure-map-region-item__meta">
+                    <span
+                      class="max-w-32 shrink-0 rounded-full bg-[color-mix(in_srgb,var(--color-brand)_10%,var(--color-surface-muted))] px-[0.45rem] py-[0.2rem] text-right text-micro leading-[1.2] font-bold text-text-muted"
+                    >
                       {{ regionStatusLabel(region) }}
                     </span>
                   </button>
@@ -320,12 +386,15 @@
               }
             </ul>
           } @else {
-            <div class="azure-map-list-empty" role="status">
+            <div
+              class="flex min-h-48 flex-auto flex-col items-center justify-center gap-3 border-t border-(--azure-map-panel-border) p-6 text-center text-text-muted"
+              role="status"
+            >
               <app-lucide-icon name="search-x" class="size-8" aria-hidden="true" />
-              <p>No regions match the current filters.</p>
+              <p class="m-0 text-sm font-bold">No regions match the current filters.</p>
               <button
                 type="button"
-                class="btn btn-outline btn--sm"
+                class="btn btn-outline btn--sm min-h-11 touch-manipulation"
                 (click)="clearFilters(); mapSearchInput.focus()"
               >
                 Clear filters
@@ -337,22 +406,23 @@
     </div>
   </section>
 
-  <section class="azure-map-note" aria-labelledby="map-note-heading">
+  <section
+    class="flex items-start gap-[0.65rem] rounded-control border border-border-soft bg-surface-muted p-4 text-sm leading-[1.55] text-text-muted [&_a]:font-bold [&_a]:text-link-primary [&_a]:underline-offset-[0.15em] [&_a:hover]:underline [&_p]:mt-[0.35rem] [&_p]:mb-0"
+    aria-labelledby="map-note-heading"
+  >
     <app-lucide-icon name="info" class="mt-0.5 size-4 shrink-0" aria-hidden="true" />
     <div>
-      <h2 id="map-note-heading" class="azure-map-note__title">Map coverage and accuracy</h2>
+      <h2 id="map-note-heading" class="m-0 text-[0.9375rem] font-extrabold text-text-strong">
+        Map coverage and accuracy
+      </h2>
       <p>
-        This map shows {{ regions.length }} unrestricted regions in the global Azure cloud dataset.
-        See separate lists for
-        <a routerLink="/Information/AzureUSGovernmentRegions">US Government</a>,
-        <a routerLink="/Information/AzureChinaRegions">China</a>,
-        <a routerLink="/Information/AzureRestrictedRegions">restricted</a>, and
-        <a routerLink="/Information/AzureUpcomingRegions">upcoming</a> regions.
+        This map includes {{ regions.length }} unrestricted regions in the global Azure cloud. See
+        separate lists for <a href="/Information/AzureUSGovernmentRegions">US Government</a>,
+        <a href="/Information/AzureChinaRegions">China</a>,
+        <a href="/Information/AzureRestrictedRegions">restricted</a>, and
+        <a href="/Information/AzureUpcomingRegions">upcoming</a> regions.
       </p>
-      <p>
-        Map points use Azure region-level location data, not exact physical datacenter facility
-        addresses.
-      </p>
+      <p>Map locations are approximate and do not identify individual facilities.</p>
     </div>
   </section>
 </article>

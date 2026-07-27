@@ -1,0 +1,5 @@
+/* Overrides .table-base min-width; unlayered semantic classes outrank Tailwind's
+   @layer utilities, so this cannot move to a min-w-* utility in the template. */
+.ai-model-price-table {
+  min-width: 64rem;
+}

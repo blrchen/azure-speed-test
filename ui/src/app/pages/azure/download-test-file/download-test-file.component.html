@@ -1,11 +1,11 @@
-<article class="page-shell section-stack mx-auto max-w-5xl">
+<article class="page-shell section-stack">
   <header class="page-header">
     <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
       <h1 class="page-title">Azure download test files</h1>
       <nav class="flex flex-wrap gap-2" aria-label="Azure download test modes">
         <a
           class="btn btn-outline btn--sm min-h-11 md:min-h-9"
-          routerLink="/Azure/Download"
+          href="/Azure/Download"
           queryParamsHandling="preserve"
         >
           Browser speed test
@@ -16,13 +16,13 @@
       </nav>
     </div>
     <p class="page-lead">
-      Generate short-lived links to 100 MiB files in Azure Storage regions for manual downloads,
-      download managers, or external benchmarking tools. This page does not measure speed.
+      Download region-hosted Azure test files with your browser, download manager, or benchmarking
+      tool.
     </p>
   </header>
 
   <section class="section-block" aria-labelledby="download-test-heading">
-    <h2 id="download-test-heading" class="sr-only">Generate download test files</h2>
+    <h2 id="download-test-heading" class="sr-only">Choose regional download test files</h2>
     @let rows = tableData();
     <div>
       <div class="mb-4 rounded-lg bg-primary/5 p-4">
@@ -37,19 +37,18 @@
               <span class="hidden text-text-subtle sm:inline" aria-hidden="true">|</span>
               <span class="flex items-center gap-2.5">
                 <span class="step-number" aria-hidden="true">2</span>
-                <span class="text-text-body">Generate secure links</span>
+                <span class="text-text-body">Open regional test files</span>
               </span>
               <span class="hidden text-text-subtle sm:inline" aria-hidden="true">|</span>
               <span class="flex items-center gap-2.5">
                 <span class="step-number" aria-hidden="true">3</span>
-                <span class="text-text-body">View links below or scroll down</span>
+                <span class="text-text-body">Use your preferred tool</span>
               </span>
             </div>
           </div>
         </div>
       </div>
       <app-region-group
-        #regionSelector
         resultsTargetId="download-links-heading"
         resultsLabel="View Download Links"
         [resultsAvailable]="rows.length > 0"
@@ -66,7 +65,7 @@
           <div class="space-y-2">
             <div class="text-lg font-bold text-text-strong">No regions selected</div>
             <p class="text-sm text-text-muted">
-              Select regions above to generate 100 MiB download links.
+              Select regions above to access regional download test files.
             </p>
           </div>
         </div>
@@ -74,25 +73,14 @@
     } @else {
       <div class="mb-3 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h2
-            id="download-links-heading"
-            class="section-title scroll-mt-[calc(env(safe-area-inset-top)+5rem)]"
-            tabindex="-1"
-          >
-            Download links
+          <h2 id="download-links-heading" class="section-title" tabindex="-1">
+            Regional test files
           </h2>
           <p class="mt-1 text-xs text-text-muted">
-            These links expire after a few minutes. If a download does not start, generate a fresh
-            link by deselecting and reselecting the region.
+            Open a file in your browser or use its link with a download manager or benchmarking
+            tool.
           </p>
         </div>
-        <button
-          type="button"
-          class="btn btn-outline btn--sm"
-          (click)="regionSelector.showSelection()"
-        >
-          Change Regions
-        </button>
       </div>
       <!-- Desktop table view -->
       <div class="table-shell mb-4 hidden sm:block">
@@ -127,14 +115,14 @@
                       class="btn btn-primary btn--sm group"
                       [href]="item.url"
                       download
-                      [attr.aria-label]="'Download 100 MiB from ' + item.displayName"
+                      [attr.aria-label]="'Download test file from ' + item.displayName"
                     >
                       <app-lucide-icon
                         name="download"
                         class="size-4 transition-transform group-hover:translate-y-0.5"
                         aria-hidden="true"
                       />
-                      Download 100 MiB
+                      Download Test File
                     </a>
                   } @else {
                     <span
@@ -165,7 +153,7 @@
               </div>
             </div>
             <a
-              class="group flex items-center justify-between gap-3 rounded-lg bg-surface-muted px-3 py-2.5 transition-colors hover:bg-surface-raised focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
+              class="group flex items-center justify-between gap-3 rounded-lg bg-surface-muted px-3 py-2.5 transition-colors hover:bg-surface-raised focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-hidden"
               [href]="buildRegionDetailHref(item.displayName)"
             >
               <div class="min-w-0 flex-1">
@@ -190,14 +178,14 @@
                   class="btn btn-primary btn--sm group w-full justify-center"
                   [href]="item.url"
                   download
-                  [attr.aria-label]="'Download 100 MiB from ' + item.displayName"
+                  [attr.aria-label]="'Download test file from ' + item.displayName"
                 >
                   <app-lucide-icon
                     name="download"
                     class="size-4 transition-transform group-hover:translate-y-0.5"
                     aria-hidden="true"
                   />
-                  Download 100 MiB
+                  Download Test File
                 </a>
               } @else {
                 <div
@@ -206,7 +194,7 @@
                   aria-live="polite"
                 >
                   <span class="spinner-sm"></span>
-                  Preparing download link...
+                  Preparing test file...
                 </div>
               }
             </div>
@@ -225,105 +213,60 @@
           Need measured results instead?
         </h2>
         <p class="mt-1 text-sm text-text-muted">
-          Run the browser-based test to see progress, elapsed time, Mbps, MiB/s, and region
-          comparisons without saving files.
+          Compare Azure region download performance with live results and identify the best
+          experience for your users and workloads.
         </p>
       </div>
-      <a routerLink="/Azure/Download" class="btn btn-primary shrink-0">
+      <a href="/Azure/Download" class="btn btn-primary shrink-0">
         <app-lucide-icon name="download" class="size-4" aria-hidden="true" />
         Run Download Test
       </a>
     </div>
   </section>
 
-  <section class="section-block" aria-labelledby="download-alternatives-heading">
+  <section class="section-block" aria-labelledby="download-tools-heading">
     <header class="mb-4">
-      <h2 id="download-alternatives-heading" class="section-title">
-        Alternatives for benchmarking
+      <h2 id="download-tools-heading" class="section-title">
+        Use Regional Test Files with Your Preferred Tool
       </h2>
+      <p class="mt-2 text-sm text-text-muted">
+        Choose the workflow that matches how you want to compare Azure region downloads.
+      </p>
     </header>
-    <div class="space-y-4">
-      <div class="flex items-start gap-3">
-        <div class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/15">
-          <app-lucide-icon name="terminal" class="size-5 text-primary" aria-hidden="true" />
-        </div>
-        <div class="space-y-1">
-          <h3 class="font-semibold text-text-strong">AzCopy Bench</h3>
-          <p class="text-sm text-text-muted">
-            Microsoft's official CLI tool for Azure Storage performance benchmarking. Ideal for
-            automated testing, CI/CD pipelines, and high-throughput scenarios where you need precise
-            control over test parameters.
-          </p>
-        </div>
-      </div>
-
-      <div class="grid gap-3 sm:grid-cols-2">
-        <div
-          class="flex items-start gap-2.5 rounded-lg border border-border-soft bg-surface-muted p-3"
-        >
-          <app-lucide-icon
-            name="zap"
-            class="mt-0.5 size-4 text-warning-foreground dark:text-warning"
-            aria-hidden="true"
-          />
-          <div class="text-sm">
-            <span class="font-medium text-text-body">Auto-tuning</span>
-            <p class="text-text-muted">
-              Automatically optimizes parallel TCP connections for maximum throughput
-            </p>
-          </div>
-        </div>
-        <div
-          class="flex items-start gap-2.5 rounded-lg border border-border-soft bg-surface-muted p-3"
-        >
-          <app-lucide-icon
-            name="shield-check"
-            class="mt-0.5 size-4 text-success-foreground dark:text-success"
-            aria-hidden="true"
-          />
-          <div class="text-sm">
-            <span class="font-medium text-text-body">Zero disk writes</span>
-            <p class="text-text-muted">Downloaded data is discarded, never saved locally</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="space-y-3">
-        <div class="flex items-center gap-2 text-sm font-medium text-text-body">
-          <app-lucide-icon name="code" class="size-4" aria-hidden="true" />
-          Download benchmark examples
-        </div>
-        <div class="space-y-2">
-          <p class="text-xs font-medium text-text-muted">Basic download benchmark:</p>
-          <div class="code-block">
-            <pre><code>azcopy bench --mode=Download "https://[account].blob.core.windows.net/[container]?[SAS]"</code></pre>
-          </div>
-        </div>
-        <div class="space-y-2">
-          <p class="text-xs font-medium text-text-muted">Rate-limited download test (500 Mbps):</p>
-          <div class="code-block">
-            <pre><code>azcopy bench --mode=Download "https://[account].blob.core.windows.net/[container]?[SAS]" \
-  --cap-mbps 500</code></pre>
-          </div>
-        </div>
-        <p class="text-xs text-text-muted">
-          Download mode tests against existing files in your container. Data is streamed but never
-          written to disk.
+    <div class="grid gap-4 md:grid-cols-3">
+      <article class="rounded-lg bg-surface-muted p-4">
+        <app-lucide-icon name="download" class="size-5 text-primary" aria-hidden="true" />
+        <h3 class="mt-3 font-semibold text-text-strong">Browser</h3>
+        <p class="mt-1 text-sm text-text-muted">
+          Open a regional test file directly in your browser for a quick manual download.
         </p>
-      </div>
-
-      <div class="flex items-center justify-between border-t border-border-soft pt-4">
-        <a
-          href="https://learn.microsoft.com/azure/storage/common/storage-ref-azcopy-bench"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="link-primary inline-flex items-center gap-1.5 text-sm font-medium"
+      </article>
+      <article class="rounded-lg bg-surface-muted p-4">
+        <app-lucide-icon name="file-text" class="size-5 text-primary" aria-hidden="true" />
+        <h3 class="mt-3 font-semibold text-text-strong">Download Manager</h3>
+        <p class="mt-1 text-sm text-text-muted">
+          Use a regional file link with your preferred download manager for repeated or controlled
+          downloads.
+        </p>
+      </article>
+      <a
+        href="https://learn.microsoft.com/azure/storage/common/storage-ref-azcopy-bench"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="group rounded-lg bg-surface-muted p-4 text-inherit hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-hidden"
+      >
+        <app-lucide-icon name="terminal" class="size-5 text-primary" aria-hidden="true" />
+        <h3
+          class="mt-3 flex items-center gap-1 font-semibold text-text-strong group-hover:text-primary"
         >
-          <span>View documentation</span>
-          <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
-        </a>
-        <span class="text-xs text-text-subtle">Requires AzCopy v10+</span>
-      </div>
+          Benchmarking Tools
+          <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
+        </h3>
+        <p class="mt-1 text-sm text-text-muted">
+          Extend your comparison with tools such as AzCopy for automation and production-scale Azure
+          workloads.
+        </p>
+      </a>
     </div>
   </section>
 

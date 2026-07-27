@@ -1,14 +1,14 @@
-<article class="page-shell section-stack mx-auto max-w-5xl">
+<article class="page-shell section-stack">
   <header class="page-header">
     <h1 class="page-title">{{ pageHeading() }}</h1>
-    <p class="page-lead">{{ pageLead() }}</p>
+    <p class="page-lead">{{ pageLead }}</p>
   </header>
 
   <section class="section-block" aria-labelledby="interactive-heading">
     <h2 id="interactive-heading" class="section-title">Compare Azure region latency</h2>
     <p id="source-region-help" class="text-text-muted">
-      Choose a source region to compare its published round-trip times to other Azure regions.
-      Results are sorted from fastest to slowest.
+      Choose a source region to compare round-trip times with other Azure regions. Results are
+      sorted from fastest to slowest.
     </p>
 
     @if (sourceRegions.length === 0) {
@@ -33,7 +33,9 @@
             class="latency-control form-select"
             autocomplete="off"
             aria-describedby="source-region-help"
-            [formField]="sourceForm.sourceRegion"
+            name="regionLatencySource.sourceRegion"
+            [value]="sourceModel().sourceRegion"
+            (change)="updateSourceRegion($event)"
           >
             <option value="" disabled>Select a source region</option>
             @for (region of sourceRegions; track region) {
@@ -56,7 +58,7 @@
         <div class="rounded-lg bg-surface-muted/50 p-6 text-center" role="status">
           <div class="text-sm font-semibold text-text-strong">No latency data available</div>
           <div class="mt-1 text-sm text-text-muted">
-            Microsoft does not publish latency values for this source region yet.
+            No latency values are currently available for this source region.
           </div>
         </div>
       } @else {
@@ -68,7 +70,7 @@
                   Latency from {{ selectedSource }}
                 </h3>
                 <p class="mt-1 text-sm text-text-muted">
-                  {{ formatInteger(summary.count) }} published routes
+                  {{ formatInteger(summary.count) }} routes compared
                 </p>
               </div>
               <a
@@ -80,8 +82,12 @@
               </a>
             </header>
 
-            <dl class="latency-summary-grid">
-              <div class="latency-summary-item min-w-0 p-4">
+            <dl
+              class="grid overflow-hidden rounded-control border border-border-soft bg-surface-raised sm:grid-cols-3"
+            >
+              <div
+                class="min-w-0 p-4 not-first:border-t not-first:border-border-soft sm:not-first:border-t-0 sm:not-first:border-l"
+              >
                 <dt class="text-xs font-semibold text-text-muted">Fastest route</dt>
                 <dd
                   class="mt-1.5 flex min-w-0 items-baseline justify-between gap-3 text-text-strong"
@@ -97,7 +103,9 @@
                   </span>
                 </dd>
               </div>
-              <div class="latency-summary-item min-w-0 p-4">
+              <div
+                class="min-w-0 p-4 not-first:border-t not-first:border-border-soft sm:not-first:border-t-0 sm:not-first:border-l"
+              >
                 <dt class="text-xs font-semibold text-text-muted">Median latency</dt>
                 <dd
                   class="mt-1.5 flex min-w-0 items-baseline justify-between gap-3 text-text-strong"
@@ -107,7 +115,9 @@
                   </span>
                 </dd>
               </div>
-              <div class="latency-summary-item min-w-0 p-4">
+              <div
+                class="min-w-0 p-4 not-first:border-t not-first:border-border-soft sm:not-first:border-t-0 sm:not-first:border-l"
+              >
                 <dt class="text-xs font-semibold text-text-muted">Slowest route</dt>
                 <dd
                   class="mt-1.5 flex min-w-0 items-baseline justify-between gap-3 text-text-strong"
@@ -125,25 +135,24 @@
               </div>
             </dl>
 
-            <div class="latency-legend">
+            <div
+              class="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 rounded-control bg-surface-muted px-4 py-3 text-xs text-text-muted"
+            >
               <ul class="flex flex-wrap items-center gap-x-4 gap-y-2">
                 <li class="inline-flex items-center gap-1.5">
                   <span
-                    class="latency-legend-dot latency-legend-dot--fast"
+                    class="size-2.5 shrink-0 rounded-full bg-success-dark"
                     aria-hidden="true"
                   ></span>
                   <strong class="text-text-strong">Fast</strong> under 50&nbsp;ms
                 </li>
                 <li class="inline-flex items-center gap-1.5">
-                  <span
-                    class="latency-legend-dot latency-legend-dot--moderate"
-                    aria-hidden="true"
-                  ></span>
+                  <span class="size-2.5 shrink-0 rounded-full bg-warning" aria-hidden="true"></span>
                   <strong class="text-text-strong">Moderate</strong> 50-99&nbsp;ms
                 </li>
                 <li class="inline-flex items-center gap-1.5">
                   <span
-                    class="latency-legend-dot latency-legend-dot--slow"
+                    class="size-2.5 shrink-0 rounded-full bg-danger-dark"
                     aria-hidden="true"
                   ></span>
                   <strong class="text-text-strong">Slow</strong> 100&nbsp;ms or more
@@ -176,7 +185,9 @@
                     autocomplete="off"
                     spellcheck="false"
                     aria-controls="latency-results"
-                    [formField]="destinationFilterForm.search"
+                    name="regionLatencyDestination.search"
+                    [value]="destinationFilterModel().search"
+                    (input)="updateDestinationSearch($event)"
                   />
                   @if (destinationFilterModel().search) {
                     <button
@@ -218,45 +229,56 @@
                   </button>
                 </div>
               } @else {
-                <div class="latency-table-shell">
-                  <table id="latency-results-table" class="latency-table">
+                <div
+                  class="overflow-hidden rounded-control border border-border-soft bg-surface-raised"
+                >
+                  <table
+                    id="latency-results-table"
+                    class="w-full table-fixed border-collapse [&_td]:p-3 [&_td]:align-middle [&_th]:p-3 [&_th]:align-middle"
+                  >
                     <caption class="sr-only">
-                      Published round-trip latency from
+                      Round-trip latency from
                       {{
                         selectedSource
                       }}
                       to Azure destination regions, sorted from fastest to slowest.
                     </caption>
                     <thead>
-                      <tr>
-                        <th scope="col" class="latency-destination-column">Destination region</th>
-                        <th scope="col" class="latency-rtt-column">
+                      <tr class="bg-surface-muted text-xs font-bold text-text-muted">
+                        <th scope="col" class="text-left">Destination region</th>
+                        <th scope="col" class="w-23 text-right sm:w-28">
                           <abbr class="no-underline" title="Round-trip time">RTT</abbr>
                         </th>
-                        <th scope="col" class="latency-rating-column">Rating</th>
-                        <th scope="col" class="latency-scale-column">Relative latency</th>
+                        <th scope="col" class="hidden w-31 text-center sm:table-cell">Rating</th>
+                        <th scope="col" class="hidden w-52 text-left min-[900px]:table-cell">
+                          Relative latency
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
                       @for (item of filteredResults(); track item.destinationDisplayName) {
                         @let tone = getLatencyTone(item.latencyMs);
-                        <tr>
-                          <td class="latency-destination-column">
+                        <tr
+                          class="border-t border-border-soft hover:bg-[color-mix(in_srgb,var(--color-secondary)_42%,transparent)]"
+                        >
+                          <td>
                             <a
-                              class="latency-destination-link link-primary"
+                              class="link-primary block max-w-full truncate text-sm font-semibold"
                               [href]="buildRegionDetailHref(item.destinationDisplayName)"
                             >
                               {{ item.destinationDisplayName }}
                             </a>
                           </td>
-                          <td class="latency-rtt-column">
-                            <span class="latency-rtt">
+                          <td class="text-right">
+                            <span
+                              class="font-mono text-sm font-bold whitespace-nowrap text-text-strong tabular-nums"
+                            >
                               {{ formatLatency(item.latencyMs) }}&nbsp;ms
                             </span>
                           </td>
-                          <td class="latency-rating-column">
+                          <td class="hidden text-center sm:table-cell">
                             <span
-                              class="badge"
+                              class="badge latency-rating-badge"
                               [class.badge-success]="tone === 'fast'"
                               [class.badge-warning]="tone === 'moderate'"
                               [class.badge-danger]="tone === 'slow'"
@@ -264,11 +286,13 @@
                               {{ getLatencyRating(tone) }}
                             </span>
                           </td>
-                          <td class="latency-scale-column">
+                          <td class="hidden min-[900px]:table-cell">
                             <div class="flex items-center" aria-hidden="true">
-                              <div class="latency-bar-track">
+                              <div
+                                class="relative h-2 w-full overflow-hidden rounded-full border border-border-strong bg-surface-muted"
+                              >
                                 <span
-                                  class="latency-bar-fill animate-bar-grow"
+                                  class="animate-bar-grow absolute inset-y-0 left-0 min-w-0.5 rounded-full"
                                   [class.bar-color-fast]="tone === 'fast'"
                                   [class.bar-color-moderate]="tone === 'moderate'"
                                   [class.bar-color-slow]="tone === 'slow'"
@@ -288,68 +312,31 @@
           </section>
         }
       }
-
-      <details class="latency-data-details">
-        <summary>About this latency data</summary>
-        <div class="grid gap-2 px-4 pb-4">
-          <p>
-            Values come from the Microsoft Learn
-            <a
-              href="https://learn.microsoft.com/en-us/azure/networking/azure-network-latency"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="link-primary inline-flex items-center gap-1"
-              aria-label="Azure network round-trip latency statistics on Microsoft Learn (opens in new tab)"
-            >
-              Azure network round-trip latency statistics
-              <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
-            </a>
-            table. Region pairs without a published numeric value are omitted.
-          </p>
-          <p>
-            Published averages are a planning reference. Application latency varies with workload,
-            routing, network conditions, and VM configuration.
-          </p>
-        </div>
-      </details>
     }
   </section>
 
-  <section class="section-block" aria-labelledby="latency-matrix-heading">
-    <h2 id="latency-matrix-heading" class="section-title">Historical latency snapshot</h2>
-    <div class="card">
-      <div class="card-body">
-        <figure>
-          <img
-            ngSrc="assets/images/azure-network-latency-2020-12.webp"
-            class="mx-auto block w-full max-w-3xl rounded-lg border border-border-card shadow-sm"
-            alt="Azure network latency matrix showing round-trip times between regions, ranging from under 2ms within geography to over 200ms cross-continent, December 2020"
-            loading="lazy"
-            width="2761"
-            height="1756"
-            sizes="(min-width: 1280px) 55vw, (min-width: 768px) 70vw, 92vw"
-          />
-          <div class="mt-3 flex flex-wrap items-center justify-between gap-3">
-            <figcaption class="text-xs text-text-muted">
-              Azure backbone latency matrix (December 2020 snapshot)
-            </figcaption>
-            <a
-              href="/assets/images/azure-network-latency-2020-12.webp"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="link-primary inline-flex min-h-11 touch-manipulation items-center gap-1 rounded-md px-2 text-sm font-semibold"
-              aria-label="View full-size matrix for historical Azure latency (opens in new tab)"
-            >
-              View full-size matrix
-              <app-lucide-icon name="external-link" class="size-3.5" aria-hidden="true" />
-            </a>
-          </div>
-        </figure>
-        <p class="mt-3 text-sm text-text-muted">
-          This archived image provides historical context. Use the interactive comparison above for
-          the currently published numeric routes included on this site.
-        </p>
-      </div>
+  <section class="section-block" aria-labelledby="latency-faq-heading">
+    <h2 id="latency-faq-heading" class="section-title">Frequently asked questions</h2>
+    <div class="faq-list">
+      <details class="faq-item group">
+        <summary class="faq-summary">
+          <span class="faq-question">{{ latencySourceFaq.question }}</span>
+          <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
+        </summary>
+        <div class="faq-body">
+          <p>{{ latencySourceFaq.answer }}</p>
+          <a
+            href="https://learn.microsoft.com/en-us/azure/networking/azure-network-latency"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="link-primary inline-flex min-h-11 items-center gap-1"
+            aria-label="Azure network round-trip latency statistics on Microsoft Learn (opens in new tab)"
+          >
+            Azure network round-trip latency statistics
+            <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
+          </a>
+        </div>
+      </details>
     </div>
   </section>
 

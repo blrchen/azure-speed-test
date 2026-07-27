@@ -40,6 +40,26 @@ export function buildNormalizedRegionLookup<TRegion extends { regionId: string }
   return lookup
 }
 
+/**
+ * Maps normalized URL tokens back to regions using a lookup built by
+ * `buildNormalizedRegionLookup`. Results keep the incoming token order,
+ * unknown tokens are dropped, and duplicates are removed by real `regionId`
+ * so aliases that normalize to the same region only appear once.
+ */
+export function resolveRegionsFromNormalizedTokens<TRegion extends { regionId: string }>(
+  normalizedTokens: readonly string[],
+  lookup: ReadonlyMap<string, TRegion>
+): TRegion[] {
+  const seen = new Set<string>()
+  return normalizedTokens
+    .map((token) => lookup.get(token))
+    .filter((match): match is TRegion => {
+      if (!match || seen.has(match.regionId)) return false
+      seen.add(match.regionId)
+      return true
+    })
+}
+
 export function generateTimestampedBlobName(): string {
   return new Date().toISOString().replace(/[-:T.Z]/g, '')
 }
@@ -61,7 +81,7 @@ export function buildRegionLatencyHref(sourceRegion: string | null | undefined):
 
 export type CopyStatus = 'idle' | 'copied' | 'failed'
 
-export interface CopyClipboardController {
+interface CopyClipboardController {
   copyStatus: Signal<CopyStatus>
   setStatus: (status: CopyStatus) => void
   copyText: (text: string | null | undefined) => Promise<void>

@@ -1,15 +1,17 @@
 import { Component, computed, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core'
-import { form, FormField } from '@angular/forms/signals'
-import { RouterLink } from '@angular/router'
 
 import azureGlobalCloudRegionsJson from '../../../../assets/data/regions.json'
 import { Region } from '../../../models'
 import { SeoService } from '../../../services/seo.service'
+import { buildDocumentHref } from '../../../shared/document-navigation'
+import { readInputValue } from '../../../shared/form-control-value'
 import { LucideIconComponent } from '../../../shared/icons/lucide-icons.component'
 import { AzureRegionMapViewComponent } from '../../../shared/region-map/azure-region-map-view.component'
 import { buildRegionDetailHref } from '../../../shared/utils'
 
 const ALL_GROUP = 'all'
+const PAGE_DESCRIPTION =
+  'Explore Azure regions around the world and find locations that support your deployment strategy. Map locations are approximate and do not identify individual facilities.'
 
 const GROUP_ORDER = [
   'North America',
@@ -49,25 +51,19 @@ const getAvailabilityZoneCount = (region: Region): number => region.availability
 
 @Component({
   selector: 'app-azure-region-map',
-  imports: [FormField, RouterLink, LucideIconComponent, AzureRegionMapViewComponent],
+  imports: [LucideIconComponent, AzureRegionMapViewComponent],
   templateUrl: './azure-region-map.component.html',
-  styleUrls: [
-    './azure-region-map.component.css',
-    './azure-region-map-explorer.component.css',
-    './azure-region-map-list.component.css',
-    './azure-region-map-toolbar.component.css',
-    './azure-region-map-overlays.component.css',
-  ],
+  styleUrl: './azure-region-map.component.css',
   host: { class: 'block' },
 })
 export class AzureRegionMapComponent implements OnInit {
+  readonly buildDocumentHref = buildDocumentHref
   private readonly seoService = inject(SeoService)
   private readonly hostElement = inject<ElementRef<HTMLElement>>(ElementRef)
   private readonly legendTrigger = viewChild<ElementRef<HTMLButtonElement>>('legendTrigger')
 
   readonly regions = PUBLIC_REGIONS
   readonly filtersModel = signal({ search: '' })
-  readonly filtersForm = form(this.filtersModel, { name: 'azureRegionMapFilters' })
   readonly selectedGroup = signal<string>(ALL_GROUP)
   readonly selectedRegionId = signal<string | null>(null)
   readonly activeRegionId = signal<string | null>(null)
@@ -200,7 +196,7 @@ export class AzureRegionMapComponent implements OnInit {
   ngOnInit(): void {
     this.seoService.setPageMeta({
       title: 'Azure Region Map: Global Cloud Locations',
-      description: `Explore ${this.regions.length} unrestricted Azure regions on an interactive world map. Compare region locations and availability zones, then open region details or test latency.`,
+      description: PAGE_DESCRIPTION,
       canonicalUrl: 'https://www.azurespeed.com/Information/AzureRegionMap',
     })
   }
@@ -221,6 +217,10 @@ export class AzureRegionMapComponent implements OnInit {
     if (!(target instanceof HTMLSelectElement)) return
 
     this.selectGroup(target.value)
+  }
+
+  updateSearch(event: Event): void {
+    this.filtersModel.set({ search: readInputValue(event) })
   }
 
   toggleToolbarPanel(panel: Exclude<AzureRegionToolbarPanel, null>): void {

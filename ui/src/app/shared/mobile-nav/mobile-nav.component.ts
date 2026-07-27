@@ -9,7 +9,6 @@ import {
   output,
   viewChild,
 } from '@angular/core'
-import { RouterLink } from '@angular/router'
 
 import { LucideIconComponent } from '../icons/lucide-icons.component'
 import { NavGroup, NavGroupsComponent } from '../nav-groups/nav-groups.component'
@@ -20,7 +19,7 @@ export interface MobileNavCloseEvent {
 
 @Component({
   selector: 'app-mobile-nav',
-  imports: [RouterLink, NavGroupsComponent, LucideIconComponent],
+  imports: [NavGroupsComponent, LucideIconComponent],
   templateUrl: './mobile-nav.component.html',
   host: {
     '(document:keydown.escape)': 'requestClose()',

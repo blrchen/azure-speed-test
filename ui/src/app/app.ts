@@ -5,7 +5,6 @@ import {
   NavigationEnd,
   NavigationSkipped,
   Router,
-  RouterLink,
   RouterOutlet,
   type ActivatedRouteSnapshot,
 } from '@angular/router'
@@ -34,7 +33,6 @@ import { ThemeToggleComponent } from './shared/theme/theme-toggle.component'
   selector: 'app-root',
   imports: [
     RouterOutlet,
-    RouterLink,
     ChunkLoadErrorPromptComponent,
     FooterComponent,
     NavGroupsComponent,
@@ -47,7 +45,6 @@ import { ThemeToggleComponent } from './shared/theme/theme-toggle.component'
     class: 'block',
   },
   templateUrl: './app.html',
-  styleUrl: './app.css',
 })
 export class App {
   private readonly document = inject(DOCUMENT)

@@ -157,32 +157,11 @@ export function getRegionToRegionLatencyParams(): AzureRegionToRegionLatencyPara
   const matrixPath = join(process.cwd(), 'src', 'assets', 'data', 'region-latency-matrix.json')
   const matrix = readJsonFile<RegionLatencyMatrix>(matrixPath, 'Azure latency matrix')
 
-  if (!Array.isArray(matrix.rows) || matrix.rows.length === 0) {
-    throw new Error(`Azure latency matrix at ${matrixPath} must contain rows.`)
+  if (!isStringArray(matrix.sourceRegions) || matrix.sourceRegions.length === 0) {
+    throw new Error(`Azure latency matrix at ${matrixPath} must contain source regions.`)
   }
 
-  const sourceRegions = matrix.rows
-    .filter((row) =>
-      row.latencies.some((latency) => typeof latency === 'number' && Number.isFinite(latency))
-    )
-    .map((row) => toRegionNameNoSpace(row.source))
-  const sourceRegionSet = new Set(sourceRegions)
-
-  for (const [destinationIndex, destination] of matrix.destinations.entries()) {
-    const routeId = toRegionNameNoSpace(destination)
-    const hasPublishedReverseRoute = matrix.rows.some((row) =>
-      Number.isFinite(row.latencies[destinationIndex])
-    )
-    if (!sourceRegionSet.has(routeId) && hasPublishedReverseRoute) {
-      sourceRegions.push(routeId)
-      sourceRegionSet.add(routeId)
-    }
-  }
-
-  if (sourceRegions.length === 0) {
-    throw new Error(`Azure latency matrix at ${matrixPath} has no routable source regions.`)
-  }
-
+  const sourceRegions = matrix.sourceRegions.map(toRegionNameNoSpace)
   assertUnique(sourceRegions, 'Azure latency source region route IDs')
 
   return sourceRegions.map((sourceRegion) => ({ sourceRegion }))

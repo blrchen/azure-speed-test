@@ -1,8 +1,8 @@
-<article class="page-shell section-stack mx-auto max-w-5xl">
+<article class="page-shell section-stack">
   <nav class="breadcrumb" aria-label="Breadcrumb">
-    <a class="breadcrumb-link" routerLink="/Azure/Latency">Home</a>
+    <a class="breadcrumb-link" href="/Azure/Latency">Home</a>
     <span class="breadcrumb-separator">/</span>
-    <a class="breadcrumb-link" [routerLink]="['/Information/AzureRegions']">Azure regions</a>
+    <a class="breadcrumb-link" href="/Information/AzureRegions">Azure regions</a>
     <span class="breadcrumb-separator">/</span>
     <span class="breadcrumb-current" aria-current="page">Upcoming regions</span>
   </nav>
@@ -10,32 +10,28 @@
   <header class="page-header">
     <h1 class="page-title">Upcoming Azure regions</h1>
     <nav class="flex flex-wrap gap-2" aria-label="Region types">
-      <a class="btn btn-outline btn--sm" [routerLink]="['/Information/AzureRegions']">
-        Global regions
-      </a>
-      <a class="btn btn-outline btn--sm" [routerLink]="['/Information/AzureUSGovernmentRegions']">
+      <a class="btn btn-outline btn--sm" href="/Information/AzureRegions"> Global regions </a>
+      <a class="btn btn-outline btn--sm" href="/Information/AzureUSGovernmentRegions">
         US Gov regions
       </a>
-      <a class="btn btn-outline btn--sm" [routerLink]="['/Information/AzureChinaRegions']">
-        China regions
-      </a>
-      <a class="btn btn-outline btn--sm" [routerLink]="['/Information/AzureRestrictedRegions']">
+      <a class="btn btn-outline btn--sm" href="/Information/AzureChinaRegions"> China regions </a>
+      <a class="btn btn-outline btn--sm" href="/Information/AzureRestrictedRegions">
         Restricted regions
       </a>
       <span class="btn btn--sm btn-current" aria-current="page">Upcoming regions</span>
     </nav>
     <p class="page-lead">
-      Azure regions are sets of datacenters inside a latency-defined perimeter, connected through a
-      dedicated regional network.
+      Track Azure regions announced by Microsoft but not yet generally available, with planned
+      locations and official announcements for infrastructure and data residency planning.
     </p>
   </header>
 
   <section class="section-block" aria-labelledby="upcoming-regions-list-heading">
     <h2 id="upcoming-regions-list-heading" class="section-title">Upcoming Azure regions</h2>
     <p class="text-text-muted">
-      These regions are announced by Microsoft to expand global coverage and meet data residency
-      requirements. They go through multiple phases before general availability, including
-      infrastructure buildout, compliance certification, and service onboarding.
+      Announced regions move through infrastructure buildout, compliance certification, and service
+      onboarding before general availability. Confirm launch status and required services before
+      making production commitments.
     </p>
     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
       @for (region of upcomingRegions; track region.regionId) {

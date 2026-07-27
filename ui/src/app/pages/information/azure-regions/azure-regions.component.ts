@@ -11,13 +11,14 @@ import {
   PLATFORM_ID,
   signal,
 } from '@angular/core'
-import { form, FormField } from '@angular/forms/signals'
-import { ActivatedRoute, Router, RouterLink } from '@angular/router'
+import { ActivatedRoute, Router } from '@angular/router'
 
 import azureGlobalCloudRegionsJson from '../../../../assets/data/regions.json'
 import { Region } from '../../../models'
 import { SeoService } from '../../../services/seo.service'
+import { readInputValue, readSelectValue } from '../../../shared/form-control-value'
 import { LucideIconComponent } from '../../../shared/icons/lucide-icons.component'
+import { replaceMergedQueryParamsIfChanged } from '../../../shared/query-param-sync'
 import {
   AvailabilityZoneFilter,
   createRegionGroupCatalog,
@@ -85,7 +86,7 @@ function normalizeSortDirectionInput(value: string | undefined): RegionSortDirec
 
 @Component({
   selector: 'app-azure-regions',
-  imports: [FormField, RouterLink, LucideIconComponent],
+  imports: [LucideIconComponent],
   templateUrl: './azure-regions.component.html',
   styleUrl: './azure-regions.component.css',
   host: { class: 'block' },
@@ -130,7 +131,6 @@ export class AzureRegionsComponent implements OnInit {
   }))
 
   readonly filtersModel = linkedSignal(() => this.routeViewState())
-  readonly filtersForm = form(this.filtersModel, { name: 'azureRegionsFilters' })
 
   readonly filteredAzureGlobalCloudRegions = computed(() => {
     const viewState = this.filtersModel()
@@ -210,6 +210,21 @@ export class AzureRegionsComponent implements OnInit {
 
   clearSearch(): void {
     this.filtersModel.update((state) => ({ ...state, search: '' }))
+  }
+
+  updateSearch(event: Event): void {
+    const search = readInputValue(event)
+    this.filtersModel.update((state) => ({ ...state, search }))
+  }
+
+  updateRegionGroup(event: Event): void {
+    const regionGroup = readSelectValue(event)
+    this.filtersModel.update((state) => ({ ...state, regionGroup }))
+  }
+
+  updateZoneSupport(event: Event): void {
+    const zoneSupport = normalizeZoneFilterInput(readSelectValue(event))
+    this.filtersModel.update((state) => ({ ...state, zoneSupport }))
   }
 
   sortBy(sortKey: RegionSortKey): void {
@@ -309,17 +324,11 @@ export class AzureRegionsComponent implements OnInit {
   }
 
   private syncUrlState(nextState: RegionViewState, routeState: RegionViewState): void {
-    const nextQueryParams = this.buildQueryParams(nextState)
-    const currentQueryParams = this.buildQueryParams(routeState)
-    if (JSON.stringify(nextQueryParams) === JSON.stringify(currentQueryParams)) return
-
-    const urlTree = this.router.createUrlTree([], {
-      relativeTo: this.route,
-      queryParams: nextQueryParams,
-      queryParamsHandling: 'merge',
-      preserveFragment: true,
-    })
-    this.location.replaceState(this.router.serializeUrl(urlTree))
+    replaceMergedQueryParamsIfChanged(
+      { router: this.router, route: this.route, location: this.location },
+      this.buildQueryParams(nextState),
+      this.buildQueryParams(routeState)
+    )
   }
 
   private buildQueryParams(state: RegionViewState): Record<string, string | null> {

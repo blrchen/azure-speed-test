@@ -1,9 +1,8 @@
-<article class="page-shell section-stack mx-auto max-w-5xl">
+<article class="page-shell section-stack">
   <header class="page-header">
     <h1 class="page-title">Azure Large File Upload Speed Test</h1>
     <p class="page-lead">
-      Upload a local test file directly from your browser to Azure Blob Storage and measure
-      real-world throughput to one Azure region.
+      Test real-world file upload performance to an Azure region using your own non-sensitive file.
     </p>
   </header>
 
@@ -111,7 +110,7 @@
                 >
                   <app-lucide-icon
                     name="file-check"
-                    class="size-6 text-success-foreground dark:text-success"
+                    class="size-6 text-success-emphasis"
                     aria-hidden="true"
                   />
                 </div>
@@ -168,8 +167,8 @@
               aria-hidden="true"
             />
             <span>
-              The selected file is sent to Azure Blob Storage. Use generated, non-sensitive test
-              data only; do not upload confidential, personal, production, or regulated data.
+              Use a generated, non-sensitive test file. Do not upload confidential, personal,
+              production, or regulated data.
             </span>
           </p>
         </div>
@@ -177,7 +176,7 @@
 
       <details class="mt-6 rounded-lg bg-surface-muted">
         <summary
-          class="flex min-h-11 cursor-pointer items-center justify-between gap-3 rounded-lg px-4 py-3 font-semibold text-text-strong hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
+          class="flex min-h-11 cursor-pointer items-center justify-between gap-3 rounded-lg px-4 py-3 font-semibold text-text-strong hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-hidden"
         >
           <span>Advanced Settings</span>
           <span class="text-sm font-normal text-text-muted">Auto is recommended</span>
@@ -288,7 +287,7 @@
                   @case ('completed') {
                     <app-lucide-icon
                       name="check-circle"
-                      class="size-6 text-success-foreground dark:text-success"
+                      class="size-6 text-success-emphasis"
                       aria-hidden="true"
                     />
                   }
@@ -360,7 +359,7 @@
           <div class="min-h-18">
             @if (task.status === 'preparing') {
               <div class="rounded-lg bg-surface-muted p-4 text-sm text-text-muted" role="status">
-                Requesting a secure upload URL and loading the Azure Storage client...
+                Preparing your upload...
               </div>
             } @else {
               <div>
@@ -437,7 +436,8 @@
         <div>
           <h2 id="lfu-results-heading" class="section-title">Test Results</h2>
           <p class="mt-1 text-sm text-text-muted">
-            Best marks only compare runs using the same file, block size, and concurrency.
+            Compare completed uploads to find your strongest result. Best marks only compare runs
+            using the same file, block size, and concurrency.
           </p>
         </div>
         <div class="flex flex-wrap items-end gap-2">
@@ -477,8 +477,8 @@
 
       <div class="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <p id="lfu-speed-unit-help" class="text-xs text-text-muted">
-          Mbps matches typical internet plan speeds. MiB/s shows file transfer throughput. CSV
-          exports include both.
+          Mbps aligns with typical internet plan speeds, while MiB/s helps you compare file upload
+          performance. CSV exports include both.
         </p>
         <div
           class="speed-unit-toggle shrink-0"
@@ -733,37 +733,41 @@
   }
 
   <section class="section-block" aria-labelledby="test-choice-heading">
-    <h2 id="test-choice-heading" class="section-title">Choose the Right Transfer Test</h2>
+    <h2 id="test-choice-heading" class="section-title">
+      Explore More Ways to Compare Azure Performance
+    </h2>
     <div class="mt-4 grid gap-4 md:grid-cols-3">
       <a
-        routerLink="/Azure/Upload"
-        class="group rounded-lg bg-surface-muted p-4 text-inherit hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-none"
+        href="/Azure/Upload"
+        class="group rounded-lg bg-surface-muted p-4 text-inherit hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-hidden"
       >
         <app-lucide-icon name="upload" class="size-5 text-primary" aria-hidden="true" />
         <h3 class="mt-3 font-semibold text-text-strong group-hover:text-primary">
           Multi-Region Upload Test
         </h3>
         <p class="mt-1 text-sm text-text-muted">
-          Generate non-sensitive test data and compare upload performance across several regions.
+          Compare upload performance across Azure regions and identify the strongest destination for
+          your data and workloads.
         </p>
       </a>
       <a
-        routerLink="/Azure/Download"
-        class="group rounded-lg bg-surface-muted p-4 text-inherit hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-none"
+        href="/Azure/Download"
+        class="group rounded-lg bg-surface-muted p-4 text-inherit hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-hidden"
       >
         <app-lucide-icon name="download" class="size-5 text-primary" aria-hidden="true" />
         <h3 class="mt-3 font-semibold text-text-strong group-hover:text-primary">
           Azure Download Test
         </h3>
         <p class="mt-1 text-sm text-text-muted">
-          Measure download throughput from Azure Storage to your current network.
+          Compare download performance across Azure regions and find the best experience for your
+          users and workloads.
         </p>
       </a>
       <a
         href="https://learn.microsoft.com/azure/storage/common/storage-ref-azcopy-bench"
         target="_blank"
         rel="noopener noreferrer"
-        class="group rounded-lg bg-surface-muted p-4 text-inherit hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-none"
+        class="group rounded-lg bg-surface-muted p-4 text-inherit hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-hidden"
       >
         <app-lucide-icon name="terminal" class="size-5 text-primary" aria-hidden="true" />
         <h3
@@ -773,7 +777,8 @@
           <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
         </h3>
         <p class="mt-1 text-sm text-text-muted">
-          Use Microsoft's CLI benchmark for servers, automation, and production-scale testing.
+          Compare download and upload performance for servers, automation, and production-scale
+          Azure workloads.
         </p>
       </a>
     </div>
@@ -795,8 +800,8 @@
           </p>
           <p>
             For quick multi-region comparisons without selecting a local file, use the
-            <a routerLink="/Azure/Upload">multi-region upload test</a>. For repeatable server or
-            CI/CD benchmarks, use AzCopy Bench.
+            <a href="/Azure/Upload">multi-region upload test</a>. For repeatable server or CI/CD
+            benchmarks, use AzCopy Bench.
           </p>
         </div>
       </details>

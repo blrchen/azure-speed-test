@@ -1,24 +1,43 @@
-import { Component, computed, inject, input, OnInit, signal } from '@angular/core'
-import { RouterLink } from '@angular/router'
+import { Component, computed, inject, input, linkedSignal, OnInit, signal } from '@angular/core'
 
 import { SeoService } from '../../../services/seo.service'
 import {
   buildVmSkuHref,
-  expandVmDirectorySku,
   VM_COMPARISON_HREF,
   VM_TYPE_OPTIONS,
   VmCatalogDocument,
   vmCatalogPriceCounts,
+  VmDirectoryPriceProfile,
   VmOperatingSystem,
   VmPriceMode,
   vmPriceModeLabel,
-  VmSkuCatalogEntry,
-  vmSkuCheapestLocations,
-  vmSkuMinHourlyPrice,
-  vmSkuPricedLocations,
-  vmTypeCategory,
+  vmPriceProfileSourceLabel,
+  VmSkuDirectoryEntry,
 } from '../../../services/vm-catalog'
+import {
+  formatVmHourlyPrice,
+  formatVmMonthlyPrice,
+  formatVmNumber,
+  VM_NAME_COLLATOR,
+  VM_NUMBER_FORMATTER,
+} from '../../../services/vm-catalog-view'
+import { buildDocumentHref } from '../../../shared/document-navigation'
+import { ExportCsvButtonComponent } from '../../../shared/export-csv-button/export-csv-button.component'
 import { LucideIconComponent } from '../../../shared/icons/lucide-icons.component'
+import {
+  buildSearchIndex,
+  buildSearchQuery,
+  matchesSearchIndex,
+  SearchIndex,
+} from '../../../shared/search-normalization'
+import {
+  absoluteUrl,
+  buildBreadcrumbList,
+  buildDataset,
+  buildFaqPage,
+  buildItemList,
+} from '../../../shared/structured-data'
+import { VmCatalogNotice } from '../vm-catalog-notice/vm-catalog-notice'
 import {
   matchesVmNumericFilter,
   VM_MEMORY_QUICK_VALUES,
@@ -42,7 +61,17 @@ import {
   VmPriceSortDirection,
 } from '../vm-pricing-table-sort'
 
-type FeatureFilter = '' | 'accelerated-networking' | 'gpu' | 'premium-io' | 'rdma'
+type FeatureFilter =
+  | ''
+  | 'accelerated-networking'
+  | 'confidential-computing'
+  | 'confidential-snp'
+  | 'confidential-tdx'
+  | 'gpu'
+  | 'no-temp-disk'
+  | 'premium-io'
+  | 'rdma'
+  | 'temp-disk'
 type SortKey = 'memory' | 'price' | 'regions' | 'series' | 'sku' | 'vcpus'
 
 interface FilterOption {
@@ -51,33 +80,50 @@ interface FilterOption {
   readonly count: number
 }
 
-interface VmSkuView {
-  readonly entry: VmSkuCatalogEntry
+interface VmSkuBaseView {
+  readonly entry: VmSkuDirectoryEntry
   readonly architecture: string
   readonly acceleratedNetworking: boolean
+  readonly confidentialComputingType: string | null
   readonly gpuCount: number | null
   readonly hasGpu: boolean
+  readonly hasTempDisk: boolean
   readonly maxDataDisks: number | null
   readonly maxNetworkInterfaces: number | null
   readonly memoryGB: number | null
   readonly premiumIO: boolean
-  readonly pricedLocations: readonly string[]
-  readonly minHourlyPrice: number | null
-  readonly cheapestLocations: readonly string[]
   readonly rdma: boolean
-  readonly searchText: string
+  readonly searchIndex: SearchIndex
   readonly vcpus: number | null
 }
 
+interface VmSkuView extends VmSkuBaseView {
+  readonly pricedRegionIndexes: readonly number[]
+  readonly minHourlyPrice: number | null
+  readonly cheapestRegionIndexes: readonly number[]
+}
+
+interface VisibleVmSkuView extends VmSkuView {
+  readonly cheapestRegionLabel: string
+}
+
 const STRUCTURED_DATA_ITEM_LIMIT = 36
-const MONTHLY_HOURS = 730
-const NAME_COLLATOR = new Intl.Collator('en', { numeric: true, sensitivity: 'base' })
-const NUMBER_FORMATTER = new Intl.NumberFormat('en-US')
+const INITIAL_VISIBLE_RESULT_COUNT = 100
+const VM_PRICING_SOURCE_FAQ = {
+  question: 'Where do VM prices and specifications come from?',
+  answer:
+    'Direct rates come from the Azure Retail Prices API, while VM specifications come from Azure Resource SKUs data. Azure reservations and savings plans discount eligible VM infrastructure, while Windows software charges remain separate. Windows commitment rates are labeled as estimates derived from the corresponding Linux commitment rate plus the Windows pay-as-you-go software surcharge. Public pricing does not guarantee quota, capacity, or deployment eligibility.',
+} as const
 const FEATURE_OPTIONS: readonly FilterOption[] = [
   { value: 'gpu', label: 'GPU', count: 0 },
   { value: 'accelerated-networking', label: 'Accelerated networking', count: 0 },
   { value: 'rdma', label: 'RDMA', count: 0 },
   { value: 'premium-io', label: 'Premium storage', count: 0 },
+  { value: 'confidential-computing', label: 'Confidential computing', count: 0 },
+  { value: 'confidential-snp', label: 'Confidential computing: AMD SEV-SNP', count: 0 },
+  { value: 'confidential-tdx', label: 'Confidential computing: Intel TDX', count: 0 },
+  { value: 'temp-disk', label: 'Local temporary disk', count: 0 },
+  { value: 'no-temp-disk', label: 'No local temporary disk', count: 0 },
 ]
 const DEFAULT_SORT_DIRECTIONS: Readonly<Record<SortKey, VmPriceSortDirection>> = {
   memory: 'desc',
@@ -88,62 +134,98 @@ const DEFAULT_SORT_DIRECTIONS: Readonly<Record<SortKey, VmPriceSortDirection>> =
   vcpus: 'desc',
 }
 
-function normalizeSearch(value: string): string {
-  return value.trim().toLowerCase()
-}
-
-function numericCapability(entry: VmSkuCatalogEntry, name: string): number | null {
-  const value = Number(entry.coreCapabilities[name])
-  return Number.isFinite(value) ? value : null
-}
-
-function booleanCapability(entry: VmSkuCatalogEntry, name: string): boolean {
-  return entry.coreCapabilities[name]?.toLowerCase() === 'true'
-}
-
-function buildSkuView(
-  entry: VmSkuCatalogEntry,
-  operatingSystem: VmOperatingSystem,
-  priceMode: VmPriceMode
-): VmSkuView {
-  const architecture = entry.coreCapabilities['CpuArchitectureType'] ?? 'Not listed'
-  const gpuCount = numericCapability(entry, 'GPUs')
-  const pricedLocations = vmSkuPricedLocations(entry, operatingSystem, priceMode)
-
+function buildSkuBaseView(entry: VmSkuDirectoryEntry): VmSkuBaseView {
+  const specs = entry.specs
+  const gpuCount = specs.gpuCount
   return {
     entry,
-    architecture,
-    acceleratedNetworking: booleanCapability(entry, 'AcceleratedNetworkingEnabled'),
+    architecture: specs.architecture ?? 'N/A',
+    acceleratedNetworking: specs.acceleratedNetworking,
+    confidentialComputingType: specs.confidentialComputingType,
     gpuCount,
     hasGpu: gpuCount !== null && gpuCount > 0,
-    maxDataDisks: numericCapability(entry, 'MaxDataDiskCount'),
-    maxNetworkInterfaces: numericCapability(entry, 'MaxNetworkInterfaces'),
-    memoryGB: numericCapability(entry, 'MemoryGB'),
-    premiumIO: booleanCapability(entry, 'PremiumIO'),
-    pricedLocations,
-    minHourlyPrice: vmSkuMinHourlyPrice(entry, operatingSystem, priceMode),
-    cheapestLocations: vmSkuCheapestLocations(entry, operatingSystem, priceMode),
-    rdma: booleanCapability(entry, 'RdmaEnabled'),
-    searchText: normalizeSearch(
+    hasTempDisk: specs.hasTempDisk,
+    maxDataDisks: specs.maxDataDisks,
+    maxNetworkInterfaces: specs.maxNetworkInterfaces,
+    memoryGB: specs.memoryGB,
+    premiumIO: specs.premiumIO,
+    rdma: specs.rdma,
+    searchIndex: buildSearchIndex(
       [
         entry.sku,
         entry.size,
         entry.series,
-        ...entry.observedLocations,
-        ...pricedLocations,
-        ...Object.keys(entry.coreCapabilities),
-        ...Object.values(entry.coreCapabilities),
-      ].join(' ')
+        entry.family,
+        entry.familyGroup,
+        specs.architecture,
+        specs.vcpus === null ? null : `${specs.vcpus} vCPU vCPUs CPU cores`,
+        specs.memoryGB === null ? null : `${specs.memoryGB} GB memory RAM`,
+        specs.gpuCount ? `${specs.gpuCount} GPU GPUs` : null,
+        specs.maxDataDisks === null ? null : `${specs.maxDataDisks} data disks`,
+        specs.maxNetworkInterfaces === null ? null : `${specs.maxNetworkInterfaces} NICs`,
+        // Only emit a keyword when the capability is present, so a search for "rdma" matches the
+        // RDMA-capable sizes instead of every row.
+        specs.premiumIO ? 'premium storage premium IO' : null,
+        specs.acceleratedNetworking ? 'accelerated networking' : null,
+        specs.rdma ? 'RDMA' : null,
+        specs.confidentialComputingType
+          ? `confidential computing ${specs.confidentialComputingType}`
+          : null,
+        specs.hasTempDisk ? 'temp disk temporary disk local disk' : null,
+      ]
+        .filter(Boolean)
+        .join(' ')
     ),
-    vcpus: numericCapability(entry, 'vCPUs'),
+    vcpus: specs.vcpus,
   }
+}
+
+function buildSkuView(
+  baseView: VmSkuBaseView,
+  operatingSystem: VmOperatingSystem,
+  priceMode: VmPriceMode
+): VmSkuView {
+  const entry = baseView.entry
+  const priceProfile: VmDirectoryPriceProfile = entry.priceProfiles[operatingSystem][priceMode]
+
+  return {
+    ...baseView,
+    pricedRegionIndexes: priceProfile.pricedRegionIndexes,
+    minHourlyPrice: priceProfile.minHourlyPrice,
+    cheapestRegionIndexes: priceProfile.cheapestRegionIndexes,
+  }
+}
+
+function buildRegionOptions(
+  skus: readonly VmSkuDirectoryEntry[],
+  regions: readonly string[],
+  operatingSystem: VmOperatingSystem,
+  priceMode: VmPriceMode
+): readonly FilterOption[] {
+  const counts = Array<number>(regions.length).fill(0)
+  for (const sku of skus) {
+    for (const regionIndex of sku.priceProfiles[operatingSystem][priceMode].pricedRegionIndexes) {
+      if (regionIndex >= 0 && regionIndex < counts.length) counts[regionIndex] += 1
+    }
+  }
+  return regions.flatMap((region, index) => {
+    const count = counts[index]
+    return count ? [{ value: region, label: region, count }] : []
+  })
+}
+
+function formatCheapestRegionLabel(view: VmSkuView, regions: readonly string[]): string {
+  const regionNames = view.cheapestRegionIndexes
+    .map((index) => regions[index])
+    .filter((region): region is string => Boolean(region))
+  return regionNames.length ? regionNames.join(', ') : 'N/A'
 }
 
 function buildOptions(values: readonly string[]): readonly FilterOption[] {
   const counts = new Map<string, number>()
   for (const value of values) counts.set(value, (counts.get(value) ?? 0) + 1)
   return Array.from(counts, ([value, count]) => ({ value, label: value, count })).sort((a, b) =>
-    NAME_COLLATOR.compare(a.label, b.label)
+    VM_NAME_COLLATOR.compare(a.label, b.label)
   )
 }
 
@@ -160,8 +242,9 @@ function buildNumericOptions(values: readonly (number | null)[]): readonly VmNum
 @Component({
   selector: 'app-azure-vm-sizes',
   imports: [
+    ExportCsvButtonComponent,
     LucideIconComponent,
-    RouterLink,
+    VmCatalogNotice,
     VmNumericMultiFilter,
     VmOperatingSystemToggle,
     VmPriceDisplayToggle,
@@ -172,9 +255,11 @@ function buildNumericOptions(values: readonly (number | null)[]): readonly VmNum
   host: { class: 'block' },
 })
 export class AzureVmSizes implements OnInit {
+  readonly buildDocumentHref = buildDocumentHref
   private readonly seoService = inject(SeoService)
 
   readonly vmCatalog = input.required<VmCatalogDocument>()
+  readonly pricingSourceFaq = VM_PRICING_SOURCE_FAQ
 
   readonly query = signal('')
   readonly selectedType = signal('')
@@ -192,6 +277,24 @@ export class AzureVmSizes implements OnInit {
   readonly selectedComparisonSkuNames = signal<readonly string[]>([])
   readonly sortKey = signal<SortKey>('price')
   readonly sortDirection = signal<VmPriceSortDirection>('asc')
+  readonly showAllResults = linkedSignal({
+    source: () =>
+      [
+        this.query(),
+        this.selectedType(),
+        this.selectedSeries(),
+        this.selectedRegion(),
+        this.selectedArchitecture(),
+        this.selectedFeature(),
+        this.selectedVcpus(),
+        this.selectedVcpuRange(),
+        this.selectedMemoryGB(),
+        this.selectedMemoryRange(),
+        this.selectedOperatingSystem(),
+        this.selectedPriceMode(),
+      ] as const,
+    computation: () => false,
+  })
   readonly typeOptions = VM_TYPE_OPTIONS
   readonly featureOptions = FEATURE_OPTIONS
   readonly vcpuQuickValues = VM_VCPU_QUICK_VALUES
@@ -206,39 +309,53 @@ export class AzureVmSizes implements OnInit {
     )
   )
   readonly selectedPriceModeLabel = computed(() => vmPriceModeLabel(this.selectedPriceMode()))
-  readonly skuViews = computed(() => {
+  readonly selectedPriceSourceLabel = computed(() =>
+    vmPriceProfileSourceLabel(
+      this.catalog().source,
+      this.selectedOperatingSystem(),
+      this.selectedPriceMode()
+    )
+  )
+  readonly skuBaseViews = computed(() => {
     const catalog = this.catalog()
+    return catalog.skus.map(buildSkuBaseView)
+  })
+  readonly skuViews = computed(() => {
     const operatingSystem = this.selectedOperatingSystem()
     const priceMode = this.selectedPriceMode()
-    return catalog.skus.map((sku) =>
-      buildSkuView(expandVmDirectorySku(sku, catalog.regions), operatingSystem, priceMode)
-    )
+    return this.skuBaseViews().map((sku) => buildSkuView(sku, operatingSystem, priceMode))
   })
   readonly seriesOptions = computed(() =>
     buildOptions(
-      this.skuViews()
+      this.skuBaseViews()
         .map((sku) => sku.entry.series)
         .filter(Boolean)
     )
   )
-  readonly regionOptions = computed(() =>
-    buildOptions(this.skuViews().flatMap((sku) => sku.pricedLocations))
-  )
+  readonly regionOptions = computed(() => {
+    const catalog = this.catalog()
+    return buildRegionOptions(
+      catalog.skus,
+      catalog.regions,
+      this.selectedOperatingSystem(),
+      this.selectedPriceMode()
+    )
+  })
   readonly architectureOptions = computed(() =>
     buildOptions(
-      this.skuViews()
+      this.skuBaseViews()
         .map((sku) => sku.architecture)
         .filter(Boolean)
     )
   )
   readonly vcpusOptions = computed(() =>
-    buildNumericOptions(this.skuViews().map((sku) => sku.vcpus))
+    buildNumericOptions(this.skuBaseViews().map((sku) => sku.vcpus))
   )
   readonly memoryOptions = computed(() =>
-    buildNumericOptions(this.skuViews().map((sku) => sku.memoryGB))
+    buildNumericOptions(this.skuBaseViews().map((sku) => sku.memoryGB))
   )
   readonly comparisonQueryParams = computed(() => ({
-    skus: this.selectedComparisonSkuNames().join(','),
+    skus: this.selectedComparisonSkuNames().join(',') || null,
     os: this.selectedOperatingSystem(),
     mode: this.selectedPriceMode(),
     region: this.selectedRegion() || null,
@@ -247,7 +364,7 @@ export class AzureVmSizes implements OnInit {
   readonly comparisonFull = computed(() => this.selectedComparisonSkuNames().length >= 3)
 
   readonly filteredSkus = computed(() => {
-    const searchTokens = normalizeSearch(this.query()).split(/\s+/).filter(Boolean)
+    const searchQuery = buildSearchQuery(this.query())
     const type = this.selectedType()
     const series = this.selectedSeries()
     const region = this.selectedRegion()
@@ -259,12 +376,13 @@ export class AzureVmSizes implements OnInit {
     const memoryRange = this.selectedMemoryRange()
     const sortKey = this.sortKey()
     const sortDirection = this.sortDirection()
+    const regionIndex = region ? this.catalog().regions.indexOf(region) : null
 
     const filtered = this.skuViews().filter((sku) => {
-      if (searchTokens.some((token) => !sku.searchText.includes(token))) return false
-      if (type && vmTypeCategory(sku.entry.familyGroup) !== type) return false
+      if (!matchesSearchIndex(sku.searchIndex, searchQuery)) return false
+      if (type && sku.entry.typeCategory !== type) return false
       if (series && sku.entry.series !== series) return false
-      if (region && !sku.pricedLocations.includes(region)) return false
+      if (regionIndex !== null && !sku.pricedRegionIndexes.includes(regionIndex)) return false
       if (architecture && sku.architecture !== architecture) return false
       if (!matchesVmNumericFilter(sku.vcpus, vcpus, vcpuRange)) return false
       if (!matchesVmNumericFilter(sku.memoryGB, memoryGB, memoryRange)) return false
@@ -272,12 +390,22 @@ export class AzureVmSizes implements OnInit {
       switch (feature) {
         case 'accelerated-networking':
           return sku.acceleratedNetworking
+        case 'confidential-computing':
+          return sku.confidentialComputingType !== null
+        case 'confidential-snp':
+          return sku.confidentialComputingType === 'SNP'
+        case 'confidential-tdx':
+          return sku.confidentialComputingType === 'TDX'
         case 'gpu':
           return sku.hasGpu
+        case 'no-temp-disk':
+          return !sku.hasTempDisk
         case 'premium-io':
           return sku.premiumIO
         case 'rdma':
           return sku.rdma
+        case 'temp-disk':
+          return sku.hasTempDisk
         default:
           return true
       }
@@ -288,24 +416,24 @@ export class AzureVmSizes implements OnInit {
         case 'series':
           return (
             compareVmPriceStrings(
-              NAME_COLLATOR,
+              VM_NAME_COLLATOR,
               left.entry.series,
               right.entry.series,
               sortDirection
-            ) || NAME_COLLATOR.compare(left.entry.sku, right.entry.sku)
+            ) || VM_NAME_COLLATOR.compare(left.entry.sku, right.entry.sku)
           )
         case 'memory':
           return (
             compareNullableVmPriceNumbers(left.memoryGB, right.memoryGB, sortDirection) ||
-            NAME_COLLATOR.compare(left.entry.sku, right.entry.sku)
+            VM_NAME_COLLATOR.compare(left.entry.sku, right.entry.sku)
           )
         case 'regions':
           return (
             compareVmPriceNumbers(
-              left.pricedLocations.length,
-              right.pricedLocations.length,
+              left.pricedRegionIndexes.length,
+              right.pricedRegionIndexes.length,
               sortDirection
-            ) || NAME_COLLATOR.compare(left.entry.sku, right.entry.sku)
+            ) || VM_NAME_COLLATOR.compare(left.entry.sku, right.entry.sku)
           )
         case 'price':
           return (
@@ -313,16 +441,16 @@ export class AzureVmSizes implements OnInit {
               left.minHourlyPrice,
               right.minHourlyPrice,
               sortDirection
-            ) || NAME_COLLATOR.compare(left.entry.sku, right.entry.sku)
+            ) || VM_NAME_COLLATOR.compare(left.entry.sku, right.entry.sku)
           )
         case 'vcpus':
           return (
             compareNullableVmPriceNumbers(left.vcpus, right.vcpus, sortDirection) ||
-            NAME_COLLATOR.compare(left.entry.sku, right.entry.sku)
+            VM_NAME_COLLATOR.compare(left.entry.sku, right.entry.sku)
           )
         default:
           return compareVmPriceStrings(
-            NAME_COLLATOR,
+            VM_NAME_COLLATOR,
             left.entry.sku,
             right.entry.sku,
             sortDirection
@@ -345,62 +473,91 @@ export class AzureVmSizes implements OnInit {
       this.selectedMemoryRange() !== null
     )
   )
-  readonly resultSummary = computed(() => {
-    const filtered = this.filteredSkus().length
-    const total = this.skuViews().length
-    return `${NUMBER_FORMATTER.format(filtered)} matching VM sizes (${NUMBER_FORMATTER.format(total)} total)`
+  readonly visibleSkus = computed<readonly VisibleVmSkuView[]>(() => {
+    const filteredSkus = this.filteredSkus()
+    const visibleSkus = this.showAllResults()
+      ? filteredSkus
+      : filteredSkus.slice(0, INITIAL_VISIBLE_RESULT_COUNT)
+    const regions = this.catalog().regions
+    return visibleSkus.map((sku) => ({
+      ...sku,
+      cheapestRegionLabel: formatCheapestRegionLabel(sku, regions),
+    }))
   })
-  private readonly hourlyPriceFormatter = computed(
-    () =>
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: this.catalog().source.retailPrices.currencyCode,
-        minimumFractionDigits: 4,
-        maximumFractionDigits: 6,
-      })
+  readonly canToggleResultVisibility = computed(
+    () => this.filteredSkus().length > INITIAL_VISIBLE_RESULT_COUNT
   )
-  private readonly monthlyPriceFormatter = computed(
-    () =>
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: this.catalog().source.retailPrices.currencyCode,
-        maximumFractionDigits: 2,
-      })
+  readonly resultSummary = computed(() => {
+    const visible = this.visibleSkus().length
+    const filtered = this.filteredSkus().length
+    const total = this.skuBaseViews().length
+    const visibleLabel =
+      visible < filtered
+        ? `${VM_NUMBER_FORMATTER.format(visible)} of ${VM_NUMBER_FORMATTER.format(filtered)}`
+        : `all ${VM_NUMBER_FORMATTER.format(filtered)}`
+    return `Showing ${visibleLabel} matching VM sizes (${VM_NUMBER_FORMATTER.format(total)} total)`
+  })
+  readonly resultVisibilityLabel = computed(() =>
+    this.showAllResults()
+      ? `Show first ${VM_NUMBER_FORMATTER.format(INITIAL_VISIBLE_RESULT_COUNT)} VM sizes`
+      : `Show all ${VM_NUMBER_FORMATTER.format(this.filteredSkus().length)} VM sizes`
   )
+  readonly csvFilename = 'azure-vm-prices'
+  readonly csvHeaders = computed(() => {
+    const currency = this.catalog().source.retailPrices.currencyCode
+    return [
+      'SKU',
+      'Series',
+      'Type',
+      'vCPUs',
+      'Memory (GB)',
+      'Architecture',
+      'Operating system',
+      'Pricing model',
+      'Price source',
+      `Lowest hourly (${currency})`,
+      `Estimated monthly (${currency})`,
+      'Priced regions',
+      'Lowest-price regions',
+    ]
+  })
+  readonly buildCsvRows = (): string[][] => {
+    const regions = this.catalog().regions
+    return this.filteredSkus().map((view) => [
+      view.entry.sku,
+      view.entry.series,
+      view.entry.typeCategory ?? 'N/A',
+      formatVmNumber(view.vcpus),
+      formatVmNumber(view.memoryGB),
+      view.architecture,
+      this.selectedOperatingSystem(),
+      this.selectedPriceModeLabel(),
+      this.selectedPriceSourceLabel(),
+      this.formatHourlyPrice(view.minHourlyPrice),
+      this.formatMonthlyPrice(view.minHourlyPrice),
+      String(view.pricedRegionIndexes.length),
+      formatCheapestRegionLabel(view, regions),
+    ])
+  }
   ngOnInit(): void {
     const catalog = this.vmCatalog()
     this.seoService.setPageMeta({
       title: 'Azure VM Sizes & Pricing',
       description:
-        'Compare Azure VM sizes, specifications, vCPU, memory, and architecture with Linux and Windows pay-as-you-go, reserved, and Spot hourly and monthly prices.',
-      canonicalUrl: 'https://www.azurespeed.com/AzureVmPricing',
+        'Compare Azure VM sizes, specifications, vCPU, memory, and architecture with Linux and Windows pay-as-you-go, savings plan, reserved, and Spot hourly and monthly prices.',
+      canonicalUrl: absoluteUrl('/AzureVmPricing'),
       structuredData: [
-        {
-          '@context': 'https://schema.org',
-          '@type': 'BreadcrumbList',
-          itemListElement: [
-            {
-              '@type': 'ListItem',
-              position: 1,
-              name: 'Azure resources',
-              item: 'https://www.azurespeed.com/Information/AzureRegions',
-            },
-            {
-              '@type': 'ListItem',
-              position: 2,
-              name: 'Azure VM Sizes & Pricing',
-              item: 'https://www.azurespeed.com/AzureVmPricing',
-            },
-          ],
-        },
-        {
-          '@context': 'https://schema.org',
-          '@type': 'Dataset',
+        buildBreadcrumbList([
+          { name: 'Azure resources', path: '/Information/AzureRegions' },
+          { name: 'Azure VM Sizes & Pricing', path: '/AzureVmPricing' },
+        ]),
+        buildDataset({
           name: 'Azure VM Sizes & Pricing',
           description:
-            'Azure VM sizes, hardware specifications, and Linux and Windows pay-as-you-go, reserved, and Spot retail pricing with regional price coverage.',
-          url: 'https://www.azurespeed.com/AzureVmPricing',
-          measurementTechnique: 'Azure Retail Prices API and Azure Resource SKUs API',
+            'Azure VM sizes, hardware specifications, direct retail prices, and clearly labeled derived Windows commitment estimates with regional price coverage.',
+          url: absoluteUrl('/AzureVmPricing'),
+          measurementTechnique:
+            'Azure Retail Prices API, derived Windows commitment estimates, and Azure Resource SKUs API',
           variableMeasured: [
             'Hourly retail price',
             'Azure region',
@@ -409,19 +566,16 @@ export class AzureVmSizes implements OnInit {
             'VM family',
             'capability',
           ],
-        },
-        {
-          '@context': 'https://schema.org',
-          '@type': 'ItemList',
+        }),
+        buildItemList({
           name: 'Azure VM prices',
           numberOfItems: catalog.counts.skuCount,
-          itemListElement: catalog.skus.slice(0, STRUCTURED_DATA_ITEM_LIMIT).map((sku, index) => ({
-            '@type': 'ListItem',
-            position: index + 1,
+          entries: catalog.skus.slice(0, STRUCTURED_DATA_ITEM_LIMIT).map((sku) => ({
             name: sku.sku,
-            url: `https://www.azurespeed.com${buildVmSkuHref(sku.sku)}`,
+            path: buildVmSkuHref(sku.sku),
           })),
-        },
+        }),
+        buildFaqPage([VM_PRICING_SOURCE_FAQ]),
       ],
     })
   }
@@ -530,6 +684,10 @@ export class AzureVmSizes implements OnInit {
     return this.sortDirection() === 'asc'
   }
 
+  toggleResultVisibility(): void {
+    this.showAllResults.update((showAll) => !showAll)
+  }
+
   clearFilters(): void {
     this.query.set('')
     this.selectedType.set('')
@@ -544,22 +702,15 @@ export class AzureVmSizes implements OnInit {
   }
 
   formatNumber(value: number | null): string {
-    return value === null ? 'Not listed' : NUMBER_FORMATTER.format(value)
+    return formatVmNumber(value)
   }
 
   formatHourlyPrice(value: number | null): string {
-    return value === null ? 'Price unavailable' : this.hourlyPriceFormatter().format(value)
+    return formatVmHourlyPrice(value, this.catalog().source.retailPrices.currencyCode)
   }
 
   formatMonthlyPrice(value: number | null): string {
-    return value === null
-      ? 'Price unavailable'
-      : this.monthlyPriceFormatter().format(value * MONTHLY_HOURS)
-  }
-
-  cheapestRegionLabel(view: VmSkuView): string {
-    if (!view.cheapestLocations.length) return 'Not available'
-    return view.cheapestLocations.join(', ')
+    return formatVmMonthlyPrice(value, this.catalog().source.retailPrices.currencyCode)
   }
 
   readonly buildVmSkuHref = buildVmSkuHref

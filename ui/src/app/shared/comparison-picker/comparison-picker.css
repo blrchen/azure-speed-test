@@ -1,0 +1,6 @@
+/* Selected-option accent: the state lives on the option element while the color
+   applies to a child, so no single utility can express it. The popup also renders
+   in a CDK overlay attached to <body>, so group or peer variants cannot reach it. */
+.comparison-picker__option[aria-selected='true'] .comparison-picker__option-name {
+  color: var(--color-primary);
+}

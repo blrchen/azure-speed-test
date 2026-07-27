@@ -1,4 +1,4 @@
-<article class="page-shell section-stack mx-auto max-w-5xl">
+<article class="page-shell section-stack">
   @let currentServiceTag = serviceTagId();
   @let data = pageData();
   @let insights = tagInsights();
@@ -6,67 +6,72 @@
   @let filteredAddresses = filteredPartitionedAddresses();
 
   <nav class="breadcrumb" aria-label="Breadcrumb">
-    <a class="breadcrumb-link" routerLink="/Azure/Latency">Home</a>
+    <a class="breadcrumb-link" href="/Azure/Latency">Home</a>
     <span class="breadcrumb-separator">/</span>
     @if (breadcrumbSource() === 'region') {
       <a
         class="breadcrumb-link"
-        routerLink="/Information/AzureIpRangesByRegion"
-        [queryParams]="directoryQueryParams()"
+        [href]="buildDocumentHref('/Information/AzureIpRangesByRegion', directoryQueryParams())"
         >Azure IP ranges by region</a
       >
     } @else {
       <a
         class="breadcrumb-link"
-        routerLink="/Information/AzureIpRangesByService"
-        [queryParams]="directoryQueryParams()"
+        [href]="buildDocumentHref('/Information/AzureIpRangesByService', directoryQueryParams())"
         >Azure IP ranges by service</a
       >
     }
     <span class="breadcrumb-separator">/</span>
     <span class="breadcrumb-current" aria-current="page">
-      <span class="ip-identifier" translate="no">{{ currentServiceTag }}</span>
+      <span class="wrap-anywhere" translate="no">{{ currentServiceTag }}</span>
     </span>
   </nav>
 
   <header class="page-header">
-    <div class="ip-title-stack">
+    <div>
       <span class="eyebrow-brand">{{ cloudLabel() }} service tag address ranges</span>
       <h1 class="page-title">
-        <span class="ip-identifier" translate="no">{{ currentServiceTag }}</span>
+        <span class="wrap-anywhere" translate="no">{{ currentServiceTag }}</span>
       </h1>
       <p class="page-lead">
-        {{ insights.metaDescription }}
+        Review, filter, copy, and export the IP ranges associated with this Azure service tag.
       </p>
     </div>
 
     @if (data) {
-      <section class="ip-summary-panel" aria-label="Service tag summary">
-        <dl class="ip-metric-grid">
+      <section
+        class="grid gap-4 rounded-lg border border-border-soft bg-surface-raised p-4 shadow-card"
+        aria-label="Service tag summary"
+      >
+        <dl class="grid grid-cols-2 gap-3 sm:grid-cols-4">
           @for (metric of summaryMetrics(); track metric.label) {
-            <div class="ip-metric">
-              <dt>{{ metric.label }}</dt>
-              <dd>{{ metric.value }}</dd>
+            <div class="min-w-0 rounded-[calc(var(--radius-lg)-2px)] bg-surface-muted p-3">
+              <dt class="text-micro font-bold text-text-muted uppercase">
+                {{ metric.label }}
+              </dt>
+              <dd class="mt-1.5 text-[1.75rem] leading-none font-extrabold text-text-strong">
+                {{ metric.value }}
+              </dd>
             </div>
           }
         </dl>
 
-        <dl class="ip-meta-grid">
-          <div>
-            <dt>Source</dt>
-            <dd>{{ cloudLabel() }} Service Tags</dd>
+        <dl class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div class="min-w-0 rounded-[calc(var(--radius-lg)-2px)] bg-surface-muted p-3">
+            <dt class="text-micro font-bold text-text-muted uppercase">Scope</dt>
+            <dd class="mt-1 text-xs font-bold wrap-anywhere text-text-body">
+              {{ insights.scopeLabel }}
+            </dd>
           </div>
-          <div>
-            <dt>Scope</dt>
-            <dd>{{ insights.scopeLabel }}</dd>
-          </div>
-          <div>
-            <dt>Service</dt>
-            <dd translate="no">{{ insights.serviceLabel }}</dd>
+          <div class="min-w-0 rounded-[calc(var(--radius-lg)-2px)] bg-surface-muted p-3">
+            <dt class="text-micro font-bold text-text-muted uppercase">Service</dt>
+            <dd class="mt-1 text-xs font-bold wrap-anywhere text-text-body" translate="no">
+              {{ insights.serviceLabel }}
+            </dd>
           </div>
         </dl>
 
-        <div class="ip-action-strip" role="group" aria-label="Quick copy actions">
+        <div class="flex flex-wrap gap-2" role="group" aria-label="Quick copy actions">
           <app-copy-button
             [text]="copyText()"
             icon="copy"
@@ -132,9 +137,15 @@
         <span class="badge" aria-live="polite"> {{ renderedResultLabel() }} </span>
       </header>
 
-      <div class="ip-workbench">
-        <div class="ip-toolbar" role="search" aria-label="Filter IP address prefixes">
-          <div class="ip-search-control form-control-shell">
+      <div
+        class="grid gap-4 rounded-lg border border-border-soft bg-surface-raised p-4 shadow-card"
+      >
+        <div
+          class="grid gap-3 md:grid-cols-[minmax(16rem,1fr)_auto] md:items-center"
+          role="search"
+          aria-label="Filter IP address prefixes"
+        >
+          <div class="form-control-shell">
             <label class="sr-only" for="ip-prefix-search">Search prefixes</label>
             <app-lucide-icon
               name="search"
@@ -145,7 +156,9 @@
               #prefixSearchInput
               id="ip-prefix-search"
               type="search"
-              [formField]="prefixSearchForm.search"
+              name="ipPrefixSearch.search"
+              [value]="prefixSearchModel().search"
+              (input)="updateSearch($event)"
               placeholder="Search all prefixes..."
               autocomplete="off"
               spellcheck="false"
@@ -163,12 +176,15 @@
             }
           </div>
 
-          <div class="ip-segment-group" role="group" aria-label="Address family filter">
+          <div
+            class="inline-flex w-fit max-w-full overflow-auto rounded-lg border border-border-soft bg-surface-muted p-0.5"
+            role="group"
+            aria-label="Address family filter"
+          >
             @for (option of familyFilterOptions; track option.value) {
               <button
                 type="button"
-                class="ip-segment-option"
-                [class.ip-segment-option-active]="familyFilter() === option.value"
+                class="form-control-focus-ring min-h-7.5 rounded-[calc(var(--radius-lg)-2px)] px-2.5 py-1.5 text-xs font-bold whitespace-nowrap text-text-muted outline-hidden hover:bg-surface-raised hover:text-text-body aria-pressed:bg-primary aria-pressed:text-primary-foreground aria-pressed:hover:bg-primary aria-pressed:hover:text-primary-foreground"
                 [attr.aria-pressed]="familyFilter() === option.value"
                 (click)="setFamilyFilter(option.value)"
               >
@@ -189,7 +205,7 @@
               >
               <p class="mt-0.5 text-sm text-text-body">{{ prefixLoadStatusLabel() }}</p>
               @if (allPrefixesDataState() === 'error') {
-                <p class="mt-0.5 text-sm font-bold text-danger-dark dark:text-danger">
+                <p class="mt-0.5 text-sm font-bold text-danger-emphasis">
                   {{ allPrefixesDataError() }}
                 </p>
               }
@@ -220,7 +236,7 @@
           </div>
         }
 
-        <div class="ip-export-strip">
+        <div class="flex flex-wrap gap-2 border-t border-border-soft pt-4">
           <app-copy-button
             [text]="visibleCopyText()"
             icon="copy"
@@ -274,12 +290,16 @@
 
         @if (data?.ipAddressPrefixes?.length) {
           @if (filteredRows.length) {
-            <div class="ip-prefix-groups">
+            <div class="grid gap-4 md:grid-cols-2">
               @if (filteredAddresses.ipv4.length > 0) {
-                <section class="ip-prefix-group" aria-labelledby="ipv4-prefixes-heading">
-                  <header class="ip-prefix-group-header">
-                    <h3 id="ipv4-prefixes-heading">IPv4 prefixes</h3>
-                    <span>{{ filteredAddresses.ipv4.length }} matches</span>
+                <section class="relative min-w-0" aria-labelledby="ipv4-prefixes-heading">
+                  <header class="mb-2 flex justify-between gap-4">
+                    <h3 id="ipv4-prefixes-heading" class="text-sm font-bold text-text-strong">
+                      IPv4 prefixes
+                    </h3>
+                    <span class="text-xs font-bold text-text-muted tabular-nums"
+                      >{{ filteredAddresses.ipv4.length }} matches</span
+                    >
                   </header>
                   <div
                     class="ip-prefix-list scrollbar-thin"
@@ -288,17 +308,21 @@
                     role="region"
                   >
                     @for (row of filteredAddresses.ipv4; track row.prefix) {
-                      <span class="ip-prefix-list-item" translate="no">{{ row.prefix }}</span>
+                      <span class="whitespace-nowrap" translate="no">{{ row.prefix }}</span>
                     }
                   </div>
                 </section>
               }
 
               @if (filteredAddresses.ipv6.length > 0) {
-                <section class="ip-prefix-group" aria-labelledby="ipv6-prefixes-heading">
-                  <header class="ip-prefix-group-header">
-                    <h3 id="ipv6-prefixes-heading">IPv6 prefixes</h3>
-                    <span>{{ filteredAddresses.ipv6.length }} matches</span>
+                <section class="relative min-w-0" aria-labelledby="ipv6-prefixes-heading">
+                  <header class="mb-2 flex justify-between gap-4">
+                    <h3 id="ipv6-prefixes-heading" class="text-sm font-bold text-text-strong">
+                      IPv6 prefixes
+                    </h3>
+                    <span class="text-xs font-bold text-text-muted tabular-nums"
+                      >{{ filteredAddresses.ipv6.length }} matches</span
+                    >
                   </header>
                   <div
                     class="ip-prefix-list scrollbar-thin"
@@ -307,7 +331,7 @@
                     role="region"
                   >
                     @for (row of filteredAddresses.ipv6; track row.prefix) {
-                      <span class="ip-prefix-list-item" translate="no">{{ row.prefix }}</span>
+                      <span class="whitespace-nowrap" translate="no">{{ row.prefix }}</span>
                     }
                   </div>
                 </section>
@@ -338,28 +362,13 @@
             aria-live="polite"
           >
             <app-lucide-icon name="alert-circle" class="size-10" aria-hidden="true" />
-            <h3 class="text-base font-bold text-text-strong">No prefixes returned</h3>
-            <p class="max-w-md text-sm">
-              This service tag did not return address prefixes in the current snapshot.
-            </p>
+            <h3 class="max-w-md text-base font-bold text-text-strong">
+              No address prefixes are currently available for this service tag.
+            </h3>
           </div>
         }
       </div>
     </section>
-
-    @if (data?.ipAddressPrefixes?.length) {
-      <section class="section-block" aria-labelledby="use-cases-heading">
-        <h2 id="use-cases-heading" class="section-title">Common use cases</h2>
-        <p class="text-text-muted">
-          This service tag often supports Azure networking tasks such as:
-        </p>
-        <ul class="list-disc space-y-2 pl-5 text-sm text-text-body">
-          @for (useCase of commonUseCases; track useCase) {
-            <li>{{ useCase }}</li>
-          }
-        </ul>
-      </section>
-    }
   }
 
   <section class="section-block" aria-labelledby="explore-heading">
@@ -367,15 +376,13 @@
     <div class="flex flex-wrap gap-3">
       <a
         class="btn btn-outline btn--sm"
-        routerLink="/Information/AzureIpRangesByService"
-        [queryParams]="directoryQueryParams()"
+        [href]="buildDocumentHref('/Information/AzureIpRangesByService', directoryQueryParams())"
       >
         IP ranges by service
       </a>
       <a
         class="btn btn-outline btn--sm"
-        routerLink="/Information/AzureIpRangesByRegion"
-        [queryParams]="directoryQueryParams()"
+        [href]="buildDocumentHref('/Information/AzureIpRangesByRegion', directoryQueryParams())"
       >
         IP ranges by region
       </a>
@@ -385,57 +392,93 @@
   <section class="section-block" aria-labelledby="resources-heading">
     <h2 id="resources-heading" class="section-title">Additional resources</h2>
     <p class="text-text-muted">
-      Stay current with Azure service tag updates and automation tooling.
+      Use these resources to maintain network rules, understand service tags, and automate updates.
     </p>
     <div class="resource-grid">
       <article class="card card-resource">
-        <h3 class="card-title">Azure IP ranges downloads</h3>
+        <h3 class="card-title">Maintain network rules</h3>
         <p class="card-description">
-          Access weekly updates for all Azure clouds to keep network rules current.
+          Review the latest Azure IP ranges before updating firewalls, proxies, and routing rules.
         </p>
         <a
           href="https://www.microsoft.com/en-us/download/details.aspx?id=56519"
           target="_blank"
           rel="noopener noreferrer"
           class="card-cta"
-          aria-label="Download Azure IP ranges (opens in new tab)"
+          aria-label="Review Azure IP ranges (opens in new tab)"
         >
-          Download Azure IP ranges
+          Review Azure IP ranges
           <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
         </a>
       </article>
       <article class="card card-resource">
-        <h3 class="card-title">Service tags overview</h3>
+        <h3 class="card-title">Understand service tags</h3>
         <p class="card-description">
-          Learn how service tags simplify network security management in Azure.
+          Learn how service tags can simplify network rules and where additional controls still
+          matter.
         </p>
         <a
           href="https://learn.microsoft.com/azure/virtual-network/service-tags-overview"
           target="_blank"
           rel="noopener noreferrer"
           class="card-cta"
-          aria-label="Explore Azure service tags (opens in new tab)"
+          aria-label="Learn about Azure service tags (opens in new tab)"
         >
-          Explore Azure service tags
+          Learn about service tags
           <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
         </a>
       </article>
       <article class="card card-resource">
-        <h3 class="card-title">Programmatic access</h3>
+        <h3 class="card-title">Automate updates</h3>
         <p class="card-description">
-          Use the Service Tag Discovery API to automate service tag updates in your tooling.
+          Keep dependent network configurations aligned as Azure service tag ranges change.
         </p>
         <a
           href="https://learn.microsoft.com/rest/api/virtualnetwork/servicetags/list"
           target="_blank"
           rel="noopener noreferrer"
           class="card-cta"
-          aria-label="View the Service Tags API (opens in new tab)"
+          aria-label="Explore Azure service tag automation options (opens in new tab)"
         >
-          View the Service Tags API
+          Explore automation options
           <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
         </a>
       </article>
+    </div>
+  </section>
+
+  <section class="section-block" aria-labelledby="service-tag-faq-heading">
+    <h2 id="service-tag-faq-heading" class="section-title">Frequently asked questions</h2>
+    <div class="faq-list">
+      <details class="faq-item group">
+        <summary class="faq-summary">
+          <span class="faq-question">{{ sourceFaq.question }}</span>
+          <app-lucide-icon name="chevron-down" class="faq-icon" aria-hidden="true" />
+        </summary>
+        <div class="faq-body">
+          <p>{{ sourceFaq.answer }}</p>
+          <div class="flex flex-wrap gap-2">
+            <a
+              class="btn btn-outline btn--sm"
+              href="https://www.microsoft.com/en-us/download/details.aspx?id=56519"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Official Azure IP ranges download
+              <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
+            </a>
+            <a
+              class="btn btn-outline btn--sm"
+              href="https://learn.microsoft.com/azure/virtual-network/service-tags-overview"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Service tags overview
+              <app-lucide-icon name="external-link" class="size-3" aria-hidden="true" />
+            </a>
+          </div>
+        </div>
+      </details>
     </div>
   </section>
 </article>

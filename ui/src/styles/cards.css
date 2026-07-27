@@ -11,6 +11,16 @@
   box-shadow: var(--shadow-card);
 }
 
+/* .card is unlayered, so its padding outranks any padding utility on the same
+   element. These modifiers cover the roomier variants the templates need. */
+.card--roomy {
+  padding: 1.5rem;
+}
+
+.card--tall {
+  padding-block: 2.5rem;
+}
+
 .vm-summary-ledger {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -64,7 +74,10 @@
 }
 
 .card-resource:focus-visible {
-  outline: none;
+  /* Transparent outline stays visible in forced-colors mode, where the
+     box-shadow ring below is suppressed. */
+  outline: 2px solid transparent;
+  outline-offset: 2px;
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 40%, transparent);
 }
 
@@ -105,7 +118,10 @@
   color: var(--color-link-hover);
 }
 .card-cta:focus-visible {
-  outline: none;
+  /* Transparent outline stays visible in forced-colors mode, where the
+     box-shadow ring below is suppressed. */
+  outline: 2px solid transparent;
+  outline-offset: 2px;
   box-shadow:
     0 0 0 2px var(--color-surface-base),
     0 0 0 4px var(--color-primary);

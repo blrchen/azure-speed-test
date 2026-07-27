@@ -1,0 +1,72 @@
+<section
+  class="flex min-w-0 items-center justify-between gap-4 rounded-lg border border-border-soft bg-surface-muted p-3 max-md:flex-col max-md:items-stretch"
+  aria-label="Comparison display options"
+>
+  <div class="flex min-w-0 flex-wrap items-center gap-3 max-md:flex-col max-md:items-stretch">
+    <span class="shrink-0 text-xs font-bold text-text-strong uppercase">Comparison rows</span>
+    <div
+      class="inline-flex shrink-0 gap-0.5 rounded-control border border-border-soft bg-surface-raised p-0.5"
+      role="group"
+      aria-label="Choose comparison row view"
+    >
+      <button
+        type="button"
+        class="form-control-focus-ring inline-flex min-h-9 touch-manipulation items-center gap-1.5 rounded-md px-2.5 text-xs font-semibold text-text-muted outline-hidden hover:bg-surface-muted hover:text-text-strong aria-pressed:bg-primary aria-pressed:text-primary-foreground aria-pressed:shadow-xs"
+        [attr.aria-pressed]="!showDifferencesOnly()"
+        (click)="selectView(false)"
+      >
+        All
+        <span
+          class="min-w-5 rounded-full bg-[color-mix(in_srgb,currentColor_12%,transparent)] px-1.5 text-center tabular-nums"
+          >{{ totalRows() }}</span
+        >
+      </button>
+      <button
+        type="button"
+        class="form-control-focus-ring inline-flex min-h-9 touch-manipulation items-center gap-1.5 rounded-md px-2.5 text-xs font-semibold text-text-muted outline-hidden hover:bg-surface-muted hover:text-text-strong aria-pressed:bg-primary aria-pressed:text-primary-foreground aria-pressed:shadow-xs"
+        [attr.aria-pressed]="showDifferencesOnly()"
+        (click)="selectView(true)"
+      >
+        Differences
+        <span
+          class="min-w-5 rounded-full bg-[color-mix(in_srgb,currentColor_12%,transparent)] px-1.5 text-center tabular-nums"
+          >{{ differingRows() }}</span
+        >
+      </button>
+    </div>
+    <p class="text-xs leading-[1.4] text-text-muted" role="status" aria-live="polite">
+      {{ viewStatus() }}
+    </p>
+  </div>
+
+  <div class="flex min-w-0 flex-wrap items-center gap-3 max-md:justify-between">
+    <span class="hidden text-xs leading-[1.4] text-text-muted max-md:block"
+      >Swipe horizontally to compare columns</span
+    >
+    <ng-content select="[comparison-toolbar-action]" />
+    <button
+      type="button"
+      class="btn btn-outline min-h-10 touch-manipulation"
+      [attr.aria-label]="
+        copyState() === 'failed'
+          ? 'Copy unavailable. Copy the comparison URL from the address bar.'
+          : copyButtonLabel()
+      "
+      (click)="copyLink()"
+    >
+      <app-lucide-icon
+        [name]="copyState() === 'copied' ? 'check' : 'copy'"
+        class="size-4"
+        aria-hidden="true"
+      />
+      {{ copyButtonLabel() }}
+    </button>
+    <span class="sr-only" role="status" aria-live="polite">
+      @if (copyState() === 'copied') {
+        Comparison link copied to the clipboard.
+      } @else if (copyState() === 'failed') {
+        Copy unavailable. Copy the comparison URL from the address bar.
+      }
+    </span>
+  </div>
+</section>

@@ -14,7 +14,7 @@ export interface SovereignServiceTagRouteParam extends Record<string, string> {
 }
 
 interface ServiceTagRoutesDocument {
-  legacyServiceTagIds: string[]
+  implicitCloudRouteServiceTagIds: string[]
   sovereignServiceTags: SovereignServiceTagRouteParam[]
 }
 
@@ -30,11 +30,32 @@ function readJsonFile<T>(path: string, description: string): T {
   }
 }
 
+/**
+ * The keys below are a contract with `scripts/data/service-tags-routes.json`, which is
+ * generated rather than hand-written. `readJsonFile` only casts, so a renamed or missing
+ * key would otherwise surface as `undefined` far downstream (prerendering reads `.length`
+ * off these arrays). Validate at the read site so the failure names the offending file.
+ */
+function assertServiceTagRoutes(document: unknown, path: string): ServiceTagRoutesDocument {
+  const candidate = document as Partial<ServiceTagRoutesDocument> | null
+
+  for (const key of ['implicitCloudRouteServiceTagIds', 'sovereignServiceTags'] as const) {
+    if (!Array.isArray(candidate?.[key])) {
+      throw new Error(`Azure service tag routes at ${path} is missing the "${key}" array`)
+    }
+  }
+
+  return candidate as ServiceTagRoutesDocument
+}
+
 function loadServiceTagRoutes(): ServiceTagRoutesDocument {
   if (cachedRoutes) return cachedRoutes
 
   const routesPath = join(process.cwd(), 'scripts', 'data', 'service-tags-routes.json')
-  cachedRoutes = readJsonFile<ServiceTagRoutesDocument>(routesPath, 'Azure service tag routes')
+  cachedRoutes = assertServiceTagRoutes(
+    readJsonFile<unknown>(routesPath, 'Azure service tag routes'),
+    routesPath
+  )
   return cachedRoutes
 }
 
@@ -64,7 +85,7 @@ export const SERVER_SERVICE_TAG_SUMMARY_SOURCE: ServiceTagSummarySource = {
 }
 
 export function getServiceTagRouteIds(): string[] {
-  return loadServiceTagRoutes().legacyServiceTagIds
+  return loadServiceTagRoutes().implicitCloudRouteServiceTagIds
 }
 
 export function getSovereignServiceTagRouteParams(): SovereignServiceTagRouteParam[] {

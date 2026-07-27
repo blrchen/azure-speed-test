@@ -6,7 +6,7 @@
   <!-- Header row - always visible -->
   <button
     type="button"
-    class="flex w-full items-center justify-between gap-3 px-4 py-3 text-left hover:bg-surface-muted focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none focus-visible:ring-inset"
+    class="flex w-full items-center justify-between gap-3 px-4 py-3 text-left hover:bg-surface-muted focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-hidden focus-visible:ring-inset"
     (click)="toggleVisibility.emit()"
     [attr.aria-expanded]="isVisible()"
     [attr.aria-controls]="isVisible() ? 'connection-details-content' : null"

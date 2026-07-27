@@ -17,6 +17,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'AzureAiModelPricing',
+        loadChildren: () =>
+          import('./pages/azure-ai-model-pricing/azure-ai-model-pricing-routes').then(
+            (_) => _.AZURE_AI_MODEL_PRICING_ROUTES
+          ),
+      },
+      {
         path: 'Information',
         loadChildren: () =>
           import('./pages/information/information-routes').then((_) => _.INFORMATION_ROUTES),

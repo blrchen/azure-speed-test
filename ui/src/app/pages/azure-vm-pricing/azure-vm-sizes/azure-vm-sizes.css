@@ -1,51 +1,6 @@
-.vm-catalog-metrics {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  overflow: hidden;
-  border: 1px solid var(--color-border-soft);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface-raised);
-  box-shadow: var(--shadow-card);
-}
-
-.vm-catalog-metric {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 0.25rem;
-  padding: 0.75rem;
-}
-
-.vm-catalog-metric:nth-child(odd) {
-  border-right: 1px solid var(--color-border-soft);
-}
-
-.vm-catalog-metric:nth-child(-n + 2) {
-  border-bottom: 1px solid var(--color-border-soft);
-}
-
-@media (min-width: 640px) {
-  .vm-catalog-metrics {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-  .vm-catalog-metric {
-    padding: 1rem;
-  }
-
-  .vm-catalog-metric:nth-child(odd) {
-    border-right: 0;
-  }
-
-  .vm-catalog-metric:nth-child(-n + 2) {
-    border-bottom: 0;
-  }
-
-  .vm-catalog-metric:not(:last-child) {
-    border-right: 1px solid var(--color-border-soft);
-  }
-}
-
+/* Overrides .table-base min-width. Semantic classes in src/styles/*.css are
+   unlayered, so they outrank Tailwind's @layer utilities regardless of source
+   order; a min-w-0 utility in the template would lose. */
 .vm-size-table {
   min-width: 0;
 }

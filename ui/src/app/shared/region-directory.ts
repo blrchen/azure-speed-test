@@ -1,3 +1,5 @@
+import { toQueryValue } from './query-value'
+
 export type AvailabilityZoneFilter = '' | 'supported' | 'unsupported'
 
 interface RegionGroupEntry {
@@ -15,13 +17,13 @@ export interface RegionGroupOption {
   readonly count: number
 }
 
-export interface RegionGroupCatalog {
+interface RegionGroupCatalog {
   readonly options: readonly RegionGroupOption[]
   readonly byValue: ReadonlyMap<string, RegionGroupOption>
   readonly normalizeInput: (value: string | undefined) => string
 }
 
-export interface GroupedGeography<T> {
+interface GroupedGeography<T> {
   readonly name: string
   readonly regions: readonly T[]
 }
@@ -30,14 +32,6 @@ export const REGION_DIRECTORY_COLLATOR = new Intl.Collator('en', {
   numeric: true,
   sensitivity: 'base',
 })
-
-export function toQueryValue(value: string): string {
-  return value
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '')
-}
 
 export function createRegionGroupCatalog<T extends RegionGroupEntry>(
   regions: readonly T[],

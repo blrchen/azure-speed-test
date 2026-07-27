@@ -1,4 +1,4 @@
-<article class="page-shell section-stack mx-auto max-w-5xl">
+<article class="page-shell section-stack">
   <header class="page-header">
     <h1 class="page-title">Azure geographies</h1>
 
@@ -6,30 +6,27 @@
       <span class="btn btn--sm btn-current min-h-11 md:min-h-9" aria-current="page">
         Geographies
       </span>
-      <a class="btn btn-outline btn--sm min-h-11 md:min-h-9" routerLink="/Information/AzureRegions">
+      <a class="btn btn-outline btn--sm min-h-11 md:min-h-9" href="/Information/AzureRegions">
         Global regions
       </a>
       <a
         class="btn btn-outline btn--sm min-h-11 md:min-h-9"
-        routerLink="/Information/AzureUSGovernmentRegions"
+        href="/Information/AzureUSGovernmentRegions"
       >
         US Gov regions
       </a>
-      <a
-        class="btn btn-outline btn--sm min-h-11 md:min-h-9"
-        routerLink="/Information/AzureChinaRegions"
-      >
+      <a class="btn btn-outline btn--sm min-h-11 md:min-h-9" href="/Information/AzureChinaRegions">
         China regions
       </a>
       <a
         class="btn btn-outline btn--sm min-h-11 md:min-h-9"
-        routerLink="/Information/AzureRestrictedRegions"
+        href="/Information/AzureRestrictedRegions"
       >
         Restricted regions
       </a>
       <a
         class="btn btn-outline btn--sm min-h-11 md:min-h-9"
-        routerLink="/Information/AzureUpcomingRegions"
+        href="/Information/AzureUpcomingRegions"
       >
         Upcoming regions
       </a>
@@ -68,7 +65,9 @@
             type="search"
             id="geographySearchInput"
             placeholder="Australia, East US, eastus, or Virginia..."
-            [formField]="filtersForm.search"
+            name="azureGeographiesFilters.search"
+            [value]="filtersModel().search"
+            (input)="updateSearch($event)"
             class="form-control form-control--icon-start form-control--action-end form-control-focus-ring min-h-11"
             autocomplete="off"
             spellcheck="false"
@@ -95,7 +94,9 @@
         <div class="form-select-wrapper">
           <select
             id="geographyScopeFilter"
-            [formField]="filtersForm.scope"
+            name="azureGeographiesFilters.scope"
+            [value]="filtersModel().scope"
+            (change)="updateScope($event)"
             class="form-select min-h-11"
             autocomplete="off"
           >
@@ -113,7 +114,9 @@
         <div class="form-select-wrapper">
           <select
             id="geographyZoneFilter"
-            [formField]="filtersForm.zoneSupport"
+            name="azureGeographiesFilters.zoneSupport"
+            [value]="filtersModel().zoneSupport"
+            (change)="updateZoneSupport($event)"
             class="form-select min-h-11"
             autocomplete="off"
           >
@@ -320,9 +323,9 @@
     </dl>
     <p class="max-w-4xl text-sm leading-relaxed text-text-muted">
       Compare individual
-      <a class="link-primary" routerLink="/Information/AzureRegions">Azure regions</a>, explore the
-      <a class="link-primary" routerLink="/Information/AzureRegionMap">region map</a>, or review
-      <a class="link-primary" routerLink="/Information/AzureAvailabilityZones"
+      <a class="link-primary" href="/Information/AzureRegions">Azure regions</a>, explore the
+      <a class="link-primary" href="/Information/AzureRegionMap">region map</a>, or review
+      <a class="link-primary" href="/Information/AzureAvailabilityZones"
         >availability zone support</a
       >.
     </p>
@@ -335,12 +338,12 @@
     </p>
 
     <nav class="flex flex-wrap gap-2" aria-label="Related Azure infrastructure pages">
-      <a class="btn btn-outline btn--sm" routerLink="/Information/AzureRegions">Azure regions</a>
-      <a class="btn btn-outline btn--sm" routerLink="/Information/AzureRegionMap"> Region map </a>
-      <a class="btn btn-outline btn--sm" routerLink="/Information/AzureAvailabilityZones">
+      <a class="btn btn-outline btn--sm" href="/Information/AzureRegions">Azure regions</a>
+      <a class="btn btn-outline btn--sm" href="/Information/AzureRegionMap"> Region map </a>
+      <a class="btn btn-outline btn--sm" href="/Information/AzureAvailabilityZones">
         Availability zones
       </a>
-      <a class="btn btn-outline btn--sm" routerLink="/Information/AzureSovereignClouds">
+      <a class="btn btn-outline btn--sm" href="/Information/AzureSovereignClouds">
         Sovereign clouds
       </a>
     </nav>

@@ -1,7 +1,7 @@
 import { isPlatformBrowser } from '@angular/common'
 import { computed, DestroyRef, inject, PLATFORM_ID, Service, signal } from '@angular/core'
 
-export interface CloudflareMetaResponse {
+interface CloudflareMetaResponse {
   clientIp: string
   asn: number | null
   asOrganization: string | null

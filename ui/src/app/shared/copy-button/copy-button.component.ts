@@ -66,10 +66,10 @@ export class CopyButtonComponent {
   protected readonly statusClasses = computed((): string => {
     const status = this.copyStatus()
     if (status === 'copied') {
-      return 'border-success-dark bg-success/10 text-success-foreground dark:border-success dark:text-success'
+      return 'border-success-dark bg-success/10 text-success-emphasis dark:border-success'
     }
     if (status === 'failed') {
-      return 'border-danger-dark text-danger-dark dark:border-danger dark:text-danger'
+      return 'border-danger-dark text-danger-emphasis dark:border-danger'
     }
     return ''
   })

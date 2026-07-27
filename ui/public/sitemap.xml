@@ -178,6 +178,12 @@
     <loc>https://www.azurespeed.com/Azure/UploadLargeFile</loc>
   </url>
   <url>
+    <loc>https://www.azurespeed.com/AzureAiModelPricing</loc>
+  </url>
+  <url>
+    <loc>https://www.azurespeed.com/AzureAiModelPricing/Compare</loc>
+  </url>
+  <url>
     <loc>https://www.azurespeed.com/AzureVmPricing</loc>
   </url>
   <url>

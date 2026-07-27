@@ -1,26 +1,34 @@
 import { Component, computed, effect, inject, input, signal } from '@angular/core'
-import { RouterLink } from '@angular/router'
 
 import { SeoService } from '../../../services/seo.service'
 import {
   buildVmSeriesHref,
   buildVmSkuHref,
-  expandVmRegionSku,
   VmFamilyDetailDocument,
   VmOperatingSystem,
   VmPriceMode,
   vmPriceModeLabel,
+  vmPriceProfileSourceLabel,
   vmSkuMinHourlyPrice,
   vmSkuPricedRegionCount,
   VmSkuSummary,
 } from '../../../services/vm-catalog'
 import {
-  buildVmSkuSpecs,
+  formatVmHourlyPrice,
+  formatVmMonthlyPrice,
   formatVmNumber,
   VM_NAME_COLLATOR,
   VmSkuSpecs,
 } from '../../../services/vm-catalog-view'
+import { ExportCsvButtonComponent } from '../../../shared/export-csv-button/export-csv-button.component'
 import { LucideIconComponent } from '../../../shared/icons/lucide-icons.component'
+import {
+  absoluteUrl,
+  buildBreadcrumbList,
+  buildListItems,
+  buildSchemaNode,
+} from '../../../shared/structured-data'
+import { VmCatalogNotice } from '../vm-catalog-notice/vm-catalog-notice'
 import { VmOperatingSystemToggle } from '../vm-operating-system-toggle/vm-operating-system-toggle'
 import { VmPriceModeToggle } from '../vm-price-mode-toggle/vm-price-mode-toggle'
 import {
@@ -41,7 +49,6 @@ interface FamilySkuView {
   readonly pricedRegionCount: number
 }
 
-const MONTHLY_HOURS = 730
 const DEFAULT_SORT_DIRECTIONS: Readonly<Record<FamilySkuSort, VmPriceSortDirection>> = {
   memory: 'desc',
   price: 'asc',
@@ -84,10 +91,15 @@ function compareFamilySkuViews(
 
 @Component({
   selector: 'app-azure-vm-family-sizes',
-  imports: [LucideIconComponent, RouterLink, VmOperatingSystemToggle, VmPriceModeToggle],
+  imports: [
+    ExportCsvButtonComponent,
+    LucideIconComponent,
+    VmCatalogNotice,
+    VmOperatingSystemToggle,
+    VmPriceModeToggle,
+  ],
   templateUrl: './azure-vm-family-sizes.html',
-  styleUrl: './azure-vm-family-sizes.css',
-  host: { class: 'block' },
+  host: { class: 'block min-w-0' },
 })
 export class AzureVmFamilySizes {
   private readonly seoService = inject(SeoService)
@@ -98,6 +110,13 @@ export class AzureVmFamilySizes {
   readonly selectedOperatingSystem = signal<VmOperatingSystem>('Linux')
   readonly selectedPriceMode = signal<VmPriceMode>('PayAsYouGo')
   readonly selectedPriceModeLabel = computed(() => vmPriceModeLabel(this.selectedPriceMode()))
+  readonly selectedPriceSourceLabel = computed(() =>
+    vmPriceProfileSourceLabel(
+      this.vmSeriesPageData().source,
+      this.selectedOperatingSystem(),
+      this.selectedPriceMode()
+    )
+  )
   readonly seriesSummary = computed(() => this.vmSeriesPageData().family)
   readonly skuViews = computed<readonly FamilySkuView[]>(() => {
     const operatingSystem = this.selectedOperatingSystem()
@@ -106,49 +125,62 @@ export class AzureVmFamilySizes {
     const sortDirection = this.sortDirection()
     return this.vmSeriesPageData()
       .skus.map((sku) => {
-        const expanded = expandVmRegionSku(sku)
         return {
-          sku: expanded,
-          specs: buildVmSkuSpecs(expanded),
-          minHourlyPrice: vmSkuMinHourlyPrice(expanded, operatingSystem, priceMode),
-          pricedRegionCount: vmSkuPricedRegionCount(expanded, operatingSystem, priceMode),
+          sku,
+          specs: sku.specs,
+          minHourlyPrice: vmSkuMinHourlyPrice(sku, operatingSystem, priceMode),
+          pricedRegionCount: vmSkuPricedRegionCount(sku, operatingSystem, priceMode),
         }
       })
       .sort((left, right) => compareFamilySkuViews(left, right, sortKey, sortDirection))
   })
+  readonly csvFilename = computed(
+    () => `azure-vm-${this.seriesSummary().routeSlug.toLowerCase()}-prices`
+  )
+  readonly csvHeaders = computed(() => {
+    const currency = this.vmSeriesPageData().source.retailPrices.currencyCode
+    return [
+      'SKU',
+      'Series',
+      'vCPUs',
+      'Memory (GB)',
+      'Architecture',
+      'Operating system',
+      'Pricing model',
+      'Price source',
+      `Lowest hourly (${currency})`,
+      `Estimated monthly (${currency})`,
+      'Priced regions',
+    ]
+  })
+  readonly csvRows = computed<string[][]>(() =>
+    this.skuViews().map((view) => [
+      view.sku.sku,
+      view.sku.series,
+      formatVmNumber(view.specs.vcpus),
+      formatVmNumber(view.specs.memoryGB),
+      view.specs.architecture ?? 'N/A',
+      this.selectedOperatingSystem(),
+      this.selectedPriceModeLabel(),
+      this.selectedPriceSourceLabel(),
+      this.formatHourlyPrice(view.minHourlyPrice),
+      this.formatMonthlyPrice(view.minHourlyPrice),
+      String(view.pricedRegionCount),
+    ])
+  )
 
   readonly buildVmSkuHref = buildVmSkuHref
   readonly formatNumber = formatVmNumber
-  private readonly hourlyPriceFormatter = computed(
-    () =>
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: this.vmSeriesPageData().source.retailPrices.currencyCode,
-        minimumFractionDigits: 4,
-        maximumFractionDigits: 6,
-      })
-  )
-  private readonly monthlyPriceFormatter = computed(
-    () =>
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: this.vmSeriesPageData().source.retailPrices.currencyCode,
-        maximumFractionDigits: 2,
-      })
-  )
-
   formatMemory(value: number | null): string {
-    return value === null ? 'Not listed' : `${formatVmNumber(value)} GB`
+    return value === null ? 'N/A' : `${formatVmNumber(value)} GB`
   }
 
   formatHourlyPrice(value: number | null): string {
-    return value === null ? 'Price unavailable' : this.hourlyPriceFormatter().format(value)
+    return formatVmHourlyPrice(value, this.vmSeriesPageData().source.retailPrices.currencyCode)
   }
 
   formatMonthlyPrice(value: number | null): string {
-    return value === null
-      ? 'Price unavailable'
-      : this.monthlyPriceFormatter().format(value * MONTHLY_HOURS)
+    return formatVmMonthlyPrice(value, this.vmSeriesPageData().source.retailPrices.currencyCode)
   }
 
   updateOperatingSystem(operatingSystem: VmOperatingSystem): void {
@@ -188,42 +220,21 @@ export class AzureVmFamilySizes {
       const data = this.vmSeriesPageData()
       const canonicalPath = buildVmSeriesHref(data.family.series)
       const familyContext = data.family.familyGroup ? ` in the ${data.family.familyGroup}` : ''
-      const description = `Compare Linux and Windows pay-as-you-go, reserved, and Spot pricing and specifications for ${data.counts.skuCount} Azure VM sizes in the ${data.family.series}${familyContext}.`
+      const description = `Compare Linux and Windows pay-as-you-go, savings plan, reserved, and Spot pricing and specifications for ${data.counts.skuCount} Azure VM sizes in the ${data.family.series}${familyContext}.`
       this.seoService.setPageMeta({
         title: `${data.family.series}: Azure VM Sizes, Prices and Specs`,
         description,
-        canonicalUrl: `https://www.azurespeed.com${canonicalPath}`,
+        canonicalUrl: absoluteUrl(canonicalPath),
         structuredData: [
-          {
-            '@context': 'https://schema.org',
-            '@type': 'BreadcrumbList',
-            itemListElement: [
-              {
-                '@type': 'ListItem',
-                position: 1,
-                name: 'Azure VM Sizes & Pricing',
-                item: 'https://www.azurespeed.com/AzureVmPricing',
-              },
-              {
-                '@type': 'ListItem',
-                position: 2,
-                name: 'Series',
-                item: 'https://www.azurespeed.com/AzureVmPricing/Series',
-              },
-              {
-                '@type': 'ListItem',
-                position: 3,
-                name: data.family.series,
-                item: `https://www.azurespeed.com${canonicalPath}`,
-              },
-            ],
-          },
-          {
-            '@context': 'https://schema.org',
-            '@type': 'CollectionPage',
+          buildBreadcrumbList([
+            { name: 'Azure VM Sizes & Pricing', path: '/AzureVmPricing' },
+            { name: 'Series', path: '/AzureVmPricing/Series' },
+            { name: data.family.series, path: canonicalPath },
+          ]),
+          buildSchemaNode('CollectionPage', {
             name: `${data.family.series} Azure VM pricing and sizes`,
             description,
-            url: `https://www.azurespeed.com${canonicalPath}`,
+            url: absoluteUrl(canonicalPath),
             about: {
               '@type': 'Thing',
               name: data.family.series,
@@ -232,14 +243,14 @@ export class AzureVmFamilySizes {
             mainEntity: {
               '@type': 'ItemList',
               numberOfItems: data.counts.skuCount,
-              itemListElement: data.skus.map((sku, index) => ({
-                '@type': 'ListItem',
-                position: index + 1,
-                name: sku.sku,
-                url: `https://www.azurespeed.com${buildVmSkuHref(sku.sku)}`,
-              })),
+              itemListElement: buildListItems(
+                data.skus.map((sku) => ({
+                  name: sku.sku,
+                  path: buildVmSkuHref(sku.sku),
+                }))
+              ),
             },
-          },
+          }),
         ],
       })
     })

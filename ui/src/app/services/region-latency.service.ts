@@ -2,58 +2,20 @@ import { Service } from '@angular/core'
 
 import regionLatencyMatrixJson from '../../assets/data/region-latency-matrix.json'
 import { RegionLatencyMatrix, RegionLatencyResult } from '../models'
-import { REGION_NAME_COLLATOR } from '../shared/utils'
 
 @Service()
 export class RegionLatencyService {
-  private readonly matrix: RegionLatencyMatrix
+  private readonly matrix: RegionLatencyMatrix = regionLatencyMatrixJson
   private readonly sourceKeyToLatencies = new Map<string, (number | null)[]>()
-  private readonly sourceRegions: string[]
-  private readonly maxPublishedLatency: number
-  private readonly collator = REGION_NAME_COLLATOR
 
   constructor() {
-    this.matrix = regionLatencyMatrixJson
-
     for (const row of this.matrix.rows) {
       this.sourceKeyToLatencies.set(this.normalizeName(row.source), row.latencies)
     }
-
-    const sourceRegions = this.matrix.rows
-      .filter((row) =>
-        row.latencies.some((latency) => typeof latency === 'number' && Number.isFinite(latency))
-      )
-      .map((row) => row.source)
-    const sourceKeys = new Set(sourceRegions.map((source) => this.normalizeName(source)))
-
-    for (const [destinationIndex, destination] of this.matrix.destinations.entries()) {
-      const destinationKey = this.normalizeName(destination)
-      const hasPublishedReverseRoute = this.matrix.rows.some((row) =>
-        Number.isFinite(row.latencies[destinationIndex])
-      )
-      if (!sourceKeys.has(destinationKey) && hasPublishedReverseRoute) {
-        sourceRegions.push(destination)
-        sourceKeys.add(destinationKey)
-      }
-    }
-
-    this.sourceRegions = sourceRegions.sort((a, b) => this.collator.compare(a, b))
-
-    this.maxPublishedLatency = this.matrix.rows.reduce<number>(
-      (matrixMax, row) =>
-        row.latencies.reduce<number>(
-          (rowMax, latency) =>
-            typeof latency === 'number' && Number.isFinite(latency)
-              ? Math.max(rowMax, latency)
-              : rowMax,
-          matrixMax
-        ),
-      0
-    )
   }
 
   getSourceRegions(): string[] {
-    return [...this.sourceRegions]
+    return [...this.matrix.sourceRegions]
   }
 
   getLatenciesForSource(source: string): RegionLatencyResult[] {
@@ -78,7 +40,7 @@ export class RegionLatencyService {
   }
 
   getMaxPublishedLatency(): number {
-    return this.maxPublishedLatency
+    return this.matrix.maxPublishedLatency
   }
 
   private normalizeName(value: string): string {

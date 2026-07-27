@@ -1,5 +1,4 @@
 import { Component, computed, effect, inject, input, signal } from '@angular/core'
-import { RouterLink } from '@angular/router'
 
 import { SeoService } from '../../../services/seo.service'
 import {
@@ -7,22 +6,34 @@ import {
   buildVmSeriesHref,
   buildVmSkuHref,
   VM_COMPARISON_HREF,
-  VM_PRICE_MODE_OPTIONS,
   VmOperatingSystem,
   VmPriceMode,
-  vmPriceModeDescription,
   vmPriceModeLabel,
+  vmPriceProfileSourceLabel,
   vmRegionHourlyPrice,
   VmSkuDetailDocument,
   VmSkuRegionPrice,
 } from '../../../services/vm-catalog'
 import {
   buildVmCapabilityViews,
+  buildVmSkuCpuDetails,
+  buildVmSkuNameSegments,
   buildVmSkuSpecs,
+  formatVmHourlyPrice,
+  formatVmMonthlyPrice,
   formatVmNumber,
   VM_NAME_COLLATOR,
 } from '../../../services/vm-catalog-view'
+import { buildDocumentHref } from '../../../shared/document-navigation'
+import { ExportCsvButtonComponent } from '../../../shared/export-csv-button/export-csv-button.component'
 import { LucideIconComponent } from '../../../shared/icons/lucide-icons.component'
+import {
+  absoluteUrl,
+  BreadcrumbEntry,
+  buildBreadcrumbList,
+  buildSchemaNode,
+} from '../../../shared/structured-data'
+import { VmCatalogNotice } from '../vm-catalog-notice/vm-catalog-notice'
 import { VmOperatingSystemToggle } from '../vm-operating-system-toggle/vm-operating-system-toggle'
 import { VmPriceModeToggle } from '../vm-price-mode-toggle/vm-price-mode-toggle'
 import {
@@ -35,21 +46,10 @@ import {
 
 type SkuRegionPriceSort = 'arm-region' | 'price' | 'region'
 
-interface SelectedVmSkuRegionPrice extends Omit<VmSkuRegionPrice, 'hourlyPrice'> {
+interface SelectedVmSkuRegionPrice extends VmSkuRegionPrice {
   readonly hourlyPrice: number
 }
 
-interface VmPriceComparisonRow {
-  readonly priceMode: VmPriceMode
-  readonly label: string
-  readonly description: string
-  readonly minHourlyPrice: number | null
-  readonly cheapestLocations: readonly string[]
-  readonly pricedRegionCount: number
-  readonly savingsPercent: number | null
-}
-
-const MONTHLY_HOURS = 730
 const PRICE_PREMIUM_PERCENT_FORMATTER = new Intl.NumberFormat('en-US', {
   maximumFractionDigits: 2,
 })
@@ -61,12 +61,18 @@ const DEFAULT_SORT_DIRECTIONS: Readonly<Record<SkuRegionPriceSort, VmPriceSortDi
 
 @Component({
   selector: 'app-azure-vm-sku-details',
-  imports: [LucideIconComponent, RouterLink, VmOperatingSystemToggle, VmPriceModeToggle],
+  imports: [
+    ExportCsvButtonComponent,
+    LucideIconComponent,
+    VmCatalogNotice,
+    VmOperatingSystemToggle,
+    VmPriceModeToggle,
+  ],
   templateUrl: './azure-vm-sku-details.html',
-  styleUrl: './azure-vm-sku-details.css',
-  host: { class: 'block' },
+  host: { class: 'block min-w-0' },
 })
 export class AzureVmSkuDetails {
+  readonly buildDocumentHref = buildDocumentHref
   private readonly seoService = inject(SeoService)
 
   readonly vmSkuPageData = input.required<VmSkuDetailDocument>()
@@ -76,37 +82,21 @@ export class AzureVmSkuDetails {
   readonly selectedPriceMode = signal<VmPriceMode>('PayAsYouGo')
   readonly sku = computed(() => this.vmSkuPageData().sku)
   readonly familySummary = computed(() => this.vmSkuPageData().familySummary)
+  readonly cpuDetails = computed(() => buildVmSkuCpuDetails(this.sku()))
+  readonly nameSegments = computed(() => buildVmSkuNameSegments(this.sku()))
   readonly specs = computed(() => buildVmSkuSpecs(this.sku()))
   readonly capabilities = computed(() => buildVmCapabilityViews(this.sku()))
   readonly selectedPriceModeLabel = computed(() => vmPriceModeLabel(this.selectedPriceMode()))
-  readonly selectedPriceModeDescription = computed(() =>
-    vmPriceModeDescription(this.selectedPriceMode())
+  readonly selectedPriceSourceLabel = computed(() =>
+    vmPriceProfileSourceLabel(
+      this.vmSkuPageData().source,
+      this.selectedOperatingSystem(),
+      this.selectedPriceMode()
+    )
   )
-  readonly priceComparisonRows = computed<readonly VmPriceComparisonRow[]>(() => {
-    const profiles = this.sku().priceProfiles[this.selectedOperatingSystem()]
-    const paygPrice = profiles.PayAsYouGo.minHourlyPrice
-    return VM_PRICE_MODE_OPTIONS.map((option) => {
-      const profile = profiles[option.value]
-      const savingsPercent =
-        option.value === 'PayAsYouGo' ||
-        profile.minHourlyPrice === null ||
-        paygPrice === null ||
-        profile.minHourlyPrice >= paygPrice
-          ? null
-          : Number((((paygPrice - profile.minHourlyPrice) / paygPrice) * 100).toFixed(1))
-      return {
-        priceMode: option.value,
-        label: option.label,
-        description: option.description,
-        minHourlyPrice: profile.minHourlyPrice,
-        cheapestLocations: profile.cheapestLocations,
-        pricedRegionCount: profile.pricedLocations.length,
-        savingsPercent,
-      }
-    })
-  })
   readonly regionPrices = computed(() => {
     const sortDirection = this.sortDirection()
+    const sortKey = this.sortKey()
     const operatingSystem = this.selectedOperatingSystem()
     const priceMode = this.selectedPriceMode()
     const prices = this.vmSkuPageData().prices.flatMap<SelectedVmSkuRegionPrice>((price) => {
@@ -114,7 +104,7 @@ export class AzureVmSkuDetails {
       return hourlyPrice === null ? [] : [{ ...price, hourlyPrice }]
     })
     return prices.sort((left, right) => {
-      switch (this.sortKey()) {
+      switch (sortKey) {
         case 'arm-region':
           return compareVmPriceStrings(
             VM_NAME_COLLATOR,
@@ -165,22 +155,30 @@ export class AzureVmSkuDetails {
     os: this.selectedOperatingSystem(),
     mode: this.selectedPriceMode(),
   }))
-  private readonly hourlyPriceFormatter = computed(
-    () =>
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: this.priceCurrency(),
-        minimumFractionDigits: 4,
-        maximumFractionDigits: 6,
-      })
-  )
-  private readonly monthlyPriceFormatter = computed(
-    () =>
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: this.priceCurrency(),
-        maximumFractionDigits: 2,
-      })
+  readonly csvFilename = computed(() => `azure-vm-${this.sku().skuKey.toLowerCase()}-region-prices`)
+  readonly csvHeaders = computed(() => [
+    'SKU',
+    'Region',
+    'ARM region',
+    'Operating system',
+    'Pricing model',
+    'Price source',
+    `Hourly (${this.priceCurrency()})`,
+    `Estimated monthly (${this.priceCurrency()})`,
+    'Vs. cheapest',
+  ])
+  readonly csvRows = computed<string[][]>(() =>
+    this.regionPrices().map((price) => [
+      this.sku().sku,
+      price.region.displayName,
+      price.armRegionName,
+      this.selectedOperatingSystem(),
+      this.selectedPriceModeLabel(),
+      this.selectedPriceSourceLabel(),
+      this.formatHourlyPrice(price.hourlyPrice),
+      this.formatMonthlyPrice(price.hourlyPrice),
+      this.formatPricePremium(price.hourlyPrice),
+    ])
   )
   readonly hasFeatureFlags = computed(() => {
     const specs = this.specs()
@@ -211,67 +209,42 @@ export class AzureVmSkuDetails {
       const specSummary = [
         specs.vcpus === null ? '' : `${formatVmNumber(specs.vcpus)} vCPU`,
         specs.memoryGB === null ? '' : `${formatVmNumber(specs.memoryGB)} GB memory`,
-        specs.architecture === 'Not listed' ? '' : specs.architecture,
+        specs.architecture,
       ]
         .filter(Boolean)
         .join(', ')
       const priceSummary = data.prices.length
-        ? `Compare Linux and Windows pay-as-you-go, reserved, and Spot prices for ${sku.sku} across Azure regions.`
+        ? `Compare Linux and Windows pay-as-you-go, savings plan, reserved, and Spot prices for ${sku.sku} across Azure regions.`
         : `No current Linux or Windows Retail Prices entry is available for ${sku.sku}.`
       const description = `${priceSummary}${specSummary ? ` Specifications: ${specSummary}.` : ''} View hourly regional prices and available VM size metadata.`
-      const breadcrumbItems = [
-        {
-          '@type': 'ListItem',
-          position: 1,
-          name: 'Azure VM Sizes & Pricing',
-          item: 'https://www.azurespeed.com/AzureVmPricing',
-        },
-        {
-          '@type': 'ListItem',
-          position: 2,
-          name: 'Series',
-          item: 'https://www.azurespeed.com/AzureVmPricing/Series',
-        },
-        ...(data.familySummary.skuCount > 1
-          ? [
-              {
-                '@type': 'ListItem',
-                position: 3,
-                name: data.familySummary.series,
-                item: `https://www.azurespeed.com${buildVmSeriesHref(data.familySummary.series)}`,
-              },
-            ]
-          : []),
+      const breadcrumbEntries: BreadcrumbEntry[] = [
+        { name: 'Azure VM Sizes & Pricing', path: '/AzureVmPricing' },
+        { name: 'Series', path: '/AzureVmPricing/Series' },
       ]
-      breadcrumbItems.push({
-        '@type': 'ListItem',
-        position: breadcrumbItems.length + 1,
-        name: sku.sku,
-        item: `https://www.azurespeed.com${canonicalPath}`,
-      })
+      if (data.familySummary.skuCount > 1) {
+        breadcrumbEntries.push({
+          name: data.familySummary.series,
+          path: buildVmSeriesHref(data.familySummary.series),
+        })
+      }
+      breadcrumbEntries.push({ name: sku.sku, path: canonicalPath })
 
       this.seoService.setPageMeta({
         title: `${sku.sku}: Azure VM Price, Specs and Regions`,
         description,
-        canonicalUrl: `https://www.azurespeed.com${canonicalPath}`,
+        canonicalUrl: absoluteUrl(canonicalPath),
         structuredData: [
-          {
-            '@context': 'https://schema.org',
-            '@type': 'BreadcrumbList',
-            itemListElement: breadcrumbItems,
-          },
-          {
-            '@context': 'https://schema.org',
-            '@type': 'WebPage',
+          buildBreadcrumbList(breadcrumbEntries),
+          buildSchemaNode('WebPage', {
             name: `${sku.sku} Azure VM pricing by region`,
             description,
-            url: `https://www.azurespeed.com${canonicalPath}`,
+            url: absoluteUrl(canonicalPath),
             about: {
               '@type': 'Thing',
               name: sku.sku,
               description: `VM size in the ${data.familySummary.series}`,
             },
-          },
+          }),
         ],
       })
     })
@@ -282,11 +255,11 @@ export class AzureVmSkuDetails {
   }
 
   formatHourlyPrice(price: number): string {
-    return this.hourlyPriceFormatter().format(price)
+    return formatVmHourlyPrice(price, this.priceCurrency())
   }
 
   formatMonthlyPrice(price: number): string {
-    return this.monthlyPriceFormatter().format(price * MONTHLY_HOURS)
+    return formatVmMonthlyPrice(price, this.priceCurrency())
   }
 
   formatPricePremium(price: number): string {
@@ -303,7 +276,7 @@ export class AzureVmSkuDetails {
     return price.region.displayName
   }
 
-  isCheapestRegionPrice(price: VmSkuRegionPrice): boolean {
+  isCheapestRegionPrice(price: SelectedVmSkuRegionPrice): boolean {
     const cheapest = this.cheapestRegionPrice()
     return cheapest !== null && price.hourlyPrice === cheapest.hourlyPrice
   }
@@ -314,23 +287,6 @@ export class AzureVmSkuDetails {
 
   updatePriceMode(priceMode: VmPriceMode): void {
     this.selectedPriceMode.set(priceMode)
-  }
-
-  priceComparisonSavingsLabel(row: VmPriceComparisonRow): string {
-    if (row.priceMode === 'PayAsYouGo') return 'Baseline'
-    if (row.minHourlyPrice === null) return 'Not available'
-    return row.savingsPercent === null ? 'No current savings' : `${row.savingsPercent}% lower`
-  }
-
-  priceComparisonRegionLabel(row: VmPriceComparisonRow): string {
-    const [firstRegion] = row.cheapestLocations
-    if (!firstRegion) return 'Not available'
-    const regionalPrice = this.vmSkuPageData().prices.find(
-      (price) => price.armRegionName === firstRegion
-    )
-    const name = regionalPrice?.region.displayName ?? firstRegion
-    const tied = row.cheapestLocations.length - 1
-    return tied > 0 ? `${name} +${tied}` : name
   }
 
   sortBy(sortKey: SkuRegionPriceSort): void {

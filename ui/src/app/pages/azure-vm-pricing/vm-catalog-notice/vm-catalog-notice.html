@@ -1,0 +1,21 @@
+@if (derivedPriceProfile(); as profile) {
+  <aside
+    class="flex items-start gap-3 rounded-lg border border-warning/40 bg-warning/5 p-4 text-sm leading-relaxed text-text-body"
+    aria-label="Estimated VM pricing notice"
+    aria-live="polite"
+  >
+    <app-lucide-icon
+      name="alert-circle"
+      class="mt-0.5 size-5 shrink-0 text-warning-emphasis"
+      aria-hidden="true"
+    />
+    <div class="space-y-1">
+      <p>
+        <strong>Estimated Windows commitment price.</strong> Azure reservations and savings plans
+        discount eligible VM infrastructure; Windows software charges remain separate. This estimate
+        uses {{ profile.description }}. Azure Hybrid Benefit, negotiated prices, and other discounts
+        are not included.
+      </p>
+    </div>
+  </aside>
+}

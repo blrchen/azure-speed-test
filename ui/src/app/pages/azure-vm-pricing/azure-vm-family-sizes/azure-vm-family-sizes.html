@@ -1,8 +1,8 @@
-<article class="page-shell section-stack mx-auto max-w-7xl">
+<article class="page-shell section-stack">
   <nav class="breadcrumb" aria-label="Breadcrumb">
-    <a class="breadcrumb-link" routerLink="/AzureVmPricing">Azure VM Sizes &amp; Pricing</a>
+    <a class="breadcrumb-link" href="/AzureVmPricing">Azure VM Sizes &amp; Pricing</a>
     <span class="breadcrumb-separator">/</span>
-    <a class="breadcrumb-link" routerLink="/AzureVmPricing/Series">Series</a>
+    <a class="breadcrumb-link" href="/AzureVmPricing/Series">Series</a>
     <span class="breadcrumb-separator">/</span>
     <span class="breadcrumb-current" aria-current="page" translate="no">
       {{ seriesSummary().series }}
@@ -23,8 +23,8 @@
         </div>
       </div>
       <p class="page-lead">
-        Compare Linux and Windows pay-as-you-go, reserved, and Spot prices, specifications, and
-        pricing coverage for every VM size in this series.
+        Compare Linux and Windows pay-as-you-go, savings plan, reserved, and Spot prices,
+        specifications, and pricing coverage for every VM size in this series.
       </p>
     </div>
 
@@ -38,7 +38,7 @@
       <div class="vm-summary-ledger__item">
         <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">VM family</dt>
         <dd class="text-base font-semibold text-text-strong" translate="no">
-          {{ seriesSummary().familyGroup ?? 'Not listed' }}
+          {{ seriesSummary().familyGroup ?? 'N/A' }}
         </dd>
       </div>
       <div class="vm-summary-ledger__item">
@@ -50,15 +50,29 @@
     </dl>
   </header>
 
+  <app-vm-catalog-notice
+    [catalog]="vmSeriesPageData()"
+    [operatingSystem]="selectedOperatingSystem()"
+    [priceMode]="selectedPriceMode()"
+  />
+
   <section class="section-block" aria-labelledby="vm-series-sizes-heading">
     <div class="flex flex-wrap items-end justify-between gap-3">
       <div>
         <h2 id="vm-series-sizes-heading" class="section-title">Compare VM sizes</h2>
         <p class="mt-2 text-sm text-text-muted">Monthly estimates use 730 hours.</p>
       </div>
-      <a class="link-primary text-sm font-semibold" routerLink="/AzureVmPricing/Series">
-        Browse all series
-      </a>
+      <div class="flex flex-wrap items-center gap-3">
+        <app-export-csv-button
+          [filename]="csvFilename()"
+          [headers]="csvHeaders()"
+          [rows]="csvRows()"
+          ariaLabel="Export this Azure VM series pricing table to CSV"
+        />
+        <a class="link-primary text-sm font-semibold" href="/AzureVmPricing/Series">
+          Browse all series
+        </a>
+      </div>
     </div>
 
     <div class="flex flex-wrap items-end gap-x-6 gap-y-4">
@@ -195,7 +209,7 @@
               <td class="px-4 py-3 text-right whitespace-nowrap tabular-nums">
                 {{ formatMemory(view.specs.memoryGB) }}
               </td>
-              <td class="px-4 py-3" translate="no">{{ view.specs.architecture }}</td>
+              <td class="px-4 py-3" translate="no">{{ view.specs.architecture ?? 'N/A' }}</td>
             </tr>
           }
         </tbody>

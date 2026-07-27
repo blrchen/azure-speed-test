@@ -1,5 +1,6 @@
-import { Component, computed, effect, inject, input, signal } from '@angular/core'
-import { ActivatedRoute, Router, RouterLink } from '@angular/router'
+import { CdkScrollable } from '@angular/cdk/scrolling'
+import { Component, computed, effect, inject, input } from '@angular/core'
+import { ActivatedRoute, Router } from '@angular/router'
 
 import { SeoService } from '../../../services/seo.service'
 import {
@@ -10,18 +11,34 @@ import {
   VmComparisonDocument,
   VmOperatingSystem,
   VmPriceMode,
-  vmPriceModeDescription,
   vmPriceModeLabel,
+  vmPriceProfileSourceLabel,
   vmRegionHourlyPrice,
   VmSkuDetailDocument,
+  VmSkuDirectoryEntry,
 } from '../../../services/vm-catalog'
 import {
+  buildVmSkuCpuDetails,
   buildVmSkuSpecs,
+  buildVmSkuStoragePerformance,
+  formatVmBytesPerSecond,
+  formatVmHourlyPrice,
+  formatVmMonthlyPrice,
   formatVmNumber,
   VM_NAME_COLLATOR,
+  VmSkuCpuDetails,
   VmSkuSpecs,
+  VmSkuStoragePerformance,
 } from '../../../services/vm-catalog-view'
+import {
+  ComparisonPicker,
+  ComparisonPickerOption,
+} from '../../../shared/comparison-picker/comparison-picker'
+import { ComparisonViewToolbar } from '../../../shared/comparison-view-toolbar/comparison-view-toolbar'
+import { ExportCsvButtonComponent } from '../../../shared/export-csv-button/export-csv-button.component'
 import { LucideIconComponent } from '../../../shared/icons/lucide-icons.component'
+import { absoluteUrl, buildBreadcrumbList, buildSchemaNode } from '../../../shared/structured-data'
+import { VmCatalogNotice } from '../vm-catalog-notice/vm-catalog-notice'
 import { VmOperatingSystemToggle } from '../vm-operating-system-toggle/vm-operating-system-toggle'
 import { VmPriceModeToggle } from '../vm-price-mode-toggle/vm-price-mode-toggle'
 
@@ -32,7 +49,9 @@ interface VmComparisonRegionOption {
 
 interface VmComparisonColumn {
   readonly detail: VmSkuDetailDocument
+  readonly cpuDetails: VmSkuCpuDetails
   readonly specs: VmSkuSpecs
+  readonly storagePerformance: VmSkuStoragePerformance
   readonly hourlyPrice: number | null
   readonly priceDifferencePercent: number | null
   readonly priceRegionLabel: string
@@ -41,16 +60,117 @@ interface VmComparisonColumn {
   readonly isLowestPrice: boolean
 }
 
+interface VmComparisonMobileRow {
+  readonly key: VmComparisonRowKey
+  readonly label: string
+  readonly value: string
+  readonly emphasized?: boolean
+  readonly lowestPrice?: boolean
+}
+
+interface VmComparisonMobileGroup {
+  readonly key: VmComparisonGroupKey
+  readonly label: string
+  readonly rows: readonly VmComparisonMobileRow[]
+}
+
 const MAX_COMPARISON_SKUS = 3
 const MIN_COMPARISON_SKUS = 2
-const MONTHLY_HOURS = 730
+type VmComparisonGroupKey = 'compute' | 'identity' | 'pricing' | 'storage'
+type VmComparisonRowKey =
+  | 'acceleratedNetworking'
+  | 'architecture'
+  | 'constrainedVcpus'
+  | 'diskControllerTypes'
+  | 'gpus'
+  | 'hourlyPrice'
+  | 'maxDataDisks'
+  | 'maxNetworkInterfaces'
+  | 'memory'
+  | 'memoryPerVcpu'
+  | 'monthlyPrice'
+  | 'observedRegions'
+  | 'premiumIO'
+  | 'priceDifference'
+  | 'pricedRegions'
+  | 'priceRegion'
+  | 'rdma'
+  | 'series'
+  | 'uncachedDiskIops'
+  | 'uncachedDiskThroughput'
+  | 'vcpus'
+
+const VM_COMPARISON_GROUP_ROWS: Readonly<
+  Record<VmComparisonGroupKey, readonly VmComparisonRowKey[]>
+> = {
+  identity: ['series'],
+  pricing: ['hourlyPrice', 'monthlyPrice', 'priceDifference', 'priceRegion', 'pricedRegions'],
+  compute: ['vcpus', 'constrainedVcpus', 'memory', 'memoryPerVcpu', 'architecture', 'gpus'],
+  storage: [
+    'maxDataDisks',
+    'diskControllerTypes',
+    'uncachedDiskIops',
+    'uncachedDiskThroughput',
+    'maxNetworkInterfaces',
+    'premiumIO',
+    'acceleratedNetworking',
+    'rdma',
+    'observedRegions',
+  ],
+}
+const VM_COMPARISON_ROWS = Object.values(VM_COMPARISON_GROUP_ROWS).flat()
+
+function toVmPickerOption(sku: VmSkuDirectoryEntry): ComparisonPickerOption {
+  const { memoryGB, vcpus } = sku.specs
+  const description = [
+    sku.series,
+    vcpus ? `${vcpus} vCPU` : null,
+    memoryGB ? `${memoryGB} GB` : null,
+  ]
+    .filter((value): value is string => value !== null)
+    .join(' - ')
+  return {
+    value: sku.sku,
+    label: sku.sku,
+    description,
+    searchText: [
+      sku.family,
+      sku.familyGroup ?? '',
+      sku.series,
+      sku.size,
+      sku.specs.architecture ?? '',
+      vcpus ? `${vcpus} vcpu vcpus cores` : '',
+      memoryGB ? `${memoryGB} gb memory ram` : '',
+      // Only emit a keyword when the capability is present, so a search for "rdma" matches the
+      // RDMA-capable sizes instead of every row.
+      sku.specs.gpuCount ? `${sku.specs.gpuCount} gpu gpus` : '',
+      sku.specs.premiumIO ? 'premium storage premium io' : '',
+      sku.specs.acceleratedNetworking ? 'accelerated networking' : '',
+      sku.specs.rdma ? 'rdma' : '',
+    ].join(' '),
+  }
+}
+
+function displayValuesDiffer(values: readonly string[]): boolean {
+  const [firstValue, ...remainingValues] = values
+  return remainingValues.some((value) => value !== firstValue)
+}
 
 @Component({
   selector: 'app-azure-vm-comparison',
-  imports: [LucideIconComponent, RouterLink, VmOperatingSystemToggle, VmPriceModeToggle],
+  imports: [
+    CdkScrollable,
+    ComparisonPicker,
+    ComparisonViewToolbar,
+    ExportCsvButtonComponent,
+    LucideIconComponent,
+    VmCatalogNotice,
+    VmOperatingSystemToggle,
+    VmPriceModeToggle,
+  ],
   templateUrl: './azure-vm-comparison.html',
   styleUrl: './azure-vm-comparison.css',
-  host: { class: 'block' },
+  host: { class: 'block max-w-full min-w-0 overflow-x-hidden' },
 })
 export class AzureVmComparison {
   private readonly route = inject(ActivatedRoute)
@@ -58,16 +178,21 @@ export class AzureVmComparison {
   private readonly seoService = inject(SeoService)
 
   readonly vmComparisonPageData = input.required<VmComparisonDocument>()
-  readonly skuInput = signal('')
-  readonly pickerMessage = signal('')
+  readonly totalComparisonRowCount = VM_COMPARISON_ROWS.length
+  readonly csvFilename = 'azure-vm-comparison'
 
   readonly selectedOperatingSystem = computed(
     () => this.vmComparisonPageData().selectedOperatingSystem
   )
   readonly selectedPriceMode = computed(() => this.vmComparisonPageData().selectedPriceMode)
+  readonly showDifferencesOnly = computed(() => this.vmComparisonPageData().showDifferencesOnly)
   readonly selectedPriceModeLabel = computed(() => vmPriceModeLabel(this.selectedPriceMode()))
-  readonly selectedPriceModeDescription = computed(() =>
-    vmPriceModeDescription(this.selectedPriceMode())
+  readonly selectedPriceSourceLabel = computed(() =>
+    vmPriceProfileSourceLabel(
+      this.vmComparisonPageData().catalog.source,
+      this.selectedOperatingSystem(),
+      this.selectedPriceMode()
+    )
   )
   readonly selectedSkuNames = computed(() =>
     this.vmComparisonPageData().skus.map((detail) => detail.sku.sku)
@@ -79,20 +204,30 @@ export class AzureVmComparison {
     () => this.vmComparisonPageData().skus.length >= MIN_COMPARISON_SKUS
   )
   readonly canAddSku = computed(() => this.vmComparisonPageData().skus.length < MAX_COMPARISON_SKUS)
-  readonly remainingSlotCount = computed(
-    () => MAX_COMPARISON_SKUS - this.vmComparisonPageData().skus.length
+  readonly sortedSkuPickerOptions = computed(() =>
+    [...this.vmComparisonPageData().catalog.skus]
+      .sort((left, right) => VM_NAME_COLLATOR.compare(left.sku, right.sku))
+      .map(toVmPickerOption)
   )
-  readonly selectionStatus = computed(() => {
-    const count = this.vmComparisonPageData().skus.length
-    if (count === 0) return 'No VM sizes selected'
-    if (count === 1) return '1 VM selected; add 1 or 2 more to compare'
-    return `${count} VMs selected for comparison`
+  readonly availableSkuPickerOptions = computed(() =>
+    this.sortedSkuPickerOptions().filter(
+      (option) => !this.selectedSkuKeys().has(option.value.toLowerCase())
+    )
+  )
+  readonly replacementSkuPickerOptions = computed(() => {
+    const selectedSkuKeys = this.selectedSkuKeys()
+    const sortedOptions = this.sortedSkuPickerOptions()
+    return new Map(
+      this.selectedSkuNames().map((selectedSkuName) => [
+        selectedSkuName.toLowerCase(),
+        sortedOptions.filter(
+          (option) =>
+            option.value.toLowerCase() === selectedSkuName.toLowerCase() ||
+            !selectedSkuKeys.has(option.value.toLowerCase())
+        ),
+      ])
+    )
   })
-  readonly skuOptions = computed(() =>
-    this.vmComparisonPageData()
-      .catalog.skus.map((sku) => sku.sku)
-      .sort((left, right) => VM_NAME_COLLATOR.compare(left, right))
-  )
   readonly commonRegions = computed<readonly VmComparisonRegionOption[]>(() => {
     const details = this.vmComparisonPageData().skus
     if (details.length < MIN_COMPARISON_SKUS) return []
@@ -164,7 +299,9 @@ export class AzureVmComparison {
       const specs = buildVmSkuSpecs(detail.sku)
       return {
         detail,
+        cpuDetails: buildVmSkuCpuDetails(detail.sku),
         specs,
+        storagePerformance: buildVmSkuStoragePerformance(detail.sku),
         hourlyPrice,
         priceRegionLabel: selectedRegion
           ? this.selectedRegionDisplayName()
@@ -189,31 +326,194 @@ export class AzureVmComparison {
       isLowestPrice: column.hourlyPrice !== null && column.hourlyPrice === lowestPrice,
     }))
   })
-  readonly selectedSeriesCount = computed(
-    () => new Set(this.vmComparisonPageData().skus.map((detail) => detail.sku.series)).size
+  readonly mobileCards = computed(() =>
+    this.columns().map((column) => ({
+      column,
+      groups: [
+        {
+          key: 'pricing',
+          label: `${this.selectedOperatingSystem()} ${this.selectedPriceModeLabel()} pricing`,
+          rows: [
+            {
+              key: 'hourlyPrice',
+              label: 'Hourly price',
+              value: this.formatHourlyPrice(column.hourlyPrice),
+              emphasized: true,
+              lowestPrice: column.isLowestPrice,
+            },
+            {
+              key: 'monthlyPrice',
+              label: 'Estimated monthly',
+              value: this.formatMonthlyPrice(column.hourlyPrice),
+              emphasized: true,
+            },
+            {
+              key: 'priceDifference',
+              label: 'Difference vs. lowest',
+              value: this.priceDifferenceLabel(column),
+            },
+            { key: 'priceRegion', label: 'Price region', value: column.priceRegionLabel },
+            {
+              key: 'pricedRegions',
+              label: 'Priced regions',
+              value: String(column.pricedRegionCount),
+            },
+          ],
+        },
+        {
+          key: 'compute',
+          label: 'Compute and memory',
+          rows: [
+            {
+              key: 'vcpus',
+              label: 'vCPUs',
+              value: formatVmNumber(column.specs.vcpus),
+              emphasized: true,
+            },
+            {
+              key: 'constrainedVcpus',
+              label: 'Constrained vCPU',
+              value: this.formatVcpuConstraint(column.cpuDetails),
+            },
+            {
+              key: 'memory',
+              label: 'Memory',
+              value: this.formatMemory(column.specs.memoryGB),
+              emphasized: true,
+            },
+            {
+              key: 'memoryPerVcpu',
+              label: 'Memory per vCPU',
+              value: this.formatMemoryPerVcpu(column.memoryPerVcpu),
+            },
+            {
+              key: 'architecture',
+              label: 'CPU architecture',
+              value: column.specs.architecture ?? 'N/A',
+            },
+            { key: 'gpus', label: 'GPUs', value: formatVmNumber(column.specs.gpuCount) },
+          ],
+        },
+        {
+          key: 'storage',
+          label: 'Storage and networking',
+          rows: [
+            {
+              key: 'maxDataDisks',
+              label: 'Maximum data disks',
+              value: formatVmNumber(column.specs.maxDataDisks),
+            },
+            {
+              key: 'diskControllerTypes',
+              label: 'Disk controllers',
+              value: column.storagePerformance.diskControllerTypes ?? 'N/A',
+            },
+            {
+              key: 'uncachedDiskIops',
+              label: 'Uncached disk IOPS',
+              value: formatVmNumber(column.storagePerformance.uncachedDiskIops),
+            },
+            {
+              key: 'uncachedDiskThroughput',
+              label: 'Uncached disk throughput',
+              value: formatVmBytesPerSecond(column.storagePerformance.uncachedDiskBytesPerSecond),
+            },
+            {
+              key: 'maxNetworkInterfaces',
+              label: 'Maximum network interfaces',
+              value: formatVmNumber(column.specs.maxNetworkInterfaces),
+            },
+            {
+              key: 'premiumIO',
+              label: 'Premium storage',
+              value: this.formatBoolean(column.specs.premiumIO),
+            },
+            {
+              key: 'acceleratedNetworking',
+              label: 'Accelerated networking',
+              value: this.formatBoolean(column.specs.acceleratedNetworking),
+            },
+            { key: 'rdma', label: 'RDMA', value: this.formatBoolean(column.specs.rdma) },
+            {
+              key: 'observedRegions',
+              label: 'Observed regions',
+              value: String(column.detail.sku.observedLocations.length),
+            },
+          ],
+        },
+        {
+          key: 'identity',
+          label: 'Identity',
+          rows: [{ key: 'series', label: 'Series', value: column.detail.sku.series }],
+        },
+      ] as readonly VmComparisonMobileGroup[],
+    }))
   )
-
-  private readonly hourlyPriceFormatter = computed(
+  readonly comparisonRowValues = computed<ReadonlyMap<VmComparisonRowKey, readonly string[]>>(
+    () => {
+      const values = new Map<VmComparisonRowKey, string[]>()
+      for (const card of this.mobileCards()) {
+        for (const group of card.groups) {
+          for (const row of group.rows) {
+            const rowValues = values.get(row.key) ?? []
+            rowValues.push(row.value)
+            values.set(row.key, rowValues)
+          }
+        }
+      }
+      return values
+    }
+  )
+  readonly differingRows = computed<ReadonlySet<VmComparisonRowKey>>(() => {
+    const rowValues = this.comparisonRowValues()
+    return new Set(
+      VM_COMPARISON_ROWS.filter((row) => displayValuesDiffer(rowValues.get(row) ?? []))
+    )
+  })
+  readonly uniformlyUnavailableRows = computed(
     () =>
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: this.vmComparisonPageData().catalog.source.retailPrices.currencyCode,
-        minimumFractionDigits: 4,
-        maximumFractionDigits: 6,
-      })
+      VM_COMPARISON_ROWS.filter((row) => {
+        const values = this.comparisonRowValues().get(row) ?? []
+        return values.length > 0 && values.every((value) => value === 'N/A')
+      }).length
   )
-  private readonly monthlyPriceFormatter = computed(
-    () =>
-      new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: this.vmComparisonPageData().catalog.source.retailPrices.currencyCode,
-        maximumFractionDigits: 2,
-      })
+  readonly visibleComparisonRowCount = computed(() =>
+    this.showDifferencesOnly() ? this.differingRows().size : VM_COMPARISON_ROWS.length
   )
+  readonly csvHeaders = computed<string[]>(() => ['Attribute', ...this.selectedSkuNames()])
+  readonly csvRows = computed<string[][]>(() => {
+    const cards = this.mobileCards()
+    const firstCard = cards.at(0)
+    if (!firstCard) return []
+    const repeatForCards = (value: string): string[] => cards.map(() => value)
+    const visibleRows = new Set(
+      this.showDifferencesOnly() ? [...this.differingRows()] : VM_COMPARISON_ROWS
+    )
+    const comparisonRows = firstCard.groups.flatMap((group) =>
+      group.rows.flatMap((row) => {
+        if (!visibleRows.has(row.key)) return []
+        const values = cards.map(
+          (card) =>
+            card.groups
+              .flatMap((candidateGroup) => candidateGroup.rows)
+              .find((candidateRow) => candidateRow.key === row.key)?.value ?? 'N/A'
+        )
+        return [[row.label, ...values]]
+      })
+    )
+    return [
+      ['Operating system', ...repeatForCards(this.selectedOperatingSystem())],
+      ['Pricing model', ...repeatForCards(this.selectedPriceModeLabel())],
+      ['Price source', ...repeatForCards(this.selectedPriceSourceLabel())],
+      ['Pricing basis', ...repeatForCards(this.pricingBasisLabel())],
+      ...comparisonRows,
+    ]
+  })
 
   readonly buildVmRegionHref = buildVmRegionHref
   readonly buildVmSeriesHref = buildVmSeriesHref
   readonly buildVmSkuHref = buildVmSkuHref
+  readonly formatBytesPerSecond = formatVmBytesPerSecond
   readonly formatNumber = formatVmNumber
 
   constructor() {
@@ -222,70 +522,46 @@ export class AzureVmComparison {
       const selectedNames = data.skus.map((detail) => detail.sku.sku)
       const description = selectedNames.length
         ? `Compare Azure VM specifications and ${data.selectedOperatingSystem} ${vmPriceModeLabel(data.selectedPriceMode)} prices for ${selectedNames.join(', ')} across a shared region or each VM's lowest-price region.`
-        : 'Select two or three Azure VM sizes from any series and compare specifications, PAYG, reserved, and Spot prices side by side.'
+        : 'Select two or three Azure VM sizes from any series and compare specifications, PAYG, savings plan, reserved, and Spot prices side by side.'
       this.seoService.setPageMeta({
         title: selectedNames.length
           ? `${selectedNames.length} Azure VM Sizes Compared: Prices and Specs`
           : 'Compare Azure VM Sizes, Prices and Specifications',
         description,
-        canonicalUrl: `https://www.azurespeed.com${VM_COMPARISON_HREF}`,
+        canonicalUrl: absoluteUrl(VM_COMPARISON_HREF),
         structuredData: [
-          {
-            '@context': 'https://schema.org',
-            '@type': 'BreadcrumbList',
-            itemListElement: [
-              {
-                '@type': 'ListItem',
-                position: 1,
-                name: 'Azure VM Sizes & Pricing',
-                item: 'https://www.azurespeed.com/AzureVmPricing',
-              },
-              {
-                '@type': 'ListItem',
-                position: 2,
-                name: 'Compare VM sizes',
-                item: `https://www.azurespeed.com${VM_COMPARISON_HREF}`,
-              },
-            ],
-          },
-          {
-            '@context': 'https://schema.org',
-            '@type': 'WebApplication',
+          buildBreadcrumbList([
+            { name: 'Azure VM Sizes & Pricing', path: '/AzureVmPricing' },
+            { name: 'Compare VM sizes', path: VM_COMPARISON_HREF },
+          ]),
+          buildSchemaNode('WebApplication', {
             name: 'Azure VM size comparison',
             description,
-            url: `https://www.azurespeed.com${VM_COMPARISON_HREF}`,
+            url: absoluteUrl(VM_COMPARISON_HREF),
             applicationCategory: 'BusinessApplication',
-          },
+          }),
         ],
       })
     })
   }
 
-  updateSkuInput(value: string): void {
-    this.skuInput.set(value.slice(0, 160))
-    this.pickerMessage.set('')
+  addSku(skuName: string): void {
+    if (!skuName || !this.canAddSku() || this.selectedSkuKeys().has(skuName.toLowerCase())) return
+    this.navigateToSelection([...this.selectedSkuNames(), skuName], '')
   }
 
-  addSku(): void {
-    if (!this.canAddSku()) {
-      this.pickerMessage.set('A comparison can contain at most 3 VM sizes.')
-      return
-    }
-    const requestedName = this.skuInput().trim()
-    const candidate = this.vmComparisonPageData().catalog.skus.find(
-      (sku) => sku.sku.toLowerCase() === requestedName.toLowerCase()
+  replaceSku(currentSkuName: string, replacementSkuName: string): void {
+    if (!replacementSkuName || replacementSkuName === currentSkuName) return
+    this.navigateToSelection(
+      this.selectedSkuNames().map((skuName) =>
+        skuName === currentSkuName ? replacementSkuName : skuName
+      ),
+      ''
     )
-    if (!candidate) {
-      this.pickerMessage.set('Choose an exact VM size from the suggestions.')
-      return
-    }
-    if (this.selectedSkuKeys().has(candidate.sku.toLowerCase())) {
-      this.pickerMessage.set(`${candidate.sku} is already selected.`)
-      return
-    }
-    this.skuInput.set('')
-    this.pickerMessage.set('')
-    this.navigateToSelection([...this.selectedSkuNames(), candidate.sku], '')
+  }
+
+  skuOptionsFor(skuName: string): readonly ComparisonPickerOption[] {
+    return this.replacementSkuPickerOptions().get(skuName.toLowerCase()) ?? []
   }
 
   removeSku(skuName: string): void {
@@ -311,22 +587,53 @@ export class AzureVmComparison {
     this.navigateToSelection(this.selectedSkuNames(), regionName)
   }
 
+  updateShowDifferencesOnly(showDifferencesOnly: boolean): void {
+    this.navigateToSelection(
+      this.selectedSkuNames(),
+      this.selectedRegion(),
+      this.selectedOperatingSystem(),
+      this.selectedPriceMode(),
+      showDifferencesOnly
+    )
+  }
+
+  shouldShowRow(row: VmComparisonRowKey): boolean {
+    return !this.showDifferencesOnly() || this.differingRows().has(row)
+  }
+
+  shouldShowGroup(group: VmComparisonGroupKey): boolean {
+    return (
+      !this.showDifferencesOnly() ||
+      VM_COMPARISON_GROUP_ROWS[group].some((row) => this.differingRows().has(row))
+    )
+  }
+
   formatHourlyPrice(value: number | null): string {
-    return value === null ? 'Price unavailable' : this.hourlyPriceFormatter().format(value)
+    return formatVmHourlyPrice(
+      value,
+      this.vmComparisonPageData().catalog.source.retailPrices.currencyCode
+    )
   }
 
   formatMonthlyPrice(value: number | null): string {
-    return value === null
-      ? 'Price unavailable'
-      : this.monthlyPriceFormatter().format(value * MONTHLY_HOURS)
+    return formatVmMonthlyPrice(
+      value,
+      this.vmComparisonPageData().catalog.source.retailPrices.currencyCode
+    )
   }
 
   formatMemory(value: number | null): string {
-    return value === null ? 'Not listed' : `${formatVmNumber(value)} GB`
+    return value === null ? 'N/A' : `${formatVmNumber(value)} GB`
   }
 
   formatMemoryPerVcpu(value: number | null): string {
-    return value === null ? 'Not listed' : `${formatVmNumber(value)} GB/vCPU`
+    return value === null ? 'N/A' : `${formatVmNumber(value)} GB/vCPU`
+  }
+
+  formatVcpuConstraint(details: VmSkuCpuDetails): string {
+    return details.isConstrained
+      ? `Yes, ${formatVmNumber(details.availableVcpus)} of ${formatVmNumber(details.baseVcpus)} available`
+      : 'No'
   }
 
   formatBoolean(value: boolean): string {
@@ -335,7 +642,7 @@ export class AzureVmComparison {
 
   priceDifferenceLabel(column: VmComparisonColumn): string {
     if (column.hourlyPrice === null || column.priceDifferencePercent === null) {
-      return 'Not available'
+      return 'N/A'
     }
     return column.isLowestPrice ? 'Lowest selected price' : `+${column.priceDifferencePercent}%`
   }
@@ -345,7 +652,7 @@ export class AzureVmComparison {
     cheapestLocations: readonly string[]
   ): string {
     const [firstRegionName] = cheapestLocations
-    if (!firstRegionName) return 'Not available'
+    if (!firstRegionName) return 'N/A'
     const regionalPrice = detail.prices.find((price) => price.armRegionName === firstRegionName)
     const label = regionalPrice?.region.displayName ?? firstRegionName
     const tiedCount = cheapestLocations.length - 1
@@ -356,7 +663,8 @@ export class AzureVmComparison {
     skuNames: readonly string[],
     regionName: string,
     operatingSystem = this.selectedOperatingSystem(),
-    priceMode = this.selectedPriceMode()
+    priceMode = this.selectedPriceMode(),
+    showDifferencesOnly = this.showDifferencesOnly()
   ): void {
     void this.router.navigate([], {
       relativeTo: this.route,
@@ -365,6 +673,7 @@ export class AzureVmComparison {
         os: operatingSystem,
         mode: priceMode,
         region: regionName || null,
+        diff: showDifferencesOnly ? '1' : null,
       },
     })
   }

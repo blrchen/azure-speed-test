@@ -16,6 +16,8 @@
   },
   "private": true,
   "dependencies": {
+    "@angular/aria": "^22.0.5",
+    "@angular/cdk": "^22.0.5",
     "@angular/common": "^22.0.2",
     "@angular/compiler": "^22.0.2",
     "@angular/core": "^22.0.2",
@@ -26,11 +28,8 @@
     "@angular/ssr": "^22.0.3",
     "@azure/storage-blob": "12.33.0",
     "@lucide/angular": "^1.21.0",
-    "d3-geo": "^3.1.1",
     "rxjs": "~7.8.0",
-    "topojson-client": "^3.1.0",
-    "tslib": "^2.3.0",
-    "world-atlas": "^2.0.2"
+    "tslib": "^2.3.0"
   },
   "devDependencies": {
     "@angular/build": "^22.0.3",
@@ -39,17 +38,18 @@
     "@eslint/js": "^10.0.1",
     "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
     "@tailwindcss/postcss": "^4.1.12",
-    "@types/d3-geo": "^3.1.0",
     "@types/node": "^20.17.19",
-    "@types/topojson-client": "^3.1.5",
     "angular-eslint": "22.0.0",
+    "d3-geo": "^3.1.1",
     "eslint": "^10.3.0",
     "postcss": "^8.5.3",
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "tailwindcss": "^4.1.12",
+    "topojson-client": "^3.1.0",
     "typescript": "~6.0.2",
-    "typescript-eslint": "8.60.1"
+    "typescript-eslint": "8.60.1",
+    "world-atlas": "^2.0.2"
   },
   "overrides": {
     "@azure/storage-common": "12.4.1"

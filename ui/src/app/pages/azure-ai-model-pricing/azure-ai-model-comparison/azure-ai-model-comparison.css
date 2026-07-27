@@ -1,0 +1,38 @@
+/* Column-count-driven min-width: an attribute selector that also has to beat
+   .table-base's unlayered min-width, which a Tailwind utility could not do. */
+.ai-model-comparison-table[data-column-count='2'] {
+  min-width: 41rem;
+}
+
+.ai-model-comparison-table[data-column-count='3'] {
+  min-width: 55rem;
+}
+
+.ai-model-comparison-table[data-column-count='4'] {
+  min-width: 69rem;
+}
+
+/* Sticky row headings and group headings repeat across 10 cells in this table;
+   keeping them here avoids restating the same 8 declarations per cell. */
+.comparison-group-heading {
+  background: color-mix(in srgb, var(--color-primary) 7%, var(--color-surface-raised));
+  padding: 0.5rem 1rem;
+  color: var(--color-primary);
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.ai-model-row-heading {
+  position: sticky;
+  z-index: 10;
+  left: 0;
+  background: var(--color-surface-raised);
+  padding: 0.75rem 1rem;
+  color: var(--color-text-body);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: left;
+}

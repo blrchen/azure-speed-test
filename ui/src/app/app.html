@@ -1,6 +1,6 @@
 <button
   type="button"
-  class="fixed top-[calc(env(safe-area-inset-top)+1rem)] left-[calc(env(safe-area-inset-left)+1rem)] z-50 -translate-y-16 rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground transition-transform duration-200 ease-out focus-visible:translate-y-0 focus-visible:ring-4 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-none"
+  class="fixed top-[calc(env(safe-area-inset-top)+1rem)] left-[calc(env(safe-area-inset-left)+1rem)] z-50 -translate-y-16 rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground transition-transform duration-200 ease-out focus-visible:translate-y-0 focus-visible:ring-4 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base focus-visible:outline-hidden"
   (click)="focusMainContent()"
 >
   Skip to main content
@@ -22,7 +22,7 @@
   >
     <!-- Sidebar Header -->
     <div class="flex h-14 items-center border-b border-border-soft px-4">
-      <a class="flex items-center gap-2 font-bold" [routerLink]="homeLink">
+      <a class="flex items-center gap-2 font-bold" [href]="homeLink">
         <app-lucide-icon name="cloud" class="size-5 text-primary" aria-hidden="true" />
         <span class="text-sm">{{ brandLabel }}</span>
       </a>
@@ -56,7 +56,7 @@
       <!-- Logo (mobile only - desktop shows in sidebar) -->
       <a
         class="flex shrink-0 items-center gap-2 font-bold whitespace-nowrap lg:hidden"
-        [routerLink]="homeLink"
+        [href]="homeLink"
       >
         <app-lucide-icon name="cloud" class="size-5 text-primary" aria-hidden="true" />
         <span class="text-sm">{{ brandLabel }}</span>
@@ -82,7 +82,7 @@
     <!-- Page content -->
     <main
       id="main-content"
-      class="relative flex flex-1 flex-col overflow-x-hidden"
+      class="relative flex min-h-[50dvh] flex-1 flex-col overflow-x-hidden"
       tabindex="-1"
       [attr.aria-busy]="routeLoading.isLoading() ? 'true' : 'false'"
     >

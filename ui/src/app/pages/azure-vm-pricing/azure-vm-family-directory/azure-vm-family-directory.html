@@ -1,6 +1,6 @@
-<article class="page-shell section-stack mx-auto max-w-6xl">
+<article class="page-shell section-stack">
   <nav class="breadcrumb" aria-label="Breadcrumb">
-    <a class="breadcrumb-link" routerLink="/AzureVmPricing">Azure VM Sizes &amp; Pricing</a>
+    <a class="breadcrumb-link" href="/AzureVmPricing">Azure VM Sizes &amp; Pricing</a>
     <span class="breadcrumb-separator">/</span>
     <span class="breadcrumb-current" aria-current="page">Series</span>
   </nav>
@@ -19,8 +19,8 @@
         </div>
         <p class="page-lead">
           Browse Azure VM series across D, E, F, M, N, and other VM families, then compare each
-          size's Linux or Windows pay-as-you-go, reserved, or Spot price, specifications, and
-          pricing coverage.
+          size's Linux or Windows pay-as-you-go, savings plan, reserved, or Spot price,
+          specifications, and pricing coverage.
         </p>
       </div>
     </div>
@@ -40,6 +40,8 @@
       </div>
     </dl>
   </header>
+
+  <app-vm-catalog-notice [catalog]="vmSeriesDirectory()" />
 
   <section class="section-block" aria-labelledby="vm-series-directory-heading">
     <div class="space-y-1">
@@ -81,7 +83,7 @@
       <p id="vm-series-result-summary" class="text-sm text-text-muted" aria-live="polite">
         {{ resultSummary() }}
       </p>
-      <a class="link-primary text-sm font-semibold" routerLink="/AzureVmPricing/Regions">
+      <a class="link-primary text-sm font-semibold" href="/AzureVmPricing/Regions">
         Browse by region
       </a>
     </div>
@@ -121,7 +123,7 @@
         </table>
       </div>
     } @else {
-      <div class="card flex flex-col items-center gap-3 py-10 text-center">
+      <div class="card card--tall flex flex-col items-center gap-3 text-center">
         <app-lucide-icon name="search-x" class="size-10 text-text-muted" aria-hidden="true" />
         <h3 class="font-semibold text-text-strong">No VM series match</h3>
         <p class="text-sm text-text-muted">Try another series name or clear the search.</p>
@@ -134,17 +136,5 @@
         </button>
       </div>
     }
-  </section>
-
-  <section class="section-block" aria-labelledby="vm-series-source-heading">
-    <h2 id="vm-series-source-heading" class="section-title">Source and scope</h2>
-    <p class="text-sm leading-relaxed text-text-muted">
-      Series and VM size relationships are derived from Azure Resource SKU family identifiers and
-      Azure VM family mappings. Specifications come from Azure Resource SKUs API version
-      <span class="font-mono" translate="no">{{
-        vmSeriesDirectory().source.resourceSkus.apiVersion
-      }}</span
-      >. Pricing does not guarantee capacity or deployment eligibility for every subscription.
-    </p>
   </section>
 </article>

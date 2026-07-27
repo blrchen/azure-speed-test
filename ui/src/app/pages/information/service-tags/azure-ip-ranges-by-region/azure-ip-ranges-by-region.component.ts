@@ -11,31 +11,40 @@ import {
   PLATFORM_ID,
   signal,
 } from '@angular/core'
-import { form, FormField } from '@angular/forms/signals'
-import { ActivatedRoute, Router, RouterLink } from '@angular/router'
+import { ActivatedRoute, Router } from '@angular/router'
 
 import { SeoService } from '../../../../services/seo.service'
+import { buildServiceTagHref } from '../../../../services/service-tag-hrefs'
 import { ServiceTagsLoader } from '../../../../services/service-tags-loader.service'
 import {
-  buildServiceTagHref,
   ServiceTagCloud,
   ServiceTagCloudDirectoryEntry,
   ServiceTagRegionDirectories,
   ServiceTagRegionDirectoryEntry,
   ServiceTagRegionStatus,
 } from '../../../../services/service-tags-snapshot'
+import { buildDocumentHref } from '../../../../shared/document-navigation'
+import { readInputValue, readSelectValue } from '../../../../shared/form-control-value'
 import { LucideIconComponent } from '../../../../shared/icons/lucide-icons.component'
+import { replaceMergedQueryParamsIfChanged } from '../../../../shared/query-param-sync'
+import { toQueryValue } from '../../../../shared/query-value'
+import {
+  absoluteUrl,
+  buildFaqPage,
+  buildListItems,
+  buildSchemaNode,
+} from '../../../../shared/structured-data'
 import {
   formatDirectoryCount,
   normalizeDirectoryCloud,
   normalizeDirectoryGroup,
   normalizeDirectorySearch,
   normalizeRegionStatus,
+  normalizeRegionStatusSelection,
   normalizeSearchText,
   SERVICE_TAG_STATUS_OPTIONS,
   statusLabel,
   toDomId,
-  toQueryValue,
 } from '../service-tag-directory.helpers'
 
 type DirectoryLoadState = 'idle' | 'loading' | 'loaded' | 'error'
@@ -71,23 +80,28 @@ interface StatusOption {
   readonly count: number
 }
 
-const PAGE_URL = 'https://www.azurespeed.com/Information/AzureIpRangesByRegion'
+const PAGE_PATH = '/Information/AzureIpRangesByRegion'
 const PAGE_DESCRIPTION =
-  'Browse Microsoft Azure service-tag address prefixes by region and cloud for firewall, proxy, and routing configuration.'
+  'Find Azure IP ranges by region and build network rules for the locations that matter to your workloads.'
+const SOURCE_FAQ = {
+  question: 'Where do these IP ranges come from, and how often are they updated?',
+  answer:
+    'This directory uses Microsoft Azure Service Tags data. Microsoft normally publishes downloadable service-tag files weekly. Use the official download for your selected cloud when you need the complete source file.',
+} as const
 const DEFAULT_STATUS: ServiceTagRegionStatus = 'available'
 const REGION_COLLATOR = new Intl.Collator('en', { numeric: true, sensitivity: 'base' })
 
 @Component({
   selector: 'app-azure-ip-ranges-by-region',
-  imports: [FormField, RouterLink, LucideIconComponent],
+  imports: [LucideIconComponent],
   templateUrl: './azure-ip-ranges-by-region.component.html',
-  styleUrl: './azure-ip-ranges-by-region.component.css',
   host: {
     class: 'block',
     '(document:keydown.escape)': 'onEscape()',
   },
 })
 export class AzureIpRangesByRegionComponent implements OnInit {
+  readonly buildDocumentHref = buildDocumentHref
   private readonly seoService = inject(SeoService)
   private readonly serviceTagsLoader = inject(ServiceTagsLoader)
   private readonly location = inject(Location)
@@ -99,6 +113,7 @@ export class AzureIpRangesByRegionComponent implements OnInit {
 
   protected readonly statusLabel = statusLabel
 
+  readonly sourceFaq = SOURCE_FAQ
   readonly serviceTagDirectories = input<ServiceTagRegionDirectories | null>(null)
   readonly q = input('', { transform: normalizeDirectorySearch })
   readonly cloud = input<ServiceTagCloud, string | undefined>('public', {
@@ -131,7 +146,6 @@ export class AzureIpRangesByRegionComponent implements OnInit {
   }))
 
   readonly filtersModel = linkedSignal(() => this.routeViewState())
-  readonly filtersForm = form(this.filtersModel, { name: 'ipRangesByRegionFilters' })
   readonly regionsForSelectedCloud = computed(() => {
     const directories = this.directories()
     const cloud = this.filtersModel().cloud
@@ -229,24 +243,29 @@ export class AzureIpRangesByRegionComponent implements OnInit {
     this.seoService.setPageMeta({
       title: 'Azure IP Ranges by Region | Microsoft Service Tags',
       description: PAGE_DESCRIPTION,
-      canonicalUrl: PAGE_URL,
-      structuredData: {
-        '@context': 'https://schema.org',
-        '@type': 'CollectionPage',
-        name: 'Azure IP ranges by region',
-        description: PAGE_DESCRIPTION,
-        url: PAGE_URL,
-        mainEntity: {
-          '@type': 'ItemList',
-          numberOfItems: defaultRegions.length,
-          itemListElement: defaultRegions.map((region, index) => ({
-            '@type': 'ListItem',
-            position: index + 1,
-            name: region.displayName,
-            url: `https://www.azurespeed.com${buildServiceTagHref(region.cloud, region.serviceTagId, region.requiresCloudRoute)}`,
-          })),
-        },
-      },
+      canonicalUrl: absoluteUrl(PAGE_PATH),
+      structuredData: [
+        buildSchemaNode('CollectionPage', {
+          name: 'Azure IP ranges by region',
+          description: PAGE_DESCRIPTION,
+          url: absoluteUrl(PAGE_PATH),
+          mainEntity: {
+            '@type': 'ItemList',
+            numberOfItems: defaultRegions.length,
+            itemListElement: buildListItems(
+              defaultRegions.map((region) => ({
+                name: region.displayName,
+                path: buildServiceTagHref(
+                  region.cloud,
+                  region.serviceTagId,
+                  region.requiresCloudRoute
+                ),
+              }))
+            ),
+          },
+        }),
+        buildFaqPage([SOURCE_FAQ]),
+      ],
     })
   }
 
@@ -263,17 +282,32 @@ export class AzureIpRangesByRegionComponent implements OnInit {
     this.filtersModel.update((state) => ({ ...state, search: '' }))
   }
 
+  updateSearch(event: Event): void {
+    const search = normalizeDirectorySearch(readInputValue(event))
+    this.filtersModel.update((state) => ({ ...state, search }))
+  }
+
+  updateCloud(event: Event): void {
+    const cloud = normalizeDirectoryCloud(readSelectValue(event))
+    this.filtersModel.update((state) => ({ ...state, cloud }))
+  }
+
+  updateStatus(event: Event): void {
+    const status = normalizeRegionStatusSelection(readSelectValue(event))
+    this.filtersModel.update((state) => ({ ...state, status }))
+  }
+
+  updateRegionGroup(event: Event): void {
+    const regionGroup = normalizeDirectoryGroup(readSelectValue(event))
+    this.filtersModel.update((state) => ({ ...state, regionGroup }))
+  }
+
   onEscape(): void {
     if (this.filtersModel().search) this.clearSearch()
   }
 
   regionHref(region: ServiceTagRegionDirectoryEntry): string {
-    return buildServiceTagHref(
-      region.cloud,
-      region.serviceTagId,
-      region.requiresCloudRoute,
-      'region'
-    )
+    return buildServiceTagHref(region.cloud, region.serviceTagId, region.requiresCloudRoute)
   }
 
   cloudQueryParams(): { cloud: ServiceTagCloud } | undefined {
@@ -294,17 +328,11 @@ export class AzureIpRangesByRegionComponent implements OnInit {
   }
 
   private syncUrlState(nextState: RegionViewState, routeState: RegionViewState): void {
-    const nextQueryParams = this.buildQueryParams(nextState)
-    const currentQueryParams = this.buildQueryParams(routeState)
-    if (JSON.stringify(nextQueryParams) === JSON.stringify(currentQueryParams)) return
-
-    const urlTree = this.router.createUrlTree([], {
-      relativeTo: this.route,
-      queryParams: nextQueryParams,
-      queryParamsHandling: 'merge',
-      preserveFragment: true,
-    })
-    this.location.replaceState(this.router.serializeUrl(urlTree))
+    replaceMergedQueryParamsIfChanged(
+      { router: this.router, route: this.route, location: this.location },
+      this.buildQueryParams(nextState),
+      this.buildQueryParams(routeState)
+    )
   }
 
   private buildQueryParams(state: RegionViewState): Record<string, string | null> {

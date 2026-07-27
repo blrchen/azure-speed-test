@@ -1,9 +1,9 @@
-<article class="page-shell section-stack mx-auto max-w-5xl">
+<article class="page-shell section-stack">
   <header class="page-header">
     <h1 class="page-title">Azure IP &amp; Service Tag Lookup</h1>
     <p class="page-lead">
-      Check whether an IPv4 address, IPv6 address, or resolved domain is covered by Microsoft Azure
-      Public Cloud service tags. View matching prefixes, regions, services, and network features.
+      Check whether an IP address or domain is associated with Azure Public Cloud ranges. Use the
+      results for network reviews, traffic analysis, and incident triage.
     </p>
   </header>
 
@@ -60,27 +60,15 @@
         Paste an address or a full HTTP/HTTPS URL. URLs are reduced to their hostname before lookup.
       </p>
       @if (ipOrDomainField.getError('required') && ipOrDomainField.touched()) {
-        <div
-          id="ip-lookup-validation-error"
-          class="text-sm text-danger-dark dark:text-danger"
-          role="alert"
-        >
+        <div id="ip-lookup-validation-error" class="text-sm text-danger-emphasis" role="alert">
           Enter an IP address, domain name, or URL.
         </div>
       } @else if (ipOrDomainField.getError('maxLength') && ipOrDomainField.touched()) {
-        <div
-          id="ip-lookup-validation-error"
-          class="text-sm text-danger-dark dark:text-danger"
-          role="alert"
-        >
+        <div id="ip-lookup-validation-error" class="text-sm text-danger-emphasis" role="alert">
           Enter 253 characters or fewer after removing the URL path.
         </div>
       } @else if (ipOrDomainField.getError('invalidIpOrDomain') && ipOrDomainField.touched()) {
-        <div
-          id="ip-lookup-validation-error"
-          class="text-sm text-danger-dark dark:text-danger"
-          role="alert"
-        >
+        <div id="ip-lookup-validation-error" class="text-sm text-danger-emphasis" role="alert">
           Enter a valid IPv4 address, IPv6 address, hostname, or HTTP/HTTPS URL.
         </div>
       }
@@ -134,11 +122,11 @@
             <app-lucide-icon name="info" class="size-5 text-primary" aria-hidden="true" />
           </div>
           <div class="min-w-0 space-y-2">
-            <h3 class="font-semibold text-text-strong">What This Tool Checks</h3>
+            <h3 class="font-semibold text-text-strong">Use Results with Context</h3>
             <p class="text-sm leading-relaxed text-text-muted">
-              The lookup compares an address with Microsoft Azure Public Cloud service tag ranges.
-              It is not IP geolocation and cannot identify a tenant, subscription, resource owner,
-              or specific physical datacenter.
+              Use matches to support network reviews, traffic analysis, and incident triage. A match
+              does not identify a tenant, subscription, resource owner, or specific physical
+              datacenter.
             </p>
           </div>
         </div>
@@ -435,9 +423,9 @@
               class="mx-auto size-8 text-text-muted"
               aria-hidden="true"
             />
-            <h3 class="mt-3 font-semibold text-text-strong">No Published Public Cloud Match</h3>
+            <h3 class="mt-3 font-semibold text-text-strong">No Azure Public Cloud Match</h3>
             <p class="mt-1 text-sm leading-relaxed text-text-muted">
-              This address is not covered by the Azure Public Cloud service tags returned by the
+              This address is not associated with an Azure Public Cloud range returned by the
               lookup. A missing match does not prove that an address is unrelated to Microsoft or
               Azure.
             </p>
@@ -451,8 +439,8 @@
             aria-hidden="true"
           />
           <p>
-            Service tags classify published Azure address ranges. Results do not reveal a tenant,
-            subscription, resource, customer, actor, exact facility, or geographic IP location.
+            Use these matches as network context only. Results do not reveal a tenant, subscription,
+            resource, customer, actor, exact facility, or geographic IP location.
           </p>
         </div>
       </section>
@@ -467,10 +455,10 @@
           <app-lucide-icon name="server" class="size-5 text-primary" aria-hidden="true" />
         </div>
         <div class="min-w-0">
-          <h3 class="font-semibold text-text-strong">Azure VIP Classification</h3>
+          <h3 class="font-semibold text-text-strong">Network Review</h3>
           <p class="mt-0.5 text-sm text-text-muted">
-            Check whether an address is covered by published Azure service tags and regional
-            prefixes.
+            Review addresses referenced in firewall rules, allowlists, routing changes, and
+            architecture assessments.
           </p>
         </div>
       </div>
@@ -479,10 +467,10 @@
           <app-lucide-icon name="search" class="size-5 text-primary" aria-hidden="true" />
         </div>
         <div class="min-w-0">
-          <h3 class="font-semibold text-text-strong">Traffic Classification</h3>
+          <h3 class="font-semibold text-text-strong">Traffic Analysis</h3>
           <p class="mt-0.5 text-sm text-text-muted">
-            Check whether addresses found in access logs are covered by published Azure service
-            tags.
+            Check addresses from access and flow logs to understand whether traffic is associated
+            with Azure Public Cloud ranges.
           </p>
         </div>
       </div>
@@ -491,10 +479,10 @@
           <app-lucide-icon name="shield-check" class="size-5 text-primary" aria-hidden="true" />
         </div>
         <div class="min-w-0">
-          <h3 class="font-semibold text-text-strong">DDoS Log Triage</h3>
+          <h3 class="font-semibold text-text-strong">Incident Triage</h3>
           <p class="mt-0.5 text-sm text-text-muted">
-            Classify Azure-owned ranges in mitigation logs. Service tags do not identify the
-            customer, resource, or actor behind an address.
+            Add Azure range context to security alerts and mitigation logs without treating a match
+            as proof of ownership or intent.
           </p>
         </div>
       </div>
@@ -645,19 +633,19 @@
           <div class="flex size-9 items-center justify-center rounded-lg bg-primary/10">
             <app-lucide-icon name="github" class="size-5 text-primary" aria-hidden="true" />
           </div>
-          <h3 class="card-title">API Source Code</h3>
+          <h3 class="card-title">Integrate IP Lookup</h3>
         </div>
         <p class="card-description">
-          Review the open-source Azure IP Lookup API that powers this tool.
+          Bring Azure range checks into network review and incident response workflows.
         </p>
         <a
           href="https://github.com/blrchen/azure-ip-lookup"
           target="_blank"
           rel="noopener noreferrer"
           class="card-cta"
-          aria-label="View on GitHub: API source code (opens in new tab)"
+          aria-label="Explore Azure IP Lookup integration options (opens in new tab)"
         >
-          View on GitHub
+          Explore integration options
           <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
         </a>
       </article>
@@ -666,19 +654,19 @@
           <div class="flex size-9 items-center justify-center rounded-lg bg-primary/10">
             <app-lucide-icon name="tag" class="size-5 text-primary" aria-hidden="true" />
           </div>
-          <h3 class="card-title">Service Tags Overview</h3>
+          <h3 class="card-title">Understand service tags</h3>
         </div>
         <p class="card-description">
-          Learn how service tags simplify Azure network security management.
+          Learn how service tags can simplify network rules and support consistent reviews.
         </p>
         <a
           href="https://learn.microsoft.com/azure/virtual-network/service-tags-overview"
           target="_blank"
           rel="noopener noreferrer"
           class="card-cta"
-          aria-label="Learn more about service tags overview (opens in new tab)"
+          aria-label="Learn about Azure service tags (opens in new tab)"
         >
-          Learn More
+          Learn about service tags
           <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
         </a>
       </article>
@@ -687,19 +675,19 @@
           <div class="flex size-9 items-center justify-center rounded-lg bg-primary/10">
             <app-lucide-icon name="code" class="size-5 text-primary" aria-hidden="true" />
           </div>
-          <h3 class="card-title">Service Tag API Docs</h3>
+          <h3 class="card-title">Automate range updates</h3>
         </div>
         <p class="card-description">
-          Use the Azure REST API to automate service tag retrieval and updates.
+          Keep network review workflows current as Azure service tag ranges change.
         </p>
         <a
           href="https://learn.microsoft.com/rest/api/virtualnetwork/servicetags/list"
           target="_blank"
           rel="noopener noreferrer"
           class="card-cta"
-          aria-label="Learn more about Service Tag API docs (opens in new tab)"
+          aria-label="Explore Azure service tag automation guidance (opens in new tab)"
         >
-          Learn More
+          Explore automation guidance
           <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
         </a>
       </article>
@@ -708,19 +696,19 @@
           <div class="flex size-9 items-center justify-center rounded-lg bg-primary/10">
             <app-lucide-icon name="terminal" class="size-5 text-primary" aria-hidden="true" />
           </div>
-          <h3 class="card-title">PowerShell Tooling</h3>
+          <h3 class="card-title">Build PowerShell workflows</h3>
         </div>
         <p class="card-description">
-          Retrieve service tags programmatically with the Azure PowerShell module.
+          Add repeatable Azure range checks to operational and investigation workflows.
         </p>
         <a
           href="https://learn.microsoft.com/powershell/module/az.network/get-aznetworkservicetag"
           target="_blank"
           rel="noopener noreferrer"
           class="card-cta"
-          aria-label="Learn more about PowerShell tooling (opens in new tab)"
+          aria-label="Explore PowerShell workflow guidance (opens in new tab)"
         >
-          Learn More
+          Explore PowerShell guidance
           <app-lucide-icon name="external-link" class="ml-1 size-3" aria-hidden="true" />
         </a>
       </article>

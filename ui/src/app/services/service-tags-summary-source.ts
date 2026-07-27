@@ -25,7 +25,7 @@ export function extractServiceTagSummary(
 }
 
 @Service()
-export class HttpServiceTagSummarySource implements ServiceTagSummarySource {
+class HttpServiceTagSummarySource implements ServiceTagSummarySource {
   private readonly http = inject(HttpClient)
   private readonly shardPromises = new Map<string, Promise<ServiceTagSummaryShardWire>>()
 

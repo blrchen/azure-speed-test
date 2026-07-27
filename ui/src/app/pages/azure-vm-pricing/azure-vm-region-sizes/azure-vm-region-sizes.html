@@ -1,8 +1,8 @@
-<article class="page-shell section-stack mx-auto max-w-7xl">
+<article class="page-shell section-stack">
   <nav class="breadcrumb" aria-label="Breadcrumb">
-    <a class="breadcrumb-link" routerLink="/AzureVmPricing">Azure VM Sizes &amp; Pricing</a>
+    <a class="breadcrumb-link" href="/AzureVmPricing">Azure VM Sizes &amp; Pricing</a>
     <span class="breadcrumb-separator">/</span>
-    <a class="breadcrumb-link" routerLink="/AzureVmPricing/Regions">Regions</a>
+    <a class="breadcrumb-link" href="/AzureVmPricing/Regions">Regions</a>
     <span class="breadcrumb-separator">/</span>
     <span class="breadcrumb-current" aria-current="page">{{ region().displayName }}</span>
   </nav>
@@ -22,9 +22,9 @@
           </div>
         </div>
         <p class="page-lead">
-          Compare Linux and Windows pay-as-you-go, 1-year reserved, 3-year reserved, and Spot VM
-          prices for this Azure region. Sort by hourly price or filter by VM size, series, family,
-          CPU, memory, and architecture.
+          Compare Linux and Windows pay-as-you-go, 1-year savings plan, 3-year savings plan, 1-year
+          reserved, 3-year reserved, and Spot VM prices for this Azure region. Sort by hourly price
+          or filter by VM size, series, family, CPU, memory, and architecture.
         </p>
       </div>
 
@@ -55,7 +55,7 @@
           @if (lowestHourlyPrice(); as price) {
             {{ formatHourlyPrice(price) }}
           } @else {
-            Not available
+            N/A
           }
         </dd>
       </div>
@@ -80,25 +80,26 @@
           View {{ region().displayName }} region profile
         </a>
       }
-      <a class="btn btn-outline min-h-11" routerLink="/AzureVmPricing/Regions">
-        All pricing regions
-      </a>
+      <a class="btn btn-outline min-h-11" href="/AzureVmPricing/Regions"> All pricing regions </a>
     </div>
   </header>
 
+  <app-vm-catalog-notice
+    [catalog]="vmRegionPageData()"
+    [operatingSystem]="selectedOperatingSystem()"
+    [priceMode]="selectedPriceMode()"
+  />
+
   <aside
     class="flex items-start gap-3 rounded-lg border border-border-soft bg-surface-muted p-4 text-sm leading-relaxed text-text-muted"
-    aria-label="Pricing interpretation"
+    aria-label="Pricing guidance"
   >
     <app-lucide-icon name="info" class="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
     <div class="space-y-1">
       <p>
-        Prices come from the anonymous Azure Retail Prices API and represent
-        {{ selectedOperatingSystem() }} {{ selectedPriceModeLabel() }} public rates in
-        {{ vmRegionPageData().source.retailPrices.currencyCode }}.
-        {{ selectedPriceModeDescription() }} Windows reserved estimates combine the reserved compute
-        rate with the current Windows software surcharge and do not model Azure Hybrid Benefit.
-        Prices exclude savings plans, storage, taxes, and negotiated discounts.
+        Explore {{ selectedOperatingSystem() }} {{ selectedPriceModeLabel() }} VM pricing in
+        {{ region().displayName }}. Estimates cover VM compute only and may exclude storage, taxes,
+        negotiated discounts and Azure Hybrid Benefit.
       </p>
       @if (!region().indexable) {
         <p class="font-semibold text-text-body">
@@ -230,16 +231,24 @@
       >
         {{ resultSummary() }}
       </p>
-      @if (hasActiveFilters()) {
-        <button
-          type="button"
-          class="btn btn-outline btn--sm min-h-11 md:min-h-9"
-          (click)="clearFilters(); skuSearch.focus()"
-        >
-          <app-lucide-icon name="x" class="size-3.5" aria-hidden="true" />
-          Clear filters
-        </button>
-      }
+      <div class="flex flex-wrap items-center gap-2">
+        <app-export-csv-button
+          [filename]="csvFilename()"
+          [headers]="csvHeaders()"
+          [rows]="csvRows()"
+          ariaLabel="Export the filtered regional Azure VM prices to CSV"
+        />
+        @if (hasActiveFilters()) {
+          <button
+            type="button"
+            class="btn btn-outline btn--sm min-h-11 md:min-h-9"
+            (click)="clearFilters(); skuSearch.focus()"
+          >
+            <app-lucide-icon name="x" class="size-3.5" aria-hidden="true" />
+            Clear filters
+          </button>
+        }
+      </div>
     </div>
 
     <div class="flex flex-wrap items-end gap-x-6 gap-y-4">
@@ -265,7 +274,7 @@
 
     @if (filteredPrices().length) {
       <div class="table-shell" aria-describedby="regional-vm-pricing-heading">
-        <table class="table-base">
+        <table id="regional-vm-price-results-table" class="table-base">
           <caption class="sr-only">
             {{
               selectedOperatingSystem()
@@ -363,7 +372,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-border-soft">
-            @for (view of filteredPrices(); track view.sku.skuKey) {
+            @for (view of visiblePrices(); track view.sku.skuKey) {
               <tr class="table-row-hover align-middle">
                 <th scope="row" class="px-4 py-3 text-left font-normal">
                   <a
@@ -388,13 +397,13 @@
                 </td>
                 <td class="px-4 py-3 text-right whitespace-nowrap tabular-nums">
                   @if (view.specs.memoryGB === null) {
-                    Not listed
+                    N/A
                   } @else {
                     {{ formatNumber(view.specs.memoryGB) }} GB
                   }
                 </td>
                 <td class="px-4 py-3 whitespace-nowrap" translate="no">
-                  {{ view.specs.architecture }}
+                  {{ view.specs.architecture ?? 'N/A' }}
                 </td>
                 <td class="max-w-52 px-4 py-3">
                   <span class="block text-sm font-semibold text-text-body" translate="no">
@@ -406,8 +415,21 @@
           </tbody>
         </table>
       </div>
+      @if (canToggleResultVisibility()) {
+        <div class="flex justify-center">
+          <button
+            type="button"
+            class="btn btn-outline min-h-11"
+            aria-controls="regional-vm-price-results-table"
+            [attr.aria-expanded]="showAllResults()"
+            (click)="toggleResultVisibility()"
+          >
+            {{ resultVisibilityLabel() }}
+          </button>
+        </div>
+      }
     } @else {
-      <div class="card flex flex-col items-center gap-3 py-10 text-center">
+      <div class="card card--tall flex flex-col items-center gap-3 text-center">
         <app-lucide-icon name="search-x" class="size-10 text-text-muted" aria-hidden="true" />
         <h3 class="font-semibold text-text-strong">No VM prices match</h3>
         <p class="text-sm text-text-muted">
@@ -422,20 +444,5 @@
         </button>
       </div>
     }
-  </section>
-
-  <section class="section-block" aria-labelledby="regional-vm-source-heading">
-    <h2 id="regional-vm-source-heading" class="section-title">Source and interpretation</h2>
-    <p class="text-sm leading-relaxed text-text-muted">
-      Prices: anonymous Azure Retail Prices API version
-      <span class="font-mono" translate="no">{{
-        vmRegionPageData().source.retailPrices.apiVersion
-      }}</span
-      >. Specifications: subscription-scoped Resource SKUs API version
-      <span class="font-mono" translate="no">{{
-        vmRegionPageData().source.resourceSkus.apiVersion
-      }}</span
-      >. A public price does not guarantee capacity, quota, or deployment eligibility.
-    </p>
   </section>
 </article>

@@ -1,6 +1,8 @@
+/* No border-radius here on purpose: this class is unlayered, so it would outrank
+   the rounded-* utilities the templates use to match each skeleton to the shape of
+   the content it stands in for. Every usage site sets its own radius. */
 .skeleton-block {
   animation: skeleton-pulse 1.6s ease-in-out infinite;
-  border-radius: 0.25rem;
   background-color: var(--color-surface-muted);
 }
 

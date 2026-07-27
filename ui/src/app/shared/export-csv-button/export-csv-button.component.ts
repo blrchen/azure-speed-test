@@ -1,6 +1,7 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common'
 import { Component, computed, inject, input, PLATFORM_ID } from '@angular/core'
 
+import { downloadBlob } from '../browser-download'
 import { LucideIconComponent } from '../icons/lucide-icons.component'
 
 @Component({
@@ -9,8 +10,8 @@ import { LucideIconComponent } from '../icons/lucide-icons.component'
   template: `
     <button
       type="button"
-      class="btn btn-outline btn--sm group"
-      [disabled]="!rows()?.length"
+      class="btn btn-outline btn--sm group touch-manipulation"
+      [disabled]="!hasRows()"
       [attr.aria-label]="accessibleLabel()"
       (click)="export()"
     >
@@ -34,13 +35,21 @@ export class ExportCsvButtonComponent {
   readonly headers = input.required<string[]>()
 
   /** Data rows (raw strings, will be escaped internally) */
-  readonly rows = input.required<string[][] | null>()
+  readonly rows = input<string[][] | null>(null)
+
+  /** Lazily builds data rows when export is requested. */
+  readonly rowsFactory = input<(() => string[][]) | null>(null)
+
+  /** Row count used to enable lazy exports without building rows eagerly. */
+  readonly rowCount = input<number | null>(null)
 
   /** Button label */
   readonly label = input<string>('Export CSV')
 
   /** Aria label */
   readonly ariaLabel = input<string>('Export results to CSV')
+
+  protected readonly hasRows = computed(() => (this.rowCount() ?? this.rows()?.length ?? 0) > 0)
 
   protected readonly accessibleLabel = computed((): string => {
     const label = this.label()
@@ -55,7 +64,7 @@ export class ExportCsvButtonComponent {
   export(): void {
     if (!this.isBrowser) return
 
-    const rows = this.rows()
+    const rows = this.rowsFactory()?.() ?? this.rows()
     if (!rows?.length) return
 
     const date = new Date().toISOString().split('T')[0]
@@ -76,17 +85,6 @@ export class ExportCsvButtonComponent {
   private downloadCsv(filename: string, headers: string[], rows: string[][]): void {
     const csvContent = [headers, ...rows].map((row) => this.formatCsvRow(row)).join('\n')
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-    const url = URL.createObjectURL(blob)
-
-    const link = this.document.createElement('a')
-    link.href = url
-    link.download = filename
-    link.style.visibility = 'hidden'
-
-    const body = this.document.body
-    body.appendChild(link)
-    link.click()
-    body.removeChild(link)
-    URL.revokeObjectURL(url)
+    downloadBlob(this.document, filename, blob)
   }
 }

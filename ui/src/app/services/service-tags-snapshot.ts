@@ -1,4 +1,4 @@
-export const SERVICE_TAG_ASSET_BASE_PATH = 'service-tags'
+const SERVICE_TAG_ASSET_BASE_PATH = 'service-tags'
 export const SERVICE_TAG_SUMMARY_SHARD_COUNT = 64
 export const SERVICE_TAG_REGION_DIRECTORY_PATH = 'service-tags/regions.json'
 export const SERVICE_TAG_SERVICE_DIRECTORY_PATH = 'service-tags/services.json'
@@ -17,19 +17,19 @@ export interface ServiceTagCloudDirectoryEntry {
   regionCount: number
 }
 
-export interface ServiceTagDirectoryRegionWire {
+interface ServiceTagDirectoryRegionWire {
   regionId: string
   regionDisplayName: string
   regionGroup: string
 }
 
-export interface ServiceTagDirectoryItemWire {
+interface ServiceTagDirectoryItemWire {
   serviceTagId: string
   regionIndex?: number
   prefixCount: number
 }
 
-export interface ServiceTagServiceDirectoryEntryWire {
+interface ServiceTagServiceDirectoryEntryWire {
   service: string
   serviceTags: ServiceTagDirectoryItemWire[]
 }
@@ -44,7 +44,7 @@ export interface ServiceTagDirectoryItem {
   prefixCount: number
 }
 
-export interface ServiceTagServiceDirectoryEntry {
+interface ServiceTagServiceDirectoryEntry {
   cloud: ServiceTagCloud
   service: string
   serviceTags: ServiceTagDirectoryItem[]
@@ -62,7 +62,7 @@ export interface ServiceTagRegionDirectoryEntry {
   status: ServiceTagRegionStatus
 }
 
-export interface ServiceTagDirectoryMetadata {
+interface ServiceTagDirectoryMetadata {
   clouds: ServiceTagCloudDirectoryEntry[]
 }
 
@@ -91,7 +91,7 @@ export interface ServiceTagPageData {
   ipv4PrefixCount: number
   ipv6PrefixCount: number
   prefixesComplete: boolean
-  legacyRoute?: boolean
+  implicitCloudRoute?: boolean
 }
 
 export interface ServiceTagSummaryWire {
@@ -101,10 +101,10 @@ export interface ServiceTagSummaryWire {
   ipv4PrefixCount: number
 }
 
-export interface ServiceTagPageLoadError {
+interface ServiceTagPageLoadError {
   error: string
   cloud?: ServiceTagCloud
-  legacyRoute?: boolean
+  implicitCloudRoute?: boolean
 }
 
 export type ServiceTagPageRouteData = ServiceTagPageData | ServiceTagPageLoadError | null
@@ -170,19 +170,6 @@ export function decodeServiceTagSummary(
   }
 }
 
-const AZURE_CLOUD_SERVICE_TAG_REGION_ALIASES: Readonly<Record<string, string>> = {
-  brazilsoutheast: 'brazilse',
-  chilecentral: 'chilec',
-  francecentral: 'centralfrance',
-  francesouth: 'southfrance',
-  germanynorth: 'germanyn',
-  germanywestcentral: 'germanywc',
-  norwayeast: 'norwaye',
-  norwaywest: 'norwayw',
-  switzerlandnorth: 'switzerlandn',
-  switzerlandwest: 'switzerlandw',
-}
-
 export function normalizeServiceTagIdInput(value: string | undefined): string {
   const normalized = value?.trim()
   if (normalized === '') return 'AzureCloud'
@@ -198,7 +185,13 @@ export function normalizeServiceTagCloud(value: string | undefined): ServiceTagC
   return 'public'
 }
 
-export function inferLegacyServiceTagCloud(serviceTagId: string): ServiceTagCloud {
+/**
+ * Guesses the owning cloud from a service tag id, for URLs that carry no cloud segment.
+ * Sovereign-cloud tags encode their region in the id suffix (e.g. `.ChinaEast`,
+ * `.USGovArizona`), so the suffix is the only signal available on those routes.
+ * Returns 'public' when nothing matches; callers fall back to probing other clouds.
+ */
+export function inferCloudFromServiceTagId(serviceTagId: string): ServiceTagCloud {
   if (/\.(?:ChinaEast(?:2|3)?|ChinaNorth(?:2|3)?)$/i.test(serviceTagId)) return 'china'
   if (
     /\.(?:USDoDCentral|USDoDEast|USGovArizona|USGovIowa|USGovTexas|USGovVirginia)$/i.test(
@@ -231,27 +224,6 @@ export function serviceTagSummaryShardId(serviceTagId: string): string {
   }
 
   return ((hash >>> 0) % SERVICE_TAG_SUMMARY_SHARD_COUNT).toString(16).padStart(2, '0')
-}
-
-export function buildServiceTagHref(
-  cloud: ServiceTagCloud,
-  serviceTagId: string,
-  requiresCloudRoute = cloud !== 'public',
-  source?: 'region' | 'service'
-): string {
-  const encodedServiceTagId = encodeURIComponent(serviceTagId)
-  const path =
-    cloud === 'public' || !requiresCloudRoute
-      ? `/Information/AzureIpRanges/${encodedServiceTagId}`
-      : `/Information/AzureIpRanges/${cloud}/${encodedServiceTagId}`
-  return source ? `${path}?source=${source}` : path
-}
-
-export function buildAzureCloudRegionServiceTagHref(regionId: string): string {
-  const normalizedRegionId = regionId.trim().toLowerCase()
-  const serviceTagRegionId =
-    AZURE_CLOUD_SERVICE_TAG_REGION_ALIASES[normalizedRegionId] ?? normalizedRegionId
-  return buildServiceTagHref('public', `AzureCloud.${serviceTagRegionId}`, false)
 }
 
 export function isServiceTagPageData(value: ServiceTagPageRouteData): value is ServiceTagPageData {

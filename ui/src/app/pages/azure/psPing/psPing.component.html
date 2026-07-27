@@ -1,10 +1,9 @@
-<article class="page-shell section-stack mx-auto max-w-5xl">
+<article class="page-shell section-stack">
   <header class="page-header">
     <h1 class="page-title">PsPing Network Latency Test for Azure</h1>
     <p class="page-lead">
-      Generate a ready-to-run PsPing command for an Azure region, measure TCP connection latency to
-      its public Storage endpoint, and understand how the result differs from a browser latency
-      test.
+      Generate a ready-to-run PsPing command and compare network latency to Azure regions from your
+      own connection.
     </p>
   </header>
 
@@ -153,8 +152,7 @@
           />
         </a>
         <a
-          routerLink="/Azure/Latency"
-          [queryParams]="browserLatencyQueryParams()"
+          [href]="buildDocumentHref('/Azure/Latency', browserLatencyQueryParams())"
           class="btn btn-outline btn--lg"
         >
           <app-lucide-icon name="activity" class="size-4" aria-hidden="true" />
@@ -201,9 +199,8 @@
           <h3 class="font-semibold text-text-strong">Paste the generated command</h3>
           <p>
             Run the
-            <a routerLink="/Azure/PsPing" fragment="psping-command" class="link-primary"
-              >command generated above</a
-            >. The <code class="font-mono text-sm">-n</code> option controls measured samples and
+            <a href="/Azure/PsPing#psping-command" class="link-primary">command generated above</a>.
+            The <code class="font-mono text-sm">-n</code> option controls measured samples and
             <code class="font-mono text-sm">-w</code> controls warm-up samples.
           </p>
         </div>
@@ -224,7 +221,7 @@
     <figure class="flex flex-col gap-3">
       <h3 class="text-lg font-semibold text-text-strong">Example PsPing output</h3>
       <img
-        ngSrc="assets/images/psping-output-example.png"
+        ngSrc="images/psping-output-example.png"
         width="1600"
         height="570"
         loading="lazy"
@@ -367,7 +364,7 @@
         <div class="faq-body">
           Use the same PsPing sample and warm-up counts for each target and repeat the test at
           different times. For Microsoft's published Azure backbone measurements, see
-          <a routerLink="/Azure/RegionToRegionLatency" class="link-primary">
+          <a href="/Azure/RegionToRegionLatency" class="link-primary">
             Azure Region to Region Latency </a
           >. Those values are not measurements from your device.
         </div>

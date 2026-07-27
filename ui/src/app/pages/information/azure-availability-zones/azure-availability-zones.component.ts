@@ -1,5 +1,4 @@
 import { Component, inject, OnInit } from '@angular/core'
-import { RouterLink } from '@angular/router'
 
 import azureGlobalCloudRegionsJson from '../../../../assets/data/regions.json'
 import { SeoService } from '../../../services/seo.service'
@@ -8,7 +7,7 @@ import { buildRegionDetailHref } from '../../../shared/utils'
 
 @Component({
   selector: 'app-azure-availability-zones',
-  imports: [RouterLink, LucideIconComponent],
+  imports: [LucideIconComponent],
   templateUrl: './azure-availability-zones.component.html',
   host: { class: 'block' },
 })

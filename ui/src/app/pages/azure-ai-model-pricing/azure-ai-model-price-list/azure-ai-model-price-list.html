@@ -1,0 +1,557 @@
+<article class="page-shell section-stack min-w-0 overflow-x-clip">
+  <header class="page-header">
+    <nav class="flex items-center gap-2 text-sm text-text-muted" aria-label="Breadcrumb">
+      <a class="breadcrumb-link" href="/Information/AzureRegions">Azure resources</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">Azure AI Model Pricing</span>
+    </nav>
+
+    <div class="max-w-4xl space-y-3">
+      <div class="flex min-w-0 items-center gap-3">
+        <div class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+          <app-lucide-icon name="sparkles" class="size-6 text-primary" aria-hidden="true" />
+        </div>
+        <h1 class="page-title min-w-0">Azure AI Model Pricing</h1>
+      </div>
+      <p class="page-lead">
+        Compare Microsoft Foundry model pricing across providers, deployment options, and regions in
+        one consistent view.
+      </p>
+    </div>
+
+    <dl class="vm-summary-ledger">
+      <div class="vm-summary-ledger__item">
+        <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">Models</dt>
+        <dd class="font-mono text-xl font-bold text-text-strong tabular-nums sm:text-2xl">
+          {{ catalog().counts.modelCount }}
+        </dd>
+      </div>
+      <div class="vm-summary-ledger__item">
+        <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">Providers</dt>
+        <dd class="font-mono text-xl font-bold text-text-strong tabular-nums sm:text-2xl">
+          {{ catalog().counts.providerCount }}
+        </dd>
+      </div>
+      <div class="vm-summary-ledger__item">
+        <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">
+          Pricing profiles
+        </dt>
+        <dd class="font-mono text-xl font-bold text-text-strong tabular-nums sm:text-2xl">
+          {{ catalog().counts.profileCount }}
+        </dd>
+      </div>
+      <div class="vm-summary-ledger__item">
+        <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">Price regions</dt>
+        <dd class="font-mono text-xl font-bold text-text-strong tabular-nums sm:text-2xl">
+          {{ catalog().counts.regionCount }}
+        </dd>
+      </div>
+    </dl>
+  </header>
+
+  <section class="section-block min-w-0" aria-labelledby="ai-model-price-directory-heading">
+    <div class="flex flex-wrap items-start justify-between gap-3">
+      <div class="max-w-3xl space-y-1">
+        <h2 id="ai-model-price-directory-heading" class="section-title">Model price directory</h2>
+        <p class="text-sm leading-relaxed text-text-muted">
+          Select up to four models for a side-by-side comparison. Price ranges indicate that Azure
+          publishes different values across the matching price regions. Price columns sort by the
+          lower value of each displayed range.
+        </p>
+      </div>
+      <a
+        class="btn btn-outline min-h-11"
+        [href]="buildDocumentHref(comparisonHref, comparisonQueryParams())"
+      >
+        Open model comparison
+        <app-lucide-icon name="arrow-left-right" class="size-4" aria-hidden="true" />
+      </a>
+    </div>
+
+    <form role="search" class="space-y-4" (submit)="$event.preventDefault()">
+      <div class="flex min-w-0 flex-col gap-2">
+        <label for="ai-model-search" class="form-label">Search model names and parameters</label>
+        <div class="form-control-shell">
+          <app-lucide-icon
+            name="search"
+            class="form-control-shell__icon size-4"
+            aria-hidden="true"
+          />
+          <input
+            #searchInput
+            id="ai-model-search"
+            type="search"
+            class="form-control form-control--icon-start form-control--action-end form-control-focus-ring min-h-11 md:min-h-9"
+            placeholder="For example: GPT-4.1, o3-mini, 128K, 70B, codex..."
+            autocomplete="off"
+            spellcheck="false"
+            [value]="query()"
+            aria-describedby="ai-model-search-hint"
+            (input)="updateQuery(searchInput.value)"
+          />
+          <span id="ai-model-search-hint" class="sr-only">
+            Search by model name, version, size, context label, variant, provider, or Azure product
+            name. Hyphens, spaces, and letter-number boundaries are treated equivalently. Multiple
+            search terms must all match.
+          </span>
+          @if (query()) {
+            <button
+              type="button"
+              class="form-control-shell__action"
+              aria-label="Clear model search"
+              (click)="updateQuery(''); searchInput.focus()"
+            >
+              <app-lucide-icon name="x" class="size-4" aria-hidden="true" />
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="flex min-w-0 flex-col gap-2">
+          <label for="ai-model-provider-filter" class="form-label">Provider</label>
+          <div class="form-select-wrapper">
+            <select
+              #providerFilter
+              id="ai-model-provider-filter"
+              class="form-select min-h-11 md:min-h-9"
+              [value]="selectedProvider()"
+              (change)="updateProvider(providerFilter.value)"
+            >
+              <option value="">All providers</option>
+              @for (provider of catalog().filters.providers; track provider.value) {
+                <option [value]="provider.value">
+                  {{ provider.value }} ({{ provider.count }})
+                </option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="flex min-w-0 flex-col gap-2">
+          <label for="ai-model-profile-filter" class="form-label">Deployment profile</label>
+          <div class="form-select-wrapper">
+            <select
+              #profileFilter
+              id="ai-model-profile-filter"
+              class="form-select min-h-11 md:min-h-9"
+              [value]="selectedProfile()"
+              (change)="updateProfile(profileFilter.value)"
+            >
+              @for (profile of catalog().filters.profiles; track profile) {
+                <option [value]="profile">{{ profile }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="flex min-w-0 flex-col gap-2">
+          <label for="ai-model-region-filter" class="form-label">Price region</label>
+          <div class="form-select-wrapper">
+            <select
+              #regionFilter
+              id="ai-model-region-filter"
+              class="form-select min-h-11 md:min-h-9"
+              [value]="selectedRegion()"
+              (change)="updateRegion(regionFilter.value)"
+            >
+              <option value="">All {{ priceCloudLabel }} price regions</option>
+              @for (region of regionOptions(); track region.value) {
+                <option [value]="region.value">{{ region.label }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="flex min-w-0 flex-col gap-2">
+          <label for="ai-model-coverage-filter" class="form-label">Price coverage</label>
+          <div class="form-select-wrapper">
+            <select
+              #coverageFilter
+              id="ai-model-coverage-filter"
+              class="form-select min-h-11 md:min-h-9"
+              [value]="selectedCoverage()"
+              (change)="updateCoverage(coverageFilter.value)"
+            >
+              <option value="">Any published token price</option>
+              <option value="input-output">Input and output listed</option>
+              <option value="cached-input">Cached input listed</option>
+              <option value="cache-write">Cache write listed</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <p
+        id="ai-model-result-summary"
+        class="m-0 text-sm font-semibold text-text-body tabular-nums"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {{ resultSummary() }} for {{ selectedProfile() }} in {{ selectedRegionLabel() }}
+      </p>
+      @if (hasActiveFilters()) {
+        <button
+          type="button"
+          class="btn btn-outline btn--sm min-h-11 md:min-h-9"
+          (click)="clearFilters(); searchInput.focus()"
+        >
+          <app-lucide-icon name="x" class="size-3.5" aria-hidden="true" />
+          Clear filters
+        </button>
+      }
+    </div>
+
+    @if (selectedModels().length) {
+      <aside
+        class="flex flex-col gap-4 rounded-xl border border-primary/30 bg-primary/5 p-4 lg:flex-row lg:items-center lg:justify-between"
+        aria-label="AI model comparison selection"
+      >
+        <div class="min-w-0 space-y-3">
+          <div class="flex items-center gap-2">
+            <app-lucide-icon
+              name="arrow-left-right"
+              class="size-5 shrink-0 text-primary"
+              aria-hidden="true"
+            />
+            <p class="font-semibold text-text-strong" role="status" aria-live="polite">
+              {{ selectedModels().length }} of {{ comparisonLimit }} models selected
+            </p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            @for (model of selectedModels(); track model.id) {
+              <span
+                class="inline-flex min-h-9 items-center gap-2 rounded-full border border-border-soft bg-surface-raised py-1 pr-1 pl-3 shadow-sm"
+              >
+                <span class="text-xs font-semibold text-text-strong">{{ model.name }}</span>
+                <button
+                  type="button"
+                  class="inline-flex size-8 items-center justify-center rounded-full text-text-muted hover:bg-surface-muted hover:text-text-strong focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-hidden"
+                  [attr.aria-label]="'Remove ' + model.name + ' from comparison'"
+                  (click)="removeSelectedModel(model.id)"
+                >
+                  <app-lucide-icon name="x" class="size-3.5" aria-hidden="true" />
+                </button>
+              </span>
+            }
+          </div>
+        </div>
+
+        <div class="flex shrink-0 flex-wrap gap-3">
+          <button
+            type="button"
+            class="btn btn-outline btn--sm min-h-11"
+            (click)="clearComparisonSelection()"
+          >
+            Clear
+          </button>
+          @if (comparisonReady()) {
+            <a
+              class="btn btn-primary min-h-11"
+              [href]="buildDocumentHref(comparisonHref, comparisonQueryParams())"
+            >
+              Compare {{ selectedModels().length }} models
+              <app-lucide-icon name="chevron-right" class="size-4" aria-hidden="true" />
+            </a>
+          } @else {
+            <button type="button" class="btn btn-primary min-h-11" disabled>
+              Select 1 more model
+            </button>
+          }
+        </div>
+      </aside>
+    }
+
+    @if (filteredModels().length) {
+      <div
+        class="table-shell w-full max-w-full min-w-0 contain-inline-size"
+        aria-describedby="ai-model-result-summary"
+      >
+        <table class="table-base ai-model-price-table">
+          <caption class="sr-only">
+            Azure AI model input, output, cached input, and cache write prices for the selected
+            Azure Public region in USD per 1 million tokens. Select up to four rows for comparison.
+            Use a column heading button to change the sort column or direction.
+          </caption>
+          <thead class="table-head">
+            <tr>
+              <th scope="col" class="px-2 py-3 text-center">
+                <span class="sr-only">Select for comparison</span>
+              </th>
+              <th scope="col" class="p-0" [attr.aria-sort]="sortAriaValue('name')">
+                <button type="button" class="table-sort-button" (click)="sortBy('name')">
+                  Model
+                  @if (isSortedBy('name')) {
+                    <app-lucide-icon
+                      name="chevron-down"
+                      class="table-sort-icon size-3.5"
+                      [class.table-sort-icon--ascending]="isSortAscending()"
+                      aria-hidden="true"
+                    />
+                  }
+                </button>
+              </th>
+              <th scope="col" class="p-0" [attr.aria-sort]="sortAriaValue('provider')">
+                <button type="button" class="table-sort-button" (click)="sortBy('provider')">
+                  Provider
+                  @if (isSortedBy('provider')) {
+                    <app-lucide-icon
+                      name="chevron-down"
+                      class="table-sort-icon size-3.5"
+                      [class.table-sort-icon--ascending]="isSortAscending()"
+                      aria-hidden="true"
+                    />
+                  }
+                </button>
+              </th>
+              <th scope="col" class="p-0" [attr.aria-sort]="sortAriaValue('input')">
+                <button
+                  type="button"
+                  class="table-sort-button justify-end text-right"
+                  (click)="sortBy('input')"
+                >
+                  Input / 1M
+                  @if (isSortedBy('input')) {
+                    <app-lucide-icon
+                      name="chevron-down"
+                      class="table-sort-icon size-3.5"
+                      [class.table-sort-icon--ascending]="isSortAscending()"
+                      aria-hidden="true"
+                    />
+                  }
+                </button>
+              </th>
+              <th scope="col" class="p-0" [attr.aria-sort]="sortAriaValue('output')">
+                <button
+                  type="button"
+                  class="table-sort-button justify-end text-right"
+                  (click)="sortBy('output')"
+                >
+                  Output / 1M
+                  @if (isSortedBy('output')) {
+                    <app-lucide-icon
+                      name="chevron-down"
+                      class="table-sort-icon size-3.5"
+                      [class.table-sort-icon--ascending]="isSortAscending()"
+                      aria-hidden="true"
+                    />
+                  }
+                </button>
+              </th>
+              <th scope="col" class="p-0" [attr.aria-sort]="sortAriaValue('cachedInput')">
+                <button
+                  type="button"
+                  class="table-sort-button justify-end text-right"
+                  (click)="sortBy('cachedInput')"
+                >
+                  Cached input / 1M
+                  @if (isSortedBy('cachedInput')) {
+                    <app-lucide-icon
+                      name="chevron-down"
+                      class="table-sort-icon size-3.5"
+                      [class.table-sort-icon--ascending]="isSortAscending()"
+                      aria-hidden="true"
+                    />
+                  }
+                </button>
+              </th>
+              <th scope="col" class="p-0" [attr.aria-sort]="sortAriaValue('cacheWrite')">
+                <button
+                  type="button"
+                  class="table-sort-button justify-end text-right"
+                  (click)="sortBy('cacheWrite')"
+                >
+                  Cache write / 1M
+                  @if (isSortedBy('cacheWrite')) {
+                    <app-lucide-icon
+                      name="chevron-down"
+                      class="table-sort-icon size-3.5"
+                      [class.table-sort-icon--ascending]="isSortAscending()"
+                      aria-hidden="true"
+                    />
+                  }
+                </button>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border-soft">
+            @for (view of filteredModels(); track view.model.id) {
+              <tr class="table-row-hover align-middle">
+                <td class="px-2 py-1 text-center">
+                  <label
+                    class="inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-md focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2"
+                  >
+                    <input
+                      #comparisonCheckbox
+                      type="checkbox"
+                      class="size-4 accent-primary"
+                      [checked]="isModelSelected(view.model.id)"
+                      [disabled]="comparisonFull() && !isModelSelected(view.model.id)"
+                      [attr.aria-label]="'Select ' + view.model.name + ' for comparison'"
+                      (change)="toggleModel(view.model.id, comparisonCheckbox.checked)"
+                    />
+                  </label>
+                </td>
+                <th scope="row" class="px-4 py-3 text-left">
+                  <span class="block font-semibold text-text-strong">{{ view.model.name }}</span>
+                  <span class="mt-0.5 block text-xs font-normal text-text-muted">
+                    {{ view.model.productNames.join(', ') }}
+                  </span>
+                </th>
+                <td class="px-4 py-3 whitespace-nowrap">{{ view.model.provider }}</td>
+                <td class="px-4 py-3 text-right font-medium whitespace-nowrap tabular-nums">
+                  {{ formatPrice(view.summary.input) }}
+                </td>
+                <td class="px-4 py-3 text-right font-medium whitespace-nowrap tabular-nums">
+                  {{ formatPrice(view.summary.output) }}
+                </td>
+                <td class="px-4 py-3 text-right whitespace-nowrap tabular-nums">
+                  {{ formatPrice(view.summary.cachedInput) }}
+                </td>
+                <td class="px-4 py-3 text-right whitespace-nowrap tabular-nums">
+                  {{ formatPrice(view.summary.cacheWrite) }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <div
+        class="rounded-xl border border-dashed border-border-soft bg-surface-muted px-6 py-12 text-center"
+      >
+        <h3 class="text-lg font-semibold text-text-strong">No matching model prices</h3>
+        <p class="mt-2 text-sm text-text-muted">
+          Try another deployment profile, Azure Public price region, provider, or search term.
+        </p>
+      </div>
+    }
+
+    <aside
+      class="grid gap-4 rounded-xl border border-primary/25 bg-primary/5 p-4 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)] lg:p-5"
+      aria-labelledby="selected-pricing-profile-heading"
+    >
+      <div class="min-w-0">
+        <p class="text-xs font-bold tracking-wide text-primary uppercase">Selected profile</p>
+        <h3 id="selected-pricing-profile-heading" class="mt-1 text-lg font-bold text-text-strong">
+          {{ selectedProfile() }}
+        </h3>
+        @if (selectedProfileGuide().contextDescription; as contextDescription) {
+          <p class="mt-2 text-sm leading-relaxed text-text-muted">{{ contextDescription }}</p>
+        }
+      </div>
+      <dl class="grid min-w-0 gap-4 sm:grid-cols-2">
+        <div>
+          <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">
+            Data processing
+          </dt>
+          <dd class="mt-1 font-semibold text-text-strong">
+            {{ selectedProfileGuide().processingLabel }}
+          </dd>
+          <p class="mt-1 text-sm leading-relaxed text-text-muted">
+            {{ selectedProfileGuide().processingDescription }}
+          </p>
+        </div>
+        <div>
+          <dt class="text-xs font-semibold tracking-wide text-text-muted uppercase">Billing</dt>
+          <dd class="mt-1 font-semibold text-text-strong">
+            {{ selectedProfileGuide().billingLabel }}
+          </dd>
+          <p class="mt-1 text-sm leading-relaxed text-text-muted">
+            {{ selectedProfileGuide().billingDescription }}
+          </p>
+        </div>
+      </dl>
+    </aside>
+
+    <p class="text-xs leading-relaxed text-text-muted">
+      Prices are shown in USD as public estimates for {{ priceCloudLabel }}. Model availability,
+      quota, taxes, negotiated discounts, and regional capacity may vary.
+    </p>
+  </section>
+
+  <section class="section-block" aria-labelledby="ai-model-pricing-notes-heading">
+    <div class="max-w-4xl space-y-2">
+      <h2 id="ai-model-pricing-notes-heading" class="section-title">Compare with confidence</h2>
+      <p class="text-sm leading-relaxed text-text-muted">
+        Explore pricing in a consistent view, compare deployment options, and focus on the models
+        that fit your workload.
+      </p>
+    </div>
+
+    <div class="grid gap-4 md:grid-cols-3">
+      <div class="rounded-xl border border-border-soft bg-surface-raised p-5 shadow-sm">
+        <p class="text-xs font-bold tracking-wide text-primary uppercase">Clear comparison</p>
+        <h3 class="mt-1 font-semibold text-text-strong">Compare at a glance</h3>
+        <p class="mt-2 text-sm leading-relaxed text-text-muted">
+          Review token pricing in a consistent per-1-million-token view across providers and
+          deployment profiles.
+        </p>
+      </div>
+      <div class="rounded-xl border border-border-soft bg-surface-raised p-5 shadow-sm">
+        <p class="text-xs font-bold tracking-wide text-primary uppercase">Deployment choice</p>
+        <h3 class="mt-1 font-semibold text-text-strong">Explore deployment options</h3>
+        <p class="mt-2 text-sm leading-relaxed text-text-muted">
+          Compare Global, Data Zone, Regional, Batch, and Priority pricing side by side.
+        </p>
+      </div>
+      <div class="rounded-xl border border-border-soft bg-surface-raised p-5 shadow-sm">
+        <p class="text-xs font-bold tracking-wide text-primary uppercase">Focused results</p>
+        <h3 class="mt-1 font-semibold text-text-strong">Find the right models</h3>
+        <p class="mt-2 text-sm leading-relaxed text-text-muted">
+          Filter by provider, profile, Azure Public region, and price coverage to narrow the list to
+          your workload.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-block" aria-labelledby="ai-model-pricing-faq-heading">
+    <div class="max-w-4xl space-y-2">
+      <h2 id="ai-model-pricing-faq-heading" class="section-title">Azure AI pricing questions</h2>
+      <p class="text-sm leading-relaxed text-text-muted">
+        Important boundaries to understand when comparing the public token prices on this page.
+      </p>
+    </div>
+
+    <div
+      class="divide-y divide-border-soft overflow-hidden rounded-xl border border-border-soft bg-surface-raised shadow-sm"
+    >
+      <details class="group px-5 py-4 open:bg-surface-muted">
+        <summary
+          class="cursor-pointer pr-4 font-semibold text-text-strong marker:text-primary focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-hidden"
+        >
+          {{ pricingSourceFaq.question }}
+        </summary>
+        <div class="mt-3 max-w-4xl text-sm leading-relaxed text-text-muted">
+          <p>{{ pricingSourceFaq.answer }}</p>
+          <div class="mt-3 flex flex-wrap gap-x-4 gap-y-2">
+            @for (source of officialSources; track source.href) {
+              <a
+                class="link-primary inline-flex min-h-11 items-center"
+                [href]="source.href"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {{ source.title }}
+              </a>
+            }
+          </div>
+        </div>
+      </details>
+      @for (faq of pricingFaqs; track faq.question) {
+        <details class="group px-5 py-4 open:bg-surface-muted">
+          <summary
+            class="cursor-pointer pr-4 font-semibold text-text-strong marker:text-primary focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-hidden"
+          >
+            {{ faq.question }}
+          </summary>
+          <p class="mt-3 max-w-4xl text-sm leading-relaxed text-text-muted">{{ faq.answer }}</p>
+        </details>
+      }
+    </div>
+  </section>
+</article>

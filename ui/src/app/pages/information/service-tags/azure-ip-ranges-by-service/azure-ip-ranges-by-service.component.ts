@@ -11,20 +11,28 @@ import {
   PLATFORM_ID,
   signal,
 } from '@angular/core'
-import { form, FormField } from '@angular/forms/signals'
-import { ActivatedRoute, Router, RouterLink } from '@angular/router'
+import { ActivatedRoute, Router } from '@angular/router'
 
 import { SeoService } from '../../../../services/seo.service'
+import { buildServiceTagHref } from '../../../../services/service-tag-hrefs'
 import { ServiceTagsLoader } from '../../../../services/service-tags-loader.service'
 import {
-  buildServiceTagHref,
   ServiceTagCloud,
   ServiceTagCloudDirectoryEntry,
   ServiceTagDirectoryItem,
   ServiceTagScope,
   ServiceTagServiceDirectories,
 } from '../../../../services/service-tags-snapshot'
+import { buildDocumentHref } from '../../../../shared/document-navigation'
+import { readInputValue, readSelectValue } from '../../../../shared/form-control-value'
 import { LucideIconComponent } from '../../../../shared/icons/lucide-icons.component'
+import { replaceMergedQueryParamsIfChanged } from '../../../../shared/query-param-sync'
+import {
+  absoluteUrl,
+  buildFaqPage,
+  buildListItems,
+  buildSchemaNode,
+} from '../../../../shared/structured-data'
 import {
   formatDirectoryCount,
   normalizeDirectoryCloud,
@@ -60,14 +68,19 @@ interface ServiceTagGroup {
   readonly global: boolean
 }
 
-const PAGE_URL = 'https://www.azurespeed.com/Information/AzureIpRangesByService'
+const PAGE_PATH = '/Information/AzureIpRangesByService'
 const PAGE_DESCRIPTION =
-  'Browse Azure service tags by service and cloud, then inspect IPv4 and IPv6 prefixes for each global or regional tag.'
+  'Explore Azure IP ranges by service and quickly find the network scopes relevant to your architecture.'
+const SOURCE_FAQ = {
+  question: 'Where do these IP ranges come from, and how often are they updated?',
+  answer:
+    'This directory uses Microsoft Azure Service Tags data. Microsoft normally publishes downloadable service-tag files weekly. Use the official download for your selected cloud when you need the complete source file.',
+} as const
 const SERVICE_COLLATOR = new Intl.Collator('en', { numeric: true, sensitivity: 'base' })
 
 @Component({
   selector: 'app-azure-ip-ranges-by-service',
-  imports: [FormField, RouterLink, LucideIconComponent],
+  imports: [LucideIconComponent],
   templateUrl: './azure-ip-ranges-by-service.component.html',
   styleUrl: './azure-ip-ranges-by-service.component.css',
   host: {
@@ -76,6 +89,7 @@ const SERVICE_COLLATOR = new Intl.Collator('en', { numeric: true, sensitivity: '
   },
 })
 export class AzureIpRangesByServiceComponent implements OnInit {
+  readonly buildDocumentHref = buildDocumentHref
   private readonly seoService = inject(SeoService)
   private readonly serviceTagsLoader = inject(ServiceTagsLoader)
   private readonly location = inject(Location)
@@ -85,6 +99,7 @@ export class AzureIpRangesByServiceComponent implements OnInit {
   private readonly canSyncUrl = signal(false)
   private readonly retryDirectories = signal<ServiceTagServiceDirectories | null>(null)
 
+  readonly sourceFaq = SOURCE_FAQ
   readonly serviceTagDirectories = input<ServiceTagServiceDirectories | null>(null)
   readonly q = input('', { transform: normalizeDirectorySearch })
   readonly cloud = input<ServiceTagCloud, string | undefined>('public', {
@@ -113,7 +128,6 @@ export class AzureIpRangesByServiceComponent implements OnInit {
   }))
 
   readonly filtersModel = linkedSignal(() => this.routeViewState())
-  readonly filtersForm = form(this.filtersModel, { name: 'ipRangesByServiceFilters' })
   readonly servicesForSelectedCloud = computed(() => {
     const directories = this.directories()
     const cloud = this.filtersModel().cloud
@@ -236,24 +250,25 @@ export class AzureIpRangesByServiceComponent implements OnInit {
     this.seoService.setPageMeta({
       title: 'Azure IP Ranges by Service | Microsoft Service Tags',
       description: PAGE_DESCRIPTION,
-      canonicalUrl: PAGE_URL,
-      structuredData: {
-        '@context': 'https://schema.org',
-        '@type': 'CollectionPage',
-        name: 'Azure IP ranges by service',
-        description: PAGE_DESCRIPTION,
-        url: PAGE_URL,
-        mainEntity: {
-          '@type': 'ItemList',
-          numberOfItems: defaultServices.length,
-          itemListElement: defaultServices.map((service, index) => ({
-            '@type': 'ListItem',
-            position: index + 1,
-            name: service.service,
-            url: `${PAGE_URL}?service=${encodeURIComponent(service.service)}`,
-          })),
-        },
-      },
+      canonicalUrl: absoluteUrl(PAGE_PATH),
+      structuredData: [
+        buildSchemaNode('CollectionPage', {
+          name: 'Azure IP ranges by service',
+          description: PAGE_DESCRIPTION,
+          url: absoluteUrl(PAGE_PATH),
+          mainEntity: {
+            '@type': 'ItemList',
+            numberOfItems: defaultServices.length,
+            itemListElement: buildListItems(
+              defaultServices.map((service) => ({
+                name: service.service,
+                path: `${PAGE_PATH}?service=${encodeURIComponent(service.service)}`,
+              }))
+            ),
+          },
+        }),
+        buildFaqPage([SOURCE_FAQ]),
+      ],
     })
   }
 
@@ -273,6 +288,23 @@ export class AzureIpRangesByServiceComponent implements OnInit {
 
   clearSelectedService(): void {
     this.filtersModel.update((state) => ({ ...state, service: '' }))
+  }
+
+  updateSearch(event: Event): void {
+    const search = normalizeDirectorySearch(readInputValue(event))
+    this.filtersModel.update((state) => ({ ...state, search }))
+  }
+
+  // Changing cloud or scope also drops the selected service, matching the previous
+  // [formField] + (change)="clearSelectedService()" pairing on these selects.
+  updateCloud(event: Event): void {
+    const cloud = normalizeDirectoryCloud(readSelectValue(event))
+    this.filtersModel.update((state) => ({ ...state, cloud, service: '' }))
+  }
+
+  updateScope(event: Event): void {
+    const scope = normalizeServiceTagScope(readSelectValue(event))
+    this.filtersModel.update((state) => ({ ...state, scope, service: '' }))
   }
 
   selectLetter(letter: string): void {
@@ -302,8 +334,7 @@ export class AzureIpRangesByServiceComponent implements OnInit {
     return buildServiceTagHref(
       this.filtersModel().cloud,
       serviceTag.serviceTagId,
-      serviceTag.requiresCloudRoute,
-      'service'
+      serviceTag.requiresCloudRoute
     )
   }
 
@@ -329,17 +360,11 @@ export class AzureIpRangesByServiceComponent implements OnInit {
   }
 
   private syncUrlState(nextState: ServiceViewState, routeState: ServiceViewState): void {
-    const nextQueryParams = this.buildQueryParams(nextState)
-    const currentQueryParams = this.buildQueryParams(routeState)
-    if (JSON.stringify(nextQueryParams) === JSON.stringify(currentQueryParams)) return
-
-    const urlTree = this.router.createUrlTree([], {
-      relativeTo: this.route,
-      queryParams: nextQueryParams,
-      queryParamsHandling: 'merge',
-      preserveFragment: true,
-    })
-    this.location.replaceState(this.router.serializeUrl(urlTree))
+    replaceMergedQueryParamsIfChanged(
+      { router: this.router, route: this.route, location: this.location },
+      this.buildQueryParams(nextState),
+      this.buildQueryParams(routeState)
+    )
   }
 
   private buildQueryParams(state: ServiceViewState): Record<string, string | null> {

@@ -11,7 +11,10 @@
 }
 
 .link-primary:focus-visible {
-  outline: none;
+  /* Transparent outline stays visible in forced-colors mode, where the
+     box-shadow ring below is suppressed. */
+  outline: 2px solid transparent;
+  outline-offset: 2px;
   box-shadow:
     0 0 0 2px var(--color-surface-base),
     0 0 0 4px var(--color-primary);
@@ -28,7 +31,10 @@
   text-decoration-line: underline;
 }
 .link-footer:focus-visible {
-  outline: none;
+  /* Transparent outline stays visible in forced-colors mode, where the
+     box-shadow ring below is suppressed. */
+  outline: 2px solid transparent;
+  outline-offset: 2px;
   box-shadow:
     0 0 0 2px var(--color-surface-base),
     0 0 0 4px var(--color-primary);
